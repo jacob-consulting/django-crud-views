@@ -1,0 +1,1066 @@
+{
+  "status": "passed-with-documented-runtime-and-human-limits",
+  "generated": "2026-11-15T07:24:08.808414+00:00",
+  "plan": "06.34-10",
+  "source_head": "e2de76475184be93569ab999824ed48e46466f43",
+  "source_manifest": "evidence/06.34-10/sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+  "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+  "source_files": 801,
+  "source_hash_encoding": "SHA256 of the manifest's sorted-key JSON bytes, excluding the file's final newline; every value hashes actual file bytes.",
+  "source_manifest_file_sha256": "5223efe78cd618b1918e6cf6a77bec4cfe4052a839388b9d948fdb0d75d78e4a",
+  "commands": [
+    {
+      "name": "alias-order-green",
+      "command": "CV_ACCESS_RECORD_REQUESTS=1 PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_transactions.py::test_on_commit_error_after_real_commit_keeps_data tests/test1/test_ancestor_auth_databases.py::test_top_level_guardian_and_manage_keep_their_routing -n 0 -q",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:07:54.771059+00:00",
+      "log": "alias-order-green.log",
+      "finished": "2026-11-15T07:07:56.995553+00:00",
+      "duration_seconds": 2.224,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "..                                                                       [100%]",
+        "2 passed in 1.44s"
+      ],
+      "counts": {
+        "passed": 2
+      },
+      "source_unchanged": true
+    },
+    {
+      "name": "alias-order-4-2",
+      "command": "CV_ACCESS_RECORD_REQUESTS=1 PYTHONPATH=src:. .nox/tests-3-12-django-4-2/bin/python -m pytest tests/test1/test_transactions.py::test_on_commit_error_after_real_commit_keeps_data tests/test1/test_ancestor_auth_databases.py::test_top_level_guardian_and_manage_keep_their_routing -n 0 -q",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:17:38.709522+00:00",
+      "log": "alias-order-4-2.log",
+      "status": "passed",
+      "pid": 3844661,
+      "finished": "2026-11-15T07:17:41.884198+00:00",
+      "duration_seconds": 3.175,
+      "exit_code": 0,
+      "summary": [
+        "..                                                                       [100%]",
+        "2 passed in 1.88s"
+      ],
+      "counts": {
+        "passed": 2
+      },
+      "source_unchanged": true
+    },
+    {
+      "name": "alias-order-6-0",
+      "command": "CV_ACCESS_RECORD_REQUESTS=1 PYTHONPATH=src:. .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_transactions.py::test_on_commit_error_after_real_commit_keeps_data tests/test1/test_ancestor_auth_databases.py::test_top_level_guardian_and_manage_keep_their_routing -n 0 -q",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:17:38.700773+00:00",
+      "log": "alias-order-6-0.log",
+      "status": "passed",
+      "pid": 3844660,
+      "finished": "2026-11-15T07:17:41.418471+00:00",
+      "duration_seconds": 2.718,
+      "exit_code": 0,
+      "summary": [
+        "..                                                                       [100%]",
+        "2 passed in 1.53s"
+      ],
+      "counts": {
+        "passed": 2
+      },
+      "source_unchanged": true
+    },
+    {
+      "name": "fixture-isolation",
+      "command": "CV_ACCESS_RECORD_REQUESTS=1 PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_ancestor_auth_databases.py tests/test1/test_transactions.py -n 2 -q",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:08:10.030884+00:00",
+      "log": "fixture-isolation.log",
+      "finished": "2026-11-15T07:09:04.443074+00:00",
+      "duration_seconds": 54.412,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "bringing up nodes...",
+        "bringing up nodes...",
+        "",
+        "........................................................................ [ 18%]",
+        "........................................................................ [ 37%]",
+        "........................................................................ [ 55%]",
+        "........................................................................ [ 74%]",
+        "........................................................................ [ 93%]",
+        "..........................                                               [100%]",
+        "386 passed in 53.71s"
+      ],
+      "counts": {
+        "passed": 386
+      },
+      "source_unchanged": true
+    },
+    {
+      "name": "runtime-5-2",
+      "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -c 'import json,pathlib,platform,sys,django,crud_views,crud_views_guardian; root=pathlib.Path(\"src\").resolve(); modules={m.__name__:str(pathlib.Path(m.__file__).resolve()) for m in (crud_views,crud_views_guardian)}; assert all(pathlib.Path(p).is_relative_to(root) for p in modules.values()); print(json.dumps({\"python\":platform.python_version(),\"django\":django.get_version(),\"executable\":sys.executable,\"modules\":modules}))'",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:10:14.232475+00:00",
+      "log": "runtime-5-2.log",
+      "finished": "2026-11-15T07:10:14.292450+00:00",
+      "duration_seconds": 0.06,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "{\"python\": \"3.12.3\", \"django\": \"5.2.19\", \"executable\": \"/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python\", \"modules\": {\"crud_views\": \"/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py\", \"crud_views_guardian\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/__init__.py\"}}"
+      ],
+      "counts": {},
+      "source_unchanged": true
+    },
+    {
+      "name": "runtime-4-2",
+      "command": "PYTHONPATH=src:. .nox/tests-3-12-django-4-2/bin/python -c 'import json,pathlib,platform,sys,django,crud_views,crud_views_guardian; root=pathlib.Path(\"src\").resolve(); modules={m.__name__:str(pathlib.Path(m.__file__).resolve()) for m in (crud_views,crud_views_guardian)}; assert all(pathlib.Path(p).is_relative_to(root) for p in modules.values()); print(json.dumps({\"python\":platform.python_version(),\"django\":django.get_version(),\"executable\":sys.executable,\"modules\":modules}))'",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:10:14.411263+00:00",
+      "log": "runtime-4-2.log",
+      "finished": "2026-11-15T07:10:14.463934+00:00",
+      "duration_seconds": 0.053,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "{\"python\": \"3.12.3\", \"django\": \"4.2.30\", \"executable\": \"/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/bin/python\", \"modules\": {\"crud_views\": \"/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py\", \"crud_views_guardian\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/__init__.py\"}}"
+      ],
+      "counts": {},
+      "source_unchanged": true
+    },
+    {
+      "name": "runtime-6-0",
+      "command": "PYTHONPATH=src:. .nox/tests-3-12-django-6-0/bin/python -c 'import json,pathlib,platform,sys,django,crud_views,crud_views_guardian; root=pathlib.Path(\"src\").resolve(); modules={m.__name__:str(pathlib.Path(m.__file__).resolve()) for m in (crud_views,crud_views_guardian)}; assert all(pathlib.Path(p).is_relative_to(root) for p in modules.values()); print(json.dumps({\"python\":platform.python_version(),\"django\":django.get_version(),\"executable\":sys.executable,\"modules\":modules}))'",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:10:14.582549+00:00",
+      "log": "runtime-6-0.log",
+      "finished": "2026-11-15T07:10:14.619086+00:00",
+      "duration_seconds": 0.037,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "{\"python\": \"3.12.3\", \"django\": \"6.0.10\", \"executable\": \"/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python\", \"modules\": {\"crud_views\": \"/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py\", \"crud_views_guardian\": \"/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/__init__.py\"}}"
+      ],
+      "counts": {},
+      "source_unchanged": true
+    },
+    {
+      "name": "full-normal",
+      "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests -n 4 -q -ra --junitxml=.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/evidence/06.34-10/full-normal.xml",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:16:49.525565+00:00",
+      "log": "full-normal.log",
+      "status": "passed",
+      "pid": 3843936,
+      "finished": "2026-11-15T07:23:25.156955+00:00",
+      "duration_seconds": 395.631,
+      "exit_code": 0,
+      "summary": [
+        "........................................................................ [ 96%]",
+        "........................................................................ [ 96%]",
+        "........................................................................ [ 97%]",
+        "........................................................................ [ 97%]",
+        "........................................................................ [ 98%]",
+        "........................................................................ [ 98%]",
+        "........................................................................ [ 99%]",
+        "........................................................................ [ 99%]",
+        "................                                                         [100%]",
+        "=========================== short test summary info ============================",
+        "SKIPPED [1] tests/test1/test_assets.py:333: built-in CSP middleware requires Django 6.0",
+        "14631 passed, 1 skipped in 393.45s (0:06:33)"
+      ],
+      "counts": {
+        "passed": 14631,
+        "skipped": 1
+      },
+      "source_unchanged": true
+    },
+    {
+      "name": "full-recorder",
+      "command": "CV_ACCESS_RECORD_REQUESTS=1 PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests -n 4 -q -ra --junitxml=.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/evidence/06.34-10/full-recorder.xml",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:14:56.424615+00:00",
+      "log": "full-recorder.log",
+      "status": "passed",
+      "pid": 3840826,
+      "finished": "2026-11-15T07:21:33.818501+00:00",
+      "duration_seconds": 397.394,
+      "exit_code": 0,
+      "summary": [
+        "........................................................................ [ 96%]",
+        "........................................................................ [ 96%]",
+        "........................................................................ [ 97%]",
+        "........................................................................ [ 97%]",
+        "........................................................................ [ 98%]",
+        "........................................................................ [ 98%]",
+        "........................................................................ [ 99%]",
+        "........................................................................ [ 99%]",
+        "................                                                         [100%]",
+        "=========================== short test summary info ============================",
+        "SKIPPED [1] tests/test1/test_assets.py:333: built-in CSP middleware requires Django 6.0",
+        "14631 passed, 1 skipped in 395.27s (0:06:35)"
+      ],
+      "counts": {
+        "passed": 14631,
+        "skipped": 1
+      },
+      "source_unchanged": true
+    },
+    {
+      "name": "supported-4-2",
+      "command": "PYTHONPATH=src:. .nox/tests-3-12-django-4-2/bin/python -m pytest tests/test1/test_access_trace*.py tests/test1/test_manage_access_trace.py tests/test1/test_manage_release.py tests/test1/test_manage_locales.py tests/test1/test_ancestor_costs.py tests/test1/test_authorization_templates.py tests/test1/test_import_safety.py -n 4 -q -ra --junitxml=.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/evidence/06.34-10/supported-4-2.xml",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:10:42.934980+00:00",
+      "log": "supported-4-2.log",
+      "finished": "2026-11-15T07:11:17.954044+00:00",
+      "duration_seconds": 35.019,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "........................................................................ [ 60%]",
+        "........................................................................ [ 68%]",
+        "........................................................................ [ 77%]",
+        "........................................................................ [ 86%]",
+        "........................................................................ [ 94%]",
+        "...........................................                              [100%]",
+        "=========================== short test summary info ============================",
+        "SKIPPED [3] tests/test1/test_access_trace_middleware.py:88: LoginRequiredMiddleware introduced in Django 5.1",
+        "SKIPPED [2] tests/test1/test_access_trace_middleware.py:106: LoginRequiredMiddleware introduced in Django 5.1",
+        "SKIPPED [7] tests/test1/test_access_trace_middleware.py:133: LoginRequiredMiddleware introduced in Django 5.1",
+        "SKIPPED [1] tests/test1/test_access_trace_middleware.py:173: LoginRequiredMiddleware introduced in Django 5.1",
+        "822 passed, 13 skipped in 34.26s"
+      ],
+      "counts": {
+        "passed": 822,
+        "skipped": 13
+      },
+      "source_unchanged": true
+    },
+    {
+      "name": "supported-6-0",
+      "command": "PYTHONPATH=src:. .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_access_trace*.py tests/test1/test_manage_access_trace.py tests/test1/test_manage_release.py tests/test1/test_manage_locales.py tests/test1/test_ancestor_costs.py tests/test1/test_authorization_templates.py tests/test1/test_import_safety.py -n 4 -q -ra --junitxml=.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/evidence/06.34-10/supported-6-0.xml",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:11:28.238043+00:00",
+      "log": "supported-6-0.log",
+      "finished": "2026-11-15T07:12:15.756517+00:00",
+      "duration_seconds": 47.518,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "........................................................................ [ 17%]",
+        "........................................................................ [ 25%]",
+        "........................................................................ [ 34%]",
+        "........................................................................ [ 43%]",
+        "........................................................................ [ 51%]",
+        "........................................................................ [ 60%]",
+        "........................................................................ [ 68%]",
+        "........................................................................ [ 77%]",
+        "........................................................................ [ 86%]",
+        "........................................................................ [ 94%]",
+        "...........................................                              [100%]",
+        "835 passed in 46.74s"
+      ],
+      "counts": {
+        "passed": 835
+      },
+      "source_unchanged": true
+    },
+    {
+      "name": "docs",
+      "command": ".venv/bin/python -m mkdocs build --strict --site-dir /tmp/cv-0634-docs",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:08:49.865685+00:00",
+      "log": "docs.log",
+      "finished": "2026-11-15T07:08:51.457785+00:00",
+      "duration_seconds": 1.592,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "INFO    -  Cleaning site directory",
+        "INFO    -  Building documentation to directory: /tmp/cv-0634-docs",
+        "INFO    -  Documentation built in 1.36 seconds"
+      ],
+      "counts": {},
+      "source_unchanged": true
+    },
+    {
+      "name": "lint",
+      "command": ".venv/bin/python -m ruff check src tests/test1/test_access_trace*.py tests/test1/test_manage_access_trace.py tests/test1/test_manage_locales.py tests/test1/test_manage_release.py tests/test1/test_button_classes.py tests/test1/test_theme_adoption_docs.py tests/test1/access_trace_cli_fixture.py tests/conftest.py tests/test1/conftest.py tests/browser/access_trace_server.py tests/test1/test_ancestor_auth_databases.py noxfile.py",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:08:49.873708+00:00",
+      "log": "lint.log",
+      "finished": "2026-11-15T07:08:49.925849+00:00",
+      "duration_seconds": 0.052,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "All checks passed!"
+      ],
+      "counts": {},
+      "source_unchanged": true
+    },
+    {
+      "name": "format",
+      "command": ".venv/bin/python -m ruff format --check src tests/test1/test_access_trace*.py tests/test1/test_manage_access_trace.py tests/test1/test_manage_locales.py tests/test1/test_manage_release.py tests/test1/test_button_classes.py tests/test1/test_theme_adoption_docs.py tests/test1/access_trace_cli_fixture.py tests/conftest.py tests/test1/conftest.py tests/browser/access_trace_server.py tests/test1/test_ancestor_auth_databases.py noxfile.py",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:08:49.866479+00:00",
+      "log": "format.log",
+      "finished": "2026-11-15T07:08:49.933475+00:00",
+      "duration_seconds": 0.067,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "152 files already formatted"
+      ],
+      "counts": {},
+      "source_unchanged": true
+    },
+    {
+      "name": "javascript",
+      "command": "npm test -- tests/js/manage.test.js --maxWorkers=4",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:08:49.866497+00:00",
+      "log": "javascript.log",
+      "finished": "2026-11-15T07:08:52.081527+00:00",
+      "duration_seconds": 2.215,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:",
+        "  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json",
+        "Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.",
+        "",
+        " RUN  v5.0.5 /home/alex/projects/alex/django-crud-views",
+        "",
+        "",
+        " Test Files  1 passed (1)",
+        "      Tests  10 passed (10)",
+        "   Start at  07:08:50",
+        "   Duration  1.55s (environment 78%, tests 16%, setup 4%, transform 2%, import 1%)",
+        ""
+      ],
+      "counts": {
+        "passed": 10
+      },
+      "source_unchanged": true
+    },
+    {
+      "name": "browser-contracts",
+      "command": "node --test tests/browser/access-trace.test.cjs tests/browser/manage-presentation.test.cjs",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:09:29.842516+00:00",
+      "log": "browser-contracts.log",
+      "finished": "2026-11-15T07:09:31.901939+00:00",
+      "duration_seconds": 2.059,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "\u2714 criterion measurements, assertions and exact cardinalities are mandatory (10.472103ms)",
+        "\u2714 startup timeout cleans only owned process/data and retains diagnostics (266.705881ms)",
+        "\u2714 missing executable and early startup failure are cleaned (109.187587ms)",
+        "\u2714 missing/mismatched cached bytes and undeclared remote URLs fail closed (4.152257ms)",
+        "\u2139 tests 11",
+        "\u2139 suites 0",
+        "\u2139 pass 11",
+        "\u2139 fail 0",
+        "\u2139 cancelled 0",
+        "\u2139 skipped 0",
+        "\u2139 todo 0",
+        "\u2139 duration_ms 2011.129804"
+      ],
+      "counts": {},
+      "source_unchanged": true
+    },
+    {
+      "name": "browser-receipt",
+      "command": "node tests/browser/access-trace.cjs --verify .planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-10-browser-evidence.json",
+      "cwd": "/home/alex/projects/alex/django-crud-views",
+      "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+      "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+      "started": "2026-11-15T07:09:32.046658+00:00",
+      "log": "browser-receipt.log",
+      "finished": "2026-11-15T07:09:32.182959+00:00",
+      "duration_seconds": 0.136,
+      "exit_code": 0,
+      "status": "passed",
+      "summary": [
+        "Verified current source bytes, complete observations, captures and cleanup"
+      ],
+      "counts": {},
+      "source_unchanged": true
+    }
+  ],
+  "executed_test_evidence": {
+    "full-normal": {
+      "collected": 14632,
+      "critical_cases": {
+        "test_external_fixture_matches_switch": [
+          {
+            "classname": "tests.test1.test_access_trace_recorder",
+            "name": "test_external_fixture_matches_switch",
+            "time": "0.002"
+          }
+        ],
+        "test_real_pipe_and_terminal_color_controls": [
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False-None-False-False]",
+            "time": "2.321"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False-None-False-True]",
+            "time": "1.078"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False---force-color-True-False]",
+            "time": "0.975"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False---force-color-True-True]",
+            "time": "1.050"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True-None-True-False]",
+            "time": "1.140"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True-None-True-True]",
+            "time": "1.016"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True---no-color-False-False]",
+            "time": "1.021"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True---no-color-False-True]",
+            "time": "1.167"
+          }
+        ],
+        "test_actual_login_middleware_or_supported_absence": [
+          {
+            "classname": "tests.test1.test_access_trace_grid",
+            "name": "test_actual_login_middleware_or_supported_absence",
+            "time": "0.015"
+          }
+        ],
+        "test_grid_inventory_is_exact_and_unskipped": [
+          {
+            "classname": "tests.test1.test_access_trace_grid",
+            "name": "test_grid_inventory_is_exact_and_unskipped",
+            "time": "0.004"
+          }
+        ]
+      },
+      "skips": [
+        {
+          "classname": "tests.test1.test_assets",
+          "name": "test_django6_builtin_csp_nonce_roundtrip",
+          "time": "0.000",
+          "reason": "built-in CSP middleware requires Django 6.0"
+        }
+      ]
+    },
+    "full-recorder": {
+      "collected": 14632,
+      "critical_cases": {
+        "test_external_fixture_matches_switch": [
+          {
+            "classname": "tests.test1.test_access_trace_recorder",
+            "name": "test_external_fixture_matches_switch",
+            "time": "0.001"
+          }
+        ],
+        "test_real_pipe_and_terminal_color_controls": [
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False-None-False-False]",
+            "time": "1.978"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False-None-False-True]",
+            "time": "1.000"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False---force-color-True-False]",
+            "time": "1.085"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False---force-color-True-True]",
+            "time": "1.144"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True-None-True-False]",
+            "time": "1.135"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True-None-True-True]",
+            "time": "1.126"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True---no-color-False-False]",
+            "time": "1.095"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True---no-color-False-True]",
+            "time": "1.064"
+          }
+        ],
+        "test_actual_login_middleware_or_supported_absence": [
+          {
+            "classname": "tests.test1.test_access_trace_grid",
+            "name": "test_actual_login_middleware_or_supported_absence",
+            "time": "0.014"
+          }
+        ],
+        "test_grid_inventory_is_exact_and_unskipped": [
+          {
+            "classname": "tests.test1.test_access_trace_grid",
+            "name": "test_grid_inventory_is_exact_and_unskipped",
+            "time": "0.003"
+          }
+        ]
+      },
+      "skips": [
+        {
+          "classname": "tests.test1.test_assets",
+          "name": "test_django6_builtin_csp_nonce_roundtrip",
+          "time": "0.000",
+          "reason": "built-in CSP middleware requires Django 6.0"
+        }
+      ]
+    },
+    "supported-4-2": {
+      "collected": 835,
+      "critical_cases": {
+        "test_external_fixture_matches_switch": [
+          {
+            "classname": "tests.test1.test_access_trace_recorder",
+            "name": "test_external_fixture_matches_switch",
+            "time": "0.001"
+          }
+        ],
+        "test_real_pipe_and_terminal_color_controls": [
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False-None-False-False]",
+            "time": "2.277"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False-None-False-True]",
+            "time": "1.103"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True---no-color-False-True]",
+            "time": "2.072"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False---force-color-True-False]",
+            "time": "1.116"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False---force-color-True-True]",
+            "time": "1.049"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True-None-True-False]",
+            "time": "1.108"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True-None-True-True]",
+            "time": "1.058"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True---no-color-False-False]",
+            "time": "1.083"
+          }
+        ],
+        "test_actual_login_middleware_or_supported_absence": [
+          {
+            "classname": "tests.test1.test_access_trace_grid",
+            "name": "test_actual_login_middleware_or_supported_absence",
+            "time": "0.017"
+          }
+        ],
+        "test_grid_inventory_is_exact_and_unskipped": [
+          {
+            "classname": "tests.test1.test_access_trace_grid",
+            "name": "test_grid_inventory_is_exact_and_unskipped",
+            "time": "0.001"
+          }
+        ]
+      },
+      "skips": [
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_installed_real_login_middleware_controls_plain_view[False-True]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_installed_real_login_middleware_controls_plain_view[True-True]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_installed_real_login_middleware_controls_plain_view[True-False]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_callback_metadata_and_configured_subclass_order[True]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_callback_metadata_and_configured_subclass_order[False]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_subclass_denials_and_errors_keep_login_boundary[403-denied]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_subclass_denials_and_errors_keep_login_boundary[404-not_found]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_subclass_denials_and_errors_keep_login_boundary[500-error]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_subclass_denials_and_errors_keep_login_boundary[200-error]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_subclass_denials_and_errors_keep_login_boundary[raise403-denied]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_subclass_denials_and_errors_keep_login_boundary[raise404-not_found]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_subclass_denials_and_errors_keep_login_boundary[raise500-error]",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        },
+        {
+          "classname": "tests.test1.test_access_trace_middleware",
+          "name": "test_login_precedes_failing_planning_and_setup",
+          "time": "0.000",
+          "reason": "LoginRequiredMiddleware introduced in Django 5.1"
+        }
+      ]
+    },
+    "supported-6-0": {
+      "collected": 835,
+      "critical_cases": {
+        "test_external_fixture_matches_switch": [
+          {
+            "classname": "tests.test1.test_access_trace_recorder",
+            "name": "test_external_fixture_matches_switch",
+            "time": "0.001"
+          }
+        ],
+        "test_real_pipe_and_terminal_color_controls": [
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False-None-False-False]",
+            "time": "2.142"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False-None-False-True]",
+            "time": "1.165"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False---force-color-True-False]",
+            "time": "1.230"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[False---force-color-True-True]",
+            "time": "1.172"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True---no-color-False-True]",
+            "time": "2.540"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True-None-True-False]",
+            "time": "1.140"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True-None-True-True]",
+            "time": "1.123"
+          },
+          {
+            "classname": "tests.test1.test_access_trace_command",
+            "name": "test_real_pipe_and_terminal_color_controls[True---no-color-False-False]",
+            "time": "1.138"
+          }
+        ],
+        "test_actual_login_middleware_or_supported_absence": [
+          {
+            "classname": "tests.test1.test_access_trace_grid",
+            "name": "test_actual_login_middleware_or_supported_absence",
+            "time": "0.014"
+          }
+        ],
+        "test_grid_inventory_is_exact_and_unskipped": [
+          {
+            "classname": "tests.test1.test_access_trace_grid",
+            "name": "test_grid_inventory_is_exact_and_unskipped",
+            "time": "0.001"
+          }
+        ]
+      },
+      "skips": []
+    }
+  },
+  "runtime_facts": {
+    "runtime-5-2": {
+      "python": "3.12.3",
+      "django": "5.2.19",
+      "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+      "modules": {
+        "crud_views": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+        "crud_views_guardian": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/__init__.py"
+      }
+    },
+    "runtime-4-2": {
+      "python": "3.12.3",
+      "django": "4.2.30",
+      "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-4-2/bin/python",
+      "modules": {
+        "crud_views": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+        "crud_views_guardian": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/__init__.py"
+      }
+    },
+    "runtime-6-0": {
+      "python": "3.12.3",
+      "django": "6.0.10",
+      "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python",
+      "modules": {
+        "crud_views": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+        "crud_views_guardian": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/__init__.py"
+      }
+    }
+  },
+  "browser": {
+    "receipt": "06.34-10-browser-evidence.json",
+    "sha256": "432a2361ba515b1efb018da08a5ecc811aefaa91d6fc8c1f5f264bc8bc45a40e",
+    "cases": 63,
+    "started": "2026-11-15T07:06:57.573Z",
+    "finished": "2026-11-15T07:08:40.214Z",
+    "versions": {
+      "Django": "6.0.10",
+      "django-guardian": "3.5.2"
+    },
+    "chromium": "149.0.7827.55",
+    "playwright": "1.64.1",
+    "node": "v24.21.0",
+    "cleanup": [
+      {
+        "pid": 3832523,
+        "stopped": true,
+        "directory": "/tmp/cv-manage-EYvqII",
+        "databaseRemoved": true
+      }
+    ]
+  },
+  "recording_proof": {
+    "environment": "CV_ACCESS_RECORD_REQUESTS=1",
+    "fixture": "tests/conftest.py::record_access_requests",
+    "assertion": "tests/test1/test_access_trace_recorder.py::test_external_fixture_matches_switch",
+    "complete_suite": "full-recorder",
+    "no_exclusions": true,
+    "original_assertions_unchanged": true
+  },
+  "authorized_contract_additions": {
+    "registry_defaults": {
+      "core": 121,
+      "core_and_guardian": 139,
+      "manage": 19
+    },
+    "description": "Plans07\u201309 add context/block/builder entries and checked-actor translations; inherited access, SQL-count and ordering assertions remain unchanged."
+  },
+  "fixture_correction": {
+    "file": "tests/test1/test_ancestor_auth_databases.py",
+    "cause": "Default-only transaction cleanup desynchronized ContentType primary keys from shard; these tests intentionally require colliding metadata.",
+    "change": "Flush/reseed both test aliases with reset_sequences before paired fixture rows, then clear ContentType cache. No production routing or test assertion change.",
+    "red": "evidence/06.34-10/alias-order-red.json",
+    "green": "alias-order-green",
+    "module_regression": "fixture-isolation",
+    "documentation": "https://docs.djangoproject.com/en/5.2/ref/django-admin/#flush",
+    "source_inspected": ".nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/management/commands/flush.py"
+  },
+  "earlier_attempts": {
+    "browser": [
+      {
+        "file": "evidence/06.34-10/browser-attempts/cv-0634-browser-first.json",
+        "status": "failed",
+        "started": "2026-11-15T06:58:47.364Z",
+        "finished": "2026-11-15T06:59:34.402Z",
+        "cases_observed": 26,
+        "error": "AssertionError [ERR_ASSERTION]: expected outcome\n\nfalse !== true\n\n    at check (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:126:71)\n    at run (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:198:25)\n    at runNextTicks (node:internal/process/task_queues:65:5)\n    at process.processImmediate (node:internal/timers:541:9)\n    at async main (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:268:9)",
+        "cleanup": [
+          {
+            "pid": 3825063,
+            "stopped": true,
+            "directory": "/tmp/cv-manage-LmMoMd",
+            "databaseRemoved": true
+          }
+        ],
+        "use": "Development diagnostics only; scratch screenshots were overwritten and are not acceptance artifacts."
+      },
+      {
+        "file": "evidence/06.34-10/browser-attempts/cv-0634-browser-fourth.json",
+        "status": "passed",
+        "started": "2026-11-15T07:03:04.161Z",
+        "finished": "2026-11-15T07:04:40.065Z",
+        "cases_observed": 63,
+        "error": null,
+        "cleanup": [
+          {
+            "pid": 3828892,
+            "stopped": true,
+            "directory": "/tmp/cv-manage-muvYpA",
+            "databaseRemoved": true
+          }
+        ],
+        "use": "Development diagnostics only; scratch screenshots were overwritten and are not acceptance artifacts."
+      },
+      {
+        "file": "evidence/06.34-10/browser-attempts/cv-0634-browser-second.json",
+        "status": "failed",
+        "started": "2026-11-15T07:00:37.767Z",
+        "finished": "2026-11-15T07:01:03.955Z",
+        "cases_observed": 12,
+        "error": "browserContext.close: Target page, context or browser has been closed\nBrowser logs:\n\n<launching> /home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,AvoidCorsURLLoaderRestartOnRedirect,Translate,AutoDeElevate,OptimizationHints,NetworkTimeServiceQuerying,AimEnabled,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --user-data-dir=/tmp/playwright_chromiumdev_profile-MahLqv --remote-debugging-pipe --no-startup-window\n<launched> pid=3826629\n[pid=3826629][err] [3826629:3826629:1115/070038.261684:ERROR:dbus/object_proxy.cc:572] Failed to call method: org.freedesktop.DBus.Properties.GetAll: object_path= /org/freedesktop/UPower/devices/DisplayDevice: org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.UPower was not provided by any .service files\n[pid=3826629][err] \n[pid=3826629][err] (process:3826629): GLib-GIO-CRITICAL **: 07:00:39.357: g_settings_schema_source_lookup: assertion 'source != NULL' failed\n[pid=3826629][err] [3826629:3826629:1115/070041.499812:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.196 s for first_image_paint 0.194 s\n[pid=3826629][err] [3826629:3826629:1115/070041.600033:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.196 s for first_image_paint 0.194 s\n[pid=3826629][err] [3826629:3826629:1115/070041.701056:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.196 s for first_image_paint 0.194 s\n[pid=3826629][err] [3826629:3826629:1115/070041.838349:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.196 s for first_image_paint 0.194 s\n[pid=3826629][err] [3826629:3826629:1115/070041.965815:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.196 s for first_image_paint 0.194 s\n[pid=3826629][err] [3826629:3826629:1115/070042.360657:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.196 s for first_image_paint 0.194 s\n[pid=3826629][err] [3826629:3826629:1115/070042.432962:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.196 s for first_image_paint 0.194 s\n[pid=3826629][err] [3826629:3826629:1115/070042.585660:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.212 s for first_image_paint 0.196 s\n[pid=3826629][err] [3826629:3826629:1115/070042.685922:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.212 s for first_image_paint 0.196 s\n[pid=3826629][err] [3826629:3826629:1115/070042.802636:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.212 s for first_image_paint 0.196 s\n[pid=3826629][err] [3826629:3826629:1115/070042.918370:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.212 s for first_image_paint 0.196 s\n[pid=3826629][err] [3826629:3826629:1115/070042.985998:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.212 s for first_image_paint 0.196 s\n[pid=3826629][err] [3826629:3826629:1115/070043.056977:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.212 s for first_image_paint 0.196 s\n[pid=3826629][err] [3826629:3826629:1115/070049.519288:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.153 s for first_image_paint 0.149 s\n[pid=3826629][err] [3826629:3826629:1115/070049.619655:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.153 s for first_image_paint 0.149 s\n[pid=3826629][err] [3826629:3826629:1115/070049.736626:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.153 s for first_image_paint 0.149 s\n[pid=3826629][err] [3826629:3826629:1115/070049.850941:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.153 s for first_image_paint 0.149 s\n[pid=3826629][err] [3826629:3826629:1115/070049.961475:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.153 s for first_image_paint 0.149 s\n[pid=3826629][err] [3826629:3826629:1115/070050.488789:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.153 s for first_image_paint 0.149 s\n[pid=3826629][err] [3826629:3826629:1115/070050.551835:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.153 s for first_image_paint 0.149 s\n[pid=3826629][err] [3826629:3826629:1115/070050.668505:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.159 s for first_image_paint 0.152 s\n[pid=3826629][err] [3826629:3826629:1115/070050.703139:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.159 s for first_image_paint 0.152 s\n[pid=3826629][err] [3826629:3826629:1115/070050.745574:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.159 s for first_image_paint 0.152 s\n[pid=3826629][err] [3826629:3826629:1115/070050.853263:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.134 s for first_image_paint 0.13 s\n[pid=3826629][err] [3826629:3826629:1115/070050.897775:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.134 s for first_image_paint 0.13 s\n[pid=3826629][err] [3826629:3826629:1115/070054.770127:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.184 s for first_image_paint 0.183 s\n[pid=3826629][err] [3826629:3826629:1115/070054.807156:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.184 s for first_image_paint 0.183 s\n[pid=3826629][err] [3826629:3826629:1115/070055.510291:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.169 s for first_image_paint 0.164 s\n[pid=3826629][err] [3826629:3826629:1115/070055.610291:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.169 s for first_image_paint 0.164 s\n[pid=3826629][err] [3826629:3826629:1115/070055.717949:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.169 s for first_image_paint 0.164 s\n[pid=3826629][err] [3826629:3826629:1115/070055.790715:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.169 s for first_image_paint 0.164 s\n[pid=3826629][err] [3826629:3826629:1115/070055.903274:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.169 s for first_image_paint 0.164 s\n[pid=3826629][err] [3826629:3826629:1115/070056.034265:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.227 s for first_image_paint 0.226 s\n[pid=3826629][err] [3826629:3826629:1115/070056.136081:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.227 s for first_image_paint 0.226 s\n[pid=3826629][err] [3826629:3826629:1115/070056.250412:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.227 s for first_image_paint 0.226 s\n[pid=3826629][err] [3826629:3826629:1115/070056.367160:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.227 s for first_image_paint 0.226 s\n[pid=3826629][err] [3826629:3826629:1115/070056.483835:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.227 s for first_image_paint 0.226 s\n[pid=3826629][err] [3826629:3826629:1115/070056.600500:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.227 s for first_image_paint 0.226 s\n[pid=3826629][err] [3826629:3826629:1115/070057.069399:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.227 s for first_image_paint 0.226 s\n[pid=3826629][err] [3826629:3826629:1115/070057.185825:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.227 s for first_image_paint 0.226 s\n[pid=3826629][err] [3826629:3826629:1115/070057.303862:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.227 s for first_image_paint 0.226 s\n[pid=3826629][err] [3826629:3826629:1115/070057.332484:ERROR:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc:179] Invalid first_paint 0.227 s for first_image_paint 0.226 s\n[pid=3826629] <gracefully close start>\n    at async run (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:242:127)\n    at async main (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:272:9)",
+        "cleanup": [
+          {
+            "pid": 3826736,
+            "stopped": true,
+            "directory": "/tmp/cv-manage-lcByfj",
+            "databaseRemoved": true
+          }
+        ],
+        "use": "Development diagnostics only; scratch screenshots were overwritten and are not acceptance artifacts."
+      },
+      {
+        "file": "evidence/06.34-10/browser-attempts/cv-0634-browser-third.json",
+        "status": "failed",
+        "started": "2026-11-15T07:01:37.268Z",
+        "finished": "2026-11-15T07:02:24.416Z",
+        "cases_observed": 28,
+        "error": "AssertionError [ERR_ASSERTION]: registry override classes\n\nfalse !== true\n\n    at check (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:126:71)\n    at run (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:204:60)\n    at async main (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:273:9)",
+        "cleanup": [
+          {
+            "pid": 3827654,
+            "stopped": true,
+            "directory": "/tmp/cv-manage-yt6zns",
+            "databaseRemoved": true
+          }
+        ],
+        "use": "Development diagnostics only; scratch screenshots were overwritten and are not acceptance artifacts."
+      },
+      {
+        "file": "evidence/06.34-10/browser-attempts/cv-0634-smoke.json",
+        "status": "failed",
+        "started": "2026-11-15T06:57:52.662Z",
+        "finished": "2026-11-15T06:57:55.723Z",
+        "cases_observed": 0,
+        "error": "AssertionError [ERR_ASSERTION]: selected actor in trace\n\nfalse !== true\n\n    at check (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:126:71)\n    at run (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:143:17)\n    at async main (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:262:9)",
+        "cleanup": [
+          {
+            "pid": 3824091,
+            "stopped": true,
+            "directory": "/tmp/cv-manage-CXWYeV",
+            "databaseRemoved": true
+          }
+        ],
+        "use": "Development diagnostics only; scratch screenshots were overwritten and are not acceptance artifacts."
+      },
+      {
+        "file": "evidence/06.34-10/browser-attempts/cv-0634-smoke2.json",
+        "status": "failed",
+        "started": "2026-11-15T06:58:08.427Z",
+        "finished": "2026-11-15T06:58:16.554Z",
+        "cases_observed": 2,
+        "error": "AssertionError [ERR_ASSERTION]: anonymous hosting redirects\n\n500 !== 302\n\n    at check (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:126:71)\n    at run (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:216:63)\n    at async main (/home/alex/projects/alex/django-crud-views/tests/browser/access-trace.cjs:262:9)",
+        "cleanup": [
+          {
+            "pid": 3824423,
+            "stopped": true,
+            "directory": "/tmp/cv-manage-jePBHu",
+            "databaseRemoved": true
+          }
+        ],
+        "use": "Development diagnostics only; scratch screenshots were overwritten and are not acceptance artifacts."
+      }
+    ],
+    "initial_full_normal": {
+      "log": "evidence/06.34-10/full-normal-initial.log",
+      "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests -n 4 -q",
+      "reported": "14631 passed, 1 skipped in381.34s",
+      "tool_exit_code": 143,
+      "status": "not-used-for-acceptance",
+      "reason": "Tool session returned143 despite complete passing pytest summary. Final detached supervisor captures an actual zero exit code and unchanged source hashes."
+    },
+    "second_full_normal": {
+      "log": "evidence/06.34-10/full-normal-wrapper-terminated.log",
+      "junit": "evidence/06.34-10/full-normal-wrapper-terminated.xml",
+      "reported": "14631 passed, 1 skipped in388.70s",
+      "tool_exit_code": 143,
+      "child_exit_code": null,
+      "status": "not-used-for-acceptance",
+      "reason": "Tool wrapper terminated while isolated pytest continued to full passing JUnit completion. The supervisor was reparented away, so no child exit code was retained; final normal run repeats unchanged tests under a detached file-backed supervisor."
+    }
+  },
+  "unavailable_compatible_matrix": [
+    {
+      "python": "3.13",
+      "django": "4.2",
+      "status": "unverified",
+      "reason": "No cached dependency environment; no installs or upgrades authorized."
+    },
+    {
+      "python": "3.13",
+      "django": "5.2",
+      "status": "unverified",
+      "reason": "No cached dependency environment; no installs or upgrades authorized."
+    },
+    {
+      "python": "3.13",
+      "django": "6.0",
+      "status": "unverified",
+      "reason": "No cached dependency environment; no installs or upgrades authorized."
+    },
+    {
+      "python": "3.14",
+      "django": "5.2",
+      "status": "unverified",
+      "reason": "No cached dependency environment; no installs or upgrades authorized."
+    },
+    {
+      "python": "3.14",
+      "django": "6.0",
+      "status": "unverified",
+      "reason": "No cached dependency environment; no installs or upgrades authorized."
+    },
+    {
+      "python": "3.15",
+      "django": "5.2",
+      "status": "unverified",
+      "reason": "No cached dependency environment; no installs or upgrades authorized."
+    },
+    {
+      "python": "3.15",
+      "django": "6.0",
+      "status": "unverified",
+      "reason": "No cached dependency environment; no installs or upgrades authorized."
+    }
+  ],
+  "runtime_inventory": {
+    "python_paths": {
+      "3.12": "/usr/bin/python3.12",
+      "3.13": null,
+      "3.14": null,
+      "3.15": "/home/alex/.local/bin/python3.15"
+    },
+    "note": "Python3.15.0rc2 executable exists but has no Django, pytest or Guardian; no compatible3.15 dependency environment exists. Default .venv uses3.12.3/Django6.1.2, used only for docs/lint tools."
+  },
+  "incompatible_matrix": [
+    {
+      "python": "3.14",
+      "django": "4.2",
+      "reason": "Explicitly excluded by noxfile.py."
+    },
+    {
+      "python": "3.15",
+      "django": "4.2",
+      "reason": "Explicitly excluded by noxfile.py."
+    }
+  ],
+  "limitations": [
+    "Human visual assessment of desktop/mobile English/German core/Guardian captures remains pending end-of-phase UAT.",
+    "Seven declared-compatible runtime combinations are unverified; no installation, package upgrade, publication or CI dispatch occurred.",
+    "Existing Vite config emits its future-native-loader warning; all10 existing JavaScript regressions pass.",
+    "Baseline and failed browser diagnostics are retained, but only final source-bound successful commands certify acceptance."
+  ]
+}

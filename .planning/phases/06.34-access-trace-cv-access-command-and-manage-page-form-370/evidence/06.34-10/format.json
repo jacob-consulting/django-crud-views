@@ -1,0 +1,18 @@
+{
+  "name": "format",
+  "command": ".venv/bin/python -m ruff format --check src tests/test1/test_access_trace*.py tests/test1/test_manage_access_trace.py tests/test1/test_manage_locales.py tests/test1/test_manage_release.py tests/test1/test_button_classes.py tests/test1/test_theme_adoption_docs.py tests/test1/access_trace_cli_fixture.py tests/conftest.py tests/test1/conftest.py tests/browser/access_trace_server.py tests/test1/test_ancestor_auth_databases.py noxfile.py",
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+  "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+  "started": "2026-11-15T07:08:49.866479+00:00",
+  "log": "format.log",
+  "finished": "2026-11-15T07:08:49.933475+00:00",
+  "duration_seconds": 0.067,
+  "exit_code": 0,
+  "status": "passed",
+  "summary": [
+    "152 files already formatted"
+  ],
+  "counts": {},
+  "source_unchanged": true
+}

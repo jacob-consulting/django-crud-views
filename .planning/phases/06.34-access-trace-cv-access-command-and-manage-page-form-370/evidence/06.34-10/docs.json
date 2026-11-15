@@ -1,0 +1,20 @@
+{
+  "name": "docs",
+  "command": ".venv/bin/python -m mkdocs build --strict --site-dir /tmp/cv-0634-docs",
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "source_manifest": "sources-e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291.json",
+  "source_sha256": "e97286088c653b715eb42ea899d0c532a62aa572cc92b939fed5c973742a6291",
+  "started": "2026-11-15T07:08:49.865685+00:00",
+  "log": "docs.log",
+  "finished": "2026-11-15T07:08:51.457785+00:00",
+  "duration_seconds": 1.592,
+  "exit_code": 0,
+  "status": "passed",
+  "summary": [
+    "INFO    -  Cleaning site directory",
+    "INFO    -  Building documentation to directory: /tmp/cv-0634-docs",
+    "INFO    -  Documentation built in 1.36 seconds"
+  ],
+  "counts": {},
+  "source_unchanged": true
+}

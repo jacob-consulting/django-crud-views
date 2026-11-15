@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-15
-last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
+last_mapped_commit: 892d3fc5adaab1660fe6812b937328efa5d71350
 ---
 # External Integrations
 
@@ -45,8 +45,11 @@ last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
 - Formset client behavior is bundled in `src/crud_views/static/crud_views/js/formset.js`; its supported page integration uses jQuery, while compact layout uses package CSS (`src/crud_views/static/crud_views/css/formset.css`).
 
 **Caller-provided resource sources:**
-- `Resource` and `ResourceViewMixin` accept application data through `cv_get_items()` and optionally `cv_get_item()`; no provider SDK or built-in API/filesystem adapter is included (`src/crud_views/lib/resource.py`).
-- Resource views default to `cv_atomic = False`; database transactions cannot roll back external API or storage writes (`src/crud_views/lib/resource.py`).
+- `Resource` is a Pydantic row model for table-shaped non-ORM data. Applications implement `cv_get_items(request, **url_kwargs)` as a plain list producer and may override `cv_get_item(request, pk, **url_kwargs)` for direct lookup; default item lookup scans the list (`src/crud_views/lib/resource.py`).
+- `ResourceViewMixin` must precede the CRUD view class in the MRO. It replaces ORM queryset/object loading, passes parent URL kwargs to the application loader, and does not automatically scope Resource rows to a parent. Resource is supported as a leaf ViewSet; parent ORM authorization still runs before loading the leaf, while Resource cannot be an ancestor (`src/crud_views/lib/resource.py`, `docs/reference/resources.md`, `docs/reference/nested.md`).
+- The package includes no S3, API, or filesystem adapter. All external reads and side effects belong to the application hook; Resource views default to `cv_atomic = False` because a database transaction cannot roll back those effects (`src/crud_views/lib/resource.py`).
+- Resource ViewSets participate in manage diagnostics. The manage page reports effective Resource metadata and explicitly declared permission mappings; it does not invent model permissions or per-item grants for Resource rows (`src/crud_views/lib/views/manage.py`, `docs/reference/manage.md`).
+- `cv_access` and the opt-in manage Access check trace Resource routes through synthetic GET dispatch. Real `cv_get_items()` / `cv_get_item()` loaders run under a freshly loaded traced actor, so external reads can occur; list traces report visible row counts without asserting a total. The synthetic handler does not run the real page handler, and its database work is rolled back, which cannot undo external effects (`src/crud_views/lib/access_trace_runner.py`, `src/crud_views/lib/settings.py`, `docs/reference/manage.md`).
 
 ## Data Storage
 

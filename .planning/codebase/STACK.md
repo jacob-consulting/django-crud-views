@@ -1,6 +1,6 @@
 ---
 last_mapped_at: 2026-11-15
-last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
+last_mapped_commit: 892d3fc5adaab1660fe6812b937328efa5d71350
 ---
 # Technology Stack
 
@@ -54,6 +54,8 @@ last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
 - `[workflow]`: `django-fsm-2`, `django-fsm-2-admin`; `[polymorphic]`: `django-polymorphic`; `[ordered]`: `django-ordered-model`; `[guardian]`: `django-guardian` (`pyproject.toml`)
 - `[all]` combines the four extension extras; `[test]` adds test tooling and Django integrations; `[examples]` adds Pygments (`pyproject.toml`)
 - Access tracing is an optional, context-local diagnostic path using Django's resolver, auth, middleware, and ORM APIs; it adds no runtime dependency or request middleware (`src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_runner.py`).
+- `Resource` is a Pydantic-backed, non-ORM row type for Resource ViewSets. `ResourceViewMixin` replaces ORM list/object loading with application-owned `cv_get_items()` / `cv_get_item()` hooks; it defaults writes to non-atomic because external effects cannot be rolled back (`src/crud_views/lib/resource.py`).
+- Manage diagnostics and access tracing include Resource ViewSets: manage reports Resource metadata and only explicitly mapped permissions; traces invoke the real Resource loader under the traced actor and summarize list counts without claiming a database total (`src/crud_views/lib/views/manage.py`, `src/crud_views/lib/access_trace_runner.py`).
 - Phase 06.30 conditional form fields add the opt-in `QuerysetConditions` API for native single-select `ModelChoiceField` controllers. It declares category keys on the field queryset and uses the selected, field-cleaned model object for server-side validation (`src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/group.py`).
 - Compact formsets expose the strict boolean `CompactLayout.row_border` option; it is presentation metadata and adds no dependency (`src/crud_views/lib/formsets/compact.py`).
 - Manage diagnostics use Django auth groups and settings (`CRUD_VIEWS_MANAGE_VIEWS_ENABLED`, `CRUD_VIEWS_MANAGE_GROUP`); `cv_manage_group` creates the configured group without changing membership or permissions (`src/crud_views/lib/settings.py`, `src/crud_views/management/commands/cv_manage_group.py`).
@@ -84,6 +86,7 @@ last_mapped_commit: db82bc76f38fdba7396dcdf93e5edd637e44ac8e
 
 **Production:**
 - Any Django host project; the package selects no database, cache, storage, or hosting provider
+- Resource integrations may call external APIs or storage from application-supplied hooks, but the package provides no provider adapters (`src/crud_views/lib/resource.py`)
 - Public demo deploys to Render with Gunicorn, WhiteNoise, and SQLite (`render.yaml`, `requirements/demo.txt`)
 
 ---

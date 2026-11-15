@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.35"
 current_phase_name: "Resource manage pages with cv_access parity (#372)"
-current_plan: "03"
+current_plan: "04"
 status: executing
-stopped_at: "Completed 06.35-02-PLAN.md; ready for plan 03"
-last_updated: "2026-11-15T18:20:00Z"
+stopped_at: "Completed 06.35-03-PLAN.md; ready for plan 04"
+last_updated: "2026-11-15T18:29:00Z"
 last_activity: 2026-11-15
-last_activity_desc: Phase 06.35 plan 02 complete; C03 145 passed and C04 563 passed; H01 handoffs remain assigned to plans 03, 05 and 06; 5 plans remain
-state_head: 530305fb
+last_activity_desc: Phase 06.35 plan 03 complete; C05 52 passed and C06 196 passed; H01 facts closed; theme/docs and locale handoffs remain with plans 05/06; 4 plans remain
+state_head: 89b22400
 progress:
   total_phases: 42
   completed_phases: 27
   total_plans: 232
-  completed_plans: 227
+  completed_plans: 228
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 ## Current Position
 
 Phase: 06.35 (Resource manage pages with cv_access parity (#372)) — IN PROGRESS
-Current Plan: 03
+Current Plan: 04
 Total Plans in Phase: 7
-Status: Executing (2/7 plans complete)
-Last activity: 2026-11-15 — Plan 02 committed; nested Resource admission and database compatibility proven; C03 145 passed, C04 563 passed
+Status: Executing (3/7 plans complete)
+Last activity: 2026-11-15 — Plan 03 committed; Resource metadata/hierarchy and matrix presentation proven; C05 52 passed, C06 196 passed
 
 Next: $gsd-execute-phase 06.35
+
+### Phase 06.35 plan 03 completion — 2026-11-15
+
+- Resource-only facts app_label/pk_field/pk_type and Presentation.other.resource_permissions preserve model/Guardian shapes and provenance. Actual Resource child routes and upward coordinate links render without item reads; both H01 facts handoffs are closed.
+- All matrix row kinds, direct/effective grants, default/custom/empty badge classes, hidden users, escaping and empty-map copy pass. Exact new schema and four msgids are handed to plans 05/06 in the summary.
+- C05: 52 passed (final 2.09s); C06: 196 passed (13.90s), four workers. Original 9/21 model/Guardian query counts remain intact; the inherited baseline now explicitly clears shared vocabulary/Guardian caches to remove test-order dependence.
+- Duration: approximately 9 minutes; 2 tasks; RED/GREEN commits 60d469a2, e46f23a6, 0b3ccdbb, 5d546230; summary 89b22400. No phase completion claimed. Four plans remain; unrelated state.json edits preserved.
 
 ### Phase 06.35 plan 02 completion — 2026-11-15
 
@@ -1732,6 +1739,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15T18:20:00Z
-Stopped at: Completed 06.35-02-PLAN.md; ready for plan 03
-Resume file: .planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-03-PLAN.md
+Last session: 2026-11-15T18:29:00Z
+Stopped at: Completed 06.35-03-PLAN.md; ready for plan 04
+Resume file: .planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-04-PLAN.md

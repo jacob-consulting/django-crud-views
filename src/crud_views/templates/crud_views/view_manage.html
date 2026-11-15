@@ -93,7 +93,10 @@
     {% block manage_access_trace %}
     {% if manage_access_trace %}
     <section class="card mb-3" id="cv-manage-access-trace">
-        <div class="card-header"><h2 class="h6 mb-0">{% translate "Access check" %}</h2></div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h6 mb-0">{% translate "Access check" %}</h2>
+            <a data-cv-manage-help class="{% cv_button_class 'manage' 'help' %}" href="{{ manage_docs_base_url }}#access-check" target="_blank" rel="noopener" aria-label="{% translate 'Documentation: Access check' %}" title="{% translate 'Opens in a new tab' %}">?</a>
+        </div>
         <div class="card-body">
             <form method="get" class="mb-3">
                 <fieldset>
@@ -118,7 +121,7 @@
             {% for row in manage_access_trace.rows %}
                 {% if row.trace %}
                 <details data-cv-access-row="{{ row.key }}">
-                    <summary><strong>{{ row.key }}</strong> <span data-cv-trace-result="{{ row.trace.outcome }}">{{ row.trace.outcome }}</span>{% if row.trace.decided_by %} — {% blocktranslate with number=row.trace.decided_by %}decided at step {{ number }}{% endblocktranslate %}{% endif %}</summary>
+                    <summary><strong>{{ row.key }}</strong> {% include "crud_views/includes/access_trace.html" with result=row.trace.outcome only %}{% if row.trace.decided_by %} — {% blocktranslate with number=row.trace.decided_by %}decided at step {{ number }}{% endblocktranslate %}{% endif %}</summary>
                     {% include "crud_views/includes/access_trace.html" with trace=row.trace only %}
                 </details>
                 {% else %}<p data-cv-access-row="{{ row.key }}"><strong>{{ row.key }}</strong> — {{ row.instruction }}</p>{% endif %}

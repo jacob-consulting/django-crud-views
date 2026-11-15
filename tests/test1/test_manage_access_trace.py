@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 from django.contrib.auth.models import Group
-from django.urls import reverse
-from django.test import override_settings
 from django.template.loader import render_to_string
+from django.test import override_settings
+from django.urls import reverse
 from lxml import html
 
 from crud_views.lib.access_trace import AccessStep, AccessTrace
@@ -70,7 +70,7 @@ def test_path_runs_under_actor_not_viewer(client, host, developer, django_user_m
     assert "<script>actor</script>" not in response.content.decode()
     assert "&lt;script&gt;actor&lt;/script&gt;" in response.content.decode()
     card = html.fromstring(response.content).cssselect("#cv-manage-access-trace")[0]
-    assert "denied" in card.text_content()
+    assert "denied" in card.text_content().lower()
     assert "other middleware and URL decorators are not traced" in card.text_content()
 
 
@@ -388,8 +388,9 @@ def test_every_result_uses_registry_and_semantic_wording(result):
 
     key = "manage:trace-" + result.replace("_", "-")
     assert DEFAULT_BUTTON_CLASSES.get(key) == TRACE_CLASSES[result]
-    trace = AccessTrace(path="/example/", outcome=result,
-                        steps=[AccessStep(1, "own_permission", result=result)]).to_dict()
+    trace = AccessTrace(
+        path="/example/", outcome=result, steps=[AccessStep(1, "own_permission", result=result)]
+    ).to_dict()
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "project-trace-status"}):
         doc = html.fromstring(render_to_string("crud_views/includes/access_trace.html", {"trace": trace}))
     badges = doc.cssselect("[data-cv-trace-result]")
@@ -400,8 +401,13 @@ def test_every_result_uses_registry_and_semantic_wording(result):
 
 def test_enabled_card_form_help_disclosure_and_csp_contract(client, host, developer, enabled, monkeypatch):
     monkeypatch.setattr(host.get_view_class("manage"), "manage_docs_base_url", "https://docs.example/manage/")
-    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"manage:trace-allowed": "project-allowed",
-                                                    "form:submit": "project-submit", "manage:help": "project-help"}):
+    with override_settings(
+        CRUD_VIEWS_BUTTON_CLASSES={
+            "manage:trace-allowed": "project-allowed",
+            "form:submit": "project-submit",
+            "manage:help": "project-help",
+        }
+    ):
         response = submit(client, host, developer, cv_access_mode="viewset", cv_access_user=developer.username)
     doc = html.fromstring(response.content)
     card = doc.cssselect("#cv-manage-access-trace")[0]
@@ -417,13 +423,15 @@ def test_enabled_card_form_help_disclosure_and_csp_contract(client, host, develo
     ids = [node.get("id") for node in inputs]
     assert len(ids) == len(set(ids)) and all(ids)
     assert all(len(card.cssselect(f'label[for="{identity}"]')) == 1 for identity in ids)
-    assert len([el.get("id") for el in doc.cssselect("[id]")]) == len(set(el.get("id") for el in doc.cssselect("[id]")))
+    assert len(doc.cssselect("[id]")) == len({el.get("id") for el in doc.cssselect("[id]")})
     link = card.cssselect("a[data-cv-manage-help]")[0]
     assert link.get("href") == "https://docs.example/manage/#access-check"
     assert link.get("target") == "_blank" and link.get("rel") == "noopener"
     assert link.get("aria-label") == "Documentation: Access check" and "new tab" in link.get("title")
     assert link.get("class") == "project-help" and link.text_content().strip() == "?"
-    assert card.cssselect("details > summary") and not card.cssselect("details[open], summary a, summary input, summary button")
+    assert card.cssselect("details > summary") and not card.cssselect(
+        "details[open], summary a, summary input, summary button"
+    )
     assert card.cssselect("summary .project-allowed")
     for node in doc.iter():
         assert not any(name.lower().startswith("on") or name.lower() == "style" for name in node.attrib)
@@ -437,12 +445,31 @@ def test_enabled_card_form_help_disclosure_and_csp_contract(client, host, develo
 
 
 def test_partial_renders_provenance_counts_and_zero_counts():
-    trace = AccessTrace(path="/path/", decided_by=3,
-                        plan=[{"kind": "ancestor_gate", "source": "ancestor_policy.read", "permission": "app.view_book"}],
-                        steps=[AccessStep(1, "list_filter", result="passed", counts={"visible": 0, "total": 5}),
-                               AccessStep(2, "list_filter", result="passed", counts={"visible": 0, "total": None}),
-                               AccessStep(3, "own_permission", result="denied", provider="model", how="no_permission",
-                                          object={"model": "app.book", "pk": "2"})]).to_dict()
+    trace = AccessTrace(
+        path="/path/",
+        decided_by=3,
+        plan=[{"kind": "ancestor_gate", "source": "ancestor_policy.read", "permission": "app.view_book"}],
+        steps=[
+            AccessStep(1, "list_filter", result="passed", counts={"visible": 0, "total": 5}),
+            AccessStep(2, "list_filter", result="passed", counts={"visible": 0, "total": None}),
+            AccessStep(
+                3,
+                "own_permission",
+                result="denied",
+                provider="model",
+                how="no_permission",
+                object={"model": "app.book", "pk": "2"},
+            ),
+        ],
+    ).to_dict()
     text = html.fromstring(render_to_string("crud_views/includes/access_trace.html", {"trace": trace})).text_content()
-    for expected in ["ancestor_policy.read", "app.view_book", "sees 0 of 5 objects", "0 rows", "model", "app.book", "decided at step 3"]:
+    for expected in [
+        "ancestor_policy.read",
+        "app.view_book",
+        "sees 0 of 5 objects",
+        "0 rows",
+        "model",
+        "app.book",
+        "decided at step 3",
+    ]:
         assert expected in text

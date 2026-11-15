@@ -1,6 +1,19 @@
 {% load i18n crud_views %}
-{% if step %}
-    <strong>{{ step.kind }}</strong>
+{% if result %}
+    {% if result == 'allowed' %}<span data-cv-trace-result="{{ result }}" class="{% cv_button_class 'manage' 'trace-allowed' %}">{% translate "Allowed" %}</span>
+    {% elif result == 'denied' %}<span data-cv-trace-result="{{ result }}" class="{% cv_button_class 'manage' 'trace-denied' %}">{% translate "Denied" %}</span>
+    {% elif result == 'not_found' %}<span data-cv-trace-result="{{ result }}" class="{% cv_button_class 'manage' 'trace-not-found' %}">{% translate "Not found" %}</span>
+    {% elif result == 'login_redirect' %}<span data-cv-trace-result="{{ result }}" class="{% cv_button_class 'manage' 'trace-login-redirect' %}">{% translate "Login redirect" %}</span>
+    {% elif result == 'error' %}<span data-cv-trace-result="{{ result }}" class="{% cv_button_class 'manage' 'trace-error' %}">{% translate "Error" %}</span>
+    {% elif result == 'no_such_route' %}<span data-cv-trace-result="{{ result }}" class="{% cv_button_class 'manage' 'trace-no-such-route' %}">{% translate "No such route" %}</span>
+    {% elif result == 'passed' %}<span data-cv-trace-result="{{ result }}" class="{% cv_button_class 'manage' 'trace-passed' %}">{% translate "Passed" %}</span>
+    {% elif result == 'skipped' %}<span data-cv-trace-result="{{ result }}" class="{% cv_button_class 'manage' 'trace-skipped' %}">{% translate "Skipped" %}</span>
+    {% elif result == 'not_reached' %}<span data-cv-trace-result="{{ result }}" class="{% cv_button_class 'manage' 'trace-not-reached' %}">{% translate "Not reached" %}</span>
+    {% elif result == 'not_evaluated' %}<span data-cv-trace-result="{{ result }}" class="{% cv_button_class 'manage' 'trace-not-evaluated' %}">{% translate "Not evaluated" %}</span>
+    {% elif result == 'unavailable' %}<span data-cv-trace-result="{{ result }}" class="{% cv_button_class 'manage' 'trace-not-evaluated' %}">{% translate "Unavailable" %}</span>
+    {% endif %}
+{% elif step %}
+    <strong>{% if step.kind == 'route' %}{% translate "Route" %}{% elif step.kind == 'validation' %}{% translate "Validation" %}{% elif step.kind == 'actor_admission' %}{% translate "Actor admission" %}{% elif step.kind == 'ancestor_lookup' %}{% translate "Ancestor lookup" %}{% elif step.kind == 'ancestor_gate' %}{% translate "Ancestor gate" %}{% elif step.kind == 'own_permission' %}{% translate "Own permission" %}{% elif step.kind == 'object_lookup' %}{% translate "Object lookup" %}{% elif step.kind == 'object_grant' %}{% translate "Object grant" %}{% elif step.kind == 'list_filter' %}{% translate "List filter" %}{% elif step.kind == 'action_state' %}{% translate "Action state" %}{% elif step.kind == 'manage_gate' %}{% translate "Manage gate" %}{% elif step.kind == 'custom_gate' %}{% translate "Custom gate" %}{% elif step.kind == 'login_middleware' %}{% translate "Login middleware" %}{% elif step.kind == 'limitation' %}{% translate "Limitation" %}{% else %}{{ step.kind }}{% endif %}</strong>
     {% if step.viewset %}{% translate "ViewSet:" %} {{ step.viewset }}{% endif %}
     {% if step.object %}{% translate "Object:" %} {{ step.object.model }} {{ step.object.pk }}{% endif %}
     {% if step.key %}{% translate "Key:" %} {{ step.key }}{% endif %}
@@ -9,7 +22,7 @@
     {% if step.provider %}{% translate "Provider:" %} {{ step.provider }}{% endif %}
     {% if step.source %}{% translate "Source:" %} <code>{{ step.source }}</code>{% endif %}
     {% if step.how %}{% translate "How:" %} {{ step.how }}{% endif %}
-    {% if step.result %}<span data-cv-trace-result="{{ step.result }}">{{ step.result }}</span>{% endif %}
+    {% if step.result %}{% include "crud_views/includes/access_trace.html" with result=step.result only %}{% endif %}
     {% if step.message %}<p>{{ step.message }}</p>{% endif %}
     {% if step.exception %}<p>{{ step.exception.class }}: {{ step.exception.message }}</p>{% endif %}
     {% if step.counts %}<p>{% if step.counts.total != None %}{% blocktranslate with visible=step.counts.visible total=step.counts.total %}sees {{ visible }} of {{ total }} objects{% endblocktranslate %}{% else %}{% blocktranslate count count=step.counts.visible %}{{ count }} row{% plural %}{{ count }} rows{% endblocktranslate %}{% endif %}</p>{% endif %}
@@ -25,7 +38,7 @@
     <ul>{% for entry in trace.plan %}<li>{% include "crud_views/includes/access_trace.html" with step=entry only %}</li>{% empty %}<li>{% translate "No planned gates." %}</li>{% endfor %}</ul>
     <h3 class="h6">{% translate "Steps" %}</h3>
     <ol>{% for entry in trace.steps %}<li value="{{ entry.n }}">{% include "crud_views/includes/access_trace.html" with step=entry only %}</li>{% endfor %}</ol>
-    <p><strong>{% translate "Outcome:" %}</strong> <span data-cv-trace-result="{{ trace.outcome }}">{{ trace.outcome }}</span>{% if trace.decided_by %} — {% blocktranslate with number=trace.decided_by %}decided at step {{ number }}{% endblocktranslate %}{% endif %}</p>
+    <p><strong>{% translate "Outcome:" %}</strong> {% include "crud_views/includes/access_trace.html" with result=trace.outcome only %}{% if trace.decided_by %} — {% blocktranslate with number=trace.decided_by %}decided at step {{ number }}{% endblocktranslate %}{% endif %}</p>
     {% if trace.outcome == 'allowed' %}<p>{% translate "This user may open the page; handler-phase checks are not evaluated." %}</p>{% endif %}
     <h3 class="h6">{% translate "Limitations" %}</h3>
     <ul>{% for limit in trace.untraced %}<li>{{ limit }}</li>{% endfor %}</ul>

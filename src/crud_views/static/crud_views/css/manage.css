@@ -137,3 +137,16 @@
 [data-cv-manage] [hidden] {
     display: none !important;
 }
+
+/* Trace paths, class names and exception messages are arbitrary scalar text. */
+[data-cv-manage] #cv-manage-access-trace {
+    overflow-wrap: anywhere;
+}
+
+[data-cv-manage] #cv-manage-access-trace .badge {
+    white-space: normal;
+}
+
+[data-cv-manage] #cv-manage-access-trace fieldset {
+    min-width: 0;
+}

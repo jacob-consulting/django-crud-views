@@ -27,6 +27,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from django.utils.translation import gettext as _
+
 from crud_views.lib.access_trace import _object_identity, get_recorder
 
 if TYPE_CHECKING:
@@ -98,6 +100,6 @@ def _guardian_ancestor_has_permission(
             source="ancestor_policy.accept_global_perms",
             result="passed" if allowed else "denied",
             how=how,
-            message=f"model fallback enabled: {viewset.ancestor_policy.accept_global_perms}",
+            message=_("model fallback enabled: %(enabled)s") % {"enabled": viewset.ancestor_policy.accept_global_perms},
         )
     return allowed

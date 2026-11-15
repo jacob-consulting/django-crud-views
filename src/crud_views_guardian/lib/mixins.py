@@ -2,6 +2,7 @@ import logging
 
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
+from django.utils.translation import gettext as _
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
@@ -45,7 +46,7 @@ def _guardian_actor_response(view):
             view,
             "not_found" if behavior == "404" else "denied",
             "_guardian_actor_response",
-            f"anonymous policy: {behavior}",
+            _("anonymous policy: %(behavior)s") % {"behavior": behavior},
         )
         if behavior == "404":
             raise Http404
@@ -53,7 +54,7 @@ def _guardian_actor_response(view):
             raise PermissionDenied
         return view.handle_no_permission()  # redirect to login
     if _guardian_inactive_actor(user):
-        _record_guardian_actor(view, "denied", "_guardian_actor_response", "inactive actor")
+        _record_guardian_actor(view, "denied", "_guardian_actor_response", _("inactive actor"))
         raise PermissionDenied
     _record_guardian_actor(view, "passed", "_guardian_actor_response")
     return None
@@ -123,7 +124,7 @@ class GuardianObjectPermissionMixin:
                 self,
                 "not_found" if self.cv_guardian_anonymous_behavior == "404" else "denied",
                 "GuardianObjectPermissionMixin.has_permission",
-                f"anonymous policy: {self.cv_guardian_anonymous_behavior}",
+                _("anonymous policy: %(behavior)s") % {"behavior": self.cv_guardian_anonymous_behavior},
             )
             if self.cv_guardian_anonymous_behavior == "404":
                 raise Http404
@@ -131,7 +132,7 @@ class GuardianObjectPermissionMixin:
                 raise PermissionDenied
             return False  # triggers Django's handle_no_permission() → redirect to login
         if _guardian_inactive_actor(self.request.user):
-            _record_guardian_actor(self, "denied", "GuardianObjectPermissionMixin.has_permission", "inactive actor")
+            _record_guardian_actor(self, "denied", "GuardianObjectPermissionMixin.has_permission", _("inactive actor"))
             raise PermissionDenied
         _record_guardian_actor(self, "passed", "GuardianObjectPermissionMixin.has_permission")
         return True
@@ -168,7 +169,7 @@ class GuardianObjectPermissionMixin:
                 source="GuardianObjectPermissionMixin._check_object_perm",
                 result="passed" if allowed else "denied",
                 how=how,
-                message=f"model fallback enabled: {self.cv_guardian_accept_global_perms}",
+                message=_("model fallback enabled: %(enabled)s") % {"enabled": self.cv_guardian_accept_global_perms},
             )
         return allowed
 
@@ -266,7 +267,7 @@ class GuardianQuerysetMixin:
                 self,
                 "not_found" if self.cv_guardian_anonymous_behavior == "404" else "denied",
                 "GuardianQuerysetMixin.has_permission",
-                f"anonymous policy: {self.cv_guardian_anonymous_behavior}",
+                _("anonymous policy: %(behavior)s") % {"behavior": self.cv_guardian_anonymous_behavior},
             )
             if self.cv_guardian_anonymous_behavior == "404":
                 raise Http404
@@ -274,7 +275,7 @@ class GuardianQuerysetMixin:
                 raise PermissionDenied
             return False  # triggers Django's handle_no_permission() → redirect to login
         if _guardian_inactive_actor(self.request.user):
-            _record_guardian_actor(self, "denied", "GuardianQuerysetMixin.has_permission", "inactive actor")
+            _record_guardian_actor(self, "denied", "GuardianQuerysetMixin.has_permission", _("inactive actor"))
             raise PermissionDenied
         _record_guardian_actor(self, "passed", "GuardianQuerysetMixin.has_permission")
         return True
@@ -386,7 +387,8 @@ class GuardianQuerysetMixin:
                 provider="guardian",
                 source="GuardianQuerysetMixin.get_queryset",
                 result="passed",
-                message=f"queryset filter; model fallback enabled: {self.cv_guardian_accept_global_perms}",
+                message=_("queryset filter; model fallback enabled: %(enabled)s")
+                % {"enabled": self.cv_guardian_accept_global_perms},
             )
         return filtered
 
@@ -545,7 +547,7 @@ class GuardianParentPermissionMixin:
         if not request.user.is_authenticated:
             return self._guardian_deny_anonymous()
         if _guardian_inactive_actor(request.user):
-            _record_guardian_actor(self, "denied", "GuardianParentPermissionMixin.dispatch", "inactive actor")
+            _record_guardian_actor(self, "denied", "GuardianParentPermissionMixin.dispatch", _("inactive actor"))
             raise PermissionDenied  # before any None-policy, method or fragment handling (D-11)
         _record_guardian_actor(self, "passed", "GuardianParentPermissionMixin.dispatch")
         return super().dispatch(request, *args, **kwargs)

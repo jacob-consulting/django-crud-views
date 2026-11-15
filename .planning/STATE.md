@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.35"
 current_phase_name: "Resource manage pages with cv_access parity (#372)"
-current_plan: "02"
+current_plan: "03"
 status: executing
-stopped_at: "Completed 06.35-01-PLAN.md; ready for plans 02 and 03"
-last_updated: "2026-11-15T18:12:00Z"
+stopped_at: "Completed 06.35-02-PLAN.md; ready for plan 03"
+last_updated: "2026-11-15T18:20:00Z"
 last_activity: 2026-11-15
-last_activity_desc: Phase 06.35 plan 01 complete; C02 172 passed; 18 bounded H01 failures assigned to plans 03, 05 and 06; 6 plans remain
-state_head: 58c1e4d3503bb70745360abea9f4efa90703c843
+last_activity_desc: Phase 06.35 plan 02 complete; C03 145 passed and C04 563 passed; H01 handoffs remain assigned to plans 03, 05 and 06; 5 plans remain
+state_head: 530305fb
 progress:
   total_phases: 42
   completed_phases: 27
   total_plans: 232
-  completed_plans: 226
+  completed_plans: 227
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 ## Current Position
 
 Phase: 06.35 (Resource manage pages with cv_access parity (#372)) — IN PROGRESS
-Current Plan: 02
+Current Plan: 03
 Total Plans in Phase: 7
-Status: Executing (1/7 plans complete)
-Last activity: 2026-11-15 — Plan 01 committed; shared Resource manage registration/admission complete; C02 172 passed, H01 18 expected failures / 205 passed
+Status: Executing (2/7 plans complete)
+Last activity: 2026-11-15 — Plan 02 committed; nested Resource admission and database compatibility proven; C03 145 passed, C04 563 passed
 
 Next: $gsd-execute-phase 06.35
+
+### Phase 06.35 plan 02 completion — 2026-11-15
+
+- 122 new real-request cases cover standalone and core/Guardian nested Resource manage admission, both cascade modes, denial order, all-none ancestry, actual sibling toolbar links, and default/shard routing with colliding identities. Both Resource loaders remain unused by manage requests.
+- No production changes were needed. Reached auth/model read routes are guarded; unused auth write routes and Guardian tables remain untouched. Model manage query replay remains owned by plans 03/07.
+- C03: 145 passed in 13.82s; C04: 563 passed in 36.08s; both with four workers. Scoped Ruff/format/whitespace pass. No skipped cases or new blockers. Existing H01 handoffs remain with plans 03/05/06.
+- Duration: approximately 7 minutes; 2 tasks; task commits 0218b029 and 5491e556; summary commit 530305fb. STATE.md updated directly; unrelated state.json and working-tree edits preserved. Five plans remain.
 
 ### Phase 06.35 plan 01 completion — 2026-11-15
 
@@ -1725,6 +1732,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15T18:12:00Z
-Stopped at: Completed 06.35-01-PLAN.md; ready for plans 02 and 03
-Resume file: .planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-02-PLAN.md
+Last session: 2026-11-15T18:20:00Z
+Stopped at: Completed 06.35-02-PLAN.md; ready for plan 03
+Resume file: .planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-03-PLAN.md

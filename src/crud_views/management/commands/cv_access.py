@@ -8,7 +8,7 @@ from django.core.management import BaseCommand, CommandError
 from django.core.management.color import supports_color
 from django.utils.termcolors import make_style
 from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy, ngettext
+from django.utils.translation import ngettext
 
 from crud_views.lib.access_trace import resolve_trace_user, trace_access
 
@@ -179,8 +179,12 @@ def _format_json(trace, color=False):
 
 
 class Command(BaseCommand):
-    help = gettext_lazy("Trace whether a user may open a project URL, without running its view handler.")
     requires_system_checks: ClassVar[list] = []
+
+    @property
+    def help(self):
+        # argparse needs a real string, translated when the parser is created.
+        return _("Trace whether a user may open a project URL, without running its view handler.")
 
     def add_arguments(self, parser):
         parser.add_argument("path", help=_("Project path or full URL (only its path is used)."))

@@ -100,7 +100,9 @@ def test_wiring_assertions_reject_regressions(monkeypatch, mutation):
         assert_suite_contract(calls, python="3.12", django="5.2", posargs=())
 
 
-@pytest.mark.parametrize("location", ["purelib", "platlib", "checkout", "sibling", "elsewhere"])
+@pytest.mark.parametrize(
+    "location", ["purelib", "platlib", "checkout", "checkout_install_root", "sibling", "elsewhere"]
+)
 def test_installed_origin_probe_checks_real_path_boundaries(monkeypatch, tmp_path, capsys, location):
     calls = session_calls(monkeypatch)
     assert_suite_contract(calls, python="3.12", django="5.2", posargs=())
@@ -109,10 +111,13 @@ def test_installed_origin_probe_checks_real_path_boundaries(monkeypatch, tmp_pat
         "purelib": purelib,
         "platlib": platlib,
         "checkout": ROOT / "src",
+        "checkout_install_root": ROOT / "src",
         "sibling": tmp_path / "purelib-neighbor",
         "elsewhere": tmp_path / "unrelated",
     }
     origin = roots[location] / "crud_views" / "__init__.py"
+    if location == "checkout_install_root":
+        purelib = ROOT / "src"  # The explicit checkout exclusion must fail even if the install-root test passes.
     monkeypatch.setitem(sys.modules, "crud_views", SimpleNamespace(__file__=str(origin)))
     monkeypatch.setattr(sysconfig, "get_paths", lambda: {"purelib": str(purelib), "platlib": str(platlib)})
     probe = calls[2][1][2]
@@ -137,4 +142,5 @@ def test_workflow_labels_both_runs_and_preserves_coverage_accounting():
     assert "flags: py${{ matrix.python-version }}" in workflow
     config = (ROOT / "pyproject.toml").read_text()
     assert "[tool.coverage.paths]" in config
-    assert '"*/site-packages"' in config
+    assert '"src/"' in config
+    assert '"*/site-packages/"' in config

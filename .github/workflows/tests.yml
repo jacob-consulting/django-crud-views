@@ -21,7 +21,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
       - run: 'pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt'
-      - run: nox -s "tests-${{ matrix.python-version }}(django='4.2')" "tests-${{ matrix.python-version }}(django='5.2')" "tests-${{ matrix.python-version }}(django='6.0')"
+      - name: Full suite (recorder off and on)
+        run: nox -s "tests-${{ matrix.python-version }}(django='4.2')" "tests-${{ matrix.python-version }}(django='5.2')" "tests-${{ matrix.python-version }}(django='6.0')"
       - run: nox -s "examples-${{ matrix.python-version }}(django='4.2')" "examples-${{ matrix.python-version }}(django='5.2')" "examples-${{ matrix.python-version }}(django='6.0')"
       # Every row uploads one report per Django session; Codecov merges them per commit.
       # codecov.yml (after_n_builds) waits for all rows before posting statuses. See #105.

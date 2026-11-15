@@ -11,6 +11,7 @@ named exactly as shown — there is no `CRUD_VIEWS = {...}` dict.
 | CRUD_VIEWS_MANAGE_VIEWS_ENABLED | Manage diagnostics mode: `yes` requires active, authenticated group membership; `no` denies everyone; `debug_only` additionally requires `DEBUG=True`. | `str` | `yes` |
 | CRUD_VIEWS_MANAGE_GROUP | Django group whose membership is required for manage diagnostics when the mode allows access. | `str` | `CRUD_VIEWS_MANAGE` |
 | CRUD_VIEWS_MANAGE_SHOW_USERS | Show direct-user rows and active-superuser names in the manage Permissions matrix; rows after the first 20 fold into a disclosure. | `bool` | `False` |
+| CRUD_VIEWS_MANAGE_ACCESS_TRACE | Enable the [Access check](manage.md#access-check) card for admitted manage viewers; allows tracing any user/path and discloses existence/access outcomes. Does not affect `cv_access`. | `bool` | `False` |
 | CRUD_VIEWS_MANAGE_VIEW_CLASS | Dotted import path to a custom `ManageView` subclass used as the base for auto-registered manage views. When `None`, uses `ManageView`. | `str \| None` | `None` |
 | CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS | Dotted import path to a custom `GuardianManageView` subclass used as the base for auto-registered guardian manage views. When `None`, uses `GuardianManageView`. | `str \| None` | `None` |
 | CRUD_VIEWS_BREADCRUMB_PREFIX | List of dicts with `title`, `url_name`, optional `args`/`kwargs` prepended to every breadcrumb (see [Breadcrumb](breadcrumb.md)); malformed entries fail system check `crud_views.E102`. | `list` | `[]` |
@@ -64,10 +65,17 @@ permissions, including groups and active-superuser status. Guardian adds strict 
 grants and its active-superuser all-object shortcut. Group and optional User rows show direct grants instead.
 See [Permissions](manage.md#permissions) for the distinction and default visibility.
 
-To diagnose Alice's results, temporarily add Alice
-to the configured manage group, inspect while signed in as Alice, then remove that membership. Alice herself can
-open diagnostics during that interval, subject to the mode and ancestor policy. A separate developer account
-does not impersonate Alice or reproduce her permission results.
+To diagnose Alice's results, first use [cv_access](manage.md#cv_access), or opt in to the
+[Access check](manage.md#access-check) card with `CRUD_VIEWS_MANAGE_ACCESS_TRACE = True` and select Alice.
+The switch is off by default: disabled trace GET parameters are ignored. Enabling it lets any admitted manage
+viewer inspect another user's access and object existence on any CRUD path, including under parents the viewer
+cannot open. No additional target permission is required. Hosting-page authorization remains unchanged, and
+exception class/messages may disclose project information. The shell command is always available.
+
+If tracing cannot reproduce a project-specific request context, signing in as Alice remains a fallback: temporarily
+add Alice to the configured manage group, inspect while signed in as Alice, then remove that membership. Alice
+herself can open diagnostics during that interval, subject to the mode and ancestor policy. Selecting Alice in
+the diagnostic form never changes the developer's signed-in identity or session.
 
 ## Delete preview
 

@@ -1,0 +1,122 @@
+.F                                                                       [100%]
+=================================== FAILURES ===================================
+____________ test_top_level_guardian_and_manage_keep_their_routing _____________
+
+adb = namespace(anc={'model': ViewSet(aamodel46c35ac3), 'guardian': ViewSet(aaguard46c35ac3), 'fallback': ViewSet(aafall46c3...s.lib.view.meta.ListViewPermissionRequired'>, CTDetail=<class 'crud_views.lib.view.meta.DetailViewPermissionRequired'>)
+world = namespace(publisher=<Publisher: default publisher>, book=<Book: default book>, shelf=<Shelf: default shelf>)
+routes = namespace(read={<class 'django.contrib.auth.models.Permission'>: 'shard', <class 'guardian.models.models.UserObjectPer... <class 'django.contrib.contenttypes.models.ContentType'>), ('read', <class 'django.contrib.auth.models.Permission'>)])
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79d7a1704830>
+
+    def test_top_level_guardian_and_manage_keep_their_routing(adb, world, routes, monkeypatch):
+        """Top-level ViewSets: Guardian list/detail gates, the strict ViewSet helper and the manage page keep their
+        routed behaviour (no default-database boundary)."""
+        user = _manage_member("aa_top", superuser=True)
+        client = _client(user)
+        routes.read[Permission] = routes.read[UserObjectPermission] = routes.read[GroupObjectPermission] = "shard"
+>       assert client.get(_url(adb.gtop, "list")).status_code == 200
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_ancestor_auth_databases.py:790: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/test/client.py:1127: in get
+    response = super().get(
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/test/client.py:475: in get
+    return self.generic(
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/test/client.py:671: in generic
+    return self.request(**r)
+           ^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/test/client.py:1090: in request
+    self.check_exception(response)
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/test/client.py:805: in check_exception
+    raise exc_value
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/handlers/exception.py:55: in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/handlers/base.py:197: in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/base.py:105: in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/mixins.py:551: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/view/base.py:1228: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/contrib/auth/mixins.py:109: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/view/base.py:329: in dispatch
+    response = super().dispatch(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/base.py:144: in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/list.py:158: in get
+    self.object_list = self.get_queryset()
+                       ^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/mixins.py:370: in get_queryset
+    perm = _local_permission_name(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+view = <crud_views.lib.view.meta.GuardianListViewPermissionRequired object at 0x79d7a1720830>
+
+    def _local_permission_name(view) -> str:
+        """The full permission name for a Guardian view instance's own ``cv_permission`` key (request gates only).
+    
+        Raises ImproperlyConfigured when the key has no entry in the ViewSet's permission map — typically a model
+        whose migration has not run — so no Guardian checker or shortcut ever receives ``None`` (G-06.18-2).
+        """
+        viewset = view.cv_viewset
+        key = view.cv_permission
+        permission = viewset.permissions.get(key)
+        if not permission:
+>           raise ImproperlyConfigured(
+                f"ViewSet {viewset.name!r} view {view.cv_key!r}: permission key {key!r} is not in the ViewSet's "
+                f"permission map — if the model is new, run `manage.py migrate`; "
+                f"a server started before the migration may need a restart"
+            )
+E           django.core.exceptions.ImproperlyConfigured: ViewSet 'aagtop46c35ac3' view 'list': permission key 'view' is not in the ViewSet's permission map — if the model is new, run `manage.py migrate`; a server started before the migration may need a restart
+
+src/crud_views_guardian/lib/mixins.py:72: ImproperlyConfigured
+------------------------------ Captured log call -------------------------------
+ERROR    django.request:log.py:293 Internal Server Error: /aagtop46c35ac3/
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/mixins.py", line 551, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 1228, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 329, in dispatch
+    response = super().dispatch(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/base.py", line 144, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/list.py", line 158, in get
+    self.object_list = self.get_queryset()
+                       ^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/mixins.py", line 370, in get_queryset
+    perm = _local_permission_name(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/mixins.py", line 72, in _local_permission_name
+    raise ImproperlyConfigured(
+django.core.exceptions.ImproperlyConfigured: ViewSet 'aagtop46c35ac3' view 'list': permission key 'view' is not in the ViewSet's permission map — if the model is new, run `manage.py migrate`; a server started before the migration may need a restart
+=========================== short test summary info ============================
+FAILED tests/test1/test_ancestor_auth_databases.py::test_top_level_guardian_and_manage_keep_their_routing
+1 failed, 1 passed in 1.40s

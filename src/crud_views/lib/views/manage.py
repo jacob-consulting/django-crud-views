@@ -1,6 +1,7 @@
 import inspect
 from collections import OrderedDict
 from types import SimpleNamespace
+from urllib.parse import urlsplit
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
@@ -800,6 +801,11 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             data["error"] = _("Enter a username or primary key.")
         elif data["mode"] == "path" and not data["path_input"].strip():
             data["error"] = _("Enter a path to check.")
+        elif data["mode"] == "path":
+            try:
+                urlsplit(data["path_input"])
+            except ValueError:
+                data["error"] = _("Enter a valid path or URL.")
         if data["error"]:
             return data
         actor = resolve_trace_user(data["user_input"])

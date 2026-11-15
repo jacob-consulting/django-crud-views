@@ -477,8 +477,9 @@ def test_partial_renders_provenance_counts_and_zero_counts():
 
 def test_malformed_path_is_form_feedback(client, host, developer, enabled):
     client.raise_request_exception = False
-    response = submit(client, host, developer, cv_access_mode="path", cv_access_user=developer.username,
-                      cv_access_path="http://[")
+    response = submit(
+        client, host, developer, cv_access_mode="path", cv_access_user=developer.username, cv_access_path="http://["
+    )
     assert response.status_code == 200
     data = response.context["manage_access_trace"]
     assert data["error"] and data["trace"] is None and data["actor"] is None

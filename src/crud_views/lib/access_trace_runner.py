@@ -4,13 +4,14 @@ from types import MethodType
 from urllib.parse import urlsplit
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import AccessMixin
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.base import BaseStorage
 from django.contrib.sessions.backends.base import SessionBase
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import QuerySet
-from django.http import Http404, HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBase
 from django.urls import Resolver404, resolve
 from django.utils.translation import gettext as _
 from django.views.generic.list import MultipleObjectMixin
@@ -198,7 +199,103 @@ def _handler_stub(self, request, *args, **kwargs):
             before, _after = captured
             total = before.count() if isinstance(before, QuerySet) else len(before)
         recorder.record(self, "list_filter", result="passed", counts={"visible": count, "total": total})
+    self._cv_trace_stub_completed = True
     return HttpResponse()
+
+
+class UnsupportedTraceResponse(Exception):
+    """The observed dispatch did not establish one of the supported outcomes."""
+
+
+def _terminal_since(recorder, cursor=0):
+    return [step for step in recorder.steps[cursor:] if step.result in {"denied", "not_found", "error"}]
+
+
+def _exception_outcome(exc):
+    return "denied" if isinstance(exc, PermissionDenied) else "not_found" if isinstance(exc, Http404) else "error"
+
+
+def _method_source(view, name, bound):
+    """Name the actual bound callable's definer, never guess an inner super frame."""
+    function = getattr(bound, "__func__", bound)
+    for cls in type(view).__mro__:
+        if cls.__dict__.get(name) is function:
+            return f"{cls.__module__}.{cls.__qualname__}.{name}"
+    return f"{function.__module__}.{function.__qualname__}"
+
+
+def _observe_custom_methods(view, recorder):
+    """Observe calls through the instance; super() continues along its original MRO."""
+
+    def wrap(name, bound):
+        source = _method_source(view, name, bound)
+
+        def observe(*args, **kwargs):
+            cursor = len(recorder.steps)
+            try:
+                value = bound(*args, **kwargs)
+            except Exception as exc:
+                report(cursor, _exception_outcome(exc))
+                raise
+            result = None
+            if name == "has_permission" and value is False:
+                result = "denied"
+            elif isinstance(value, HttpResponseBase):
+                result = {403: "denied", 404: "not_found"}.get(value.status_code)
+            if result is not None:
+                report(cursor, result)
+            return value
+
+        def report(cursor, result):
+            if not _terminal_since(recorder, cursor):
+                recorder.record(
+                    view,
+                    "custom_gate",
+                    result=result,
+                    source=source,
+                    how="observed_boundary",
+                    message=_(
+                        "This observed method boundary refused access; the inner denying implementation is unknown."
+                    ),
+                )
+
+        return observe
+
+    for name in ("has_permission", "get_object", "dispatch"):
+        bound = getattr(view, name, None)
+        if callable(bound):
+            setattr(view, name, wrap(name, bound))
+
+
+def _observe_denial_response(view, recorder):
+    bound = getattr(view, "handle_no_permission", None)
+    if getattr(bound, "__func__", None) is not AccessMixin.handle_no_permission:
+        return
+
+    def observe(*args, **kwargs):
+        response = bound(*args, **kwargs)
+        recorder.capture_login_response(view, response)
+        return response
+
+    view.handle_no_permission = observe
+
+
+def _classify_response(response, view, recorder):
+    status = response.status_code if isinstance(response, HttpResponseBase) else None
+    if status == 403:
+        return "denied"
+    if status == 404:
+        return "not_found"
+    if status is not None and 300 <= status < 400:
+        if any(response is captured for captured in recorder._login_responses.values()):
+            return "login_redirect"
+    if status is not None and 200 <= status < 300:
+        if getattr(view, "_cv_trace_stub_completed", False) and not _terminal_since(recorder):
+            return "allowed"
+    raise UnsupportedTraceResponse(
+        _("Unsupported trace response (status %(status)s): no successful stub or recognized terminal response.")
+        % {"status": status}
+    )
 
 
 def _run_trace(path, user):
@@ -233,35 +330,31 @@ def _run_trace(path, user):
                     request = _TraceRequest(trace.path, actor)
                     request.resolver_match = match
                     view.setup(request, *match.args, **match.kwargs)
+                    view.get = MethodType(_handler_stub, view)
+                    view._cv_trace_stub_completed = False
+                    _observe_custom_methods(view, recorder)
+                    _observe_denial_response(view, recorder)
                     trace.plan = _plan_gates(view)
                     response = view.dispatch(request, *match.args, **match.kwargs)
-                    if any(response is captured for captured in recorder._login_responses.values()):
-                        trace.outcome = "login_redirect"
-                    elif response.status_code == 403:
-                        trace.outcome = "denied"
-                    elif response.status_code == 404:
-                        trace.outcome = "not_found"
-                    elif response.status_code == 302 and actor.is_anonymous:
-                        trace.outcome = "login_redirect"
-                    elif response.status_code == 200:
-                        trace.outcome = "allowed"
-                    else:
-                        trace.outcome = "error"
+                    trace.outcome = _classify_response(response, view, recorder)
                 finally:
                     transaction.set_rollback(True, using="default")
         except Resolver404:
             trace.outcome = "no_such_route"
             recorder.record(recorder, "route", result="not_found")
         except Exception as exc:
-            trace.outcome = (
-                "denied" if isinstance(exc, PermissionDenied) else "not_found" if isinstance(exc, Http404) else "error"
-            )
-            if not any(step.result == trace.outcome for step in recorder.steps):
+            # Normalize only after atomic has restored a usable outer transaction.
+            trace.outcome = _exception_outcome(exc)
+            exception = {"class": type(exc).__name__, "message": str(exc)}
+            terminal = _terminal_since(recorder)
+            if terminal and terminal[-1].result == trace.outcome:
+                terminal[-1].exception = exception
+            else:
                 recorder.record(
                     recorder,
                     "custom_gate",
                     result=trace.outcome,
-                    exception={"class": type(exc).__name__, "message": str(exc)},
+                    exception=exception,
                 )
         finally:
             _merge_plan(recorder, trace.plan)

@@ -244,7 +244,7 @@ def test_actor_database_identity_is_preserved(django_user_model):
 
     def dispatch(self, request, *args, **kwargs):
         seen.append((request.user.username, request.user._state.db))
-        return HttpResponse()
+        return super(type(self), self).dispatch(request, *args, **kwargs)
 
     def build(sfx):
         vs = ViewSet(model=Publisher, name="alias" + sfx)
@@ -253,8 +253,9 @@ def test_actor_database_identity_is_preserved(django_user_model):
 
     default = django_user_model.objects.create_user(username="default identity")
     other = django_user_model.objects.db_manager("shard").create_user(pk=default.pk, username="shard identity")
+    obj = Publisher.objects.create(name="identity lookup")
     with isolated_routes(build) as vs:
-        result = trace(_url(vs, "tested", pk=1), other)
+        result = trace(_url(vs, "tested", pk=obj.pk), other)
         assert result.outcome == "allowed"
         assert seen == [("shard identity", "shard")]
 

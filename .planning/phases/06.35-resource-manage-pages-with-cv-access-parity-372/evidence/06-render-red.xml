@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.672" timestamp="2026-11-15T18:53:27.581076+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_resource_manage_locales" name="test_resource_manage_localized_render[None-localized_resource0]" time="0.493"><failure message="assert 'Ressource' in &quot;\n        \n            ViewSet\n            ?\n        \n        \n            \n            name'localeresource27ab...rce metadata)\n            \n            pk_type'[A-Za-z0-9_\\\\-]+' (Resource metadata)\n            \n        \n    &quot;&#10;[+2 more lines; full report in element text]">client = &lt;django.test.client.Client object at 0x7cf43ee62ea0&gt;
+localized_resource = namespace(vs=ViewSet(localeresource27ab851b), parents=[], coords={}, path='/localeresource27ab851b/manage/', actor=&lt;Us...r: holder 18 &lt;script&gt;name&lt;/script&gt;&gt;, &lt;User: holder 19 &lt;script&gt;name&lt;/script&gt;&gt;, &lt;User: holder 20 &lt;script&gt;name&lt;/script&gt;&gt;])
+classes = None
+
+    @pytest.mark.parametrize(
+        "localized_resource",
+        [
+            {"mapping": mapping, "declared": declared, "nested": nested}
+            for mapping in ("mapped", None, {}, "omitted")
+            for declared, nested in ((False, False), (True, True))
+        ],
+        indirect=True,
+    )
+    @pytest.mark.parametrize("classes", [None, "locale-resource", ""])
+    def test_resource_manage_localized_render(client, localized_resource, classes):
+        env = localized_resource
+        badges_by_language = {}
+        for language in ("en", "de"):
+            labels = RESOURCE_MESSAGES if language == "de" else {key: key for key in RESOURCE_MESSAGES}
+            overrides = {} if classes is None else {"manage:badge-resource": classes}
+            with translation.override(language), override_settings(CRUD_VIEWS_BUTTON_CLASSES=overrides):
+                response = client.get(env.path)
+            assert response.status_code == 200 and not env.state.reads
+            root = html.fromstring(response.content)
+            identity = root.get_element_by_id("cv-manage-viewset")
+&gt;           assert labels["Resource"] in identity.text_content()
+E           assert 'Ressource' in "\n        \n            ViewSet\n            ?\n        \n        \n            \n            name'localeresource27ab...rce metadata)\n            \n            pk_type'[A-Za-z0-9_\\\\-]+' (Resource metadata)\n            \n        \n    "
+E            +  where "\n        \n            ViewSet\n            ?\n        \n        \n            \n            name'localeresource27ab...rce metadata)\n            \n            pk_type'[A-Za-z0-9_\\\\-]+' (Resource metadata)\n            \n        \n    " = text_content()
+E            +    where text_content = &lt;Element section at 0x7cf43ee22f30&gt;.text_content
+
+tests/test1/test_resource_manage_locales.py:139: AssertionError</failure></testcase></testsuite></testsuites>

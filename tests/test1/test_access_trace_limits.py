@@ -14,7 +14,7 @@ from crud_views.lib.views import (
     UpdateView,
 )
 from crud_views.lib.views.form import CustomFormNoObjectView, CustomFormView
-from crud_views.lib.viewset import AncestorPolicy, ParentViewSet, ViewSet
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
 from crud_views_workflow.lib.views import WorkflowView
 from tests.test1.app.models import Book, Publisher
 from tests.test1.test_access_trace import explode, trace
@@ -31,7 +31,7 @@ def limitations(result):
 def test_post_only_backend_diagnosis_is_instance_local(reject):
     class PostOnly(ActionView):
         http_method_names = ["post", "options"]
-        cv_backend = True
+        cv_backend_only = True
 
         def dispatch(self, request, *args, **kwargs):
             if reject and request.method != "POST":
@@ -87,6 +87,9 @@ def test_handler_families_are_not_evaluated_even_after_denial(base, nested, keys
             model=Book,
             name="limited" + sfx,
             parent=ParentViewSet(name=parent.name, attribute="publisher") if nested else None,
+            ancestor_policy=AncestorPolicy(
+                actions={"tested": AncestorPermissions(nearest="view", higher="view")} if nested else {}
+            ),
         )
         attrs = {
             "get": explode,

@@ -337,8 +337,41 @@ def _run_login_middleware(request, match, recorder):
     return None
 
 
+def _add_limitations(cls, recorder):
+    """Describe handler families using declarations only, even when dispatch denied."""
+    from .views.action import ActionView
+    from .views.delete import DeleteView
+    from .views.mixins import CrudViewProcessFormMixin
+
+    vs = cls.cv_viewset
+    nested = vs.parent is not None and not vs.is_resource
+
+    def note(key, message):
+        recorder.record(recorder, "limitation", viewset=vs.name, key=key, result="not_evaluated", message=message)
+
+    if issubclass(cls, ActionView) or ("post" in cls.http_method_names and "get" not in cls.http_method_names):
+        note(
+            "method",
+            _(
+                "Authorization uses a synthetic GET stub; "
+                "the POST handler and method-sensitive behavior are not evaluated."
+            ),
+        )
+    if any(
+        base.__module__ == "crud_views_workflow.lib.views" and base.__name__ == "WorkflowView" for base in cls.__mro__
+    ):
+        note("workflow_transition", _("Workflow transition permissions are checked on submit and are not evaluated."))
+    if nested and issubclass(cls, MultipleObjectMixin):
+        note("nested_list_database", _("Nested-list database configuration is checked when the page is built."))
+    if issubclass(cls, DeleteView):
+        note("delete_preview", _("Delete-preview configuration is checked when the page is built."))
+    if nested and issubclass(cls, (CrudViewProcessFormMixin, ActionView)):
+        note("write_database", _("Write database configuration is checked on submit and is not evaluated."))
+
+
 def _run_trace(path, user):
     recorder = AccessRecorder()
+    traced_class = None
     trace = AccessTrace(
         path=_normalize_path(path),
         untraced=[
@@ -361,6 +394,7 @@ def _run_trace(path, user):
                     cls = getattr(match.func, "view_class", None)
                     if cls is None or not issubclass(cls, CrudView):
                         raise Resolver404(trace.path)
+                    traced_class = cls
                     trace.route = match.view_name
                     trace.view = f"{cls.__module__}.{cls.__qualname__}"
                     recorder.record(recorder, "route", result="passed")
@@ -373,6 +407,8 @@ def _run_trace(path, user):
                         view.get = MethodType(_handler_stub, view)
                         view.setup(request, *match.args, **match.kwargs)
                         view.get = MethodType(_handler_stub, view)
+                        if "post" in view.http_method_names and "get" not in view.http_method_names:
+                            view.http_method_names = [*view.http_method_names, "get"]
                         view._cv_trace_stub_completed = False
                         _observe_custom_methods(view, recorder)
                         _observe_denial_response(view, recorder)
@@ -400,6 +436,12 @@ def _run_trace(path, user):
                 )
         finally:
             _merge_plan(recorder, trace.plan)
+            if traced_class is not None:
+                _add_limitations(traced_class, recorder)
+            if trace.outcome == "allowed":
+                trace.untraced.append(
+                    _("Allowed means this user may open the page; handler-phase checks are not evaluated.")
+                )
             trace.steps = list(recorder.steps)
             terminal = _terminal_since(recorder)
             trace.decided_by = terminal[-1].n if terminal else None

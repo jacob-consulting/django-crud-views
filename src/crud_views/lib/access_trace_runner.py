@@ -277,6 +277,14 @@ def _observe_denial_response(view, recorder):
     def observe(*args, **kwargs):
         response = bound(*args, **kwargs)
         recorder.capture_login_response(view, response)
+        if not _terminal_since(recorder):
+            recorder.record(
+                view,
+                "actor_admission",
+                result="denied",
+                source=_method_source(view, "handle_no_permission", bound),
+                message=_("Django's inherited access handler returned a login response."),
+            )
         return response
 
     view.handle_no_permission = observe

@@ -1965,7 +1965,6 @@ Plans:
 Plans:
 **Wave 1**
 - [x] 06.34-01-PLAN.md
-- [ ] TBD (run $gsd-plan-phase 06.34 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.34-02-PLAN.md

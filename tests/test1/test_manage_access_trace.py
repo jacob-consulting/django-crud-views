@@ -484,3 +484,88 @@ def test_malformed_path_is_form_feedback(client, host, developer, enabled):
     data = response.context["manage_access_trace"]
     assert data["error"] and data["trace"] is None and data["actor"] is None
     assert data["path_input"] == "http://["
+
+
+@pytest.mark.parametrize(
+    "mode,field,value",
+    [
+        ("viewset", "user", "unknown"),
+        ("path", "user", "unknown"),
+        ("path", "path", "http://["),
+        ("path", "path", ""),
+    ],
+)
+def test_validation_belongs_to_submitted_form(client, host, developer, enabled, mode, field, value):
+    response = submit(
+        client,
+        host,
+        developer,
+        cv_access_mode=mode,
+        cv_access_user=value if field == "user" else developer.username,
+        cv_access_path=value if field == "path" else "/author/",
+    )
+    card = html.fromstring(response.content).cssselect("#cv-manage-access-trace")[0]
+    forms = card.cssselect("form")
+    submitted = forms[0 if mode == "viewset" else 1]
+    other = forms[1 if mode == "viewset" else 0]
+    error = submitted.cssselect('[role="alert"]')[0]
+    control = submitted.cssselect(f'input[name="cv_access_{field}"]')[0]
+    assert control.get("aria-invalid") == "true"
+    assert error.get("id") in control.get("aria-describedby").split()
+    assert "mt-3" in error.get("class").split()
+    assert not other.cssselect('[aria-invalid], [role="alert"]')
+    assert control.get("value") == value
+
+
+def test_recorded_summary_precedes_metadata_and_keeps_full_scalar_trace():
+    trace = AccessTrace(
+        path="/" + "long-path/" * 50,
+        outcome="denied",
+        decided_by=1,
+        steps=[
+            AccessStep(
+                1, "own_permission", permission="app.delete_book", result="denied", message="<unsafe>" + "x" * 300
+            )
+        ],
+    ).to_dict()
+    summary = html.fromstring(render_to_string("crud_views/includes/access_trace.html", {"summary_trace": trace}))
+    assert "app.delete_book" in summary.text_content()
+    assert len(summary.text_content().strip()) < 250
+    assert not summary.cssselect("unsafe")
+    doc = html.fromstring(render_to_string("crud_views/includes/access_trace.html", {"trace": trace}))
+    assert doc.cssselect("[data-cv-trace-outcome]")[0].getnext().tag == "dl"
+    assert "<unsafe>" + "x" * 300 in doc.text_content()
+
+
+def test_summary_shows_zero_list_counts_and_allowed_boundary_once():
+    notice = "Allowed means this user may open the page; handler-phase checks are not evaluated."
+    trace = AccessTrace(
+        path="/",
+        outcome="allowed",
+        untraced=[notice],
+        steps=[AccessStep(1, "list_filter", result="passed", counts={"visible": 0, "total": 5})],
+    ).to_dict()
+    summary = render_to_string("crud_views/includes/access_trace.html", {"summary_trace": trace})
+    assert "sees 0 of 5 objects" in summary
+    doc = html.fromstring(render_to_string("crud_views/includes/access_trace.html", {"trace": trace}))
+    assert doc.text_content().count("handler-phase checks are not evaluated") == 1
+    assert trace["untraced"] == [notice]
+
+
+@pytest.mark.parametrize(
+    "language,wording",
+    [
+        ("en", "the access row includes effective permissions and reachable objects"),
+        ("de", "die Zugriffszeile enthält wirksame Berechtigungen und erreichbare Objekte"),
+    ],
+)
+def test_actor_neutral_matrix_and_result_spacing(client, host, developer, enabled, language, wording):
+    from django.utils.translation import override
+
+    with override(language):
+        response = submit(client, host, developer, cv_access_mode="viewset", cv_access_user=developer.username)
+    doc = html.fromstring(response.content)
+    text = doc.cssselect("#cv-manage-permissions")[0].text_content()
+    assert wording in text
+    assert "your row includes" not in text
+    assert doc.cssselect("#cv-manage-access-trace [data-cv-access-results].mt-3")

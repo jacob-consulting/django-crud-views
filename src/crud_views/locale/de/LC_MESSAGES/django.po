@@ -872,11 +872,11 @@ msgstr "Modell-Meta"
 
 #: lib/views/manage.py
 msgid ""
-"model: model-level permission · objects: object grants; your row includes "
+"model: model-level permission · objects: object grants; the access row includes "
 "effective permissions and reachable objects"
 msgstr ""
-"Modell: Berechtigung auf Modellebene · Objekte: Objektberechtigungen; Ihre "
-"Zeile enthält wirksame Berechtigungen und erreichbare Objekte"
+"Modell: Berechtigung auf Modellebene · Objekte: Objektberechtigungen; die "
+"Zugriffszeile enthält wirksame Berechtigungen und erreichbare Objekte"
 
 #: lib/views/manage.py
 msgid "none"

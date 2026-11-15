@@ -799,18 +799,22 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             data["error"] = _("Choose this ViewSet or any URL.")
         elif not data["user_input"]:
             data["error"] = _("Enter a username or primary key.")
+            data["error_field"] = "user"
         elif data["mode"] == "path" and not data["path_input"].strip():
             data["error"] = _("Enter a path to check.")
+            data["error_field"] = "path"
         elif data["mode"] == "path":
             try:
                 urlsplit(data["path_input"])
             except ValueError:
                 data["error"] = _("Enter a valid path or URL.")
+                data["error_field"] = "path"
         if data["error"]:
             return data
         actor = resolve_trace_user(data["user_input"])
         if actor is None:
             data["error"] = _("Unknown user: %(user)s") % {"user": data["user_input"]}
+            data["error_field"] = "user"
             return data
         result = self.get_manage_access_trace(
             self.cv_viewset,

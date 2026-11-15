@@ -83,7 +83,7 @@
         <h3 class="h6">{% translate "No direct permission holders" %}</h3>
         <p>{% translate "Permissions inherited through groups appear in group rows. Review the access row and active-superuser count above." %}</p>
         {% endif %}
-        <p class="text-muted">{% translate "model: model-level permission · objects: object grants; your row includes effective permissions and reachable objects" %}</p>
+        <p class="text-muted">{% translate "model: model-level permission · objects: object grants; the access row includes effective permissions and reachable objects" %}</p>
         {% if manage_guardian %}<p class="text-muted">{% translate "Guardian actor counts use the strict ViewSet helper, including group grants. An active superuser reaches every object; ordinary global model permissions do not add objects." %}</p>{% endif %}
         {% endwith %}
         </div>
@@ -102,31 +102,35 @@
                 <fieldset>
                     <legend class="h6">{% translate "This ViewSet" %}</legend>
                     <input type="hidden" name="cv_access_mode" value="viewset">
-                    <div class="mb-2"><label for="cv-access-viewset-user" class="form-label">{% translate "Username or primary key" %}</label><input class="form-control" id="cv-access-viewset-user" name="cv_access_user" value="{{ manage_access_trace.user_input }}" required></div>
+                    <div class="mb-2"><label for="cv-access-viewset-user" class="form-label">{% translate "Username or primary key" %}</label><input class="form-control" id="cv-access-viewset-user" {% if manage_access_trace.mode == "viewset" and manage_access_trace.error_field == "user" %}aria-invalid="true" aria-describedby="cv-access-viewset-error"{% endif %} name="cv_access_user" value="{{ manage_access_trace.user_input }}" required></div>
                     <div class="mb-2"><label for="cv-access-pk" class="form-label">{% translate "Object pk (optional)" %}</label><input class="form-control" id="cv-access-pk" name="cv_access_pk" value="{{ manage_access_trace.pk_input }}"></div>
                     <button type="submit" class="{% cv_button_class 'form' 'submit' %}">{% translate "Check" %}</button>
+                    {% if manage_access_trace.mode == "viewset" and manage_access_trace.error %}<p id="cv-access-viewset-error" class="mt-3" role="alert">{{ manage_access_trace.error }}</p>{% endif %}
                 </fieldset>
             </form>
             <form method="get">
                 <fieldset>
                     <legend class="h6">{% translate "Any URL" %}</legend>
                     <input type="hidden" name="cv_access_mode" value="path">
-                    <div class="mb-2"><label for="cv-access-path-user" class="form-label">{% translate "Username or primary key" %}</label><input class="form-control" id="cv-access-path-user" name="cv_access_user" value="{{ manage_access_trace.user_input }}" required></div>
-                    <div class="mb-2"><label for="cv-access-path" class="form-label">{% translate "Path" %}</label><input class="form-control" id="cv-access-path" name="cv_access_path" value="{{ manage_access_trace.path_input }}" required></div>
+                    <div class="mb-2"><label for="cv-access-path-user" class="form-label">{% translate "Username or primary key" %}</label><input class="form-control" id="cv-access-path-user" {% if manage_access_trace.mode == "path" and manage_access_trace.error_field == "user" %}aria-invalid="true" aria-describedby="cv-access-path-error"{% endif %} name="cv_access_user" value="{{ manage_access_trace.user_input }}" required></div>
+                    <div class="mb-2"><label for="cv-access-path" class="form-label">{% translate "Path" %}</label><input class="form-control" id="cv-access-path" {% if manage_access_trace.mode == "path" and manage_access_trace.error_field == "path" %}aria-invalid="true" aria-describedby="cv-access-path-error"{% endif %} name="cv_access_path" value="{{ manage_access_trace.path_input }}" required></div>
                     <button type="submit" class="{% cv_button_class 'form' 'submit' %}">{% translate "Check" %}</button>
+                    {% if manage_access_trace.mode == "path" and manage_access_trace.error %}<p id="cv-access-path-error" class="mt-3" role="alert">{{ manage_access_trace.error }}</p>{% endif %}
                 </fieldset>
             </form>
-            {% if manage_access_trace.error %}<p role="alert">{{ manage_access_trace.error }}</p>{% endif %}
+            <div data-cv-access-results class="mt-3">
+            {% if manage_access_trace.error and manage_access_trace.mode != "path" and manage_access_trace.mode != "viewset" %}<p role="alert">{{ manage_access_trace.error }}</p>{% endif %}
             {% if manage_access_trace.actor %}<p>{% blocktranslate with username=manage_access_trace.actor.username %}Checking access for: {{ username }}{% endblocktranslate %}</p>{% endif %}
             {% for row in manage_access_trace.rows %}
                 {% if row.trace %}
                 <details data-cv-access-row="{{ row.key }}">
-                    <summary><strong>{{ row.key }}</strong> {% include "crud_views/includes/access_trace.html" with result=row.trace.outcome only %}{% if row.trace.decided_by %} — {% blocktranslate with number=row.trace.decided_by %}decided at step {{ number }}{% endblocktranslate %}{% endif %}</summary>
+                    <summary><strong>{{ row.key }}</strong> {% include "crud_views/includes/access_trace.html" with result=row.trace.outcome only %}{% if row.trace.decided_by %} — {% blocktranslate with number=row.trace.decided_by %}decided at step {{ number }}{% endblocktranslate %}{% endif %} {% include "crud_views/includes/access_trace.html" with summary_trace=row.trace only %}</summary>
                     {% include "crud_views/includes/access_trace.html" with trace=row.trace only %}
                 </details>
                 {% else %}<p data-cv-access-row="{{ row.key }}"><strong>{{ row.key }}</strong> — {{ row.instruction }}</p>{% endif %}
             {% endfor %}
             {% if manage_access_trace.trace %}{% include "crud_views/includes/access_trace.html" with trace=manage_access_trace.trace only %}{% endif %}
+            </div>
         </div>
     </section>
     {% endif %}

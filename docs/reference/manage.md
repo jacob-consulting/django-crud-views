@@ -190,6 +190,9 @@ accepted as inputs; the real gates decide their result. Only the CLI offers an a
 The form parameters are `cv_access_mode` (`viewset` or `path`), `cv_access_user`, `cv_access_pk` and
 `cv_access_path`. Empty, invalid and unknown-user submissions keep the viewer's matrix row. Native disclosures
 work without JavaScript. Both forms share the command's trace semantics below.
+Collapsed results show the recorded deciding requirement/reason or list counts; the full disclosure retains
+every scalar detail. The arbitrary-path result shows its outcome before route metadata. Server validation is
+associated with the submitted user/path field, and submitted values remain available for correction.
 
 ## cv_access
 
@@ -204,9 +207,8 @@ python manage.py cv_access /author/list/ sam --as-json | jq
 ```
 
 Replace paths/users with your project's routes and accounts. Users are loaded fresh from the project's user
-model; username matches take precedence over primary keys, including numeric usernames. Supply either a user
-selector accepted by the username field or the primary key; a username conversion failure still permits the
-primary-key lookup. Unknown selectors produce normal command/form feedback. Supply either a user
+model; username matches take precedence over primary keys, including numeric usernames. A username conversion
+failure still permits primary-key lookup. Unknown selectors produce normal command/form feedback. Supply a user
 or `--anonymous`, never both. Full URLs are reduced to their path: host, query and fragment do not affect tracing.
 The extracted URI path is decoded once, as for a Django request, including URLs returned by `reverse()`.
 Literal plus signs stay unchanged; encoded question marks, hashes and percent signs remain path content.

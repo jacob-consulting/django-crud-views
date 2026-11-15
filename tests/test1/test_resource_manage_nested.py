@@ -16,6 +16,7 @@ from crud_views.lib.views.manage import ManageView
 from crud_views.lib.viewset import AncestorPolicy, ParentViewSet, ViewSet
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1 import test_ancestor_auth_databases as auth_db
+from tests.test1 import test_ancestor_databases as database_tests
 from tests.test1.app.models import Book, Publisher
 from tests.test1.app.resources import S3FileTable
 from tests.test1.test_ancestor_authorization import _client, _url, isolated_routes
@@ -23,6 +24,9 @@ from tests.test1.test_ancestor_databases import _sql, captured
 from tests.test1.test_ancestor_manage import _actor, _grant
 
 database_world = auth_db.world
+# Keep Django 4.2's admin-email frame repr out of SQL captures, as in the
+# existing ancestor database tests; package refusal/read assertions stay intact.
+no_admin_email_report = database_tests._no_admin_email_report
 
 
 class NestedItem(Resource):

@@ -1960,7 +1960,7 @@ Plans:
 4. The Access check card is absent and its parameters ignored by default; when enabled, authorized manage viewers can check another user's per-view outcomes or any path with nested URL context, accessible native disclosure and registry-backed styling.
 5. Documentation, settings reference, help anchors and German strings cover the command, card, JSON, default-off exposure and the approved operational limitations.
 
-**Plans:** 5/10 plans executed
+**Plans:** 6/10 plans executed
 
 Plans:
 **Wave 1**
@@ -1978,7 +1978,7 @@ Plans:
 - [x] 06.34-05-PLAN.md
 
 **Wave 5** *(blocked on Wave 4 completion)*
-- [ ] 06.34-06-PLAN.md
+- [x] 06.34-06-PLAN.md
 
 **Wave 6** *(blocked on Wave 5 completion)*
 - [ ] 06.34-07-PLAN.md

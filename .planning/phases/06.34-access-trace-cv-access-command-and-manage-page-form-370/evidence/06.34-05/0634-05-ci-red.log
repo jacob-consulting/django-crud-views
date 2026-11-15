@@ -1,0 +1,41 @@
+bringing up nodes...
+bringing up nodes...
+
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ test_nox_complete_off_on_runs_same_installed_origin[5.2-3.12] _________
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f075767ea50>
+python = '3.12', django = '5.2'
+
+    @pytest.mark.parametrize("python", ["3.12", "3.13", "3.14", "3.15"])
+    @pytest.mark.parametrize("django", ["4.2", "5.2", "6.0"])
+    def test_nox_complete_off_on_runs_same_installed_origin(monkeypatch, python, django):
+        # Neither an inherited source override nor inherited recording may leak into the normal run.
+        monkeypatch.setenv("PYTHONPATH", "src:.")
+        monkeypatch.setenv("CV_ACCESS_RECORD_REQUESTS", "1")
+        posargs = ("--maxfail=3", "--durations=5")
+        calls = session_calls(monkeypatch, python=python, django=django, posargs=posargs)
+        if django == "4.2" and python in {"3.14", "3.15"}:
+            assert calls == [("skip", (f"Django 4.2 does not support Python {python}",), {})]
+        else:
+>           assert_suite_contract(calls, python=python, django=django, posargs=posargs)
+
+tests/test1/test_access_trace_ci.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+calls = [('install', ('django~=5.2.0',), {}), ('install', ('.[polymorphic,workflow,ordered,test]',), {}), ('run', ('pytest', 'tests', '-n', 'auto', '--cov', '--cov-report=term-missing', ...), {})]
+python = '3.12', django = '5.2', posargs = ('--maxfail=3', '--durations=5')
+
+    def assert_suite_contract(calls, *, python, django, posargs):
+>       assert [kind for kind, _, _ in calls] == ["install", "install", "run", "run", "run"]
+E       AssertionError: assert ['install', 'install', 'run'] == ['install', '... 'run', 'run']
+E         
+E         Right contains 2 more items, first extra item: 'run'
+E         Use -v to get more diff
+
+tests/test1/test_access_trace_ci.py:46: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_access_trace_ci.py::test_nox_complete_off_on_runs_same_installed_origin[5.2-3.12]
+1 failed in 0.89s

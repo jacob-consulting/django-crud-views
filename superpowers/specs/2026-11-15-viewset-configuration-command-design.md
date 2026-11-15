@@ -1,0 +1,429 @@
+# Design: ViewSet configuration command and JSON contract (#371)
+
+**Date:** 2026-11-15
+**Status:** Discussion decisions approved; builder check passed; written design awaiting maintainer approval.
+**Issue:** https://github.com/jacob-consulting/django-crud-views/issues/371
+**Deliverable:** Design and explicit GSD handover. No feature implementation or phase allocation in this discussion.
+
+## Intent
+
+Provide `cv_manage_view` for interactive debugging and for a future skill consuming JSON. Developers and
+the skill can discover registered ViewSets, inspect one ViewSet or view, and explain configuration and
+permission grants without opening a browser. The catalogue is an essential feature, not a convenience.
+
+The command reuses manage-page fact collection. Its versioned Pydantic output models make the export
+contract explicit and validate the result before text or JSON rendering. This is a diagnostic report,
+not a round-trip Python configuration export or a concrete URL access evaluation.
+
+## Constraints and prerequisites
+
+- Developer maintainability is a hard constraint, per `CLAUDE.md`. Keep shared diagnostic logic in its
+  existing owners and keep the conversion to output models mechanical.
+- Build on #366's shared manage builders and completed #372 Resource manage support. #372 is currently
+  being processed in GSD; do not modify its plans, implementation or decisions from this discussion.
+- Preserve #370's `cv_access` behavior. Reuse its username-first actor resolution where applicable;
+  this command does not invoke its trace runner or change its JSON schema.
+- Support core model, Guardian and Resource ViewSets, including supported model-nested configurations.
+  Resource-as-parent and Resource object grants remain unsupported.
+- Preserve existing builder return contracts, template extension points, page access rules and normal
+  query costs. No new dependency is required; Pydantic is already a project dependency.
+- User instructions and this approved design take precedence over the issue's original placeholder.
+  In particular, catalogue mode, Pydantic output models and completed #372 support are now required.
+
+## Approaches
+
+### Selected: existing builders plus Pydantic output models
+
+Reuse the configured manage class's request-free builders, extend shared collection narrowly where
+complete values or stable metadata are missing, and convert their results into explicitly typed output
+models. Both text and JSON render the same validated result. Permission evaluation, fallback resolution,
+Guardian counts and system-check collection must not be reimplemented in the conversion layer.
+
+This preserves downstream page/subclass contracts and bounds integration with #372. Its cost is maintaining
+the builder structures and export structures together. Contract and semantic parity tests must catch drift.
+Do not claim that wrapping today's dictionaries is sufficient: some values are already truncated, sources
+are translated, and the permission builder currently assumes a user is supplied.
+
+### Rejected for this issue: replace all builder return types with Pydantic models
+
+One shared typed diagnostic model could benefit both interfaces, but replacing current dictionary/list
+contracts would affect templates, Guardian extensions and downstream overrides. Compatibility adapters
+would themselves widen the refactor. The maintainer selected the bounded command approach after reviewing
+this tradeoff. A general migration of manage-page internals is outside #371.
+
+## Approved decisions
+
+### D-01: Command surface and catalogue
+
+```bash
+python manage.py cv_manage_view --list
+python manage.py cv_manage_view --list --as-json
+python manage.py cv_manage_view books
+python manage.py cv_manage_view books update
+python manage.py cv_manage_view books --user alice
+python manage.py cv_manage_view books --as-json
+python manage.py cv_manage_view --schema
+```
+
+The name is `cv_manage_view`. Positional arguments are a registered ViewSet name and optional registered
+view key, not model names, dotted import paths or concrete URLs. `--user` and `--as-json` also apply to
+single-view inspection. No bulk full-report mode is required.
+
+The catalogue identifies each registered ViewSet, its backing class, its model/Guardian/Resource kind,
+and its registered view keys. It does not collect permission holders, Guardian object counts or full
+diagnostics for every entry. The skill uses it to choose a targeted inspection. Developers may go
+straight to a known name. Schema mode outputs the generated JSON Schema for catalogue and inspection
+results without collecting live diagnostics.
+
+### D-02: Inspection scope and defaults
+
+A full report covers the information owned by the shared manage builders:
+
+- identity, effective ViewSet facts and declaration/default provenance;
+- presentation configuration and all collected registered-view configuration, including defaults;
+- permission vocabulary, holder groups, membership counts and applicable Guardian grant counts;
+- optional selected-actor effective permissions, controlled user-holder details and superuser summary;
+- hierarchy, generated relative route names/patterns and ancestor policy;
+- Guardian helper and per-view policies where applicable;
+- ViewSet-scoped system checks, including the collectors used by the manage page.
+
+A single-view report limits view configuration and the view route inventory to that selected view.
+Keep ViewSet identity, facts, presentation, hierarchy, ancestor policy, Guardian helper policy, permission
+matrix and checks; clearly label these as ViewSet-wide. Do not filter permission columns or checks by an
+invented interpretation of which ones affect the selected view. Per-view policy stays with its view row.
+
+Include all collected declared/default configuration in both text and JSON; no Show defaults filter is
+required. "All" means the existing diagnostic collection scope, with this design's full-value extensions,
+not every Django setting, descriptor, instance attribute or arbitrary application object graph.
+
+### D-03: Permissions without and with an actor
+
+Without `--user`, report configured permissions and their live holders. There is no evaluated-actor row
+and no implicit anonymous user. Preserve group member counts, applicable Guardian object-grant counts,
+and active-superuser counts and meanings from the page.
+
+Respect `CRUD_VIEWS_MANAGE_SHOW_USERS` for individual holder information and superuser names. State
+explicitly when details are hidden, rather than representing hidden information as an empty result.
+When user details are enabled, include the full collected user set, including the page's overflow rows.
+There is no CLI pagination or 20-user limit. Holder rows describe direct grants; the selected actor's
+row describes effective permissions. Preserve the distinction between model/Resource global grants and
+Guardian object grants. Resource grants retain #372's meaning and never imply per-item grants.
+
+`--user <username-or-pk>` adds that user's effective row. Reuse username-first resolution from `cv_access`.
+Inactive users are valid inspected actors; existing permission helpers determine their effective results.
+An unknown user is an input failure. Selecting an actor does not make the report an access decision for a
+URL. The selected actor's identity/row is deliberately shown even when holder-user details are hidden.
+
+### D-04: Command access and database boundaries
+
+Access to the application's management environment authorizes use of this diagnostic command. It works
+when browser manage pages are disabled and does not require developer-group membership. `--user` selects
+an inspected actor; it does not authorize the command or impersonate a browser session.
+
+Do not dispatch the web view, synthesize an authorized request, or apply browser manage-mode/group gates.
+Existing nested database-routing restrictions still apply to reached diagnostic reads. Do not bypass a
+guard, reroute to a different database or grant fake privileges to make a report succeed. There is no
+new `--database` option in this scope. Failed reads are reported under D-08.
+
+Ancestor policy is inspected as configuration. Do not fetch parent objects or evaluate ancestor access
+for an invented URL. Hierarchy routes can remain descriptive without parent coordinates.
+
+### D-05: Pydantic contract and shared collection
+
+Use explicit Pydantic models for the command's output contract, including catalogue and inspection results
+and their structured errors. Type the known sections and fields; an untyped dictionary containing the
+entire report does not meet this decision. Dynamic configuration values may use a bounded JSON-value type.
+
+Collect shared facts, construct/validate the output models, then render either text or JSON from those
+models. Generate `--schema` from the same models. Keep permission/configuration semantics in the shared
+builders; the converter only structures facts and normalizes their representation.
+
+Preserve existing dictionary/list builder contracts. Narrow additions may retain complete values and
+machine-readable provenance alongside display information, or provide equivalent opt-in collection.
+Exact internal plumbing is a builder choice subject to compatibility and no duplicated resolution logic.
+
+### D-06: Values, provenance and bounded serialization
+
+Preserve complete JSON-compatible values directly, including native booleans, numbers, nulls, arrays
+and string-keyed objects. Python classes are represented by dotted class path with an explicit class
+marker. Preserve the distinction between an actual null, an annotation without a declared value, an
+unsupported value, and information unavailable because collection failed.
+
+Unusual Python objects receive an explicit unsupported/type marker. Do not evaluate them, stringify
+arbitrary objects as if that were structured data, execute descriptors/callables, or crawl object graphs
+to manufacture a serializable value. This is bounded diagnostic serialization, not a general Python
+serializer. Supported values must not be silently shortened; unsupported cases must be documented.
+
+Retain declaration/default flags separately from the effective value's source. An explicitly declared
+value can still trigger an established runtime fallback. Supply stable source codes and, where known,
+the setting name or declaring class; translated display labels are not source identifiers. Preserve
+existing special distinctions such as an explicit empty `extends` declaration and its effective fallback.
+Do not infer machine provenance by parsing translated strings or truncated `repr` output.
+
+### D-07: Versioning, schema and rendering
+
+Start with JSON contract version `1`. Additive fields may remain within that version. Removing a field,
+changing its type or meaning, or otherwise breaking a documented consumer requires a new version.
+Consumers must tolerate additional fields. Field names and machine status/source codes are independent
+of locale; human-facing labels, check messages and explanations may be translated.
+
+JSON output is always plain JSON, including with `--force-color`; no ANSI sequences or command-owned
+progress messages may contaminate stdout. Text follows Django's color options and terminal conventions.
+Schema output is also always plain JSON. Both text and JSON retain all supported diagnostic facts and
+errors; formatting may differ. Escape terminal controls in dynamic text without losing the JSON value.
+
+The JSON and generated JSON Schema are the promised machine interfaces. This design does not create a
+separate public Python SDK contract for the implementation's model class names or import paths.
+
+### D-08: Failure behavior and exit status
+
+| Exit | Meaning |
+|---|---|
+| `0` | Report completed with no unsilenced error/critical system-check results; warnings may exist. |
+| `1` | Report completed, but its scoped system checks contain error/critical results. |
+| `2` | Inspection could not complete, including invalid selection, unknown actor, collection or validation failure. |
+
+With `--as-json`, errors handled by the command produce one versioned JSON result. When one independent
+section fails, retain successfully collected sections and explicitly mark the failed section. Never
+present failure as an empty permissions list, zero grants, or no checks. An incomplete report exits `2`
+even if a successfully collected checks section also contains errors. System-check findings themselves
+are report data, not a failed checks collector.
+
+Do not let Django's automatic project-wide check phase abort the command before it can report its own
+scoped results. Run the same scoped checks as the page and respect silenced checks; this command does
+not replace `manage.py check`.
+
+Django startup failures before command execution are outside the structured-output guarantee. Preserve
+ordinary parser/help behavior for failures that cannot reach the command; validate command-owned option
+combinations in the command so recognized invalid combinations can receive structured results. Do not
+catch process termination or invent a global framework for all management-command failures.
+
+### D-09: Read boundary and exclusions
+
+Live auth/permission and Guardian count queries are expected during inspection. Catalogue and schema
+modes do not perform those diagnostics. Built-in Resource inspection must not call `cv_get_items` or
+`cv_get_item`. No Resource identifier is needed, and no bucket listing or connectivity probe is added.
+
+Do not run access traces, action/view handlers or dynamic labels. Use supported static metadata and the
+existing scoped system checks. Arbitrary application startup code, downstream builder overrides and
+custom checks can have their own I/O; the command is not a sandbox for extension code. Do not introduce
+caching or hook interception to pretend otherwise.
+
+Out of scope: building the future skill, whole-project full dumps, configuration diff tooling, a new
+permission engine, browser redesign, migration of all builders to Pydantic, S3 integration, new write
+capabilities, or changes to `cv_access`, `cv_manage_group` or the placeholder `crud_views_show` command.
+
+## Engineering defaults proposed by the author
+
+The maintainer approved D-01–D-09 in the discussion. The following concrete details make the handover
+actionable but are author choices, not separately attributed user requests. They are included for review
+with this written design.
+
+### A-01: Selection and catalogue loading
+
+- With no selector and no mode, report a usage error (`2`); never silently perform a full dump.
+- `--list` and `--schema` are mutually exclusive and cannot combine with positionals or `--user`.
+  `--as-json` is valid with `--list`; it is harmless/redundant with `--schema`.
+- Populate the registry through the project's configured URLconf and included URLconfs before catalogue
+  or inspection selection. Reuse existing URL-loading machinery where practical; do not scan arbitrary
+  packages for unimported ViewSets. Include all ViewSets registered after this normal loading step, even
+  when browser manage is disabled. Take a registry snapshot without holding its lock during diagnostics.
+- Catalogue entry fields: `name`, `kind` (`model`, `guardian`, `resource`), `backing_class`, `parent` (name
+  or null), and `views` (registered keys). A Resource below Guardian remains `resource`; ancestry is
+  separate. Sort catalogue entries by name; preserve registered view-key order. Empty catalogue is success.
+- Schema mode does not need registry discovery or user resolution after Django's normal initialization.
+
+### A-02: Result envelope and section boundaries
+
+Use these common version-1 result fields:
+
+| Field | Meaning |
+|---|---|
+| `version` | Literal `1`. |
+| `kind` | `catalogue` or `inspection`, identifying the requested result family. |
+| `status` | `complete`, `partial` or `failed`; check findings do not themselves make collection partial. |
+| `selection` | Requested `viewset`, `view` and `user` identifiers, each nullable. |
+| `data` | Typed catalogue or inspection payload, or null when selection/collection cannot produce one. |
+| `errors` | Structured command/collection errors; empty on successful collection. |
+
+Catalogue data contains `entries`. Inspection data contains `identity` and the section keys `facts`,
+`presentation`, `views`, `routes`, `hierarchy`, `ancestor_policy`, `permissions`, `checks`, and `guardian`.
+Use a typed section result carrying `status` (`ok`, `error`, `not_applicable`), typed `data` or null, and
+references to the corresponding errors. A core/Resource report has a `not_applicable` Guardian section.
+Successful empty sections use `ok` with an empty collection, never `error` or `not_applicable`.
+
+Each error has a stable `code`, nullable `section`, human `message`, and optional exception class.
+Initial codes cover invalid arguments, unknown ViewSet, unknown view, unknown user, collection failure
+and output validation failure. Include a field/location path for validation failures without embedding
+arbitrary raw Python objects. No tracebacks are part of the JSON contract.
+
+Keep typed section model definitions explicit. Exact nested field names beyond the fields fixed here,
+model class names and file placement are planning choices, but publish and test the full generated
+schema before shipping. Do not hide known sections behind unrestricted `Any` or arbitrary extension bags.
+New enum variants are not automatically compatible merely because they are additions; preserve documented
+closed vocabularies within version 1.
+
+### A-03: Selected actor, hidden users and failures
+
+- Represent actor selection explicitly as `not_selected` or `selected` with an optional row; do not use
+  an AnonymousUser to satisfy an actor-required builder. Extend shared permission collection narrowly to
+  omit actor evaluation when no actor is supplied. Preserve unchanged behavior for ordinary page callers.
+- Mark user-holder visibility as `hidden` or `shown`; hidden rows and hidden superuser names are absent
+  data, not measured empty sets. Join the existing visible/overflow rows for the command when shown.
+- If actor resolution fails, return a failed selection before running holder diagnostics. Do not ignore
+  a mistyped user and quietly return the no-actor report.
+- Permission collection remains one section: a failure within that builder marks that section unavailable.
+  Keep other independent sections. Do not introduce per-query recovery or alternate database retries.
+- Validate sections independently enough to preserve good sections when one is malformed; validate the
+  assembled envelope before output. A result that cannot be assembled uses the minimal valid failed
+  envelope. `partial` means useful report data survived a failure; `failed` means no usable report could
+  be produced. Both exit `2`.
+
+### A-04: Values and check severity
+
+- Use an explicit value record distinguishing native JSON, dotted class path, unsupported and not-declared
+  values; include the original Python type where normalization needs explanation. Collection unavailability
+  belongs in the section/error status, not a fabricated configuration value.
+- Support the ordinary tuples used by shipped configuration as JSON arrays, retaining a tuple type marker.
+  Treat non-string-key mappings, sets, cyclic containers, non-finite floats and arbitrary instances as
+  unsupported unless an existing, bounded metadata projection already owns them. Never coerce dictionary
+  keys to strings and risk collisions. Unsupported values are documented limitations, not collector failures.
+- Resolve known Django lazy translation strings to their text. Project-owned callable or descriptor
+  evaluation remains excluded. Existing structured button/parent/policy metadata should be reused rather
+  than serializing the corresponding arbitrary instance.
+- Add stable numeric levels and/or machine severity codes at shared check collection; never infer exit
+  status by matching translated severity labels. Preserve existing page fields and silencing behavior.
+- Preserve meaningful existing row order; stabilize otherwise unordered command output. Do not add volatile
+  timestamps or promise a transactionally consistent snapshot across separate live database reads.
+- The schema is generated for serialized output, covers both result families and failures, and is tested
+  against emitted fixtures. It describes the contract; it is not itself wrapped in a diagnostic envelope.
+
+## Source evidence and implementation boundaries
+
+Inspected before #372 implementation, with planning HEAD `9668caa1`. Re-read the final #372 source before
+planning; its builders are the required execution baseline. Relevant existing owners:
+
+- `src/crud_views/lib/views/manage.py`: request-free builders; the current permission builder always calls
+  `get_manage_actor_row`; `_manage_display` and `_manage_view_entry` shorten values; provenance and check
+  severity include translated display strings. These are concrete gaps, not reasons to build a second collector.
+- `src/crud_views_guardian/lib/views.py`: Guardian builder extensions, strict actor counts and direct holder
+  aggregates. Preserve generic/direct-FK permission-model behavior and applicable provider guards.
+- `src/crud_views/lib/viewset/__init__.py`: registry and registered class selection; model manage classes
+  exist even in disabled web mode. #372 extends registration to Resources.
+- `src/crud_views/lib/ancestor_db.py`: reached auth-read routing guards accept an explicit actor and inspect
+  configured tables; a missing selected actor must not bypass table restrictions.
+- `src/crud_views/checks.py`: existing URLconf traversal and scoped collectors; catalogue discovery must not
+  accidentally execute the full diagnostics merely to load registrations.
+- `src/crud_views/management/commands/cv_access.py`: username resolution, management-command conventions,
+  scoped execution and text escaping precedents. Do not copy its colorized JSON behavior into this command.
+- `docs/reference/theme.md`: published builder contracts and supplied-ViewSet routing semantics.
+- `pyproject.toml`: existing Pydantic floor. Use APIs compatible with supported dependencies; no incidental
+  version-floor increase to implement the output models.
+
+Preserve configured `manage_view_class` selection, including Guardian and project overrides. Do not always
+instantiate the core stock class or fabricate a new registered view. Overrides returning documented builder
+structures remain supported. Missing full-value metadata must be explicitly unavailable, not reconstructed
+from legacy display text. The implementation may provide opt-in full-value plumbing for compliant overrides;
+document how downstream overrides participate. Arbitrary malformed override data produces a section error.
+
+## Acceptance and documentation
+
+1. **Discovery:** catalogue includes model, Guardian, standalone Resource and nested Resource fixtures,
+   their parent names and view keys; discovery works when URLconf imports trigger registration. Disabled
+   browser manage mode does not hide entries. Empty catalogue succeeds. No permission/holder/count
+   collectors run for catalogue or schema output.
+2. **Inspection:** full and selected-view text/JSON cover all agreed sections, all collected defaults,
+   full values and stable provenance. ViewSet-wide data remains clearly scoped in selected-view output.
+   Invalid selectors/options have the defined failure behavior; selected-view output does not claim a
+   filtered permission matrix or filtered system-check scope.
+3. **Permissions:** no actor by default and no anonymous evaluation; username-first resolution, inactive
+   and unknown actors; effective actor versus direct holder semantics; group membership and Guardian
+   generic/direct grant counts; superuser meaning; SHOW_USERS false/true, including more than 20 users.
+4. **Access and routing:** management use works in all web manage modes without developer membership;
+   the selected actor is not an admission gate. Preserve reached nested auth/Guardian routing rejections,
+   including no-actor mode, and report errors without bypasses. Nested reports need no object coordinates.
+5. **Resources and static collection:** raise on Resource item/list loaders and still collect ordinary
+   reports successfully; no handlers/traces or dynamic labels execute. Cover empty Resource permission
+   maps and #372's grant distinction. Use fake Resources; no credentials or external service is needed.
+6. **Contract and values:** emitted catalogue, inspection, partial and failed JSON validate against the
+   Pydantic models and generated schema. Cover long strings/containers, booleans/nulls, class paths, tuple
+   normalization, unsupported objects, annotation-only values and inherited/fallback provenance. An
+   unsupported marker cannot be confused with null or no configured value. No Pydantic silent coercion
+   should conceal a malformed known builder field.
+7. **Failures:** exits 0/1/2, warnings and silenced errors, partial database/collector failures, malformed
+   override output, unknown actor/selection and JSON failures handled inside the command. Preserve other
+   sections and never fabricate successful empty data. Prove global automatic checks do not preempt the
+   intended scoped report; document startup/parser boundaries.
+8. **Renderers and compatibility:** semantic parity between text/JSON and shared page facts for matched
+   inputs, accounting for the page's truncation/disclosures. JSON/schema remain parseable under force-color;
+   text honors color settings and safely represents control characters. Test English/German output with
+   stable machine keys and severity codes. Preserve page dictionaries/templates and valid subclass overrides.
+9. **Regression and query costs:** focused command/model/Resource/Guardian tests, shared-builder and
+   access-trace regressions where touched, and checks that normal page paths gain no extra diagnostic
+   queries. Use multicore pytest for broad suites; do not require live external services.
+10. **Delivery:** document command examples, catalogue/selection flow, full schema and compatibility rules,
+    all statuses/exits, user visibility, live-query/read boundaries, custom-builder participation and
+    unsupported serialization cases. Add German translations for new human-facing strings and a changelog
+    entry. Update manage/Resource/theme references as appropriate. If any Breaking entry is needed, also
+    update `docs/migrating-1.0.md` under the repository rule.
+
+## gsd-handover
+
+### Settled maintainer decisions — do not reopen without a concrete conflict
+
+- **Purpose:** debugging and a future JSON-consuming skill. Implementing the skill is separate.
+- **D-01:** `cv_manage_view`, essential catalogue, one targeted ViewSet or view per call, `--user`,
+  `--as-json`, and generated `--schema` are approved. No bulk full-report mode.
+- **D-02:** collect the shared manage-page diagnostic scope, including defaults. Single-view inspection
+  retains clearly labelled ViewSet-wide permissions, checks and contextual policies.
+- **D-03:** default includes live holders without an actor; respect SHOW_USERS; explicit `--user` adds an
+  effective row using existing username-first resolution. URL access decisions stay in `cv_access`.
+- **D-04:** management-environment access; no developer-group/web-mode gate; preserve diagnostic database
+  restrictions. Selected users are inspected actors, not command authorizers.
+- **D-05 / approach:** shared fact collection, dedicated Pydantic output contract, then text/JSON. Preserve
+  existing builder return contracts; bounded shared additions supply complete values and stable metadata.
+  The maintainer selected this over migrating all manage builders to Pydantic.
+- **D-06:** complete supported values, stable provenance, class paths, explicit unsupported/type markers;
+  no arbitrary object evaluation or silent truncation.
+- **D-07:** version 1; additive compatible fields allowed; incompatible changes require a new version;
+  consumers tolerate additional fields. Stable machine keys/codes and always-plain JSON/schema.
+- **D-08:** 0 completed/no error checks, 1 completed/error checks, 2 incomplete/input/runtime failure.
+  Preserve partial results and explicit failed sections; structured handled JSON errors; startup boundary.
+- **D-09:** no Resource item/list loading, traces or handlers; no future-skill implementation, unrelated
+  CLI changes, permission redesign or broad page refactor.
+- **Ordering:** build on completed #372 and #366, preserving #370. No phase number was chosen in this discussion.
+
+### Planning inputs and author choices
+
+Read this entire design, including A-01–A-04 and acceptance items 1–10. The author choices are concrete
+defaults proposed for approval with the document, not a record of additional maintainer utterances.
+After approval they belong to the design baseline; exact internal function placement, Pydantic class
+names, nested wire fields not fixed above and test organization remain bounded builder discretion.
+
+Canonical supporting references:
+
+- `superpowers/specs/2026-11-14-manage-page-design.md` — shared builder and template contracts.
+- `superpowers/specs/2026-11-14-access-trace-design.md` — separate access diagnostic and actor conventions.
+- `superpowers/specs/2026-11-15-resource-manage-page-design.md` — completed #372 is a prerequisite.
+- `docs/reference/manage.md`, `docs/reference/theme.md`, `docs/reference/resources.md`,
+  `docs/reference/guardian.md`, and `CLAUDE.md` — implementation baseline and preservation constraints.
+
+### Required planning outcomes
+
+Map all decisions and acceptance items into executable work. Address the demonstrated gaps explicitly:
+no-actor shared permission collection, full-value retention before truncation, stable source/severity
+metadata, bounded normalization, discovery loading and partial output validation. Do not solve these by
+copying authorization/configuration logic or weakening existing database guards.
+
+Plan contract/schema tests alongside the command and preservation tests alongside shared-builder changes.
+Separate command-owned errors from pre-command Django startup behavior. Verify against the completed
+#372 source, not stale assertions that Resource manage pages do not exist.
+
+### Current state and next workflow
+
+The discussion decisions are approved. A fresh builder reviewer returned "nothing important left" on
+2026-11-15; maintainer approval of the complete written design is still pending.
+No application code, phase state, implementation plan or issue body was changed by this design draft;
+no application tests have been run as acceptance evidence. The requested output is this GSD handover.
+Do not create a phase/worktree or execute the feature merely because the design is approved. Surface
+concrete conflicts with settled decisions instead of silently broadening or narrowing the scope.

@@ -154,7 +154,7 @@ def test_nested_unscoped_list_counts_precede_context_parent_scoping(client, monk
         view = register(GuardianListViewPermissionRequired, child, cv_key="list")
         return (parent, child, view), [parent, child]
 
-    with isolated_routes(build) as (parent, child, view):
+    with isolated_routes(build) as (parent, child, _view):
         parent.assign_perm("view", user, parents[0])
         for row in rows[:3]:
             child.assign_perm("view", user, row)
@@ -183,7 +183,7 @@ def test_ordinary_filter_capture_never_evaluates_querysets(monkeypatch, django_a
         instance = view()
         instance.request = SimpleNamespace(user=_user("lazy"))
         instance.kwargs = {}
-        vs.permissions  # warm the existing vocabulary outside the assertion
+        assert vs.permissions  # warm the existing vocabulary outside the assertion
         before = Publisher.objects.all()
         after = before.none()
         monkeypatch.setattr(GuardianViewSet, "get_queryset", lambda self, view: before)

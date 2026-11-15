@@ -35,7 +35,7 @@ def test_core_trace_contract(allowed, monkeypatch):
         view = register(DetailViewPermissionRequired, vs, get=explode, get_context_data=explode)
         return (vs, view), [vs]
 
-    with isolated_routes(build) as (vs, view):
+    with isolated_routes(build) as (vs, _view):
         obj = Publisher.objects.create(name="private contents")
         user = _user("trace actor")
         if allowed:
@@ -157,21 +157,20 @@ def test_fresh_actor_and_user_resolution():
 @pytest.mark.parametrize("omit_filter", [True, False])
 def test_list_counts_are_before_context_parent_scoping(omit_filter):
     def build(sfx):
-        parent = ViewSet(model=Publisher, name="parent" + sfx, ancestor_policy=AncestorPolicy(read=None, write=None))
+        parent = ViewSet(model=Publisher, name="parent" + sfx, ancestor_policy=AncestorPolicy(provider="none"))
         register(ListView, parent)
         child = ViewSet(model=Book, name="child" + sfx, parent=ParentViewSet(name=parent.name, attribute="publisher"))
         attrs = {"get_queryset": lambda self: Book.objects.all()} if omit_filter else {}
         view = register(ListViewPermissionRequired, child, **attrs)
         return (parent, child, view), [parent, child]
 
-    with isolated_routes(build) as (parent, child, view):
+    with isolated_routes(build) as (_parent, child, view):
         first = Publisher.objects.create(name="first")
         second = Publisher.objects.create(name="second")
         book = Book.objects.create(title="first", publisher=first)
         Book.objects.create(title="second", publisher=second)
         user = _user("list actor")
         grant(user, child, "view")
-        kwargs = {parent.pk_name: first.pk}
         # Parent URL argument is based on the parent's registry name.
         kwargs = {child.get_parent_url_args(first_only=True): first.pk}
         url = _url(child, "tested", **kwargs)
@@ -195,7 +194,14 @@ def test_list_counts_are_before_context_parent_scoping(omit_filter):
 @pytest.mark.django_db
 @pytest.mark.parametrize(
     "plain,active,grant_early",
-    [(True, False, False), (False, True, False), (False, False, True), (False, False, False)],
+    [
+        (True, False, False),
+        (False, True, False),
+        (False, False, True),
+        (False, False, False),
+        (False, None, True),
+        (False, None, False),
+    ],
 )
 def test_all_none_actor_admission_observes_actual_unbound_check(plain, active, grant_early, monkeypatch):
     calls = []
@@ -207,9 +213,7 @@ def test_all_none_actor_admission_observes_actual_unbound_check(plain, active, g
     monkeypatch.setattr("django.contrib.auth.backends.ModelBackend.has_perm", backend)
 
     def build(sfx):
-        parent = ViewSet(
-            model=Publisher, name="earlyparent" + sfx, ancestor_policy=AncestorPolicy(read=None, write=None)
-        )
+        parent = ViewSet(model=Publisher, name="earlyparent" + sfx, ancestor_policy=AncestorPolicy(provider="none"))
         register(ListView, parent)
         child = ViewSet(
             model=Book, name="earlychild" + sfx, parent=ParentViewSet(name=parent.name, attribute="publisher")
@@ -221,13 +225,112 @@ def test_all_none_actor_admission_observes_actual_unbound_check(plain, active, g
         obj = Publisher.objects.create(name="parent")
         user = _user("early actor")
         user.is_active = active
-        user.save()
+        if active is None:
+            user = AnonymousUser()
+        else:
+            user.save()
         result = trace(_url(child, "tested", **{child.get_parent_url_args(first_only=True): obj.pk}), user)
         admission = next(step for step in result.steps if step.kind == "actor_admission")
         assert admission.source.endswith("._cv_ancestor_actor_response")
         assert admission.permission == (None if plain or active else "app.view_book")
         assert admission.result == ("passed" if plain or active or grant_early else "denied")
         assert len(calls) == (0 if plain else 2 if not active and grant_early else 1)
+
+
+@pytest.mark.django_db(databases=["default", "shard"])
+def test_actor_database_identity_is_preserved(django_user_model):
+    seen = []
+
+    def dispatch(self, request, *args, **kwargs):
+        seen.append((request.user.username, request.user._state.db))
+        return HttpResponse()
+
+    def build(sfx):
+        vs = ViewSet(model=Publisher, name="alias" + sfx)
+        register(DetailView, vs, dispatch=dispatch)
+        return vs, [vs]
+
+    default = django_user_model.objects.create_user(username="default identity")
+    other = django_user_model.objects.db_manager("shard").create_user(pk=default.pk, username="shard identity")
+    with isolated_routes(build) as vs:
+        result = trace(_url(vs, "tested", pk=1), other)
+        assert result.outcome == "allowed"
+        assert seen == [("shard identity", "shard")]
+
+
+@pytest.mark.django_db
+def test_real_setup_dispatch_initkwargs_and_repeated_lookup(monkeypatch):
+    from django.urls import path
+
+    from crud_views.lib.view.base import CrudView
+
+    events = []
+    original = CrudView.get_object
+
+    def lookup(self, queryset=None):
+        events.append("lookup")
+        return original(self, queryset)
+
+    monkeypatch.setattr(CrudView, "get_object", lookup)
+
+    def setup(self, request, *args, **kwargs):
+        assert self.extra_context == {"trace": "init"}
+        assert request.resolver_match.kwargs == kwargs
+        events.append("setup")
+        super(type(self), self).setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        events.append("dispatch")
+        return super(type(self), self).dispatch(request, *args, **kwargs)
+
+    def build(sfx):
+        vs = ViewSet(model=Publisher, name="dispatch" + sfx)
+        view = register(DetailViewPermissionRequired, vs, setup=setup, dispatch=dispatch, get=explode)
+        return (vs, view), [vs]
+
+    with isolated_routes(build) as (vs, view):
+        import importlib
+
+        from django.conf import settings
+        from django.urls import clear_url_caches
+
+        module = importlib.import_module(settings.ROOT_URLCONF)
+        module.urlpatterns.insert(0, path("exact/<int:pk>/", view.as_view(extra_context={"trace": "init"})))
+        clear_url_caches()
+        obj = Publisher.objects.create(name="object")
+        user = _user("dispatch actor")
+        grant(user, vs, "view")
+        result = trace(f"/exact/{obj.pk}/", user)
+        assert result.outcome == "allowed"
+        assert events == ["setup", "dispatch", "lookup", "lookup"]
+        assert len([step for step in result.steps if step.kind == "object_lookup"]) == 1
+
+
+@pytest.mark.django_db
+def test_state_denial_is_deciding_and_on_commit_is_discarded():
+    from django.db import transaction
+
+    committed = []
+
+    def state(cls, user, obj):
+        transaction.on_commit(lambda: committed.append(True))
+        Publisher.objects.create(name="state write")
+        return False
+
+    def build(sfx):
+        vs = ViewSet(model=Publisher, name="state" + sfx)
+        register(DetailViewPermissionRequired, vs, cv_action_enabled=classmethod(state), get=explode)
+        return vs, [vs]
+
+    with isolated_routes(build) as vs:
+        obj = Publisher.objects.create(name="retained")
+        user = _user("state actor")
+        grant(user, vs, "view")
+        result = trace(_url(vs, "tested", pk=obj.pk), user)
+        assert result.outcome == "denied"
+        assert result.steps[result.decided_by - 1].kind == "action_state"
+        assert not committed
+        assert list(Publisher.objects.values_list("name", flat=True)) == ["retained"]
 
 
 @pytest.mark.django_db

@@ -30,6 +30,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import FormMixin
 
 from crud_views.lib import check
+from crud_views.lib.access_trace import _object_identity, get_recorder
 from crud_views.lib.check import (
     Check,
     CheckAttribute,
@@ -281,10 +282,21 @@ class CrudView(metaclass=CrudViewMetaClass):
         from crud_views.lib.ancestor_db import _check_nested_queryset
         from crud_views.lib.ancestors import _validate_child_parent
 
-        if queryset is None:
-            queryset = self.get_queryset()
-        obj = super().get_object(_check_nested_queryset(self, queryset))
-        return _validate_child_parent(self, obj)
+        recorder = get_recorder()
+        try:
+            if queryset is None:
+                queryset = self.get_queryset()
+            obj = super().get_object(_check_nested_queryset(self, queryset))
+            obj = _validate_child_parent(self, obj)
+        except Http404:
+            if recorder is not None:
+                recorder.record(self, "object_lookup", result="not_found", source="CrudView.get_object")
+            raise
+        if recorder is not None:
+            recorder.record(
+                self, "object_lookup", object=_object_identity(obj), result="passed", source="CrudView.get_object"
+            )
+        return obj
 
     def get_context_data(self, **kwargs):
         from crud_views.lib.ancestor_db import _check_nested_queryset
@@ -338,6 +350,10 @@ class CrudView(metaclass=CrudViewMetaClass):
             from crud_views.lib.ancestors import _protected_actor_response
 
             return _protected_actor_response(self)
+        if (recorder := get_recorder()) is not None:
+            recorder.record(
+                self, "actor_admission", result="passed", how="no_rule", source="CrudView._cv_ancestor_actor_response"
+            )
         return None
 
     def _cv_consume_cancel_restore(self, request):
@@ -1225,12 +1241,31 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
             return _protected_actor_response(self)
         user = self.request.user
         if user.is_authenticated and user.is_active:
+            if (recorder := get_recorder()) is not None:
+                recorder.record(
+                    self,
+                    "actor_admission",
+                    result="passed",
+                    how="active",
+                    source="CrudViewPermissionRequiredMixin._cv_ancestor_actor_response",
+                )
             return None
         # the early model-permission check reads auth records: default only, before the permission map
         from crud_views.lib.ancestor_db import _check_nested_auth
 
         _check_nested_auth(self, actor=user, model=self.cv_viewset.model)
-        if PermissionRequiredMixin.has_permission(self):
+        allowed = PermissionRequiredMixin.has_permission(self)
+        if (recorder := get_recorder()) is not None:
+            recorder.record(
+                self,
+                "actor_admission",
+                result="passed" if allowed else "denied",
+                key=self.cv_permission,
+                permission=self.permission_required,
+                provider="core",
+                source="CrudViewPermissionRequiredMixin._cv_ancestor_actor_response",
+            )
+        if allowed:
             return None
         return self.handle_no_permission()
 
@@ -1240,7 +1275,19 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
         from crud_views.lib.ancestor_db import _check_nested_auth
 
         _check_nested_auth(self, actor=self.request.user, model=self.cv_viewset.model)
-        if not super().has_permission():
+        allowed = super().has_permission()
+        recorder = get_recorder()
+        if recorder is not None:
+            recorder.record(
+                self,
+                "own_permission",
+                key=self.cv_permission,
+                permission=self.permission_required,
+                provider="core",
+                result="passed" if allowed else "denied",
+                source="CrudViewPermissionRequiredMixin.has_permission",
+            )
+        if not allowed:
             return False
         # Secondary state gate — a disabled action is denied even with permission.
         # Note: cv_get_action_object() re-fetches the object (object views call
@@ -1249,7 +1296,16 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
         # phase rather than reaching the view. Returning False yields 403 for an
         # authenticated user (login redirect for anonymous — the pre-existing contract).
         obj = self.cv_get_action_object()
-        return self.cv_action_enabled(self.request.user, obj)
+        allowed = self.cv_action_enabled(self.request.user, obj)
+        if recorder is not None:
+            recorder.record(
+                self,
+                "action_state",
+                object=_object_identity(obj),
+                result="passed" if allowed else "denied",
+                source="CrudViewPermissionRequiredMixin.has_permission",
+            )
+        return allowed
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:

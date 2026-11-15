@@ -33,6 +33,8 @@ function validateEvidence(report) {
         const f = item.facts;
         assert(f && f.documentWidth <= f.width + 1 && f.inline === 0 && f.labels === true, `False measurements: ${id}`);
         assert.deepEqual(f.csp, [], `CSP violations: ${id}`);
+        for (const key of ['outcomeFirst', 'boundaryOnce', 'errorLinked', 'resultSpacing'])
+            assert.equal(f.presentation?.[key], true, `False presentation measurement ${key}: ${id}`);
         assert(report.screenshots.some(s => s.case === id && s.path && /^[a-f0-9]{64}$/.test(s.sha256)), `Missing capture: ${id}`);
     }
     assert.equal(report.preflight.status, 'passed'); assert.equal(report.csp, CSP); assert.deepEqual(report.failures, []);
@@ -95,7 +97,19 @@ async function facts(page, response) {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         const inputs = [...doc.querySelectorAll('#cv-manage-access-trace input:not([type="hidden"])')];
         const inline = [...doc.querySelectorAll('*')].filter(el => el.tagName === 'STYLE' || (el.tagName === 'SCRIPT' && !el.src) || [...el.attributes].some(a => a.name === 'style' || /^on/i.test(a.name) || /^javascript:/i.test(a.value))).length;
+        const card = document.querySelector('#cv-manage-access-trace');
+        const traces = [...document.querySelectorAll('[data-cv-access-trace]')];
+        const errors = [...document.querySelectorAll('#cv-manage-access-trace [role="alert"]')];
         return {width: innerWidth, documentWidth: document.documentElement.scrollWidth, inline,
+            presentation: {
+                outcomeFirst: traces.every(el => el.firstElementChild?.matches('[data-cv-trace-outcome]')),
+                boundaryOnce: traces.filter(el => el.querySelector('[data-cv-trace-outcome] [data-cv-trace-result="allowed"]')).every(el => {
+                    const notice = el.querySelector('[data-cv-trace-outcome] > p:nth-child(2)')?.textContent.trim();
+                    return Boolean(notice) && el.textContent.split(notice).length === 2;
+                }),
+                errorLinked: errors.every(el => el.id && el.closest('form')?.querySelectorAll(`[aria-invalid="true"][aria-describedby="${el.id}"]`).length === 1 && parseFloat(getComputedStyle(el).marginTop) >= 16),
+                resultSpacing: !card || parseFloat(getComputedStyle(card.querySelector('[data-cv-access-results]')).marginTop) >= 16,
+            },
             labels: inputs.every(el => el.id && doc.querySelectorAll(`[id="${el.id}"]`).length === 1 && doc.querySelectorAll(`label[for="${el.id}"]`).length === 1),
             csp: window.accessCsp ?? [], language: document.documentElement.lang,
             text: document.querySelector('#cv-manage-access-trace')?.textContent ?? '',
@@ -105,6 +119,7 @@ async function facts(page, response) {
     assert(result.documentWidth <= result.width + 1, `Page overflow: ${result.documentWidth} > ${result.width}`);
     assert.equal(result.inline, 0); assert(result.labels); assert.deepEqual(result.csp, []);
     assert(result.regions.every(r => r.label && r.tab === 0));
+    assert(Object.values(result.presentation).every(Boolean), 'Reviewed presentation measurements failed');
     assert(!result.text.includes('PRIVATE_'), 'Object content leaked');
     return result;
 }
@@ -147,6 +162,7 @@ async function run(browser, base, server, assets, opts, report) {
                 check(checks, 'selected actor in trace', (await page.locator('[data-cv-access-trace]').first().textContent()).includes('reader'));
                 const matrix = await page.locator('[data-manage-actor]').innerText();
                 check(checks, 'matrix actor', matrix.includes(mode === 'viewset' ? 'reader' : 'developer'));
+                check(checks, 'actor-neutral matrix explanation', /the access row includes|die Zugriffszeile/i.test(await page.locator('#cv-manage-permissions').innerText()));
                 for (const input of await page.locator('#cv-manage-access-trace input:not([type="hidden"])').all()) {
                     await input.focus(); check(checks, 'input focus and visible indicator', await input.evaluate(e => e === document.activeElement &&
                         (getComputedStyle(e).boxShadow !== 'none' || getComputedStyle(e).outlineStyle !== 'none')));
@@ -158,6 +174,13 @@ async function run(browser, base, server, assets, opts, report) {
                     check(checks, 'local keyboard scrolling', await region.evaluate(e => e.scrollLeft > 0));
                 }
                 if (mode === 'viewset') {
+                    check(checks, 'collapsed denied summary shows recorded permission',
+                        (await page.locator('[data-cv-access-row="delete"] summary [data-cv-trace-summary]').innerText()).includes('app.delete_author'));
+                    const errorSummary = (await page.locator('[data-cv-access-row="error"] summary [data-cv-trace-summary]').innerText()).trim();
+                    check(checks, 'collapsed error summary retains recorded explanation', errorSummary.length > 0 &&
+                        (await page.locator('[data-cv-access-row="error"] [data-cv-access-trace]').textContent()).includes(errorSummary));
+                    if (kind === 'guardian') check(checks, 'collapsed strict list summary shows actual counts',
+                        /(?:sees 1 of 2 objects|sieht 1 von 2 Objekten)/i.test(await page.locator('[data-cv-access-row="list"] summary [data-cv-trace-summary]').innerText()));
                     const rows = await page.locator('[data-cv-access-row]').evaluateAll(es => es.map(e => e.dataset.cvAccessRow));
                     check(checks, 'complete route inventory', rows, server.view_keys[kind]);
                     const details = page.locator('[data-cv-access-row="detail"]'), summary = details.locator('summary');
@@ -188,6 +211,8 @@ async function run(browser, base, server, assets, opts, report) {
                         if (expected === null) {
                             check(checks, 'unknown input feedback', await page.locator('#cv-manage-access-trace [role="alert"]').count(), 1);
                             check(checks, 'unknown has no trace', await page.locator('[data-cv-access-trace]').count(), 0);
+                            check(checks, 'unknown error belongs to selected user field',
+                                await page.locator(`#cv-access-${mode}-user`).getAttribute('aria-describedby'), `cv-access-${mode}-error`);
                         } else {
                             const text = await page.locator('[data-cv-access-trace]').first().textContent();
                             check(checks, 'selected actor identity', text.includes(`${expected} (pk ${server.actors[expected]},`));

@@ -35,7 +35,8 @@ test('receipt validation rejects missing cases, false measurements, failed asset
     const digest = 'a'.repeat(64);
     const valid = () => ({selection: 'all', status: 'passed', preflight: {status: 'passed'}, csp: harness.CSP,
         cases: harness.requiredCases('all').map(id => ({id, passed: true, assertions: [{name: 'measured', actual: 1, expected: 1}],
-            facts: {width: 390, documentWidth: 390, inline: 0, csp: [], labels: true}})),
+            facts: {width: 390, documentWidth: 390, inline: 0, csp: [], labels: true,
+                presentation: {outcomeFirst: true, boundaryOnce: true, errorLinked: true, resultSpacing: true}}})),
         failures: [], cleanup: [{stopped: true, databaseRemoved: true}],
         sources: {files: Object.fromEntries(harness.requiredInputs.map(file => [file, digest]))},
         requiredAssets: ['manage.css'], assets: [{url: 'manage.css', status: 200, sha256: digest}],
@@ -46,7 +47,8 @@ test('receipt validation rejects missing cases, false measurements, failed asset
         r => r.cases[0].facts.labels = false, r => r.cases[0].facts.csp.push('blocked'),
         r => r.assets[0].status = 404, r => r.cleanup[0].stopped = false,
         r => r.cleanup[0].databaseRemoved = false, r => r.screenshots.pop(),
-        r => r.sources.files = {}, r => r.failures.push('unexpected fetch'), r => r.csp += " 'unsafe-inline'"]) {
+        r => r.sources.files = {}, r => r.failures.push('unexpected fetch'), r => r.csp += " 'unsafe-inline'",
+        ...['outcomeFirst', 'boundaryOnce', 'errorLinked', 'resultSpacing'].map(key => r => r.cases[0].facts.presentation[key] = false)]) {
         const receipt = valid(); mutate(receipt);
         assert.throws(() => harness.validateEvidence(receipt));
     }

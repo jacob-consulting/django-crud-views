@@ -179,12 +179,22 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `manage:badge-policy-na` | `badge bg-secondary` |
 | `manage:row-default` | `cv-manage-default` |
 | `manage:help` | `btn btn-sm btn-outline-secondary` |
+| `manage:trace-allowed` | `badge bg-success` |
+| `manage:trace-denied` | `badge bg-danger` |
+| `manage:trace-not-found` | `badge bg-warning text-dark` |
+| `manage:trace-login-redirect` | `badge bg-warning text-dark` |
+| `manage:trace-error` | `badge bg-warning text-dark` |
+| `manage:trace-no-such-route` | `badge bg-warning text-dark` |
+| `manage:trace-passed` | `badge bg-success` |
+| `manage:trace-skipped` | `badge bg-secondary` |
+| `manage:trace-not-reached` | `badge bg-secondary` |
+| `manage:trace-not-evaluated` | `badge bg-warning text-dark` |
 
-The default table has 111 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 121 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
 Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
 keys and two dismissal utilities; the two form-group utilities each contribute one key, numbered columns contribute
-twelve width keys, and manage diagnostics contribute nine keys. Manage values replace complete class strings;
+twelve width keys, and manage diagnostics contribute nineteen keys. Manage values replace complete class strings;
 theme registrations override defaults and project settings override the theme. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
@@ -192,18 +202,21 @@ from the default-table count.
 
 ### Manage diagnostic classes
 
-The nine `manage:*` entries above are complete utility class strings, without label-mode variants.
+The nineteen `manage:*` entries above are complete utility class strings, without label-mode variants.
 `manage:badge-model` and `manage:badge-objects` label matrix facts; `manage:badge-permission` and
 `manage:badge-group` describe gates; `manage:badge-policy-global`, `manage:badge-policy-strict` and
 `manage:badge-policy-na` describe Guardian policy. `manage:row-default` owns default-value muting (keys remain
 stronger), and `manage:help` styles the card/section documentation links. Default rows are not dimmed by opacity.
+The ten `manage:trace-*` entries style outcomes and step results in the shared Access check partial. Their
+visible translated words remain necessary: color alone must not convey authorization. These keys are available
+even when `CRUD_VIEWS_MANAGE_ACCESS_TRACE` is off; that setting controls web exposure, not registry contents.
 
 The stock `cv-manage-badge-group` and `cv-manage-default` styles live in external `manage.css`. Replacing their
 registry strings lets a theme own their appearance; the default-state JS uses data attributes, not those classes.
 Keep textual labels and focus/help behavior when restyling. The one Show defaults switch hides default rows in
 Views and Presentation only after successful JS setup; without JavaScript all rows are readable. See the
 [theme registration recipe](theme.md#manage-class-registration) and [external asset contract](javascript.md#manage-defaults).
-The exact 111 core / 129 with-workflow inventories above remain unchanged by this documentation addition.
+The exact inventories are 121 core / 139 with workflow, including all nineteen manage keys.
 
 ### Numbered column classes
 
@@ -227,8 +240,8 @@ an alternate framework's grid.
 
 ### Optional workflow defaults
 
-The 111-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
-for 129 effective default keys with only that contribution. Other installed extensions may add more.
+The 121-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
+for 139 effective default keys with only that contribution. Other installed extensions may add more.
 
 | Key | Complete default classes |
 |---|---|

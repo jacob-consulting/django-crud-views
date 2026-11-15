@@ -75,6 +75,47 @@ def test_documented_schema_and_command_codes(cv_author, developer):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("outcome", ["allowed", "denied", "not_found", "login_redirect", "error", "no_such_route"])
+def test_every_documented_exit_code_matches_real_dispatch(outcome):
+    from tests.test1.test_access_trace_command import invoke
+    from tests.test1.test_manage_requirements import grant
+
+    def build(suffix):
+        vs = ViewSet(model=Publisher, name="docoutcome" + suffix)
+        attrs = {}
+        if outcome == "error":
+
+            def broken_gate(self):
+                raise ValueError("documented failure")
+
+            attrs["has_permission"] = broken_gate
+        register(DetailViewPermissionRequired, vs, **attrs)
+        return vs, [vs]
+
+    with isolated_routes(build) as vs:
+        obj = Publisher.objects.create(name="never published")
+        actor = _user("doc outcomes")
+        if outcome in {"allowed", "not_found"}:
+            grant(actor, vs, "view")
+        path = _url(vs, "tested", pk=99999 if outcome == "not_found" else obj.pk)
+        if outcome == "no_such_route":
+            path = "/missing/"
+        selector = ["--anonymous"] if outcome == "login_redirect" else [actor.username]
+        code, stdout, stderr = invoke(path, *selector, "--as-json", "--no-color")
+    data = json.loads(stdout)
+    assert data["outcome"] == outcome and not stderr
+    codes = dict(re.findall(r"^\| `(\w+)` \| `(\d)` \|", section("Outcomes and streams"), re.M))
+    assert code == int(codes[outcome])
+    step_section = section("Step fields")
+    assert all(f"`{step['kind']}`" in step_section and f"`{step['result']}`" in step_section for step in data["steps"])
+    if outcome == "error":
+        assert data["steps"][data["decided_by"] - 1]["exception"] == {
+            "class": "ValueError",
+            "message": "documented failure",
+        }
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("fixture", ["cv_author", "cv_guardian_author"])
 def test_enabled_help_anchor_and_setting_contract(request, fixture, client, developer, monkeypatch):
     host = request.getfixturevalue(fixture)

@@ -298,9 +298,9 @@ def test_workflow_presentation_docs():
     assert manage_defaults == {
         key: value for key, value in bc.DEFAULT_BUTTON_CLASSES.items() if key.startswith("manage:")
     }
-    assert len(bc.DEFAULT_BUTTON_CLASSES) == 111
-    assert len(bc._get_default_button_classes()) == 129
-    assert "129 effective default keys" in section
+    assert len(bc.DEFAULT_BUTTON_CLASSES) == 121
+    assert len(bc._get_default_button_classes()) == 139
+    assert "139 effective default keys" in section
     precedence = text.split("### Precedence\n", 1)[1].split("\n## ", 1)[0]
     assert "core defaults + installed-app defaults + theme registrations + CRUD_VIEWS_BUTTON_CLASSES" in precedence
     assert "collisions with core or another app's defaults are rejected" in precedence

@@ -301,6 +301,9 @@ Kinds are `route`, `validation`, `actor_admission`, `ancestor_lookup`, `ancestor
 and `limitation`. Step results include `passed`, `denied`, `not_found`, `login_redirect`, `error`, `skipped`,
 `not_reached`, `not_evaluated` and `unavailable` (planning metadata). Use codes for scripts and message text for
 people. Sources retain requirements such as `ancestor_policy.read` or configured action/global defaults.
+Observed `how` values include `anonymous`, `inactive`, `active`, `no_rule`, `disabled`, `group_member`,
+`not_member`, `observed_boundary`, and Guardian's `object grant`, `model fallback`, `active superuser`.
+The last three describe the real successful grant branch, including direct/group grants, not another permission probe.
 
 ### Custom method boundaries
 

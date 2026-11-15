@@ -815,8 +815,9 @@ also removes the form-contained cancel control. A copied alert leaf must render 
 
 Core `crud_views/view_manage.html` owns the shared page; Guardian's
 `crud_views/view_guardian_manage.html` extends it. The [manage reference](manage.md) explains the visible
-semantics. This inventory is the public theme surface before the 1.0 freeze; #370's another-user evaluator and
-#371's configuration-dump command are separate follow-ups, not current UI or command capabilities.
+semantics. This inventory is the public theme surface before the 1.0 freeze, including the default-off
+[Access check](manage.md#access-check) card and [cv_access](manage.md#cv_access) command (#370).
+#371's configuration-dump command remains a separate follow-up.
 
 ### Manage blocks
 
@@ -827,6 +828,7 @@ they do not acquire actor/superuser enhancements until migrated. `cv_content` re
 |---|---|
 | `manage_checks` | Main-column issues from `manage_checks` |
 | `permission_holders` | Main Permissions card from `manage_permissions` |
+| `manage_access_trace` | Main Access check card below Permissions and above Views, only when `manage_access_trace` is not `None` |
 | `manage_views` | Main Views card from `manage_views` |
 | `manage_presentation` | Main collapsed Presentation from `manage_presentation` |
 | `manage_checks_clean` | Side-column clean strip from `manage_checks` |
@@ -846,6 +848,7 @@ check messages or route text safe. Keep visibility policy intact, including omit
 | Context key | Shape |
 |---|---|
 | `manage_permissions` | Dict: `columns`, `actor`, `groups`, `users`, `users_overflow`, `show_users`, `superusers` |
+| `manage_access_trace` | `None` with tracing disabled; enabled mapping described below, shared by core and Guardian |
 | `manage_views` | Ordered list of view dicts: `key`, `class_path`, `route_name`, `route`, `route_error`, `requirement`, `permission`, `parent_requirement`, `requirement_metadata_error`, `guardian_policy`, `sections`; Guardian also adds `parent_only_requirement` |
 | `manage_checks` | Dict: `count`, `messages`; each message has `id`, `severity`, `message`, `hint` |
 | `manage_facts` | Ordered list of field rows: `key`, `value`, `source`, `is_default`; the icon row also has `icon` |
@@ -860,6 +863,10 @@ Permission columns have `key`, `permission` (full Django string) and `codename`.
 `label`, `member_count`, `cells`; cells have `key`, `model` (boolean), `object_count` (integer or `None`).
 `superusers` has `count` and `names`; users are split at 20 rows. Core object counts are `None`.
 Guardian actor counts use strict effective access, while direct holder counts use configured grant tables.
+The actor defaults to the viewer. Only a successful this-ViewSet trace selection replaces it with the supplied
+user's row, marked `(checked below)`; path mode, invalid submissions and disabled tracing retain `(you)`.
+The selected user never replaces `request.user`, the session or the holder rows. Guardian inherits this adapter
+and uses its own `get_manage_actor_row` override, preserving strict counts independently of endpoint fallback.
 
 View sections have `key`, `label`, `entries`, `default_count`; ordinary entries have `key`, `value`, `source`,
 `is_default`, `unknown`. Configuration source and default classification are separate. Presentation rows use
@@ -867,6 +874,35 @@ the field-row shape, with button-specific metadata for context-button entries. E
 its effective setting fallback and an additional `declared_value` of `"''"`. Normal ViewSet constructor keys
 are recorded before validators infer defaults. Pydantic `model_construct` bypasses that record and is unsupported
 for declaration provenance; this is not a general guarantee about other Pydantic construction paths.
+
+### Access trace mapping
+
+The enabled context has the following exact keys, even before submission or on invalid input. Data remains
+escaped text; exception messages are deliberately disclosed by this opt-in feature. The direct builder returns
+the same shape for valid inputs, using the supplied username; the web adapter preserves the user's typed selector.
+
+| Field | Meaning |
+|---|---|
+| `mode` | `viewset` or `path` for a valid selection; raw/empty mode before validation. |
+| `user_input` | Typed username/PK selector; the direct builder uses the supplied user's username. |
+| `pk_input` | Optional object PK, or empty string. |
+| `path_input` | Typed path/full URL, or empty string. |
+| `error` | Validation/unknown-user message, or `None`. |
+| `actor` | Selected user identity: string `pk`, string `username`, boolean `active` and `anonymous`; `None` before a valid selection. |
+| `rows` | All registered view rows in ViewSet mode; empty otherwise. |
+| `trace` | Version-1 scalar trace dictionary in path mode; `None` otherwise. |
+
+### Access trace rows
+
+| Field | Meaning |
+|---|---|
+| `key` | Registered view key, including backend-only and POST-only views. |
+| `path` | Reversed path using supplied parent coordinates and optional own PK, or `None`. |
+| `instruction` | `needs an object pk`, `use the path field`, or `None` when a trace exists. |
+| `trace` | Version-1 scalar trace dictionary, or `None` when coordinates cannot be supplied. |
+
+There is no per-row HTTP-method selector. Parent coordinates come from the hosting URL in web mode;
+extra contributed arguments require the path form. See [trace limits](manage.md#diagnostic-limits).
 
 ### Request-free manage builders
 
@@ -876,6 +912,7 @@ Every method below takes explicit `(viewset, user)` and does not read `self.requ
 |---|---|
 | `get_manage_actor_row` | The supplied actor row |
 | `get_manage_permissions` | Permission matrix |
+| `get_manage_access_trace` | Explicit-user path or ViewSet trace mapping; keyword-only `mode`, `object_pk=None`, `path=None`, `route_kwargs=None` |
 | `get_manage_views` | View inventory and requirement metadata |
 | `get_manage_checks` | Scoped check results |
 | `get_manage_facts` | Identity rows |
@@ -885,7 +922,17 @@ Every method below takes explicit `(viewset, user)` and does not read `self.requ
 | `get_manage_presentation` | Shared presentation configuration |
 | `get_manage_guardian` | Guardian-only helper policy |
 
-These are presentation builders, not an authorization API. The web adapter remains responsible for admission,
+The trace builder's full signature is
+`(self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None)`.
+Call it on a manage instance without `request`, supplying a resolved user, `mode="path"` with `path`, or
+`mode="viewset"` with optional object PK and parent route kwargs. It delegates actual authorization to
+`crud_views.lib.access_trace.trace_access(path, user)` and returns the scalar `AccessTrace.to_dict()` projection;
+`resolve_trace_user(identifier)` selects fresh users. `AccessTrace` and `AccessStep` and their complete
+[version-1 fields](manage.md#version-1-document) are public. The request adapter, recorder observations,
+queryset captures and runner helpers are internal implementation details, not theme APIs.
+
+Configuration/matrix builders describe policy; the trace builder runs the bounded diagnostic gates. None
+authorizes the hosting request. The web adapter remains responsible for admission,
 active-account/group/mode checks and actual ancestor authorization. Auth-reading builders use the **supplied**
 ViewSet's registered manage class for the existing nested database/auth guard before diagnostic reads. If that
 class is absent, they raise the fixed
@@ -894,6 +941,8 @@ absence example; this does not add Resource diagnostics. `manage_views_enabled="
 AutoManageView/URLs and controls availability/context actions. Pure configuration/route projections have no
 auth-read dependency. View metadata that needs permission maps, and Guardian's enriched inventory, also use
 the auth guard. Pass `route_kwargs` explicitly for hierarchy links instead of inventing an object or request.
+For traces, pass those coordinates explicitly to the trace builder too. It does not enforce the web opt-in setting
+or host admission itself, matching the always-available command; callers own their exposure policy.
 
 ### Requirement descriptions
 
@@ -910,8 +959,41 @@ the policy rather than duplicating it in this method. This describes configurati
 
 Shipped owning gates describe themselves. If a project overrides `has_permission()`, override
 `cv_get_requirement()` alongside it to describe the actual gate; otherwise it is reported as custom. Arbitrary
-project `dispatch()`/`get_object()` changes cannot be inferred. No per-object evaluator or another-user trace
-is implied, and changing the description does not grant access.
+project `dispatch()`/`get_object()` changes cannot be inferred from metadata. Use the separate bounded trace
+for observed access; changing the requirement description does not grant access.
+
+### Shared access trace partial
+
+Both the path result and expanded ViewSet rows include `crud_views/includes/access_trace.html` with `trace`
+set to a version-1 dictionary. It also accepts `step` for a plan/step facts row or `result` for a status badge;
+nonempty `result` takes precedence, then `step`, then the full `trace`. Pass only the relevant input using
+Django's `only` include option. `unavailable` reuses the `manage:trace-not-evaluated` class.
+Core and Guardian use the same partial and `manage_access_trace` block. Override
+the shared partial rather than copying Guardian's page; for example, a theme-owned minimal textual projection
+can use this template at that path (theme CSS supplies the class):
+
+```django
+{% if result %}
+  <span class="theme-trace-result">{{ result }}</span>
+{% elif step %}
+  <span>{{ step.n }} {{ step.kind }} {{ step.result }} {{ step.message }}</span>
+  {% if step.exception %}<span>{{ step.exception.class }}: {{ step.exception.message }}</span>{% endif %}
+{% else %}
+<section class="theme-access-trace">
+  <p>{{ trace.path }} — {{ trace.outcome }}</p>
+  {% for step in trace.steps %}
+    <p>{{ step.n }}. {{ step.kind }}: {{ step.result }} {{ step.message }}
+      {% if step.exception %}{{ step.exception.class }}: {{ step.exception.message }}{% endif %}
+    </p>
+  {% endfor %}
+  {% for limitation in trace.untraced %}<p>{{ limitation }}</p>{% endfor %}
+</section>
+{% endif %}
+```
+
+For the full stock presentation, retain planned/reached provenance, deciding step, counts and limitations from
+the shared partial. Whole-card overrides own both GET forms and their feedback; preserve the enabled/disabled
+guard, labels, help link, escaping and actor/viewer separation. Do not call permission gates from templates.
 
 ### Legacy manage context and includes
 
@@ -961,9 +1043,12 @@ def ready(self):
     register_button_classes({"manage:help": "theme-help", "manage:row-default": "theme-default"})
 ```
 
-All nine keys are inventoried with exact defaults in [Buttons](buttons.md#the-class-table): `manage:badge-model`,
+All nineteen keys are inventoried with exact defaults in [Buttons](buttons.md#the-class-table): `manage:badge-model`,
 `manage:badge-objects`, `manage:badge-permission`, `manage:badge-group`, `manage:badge-policy-global`,
-`manage:badge-policy-strict`, `manage:badge-policy-na`, `manage:row-default`, `manage:help`.
+`manage:badge-policy-strict`, `manage:badge-policy-na`, `manage:row-default`, `manage:help`,
+`manage:trace-allowed`, `manage:trace-denied`, `manage:trace-not-found`, `manage:trace-login-redirect`,
+`manage:trace-error`, `manage:trace-no-such-route`, `manage:trace-passed`, `manage:trace-skipped`,
+`manage:trace-not-reached`, `manage:trace-not-evaluated`.
 Project `CRUD_VIEWS_BUTTON_CLASSES` entries override theme registrations per key; `""` or `None` clears classes.
 Replacing the default-row class also replaces its CSS muting without affecting the switch's data markers.
 

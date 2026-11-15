@@ -229,6 +229,7 @@ def test_real_get_fidelity_grid(grid, settings, family, actor_kind):
         assert untouched == set()
         assert any(s.kind == "object_lookup" and s.result == "passed" for s in result.steps)
     elif family == "guardian_list":
+        assert untouched == {"action_state"}  # The top-level filter does not call the object/parent state gate.
         visible = 1 if actor_kind in {"object_grant", "superuser"} else 0
         assert len(response.context["object_list"]) == visible
         assert [s.counts for s in result.steps if s.kind == "list_filter"] == [{"total": 1, "visible": visible}]

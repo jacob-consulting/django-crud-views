@@ -424,8 +424,9 @@ Separate command-owned errors from pre-command Django startup behavior. Verify a
 The discussion decisions are approved. A fresh builder reviewer returned "nothing important left" on
 2026-11-15. The maintainer then explicitly approved the complete written design and GSD handover,
 including A-01–A-04. This document is ready for GSD planning against completed #372.
-No application code, phase state, implementation plan or issue body was changed by this design work;
-no application tests have been run as acceptance evidence. The requested output is this GSD handover.
+The approved design and GSD handover were published as issue #371's body at the maintainer's request.
+No application code, phase state or implementation plan was changed by this design work; no application
+tests have been run as acceptance evidence. The requested output is this GSD handover.
 The brainstorming workflow's writing-plans skill was consulted after approval; the user's explicit GSD
 handover destination takes precedence over creating a separate Superpowers implementation plan here.
 Do not create a phase/worktree or execute the feature merely because the design is approved. Surface

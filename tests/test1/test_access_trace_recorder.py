@@ -256,3 +256,54 @@ def test_custom_requirements_keep_real_and_traced_request_outcomes(client):
         calls.clear()
         assert trace_access(url, None).outcome == "allowed"
         assert calls == [True]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("early", [False, True])
+@pytest.mark.parametrize("raise_on_extra_read", [False, True])
+def test_classproperty_requirements_remain_opaque_without_extra_reads(
+    early, raise_on_extra_read, monkeypatch, django_assert_num_queries
+):
+    from django.contrib.auth.models import AnonymousUser
+    from django.utils.functional import classproperty
+
+    from crud_views.lib.views import ListViewPermissionRequired
+
+    reads = []
+    checks = []
+
+    @classproperty
+    def permission_required(cls):
+        reads.append(cls)
+        if raise_on_extra_read and len(reads) > 3:
+            raise RuntimeError("unexpected extra descriptor evaluation")
+        return ()
+
+    def check(perms):
+        checks.append(tuple(perms))
+        return not perms
+
+    def build(sfx):
+        vs = ViewSet(model=Publisher, name="descriptorrequirement" + sfx)
+        view = register(ListViewPermissionRequired, vs, permission_required=permission_required)
+        return view, [vs]
+
+    with isolated_routes(build) as view:
+        for recorder in (None, AccessRecorder()):
+            reads.clear()
+            checks.clear()
+            actor = AnonymousUser()
+            monkeypatch.setattr(actor, "has_perms", check)
+            instance = view()
+            instance.setup(RequestFactory().get("/"))
+            instance.request.user = actor
+            with recording(recorder), django_assert_num_queries(0):
+                if early:
+                    assert instance._cv_ancestor_actor_response(protected=False) is None
+                else:
+                    assert instance.has_permission()
+            # Django's stock get_permission_required reads its source three times.
+            assert reads == [view] * 3
+            assert checks == [()]
+            if recorder:
+                assert recorder.steps[0].permission is None

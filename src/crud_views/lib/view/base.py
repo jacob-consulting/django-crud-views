@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from contextlib import nullcontext
 from functools import cached_property
+from inspect import getattr_static
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode
 
@@ -1230,9 +1231,10 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
     def _cv_recorded_permission(self):
         # The stock Django hook already read our cached property during the real check.
         # Custom hooks/properties are opaque: never evaluate a second permission source.
-        if (
-            type(self).get_permission_required is PermissionRequiredMixin.get_permission_required
-            and type(self).permission_required is CrudViewPermissionRequiredMixin.permission_required
+        if getattr_static(type(self), "get_permission_required") is getattr_static(
+            PermissionRequiredMixin, "get_permission_required"
+        ) and getattr_static(type(self), "permission_required") is getattr_static(
+            CrudViewPermissionRequiredMixin, "permission_required"
         ):
             return self.__dict__.get("permission_required")
         return None

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="0.678" timestamp="2026-11-15T18:05:44.415517+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_resource_manage" name="test_resource_manage_model_query_preservation[cv_author]" time="0.391" /><testcase classname="tests.test1.test_resource_manage" name="test_resource_manage_model_query_preservation[cv_guardian_author]" time="0.058" /><testcase classname="tests.test1.test_resource_manage" name="test_resource_manage_tracer" time="0.002"><failure message="AssertionError: Resource ViewSets must automatically register manage&#10;assert False&#10; +  where False = has_view('manage')&#10; +    where has_view = ViewSet(managed0790af42).has_view">client = &lt;django.test.client.Client object at 0x74589dfd0470&gt;
+django_user_model = &lt;class 'django.contrib.auth.models.User'&gt;
+
+    def test_resource_manage_tracer(client, django_user_model):
+        def build(sfx):
+            vs = ViewSet(model=ManageItem, name="managed" + sfx, resource_permissions={"view": "app.view_author"})
+            assert vs.has_view("manage"), "Resource ViewSets must automatically register manage"
+            return vs, [vs]
+    
+&gt;       with isolated_routes(build) as vs:
+
+tests/test1/test_resource_manage.py:88: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+tests/test1/test_ancestor_authorization.py:55: in isolated_routes
+    namespace, routed = build(sfx)
+                        ^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+sfx = '0790af42'
+
+    def build(sfx):
+        vs = ViewSet(model=ManageItem, name="managed" + sfx, resource_permissions={"view": "app.view_author"})
+&gt;       assert vs.has_view("manage"), "Resource ViewSets must automatically register manage"
+E       AssertionError: Resource ViewSets must automatically register manage
+E       assert False
+E        +  where False = has_view('manage')
+E        +    where has_view = ViewSet(managed0790af42).has_view
+
+tests/test1/test_resource_manage.py:85: AssertionError</failure></testcase></testsuite></testsuites>

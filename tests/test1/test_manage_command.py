@@ -145,6 +145,6 @@ def test_catalogue_isolation_restores_same_worker(monkeypatch, raise_error):
                 raise RuntimeError("fixture teardown")
     except RuntimeError:
         assert raise_error
-    assert dict(_REGISTRY) == original and check._VOCAB_CACHE == vocabulary
-    assert settings.ROOT_URLCONF == root and get_resolver().url_patterns == patterns
+    assert dict(_REGISTRY) == original and vocabulary == check._VOCAB_CACHE
+    assert root == settings.ROOT_URLCONF and get_resolver().url_patterns == patterns
     assert "temporary_catalogue_module" not in sys.modules

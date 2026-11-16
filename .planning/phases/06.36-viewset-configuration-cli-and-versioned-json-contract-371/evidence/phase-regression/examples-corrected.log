@@ -1,0 +1,27 @@
+bringing up nodes...
+bringing up nodes...
+
+.............uu..uu...................uu..u.u.uu..u..u...uuuu..uu.u..uuu [  9%]
+uu.......u..uuuu...u.................uuuu...uuu.uu.uu.u.uu........uuuu.. [ 17%]
+uu.....u..uuuuu.u.......uu.uuu.u...u.uuuu.u.uuu.uu.uuuuuuuuuuuu......... [ 23%]
+.....uuuu.uuuuuu..........uuuuuuu.....uu.............uu.uuuuu.u.u.u..uu. [ 31%]
+.............uuuuuuuuuuu.uuuuu..........uu.u..........u...u.uuuuuuuuu.uu [ 38%]
+uuuu.......u....uu...........................uuuu.uuu.uu.uuuuuuuuuuuu... [ 46%]
+uu...........uu.......uuuuuu.uu.uu.uu.......uu..uuuuuuuu...u........u..u [ 54%]
+uu..u.uu.......uuuu........uuu....uu.....uu...........uuuuuuuuuuuuuuuuuu [ 61%]
+uu.u......uu....u..uuuuuuuuuuuuuuuuuu................................... [ 70%]
+........................................................................ [ 83%]
+........................................................................ [ 96%]
+....................                                                     [100%]
+=============================== warnings summary ===============================
+project/tests.py::HomePageTest::test_every_feature_landing_page_renders
+project/tests.py::NavGroupsTest::test_feature_page_marks_its_group_active
+project/tests.py::ExampleAboutTest::test_every_feature_page_shows_about
+project/tests.py::BreadcrumbAdoptionTest::test_every_feature_landing_page_shows_breadcrumb
+project/tests.py::DocRefsPanelTest::test_every_feature_page_lists_its_doc_refs
+workflow/tests.py::CampaignWorkflowTest::test_list_renders_with_snippets
+  /home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/django/views/generic/list.py:91: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'workflow.models.Campaign'> QuerySet.
+    return self.paginator_class(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+548 passed, 6 warnings, 264 subtests passed in 55.87s

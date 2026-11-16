@@ -1,0 +1,79 @@
+{
+  "js": {
+    "command": [
+      "npm",
+      "test",
+      "--",
+      "--reporter=dot"
+    ],
+    "exit": 0,
+    "seconds": 13.991,
+    "passed": 457
+  },
+  "js-integration": {
+    "command": [
+      "npm",
+      "run",
+      "test:integration",
+      "--",
+      "--reporter=dot"
+    ],
+    "exit": 1,
+    "seconds": 5.176,
+    "disposition": "superseded setup failure: explicit interpreter omitted"
+  },
+  "examples": {
+    "command": [
+      "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+      "-m",
+      "pytest",
+      "examples/bootstrap5",
+      "-c",
+      "examples/bootstrap5/pytest.ini",
+      "-n",
+      "4",
+      "-q"
+    ],
+    "exit": 1,
+    "seconds": 44.828,
+    "disposition": "superseded setup failure: selected nox environment lacks example-only django_ratelimit"
+  },
+  "js-integration-corrected": {
+    "command": "CV_FRAGMENT_PYTHON=/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python npm run test:integration -- --reporter=dot",
+    "exit": 0,
+    "passed": 2,
+    "runner_seconds": 17.12
+  },
+  "examples-corrected": {
+    "command": "PYTHONPATH=/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views/examples/bootstrap5 .venv/bin/python -m pytest examples/bootstrap5 -c examples/bootstrap5/pytest.ini -n 4 -q",
+    "exit": 0,
+    "passed": 548,
+    "subtests_passed": 264,
+    "pytest_seconds": 55.87
+  },
+  "node": {
+    "command": [
+      "node",
+      "--test",
+      "tests/browser/formset-row-cards.test.cjs",
+      "tests/browser/presentation-config.test.cjs",
+      "tests/browser/protected-delete.test.cjs",
+      "tests/browser/access-trace.test.cjs",
+      "tests/browser/workflow-validation.test.cjs",
+      "tests/browser/action-tooltips.test.cjs",
+      "tests/browser/workflow-presentation.test.cjs",
+      "tests/browser/conditional-formsets-evidence.test.cjs",
+      "tests/browser/compact-checkboxes-output.test.cjs",
+      "tests/browser/cancel-navigation.test.cjs",
+      "tests/browser/presentation-cleanup.test.cjs",
+      "tests/browser/manage-presentation.test.cjs"
+    ],
+    "env": {
+      "CV_FOCUS_PYTHON": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python"
+    },
+    "exit": 0,
+    "seconds": 2.951,
+    "excluded": "theme-adoption-config.test.cjs: historical external Tabler runtime requirement remains unverified",
+    "passed": 177
+  }
+}

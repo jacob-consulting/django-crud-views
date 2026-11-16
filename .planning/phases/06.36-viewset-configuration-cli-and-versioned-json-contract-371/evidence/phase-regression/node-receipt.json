@@ -1,0 +1,24 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/browser/formset-row-cards.test.cjs",
+    "tests/browser/presentation-config.test.cjs",
+    "tests/browser/protected-delete.test.cjs",
+    "tests/browser/access-trace.test.cjs",
+    "tests/browser/workflow-validation.test.cjs",
+    "tests/browser/action-tooltips.test.cjs",
+    "tests/browser/workflow-presentation.test.cjs",
+    "tests/browser/conditional-formsets-evidence.test.cjs",
+    "tests/browser/compact-checkboxes-output.test.cjs",
+    "tests/browser/cancel-navigation.test.cjs",
+    "tests/browser/presentation-cleanup.test.cjs",
+    "tests/browser/manage-presentation.test.cjs"
+  ],
+  "env": {
+    "CV_FOCUS_PYTHON": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python"
+  },
+  "exit": 0,
+  "seconds": 2.951,
+  "excluded": "theme-adoption-config.test.cjs: historical external Tabler runtime requirement remains unverified"
+}

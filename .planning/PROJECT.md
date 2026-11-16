@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ `cv_access` validates every version-1 trace against strict internal Pydantic models before printing (stderr diagnostic + exit 2 on failure, never an outcome) and `cv_access --schema` prints the generated JSON Schema; valid output bytes and the public trace API unchanged — Phase 06.37; verification 34/34, schema independently checked by jsonschema at Pydantic 2.14.3 and 2.2.1.
+
 - ✓ Versioned ViewSet configuration CLI across core/Guardian/Resource, shared-builder preservation, bounded values/provenance and verified actual Pydantic2.2.1 contract — Phase06.36; independent9/9 verdict. Seven runtime combinations remain unexecuted.
 
 - ✓ Resource manage pages reuse existing registration, developer/ancestor/database guards, metadata and matrices without implicit Resource reads; full UI/`cv_access` parity, German catalogs and theme/migration contracts — Phase 06.35; canonical verification passed, seven unavailable runtime combinations and four external-theme checks remain unverified.
@@ -229,6 +231,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Reuse the shared ManageView and diagnostic runner for Resources; add only bounded registration, metadata and presentation branches | Avoid a second diagnostics implementation and preserve model/Guardian queries, permissions and trace contracts | Validated (Phase 06.35) |
 | Share existing configured manage builders and validate explicit versioned wire records; repair supported-floor APIs without version branches | Preserves page contracts and query costs while keeping CLI serialization and compatibility traceable | Validated (Phase06.36) |
+| Gate `cv_access` output behind strict internal export models and generate the schema from them; keep the models private and the dataclass `to_dict()` API unchanged | One source of truth for validation and schema without a new public API or changed output bytes | Validated (Phase 06.37) |
 
 ## Evolution
 
@@ -248,4 +251,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-16 after Phase 06.36*
+*Last updated: 2026-11-16 after Phase 06.37*

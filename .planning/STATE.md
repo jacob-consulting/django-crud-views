@@ -28,7 +28,7 @@ Total Phases: 43
 See: .planning/PROJECT.md (updated 2026-11-16)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.37 — cv_access Pydantic JSON contract validation and schema (#375)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
@@ -38,7 +38,14 @@ Total Plans in Phase: 4
 Status: Ready to plan
 Last activity: 2026-11-16 — Phase 06.37 complete, transitioned to Phase 7
 
-Next: $gsd-discuss-phase 06.37 — then plan the #375 contract work before Phase 7.
+Next: $gsd-discuss-phase 7 (Phase 7 needs a spec or maintainer decision before planning).
+
+### Phase 06.37 completion — 2026-11-16
+
+- 4/4 plans summarized (01 export models + gate + `--schema` + German; 02 real-trace corpus + Pydantic 2.2.1 floor 487 passed; 03 reference docs + #375 CHANGELOG; 04 regression gate). Ran sequentially on the main tree (HEAD ≠ origin/HEAD auto-degrade).
+- Full suite: Django 4.2 15739 passed/14 skipped, 5.2 15752/1, 6.0 15753/0. Independent jsonschema: 7 valid/6 rejected; recheck at 2.14.3 and 2.2.1.
+- Verification passed 34/34 (b26cf387); Nyquist validated (7add0aa3); security threats_open 0 (ae9b1669); deep code review 0 critical/3 warning/5 info, all 8 open in 06.37-REVIEW-DISPOSITION.md.
+- Pre-existing dirty state.json preserved; no publication or merge performed.
 
 ### Phase 06.36 gap closure completed — 2026-11-16
 
@@ -1801,6 +1808,8 @@ None yet.
 
 ### Blockers/Concerns
 
+- Phase 06.37 review (open, maintainer triage): WR-01 text output for `user == {}` prints `None (pk None, inactive)` (fix changes text bytes); WR-02 `TraceUser` accepts partial/null actors, looser than manage.md:478; WR-03 `isolated_routes` (tests/test1/test_ancestor_authorization.py) restores an emptied ViewSet registry — root cause of the xdist flake `test_published_command_examples` (pre-existing at 7daae93f; one-import fix proposed). `manage_report_floor` is not run in CI (IN-05).
+
 - Phase06.36: Pydantic2.2.1 command-corpus acceptance is blocked by pre-existing `Resource.__pydantic_init_subclass__` access to `__pydantic_fields__` at `src/crud_views/lib/resource.py:89`. Plan07's final floor has57 model passes/20 collection errors. Seven matrix combinations are unexecuted; independent code/security review and phase verification remain pending. See06.36-ACCEPTANCE.md and deferred-items.md; do not infer phase acceptance from7/7 executed plans.
 
 - Phase 2: Ruff 0.16.10 is below the manifest range and global formatting flags eight pre-existing planning
@@ -1883,6 +1892,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T20:20:20.536Z
+Last session: 2026-11-16T21:05:00Z
 Stopped at: Phase 06.37 complete, ready to plan Phase 7
 Resume file: None

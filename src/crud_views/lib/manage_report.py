@@ -4,7 +4,7 @@ import math
 from typing import Annotated, Generic, Literal, TypeVar
 from uuid import UUID
 
-from django.utils.translation import gettext_lazy, pgettext_lazy
+from django.utils.translation import gettext, gettext_lazy, pgettext, pgettext_lazy
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 from typing_extensions import TypeAliasType  # noqa: UP035 - Pydantic 2.2 recognizes the backported alias.
 
@@ -127,7 +127,10 @@ def normalize_value(value, *, not_declared=False, _projection=None):
                 type(key) is not str or type(arg) is not str for key, arg in kwargs.items()
             ):
                 raise ValueError("unsupported translation arguments")
-            return str(item)
+            # Supplied instances can shadow Django's cast helpers. Evaluate only
+            # the validated arguments through the trusted eager translation API.
+            translate = gettext if type(item) is translation_types[0] else pgettext
+            return translate(*args, **kwargs)
         projected = _projection(item) if _projection is not None else None
         if projected is not None:
             if id(item) in active:

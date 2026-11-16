@@ -344,6 +344,23 @@ def make_view(catalogue, **attrs):
     return vs, view
 
 
+@pytest.mark.parametrize("contextual", [False, True], ids=["gettext", "pgettext"])
+def test_builder_translation_instance_cast_hooks_are_never_called(catalogue, contextual):
+    from django.utils.translation import gettext_lazy, pgettext_lazy
+
+    value = pgettext_lazy(context="context", message="hello") if contextual else gettext_lazy(message="hello")
+    for name in ("_proxy____cast", "_proxy____text_cast", "_proxy____bytes_cast"):
+        setattr(value, name, Hostile().fail)
+    vs, view = make_view(catalogue, cv_action_label=value)
+    vs.verbose_name = value
+    manage = ManageView()
+    with manage.manage_export():
+        facts = {row["key"]: row for row in manage.get_manage_facts(vs, None)}
+        entries = export_entries(manage, view)
+    assert facts["verbose_name"]["_export"]["value"].value == "hello"
+    assert entries["action_label"]["_export"]["value"].value == "hello"
+
+
 def test_export_context_exists_and_restores_nested_success_and_error():
     manage = ManageView()
     assert callable(getattr(manage, "manage_export", None)), "Manage builders need an opt-in export context"

@@ -99,6 +99,22 @@ def test_known_translation_storage_does_not_call_mapping_hooks():
     assert normalize_value(value).value == str(value)
 
 
+@pytest.mark.parametrize("contextual", [False, True], ids=["gettext", "pgettext"])
+@pytest.mark.parametrize("keywords", [False, True])
+def test_known_translation_instance_cast_hooks_are_never_called(contextual, keywords):
+    factory = pgettext_lazy if contextual else gettext_lazy
+    args = ("context", "hello") if contextual else ("hello",)
+    kwargs = {"context": "context", "message": "hello"} if contextual else {"message": "hello"}
+    value = factory(**kwargs) if keywords else factory(*args)
+    # Cover the cast helpers used by supported Django versions.
+    for name in ("_proxy____cast", "_proxy____text_cast", "_proxy____bytes_cast"):
+        setattr(value, name, Hostile().fail)
+    for language in ("en", "de"):
+        with override(language):
+            record = normalize_value(value)
+            assert record.kind == "native" and record.value == "hello"
+
+
 @pytest.mark.parametrize(
     "model,data",
     [

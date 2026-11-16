@@ -448,7 +448,8 @@ def test_documented_vocabularies_are_closed_sets():
     assert "[Schema and compatibility](#schema-and-compatibility)" in prose
     assert "Plan rows use the same kinds and only the `unavailable` result" in prose
     assert PlanRow.model_fields["kind"].annotation == Kind
-    assert set(get_args(PlanRow.model_fields["result"].annotation)) == {"unavailable", type(None)}
+    plan_result, none = get_args(PlanRow.model_fields["result"].annotation)
+    assert get_args(plan_result) == ("unavailable",) and none is type(None)
     assert set(get_args(Outcome)) == set(
         dict(re.findall(r"^\| `(\w+)` \| `(\d)` \|", section("Outcomes and streams"), re.M))
     )

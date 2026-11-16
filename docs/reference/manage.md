@@ -500,7 +500,7 @@ records their gate result without evaluating another requirement source or calli
 | `key` | Requirement, action or limitation key, or null. |
 | `permission` | Full permission codename, or null. |
 | `group` | Required group name, or null. |
-| `provider` | Owning permission provider, such as `core`, `guardian` or `none`, or null. |
+| `provider` | Owning permission provider: `core`, `guardian`, `model` or `none`, or null. |
 | `source` | Requirement declaration or observed callable provenance, or null. |
 | `result` | Step result code, or null. |
 | `how` | Observed branch explanation code, or null; not a second permission decision. |
@@ -510,9 +510,12 @@ records their gate result without evaluating another requirement source or calli
 
 Kinds are `route`, `validation`, `actor_admission`, `ancestor_lookup`, `ancestor_gate`, `own_permission`,
 `object_lookup`, `object_grant`, `list_filter`, `action_state`, `manage_gate`, `custom_gate`, `login_middleware`
-and `limitation`. Step results include `passed`, `denied`, `not_found`, `login_redirect`, `error`, `skipped`,
-`not_reached`, `not_evaluated` and `unavailable` (planning metadata). Use codes for scripts and message text for
-people. Sources retain requirements such as `ancestor_policy.read` or configured action/global defaults.
+and `limitation`. Step results are `passed`, `denied`, `not_found`, `login_redirect`, `error`, `skipped`,
+`not_reached`, `not_evaluated` and `unavailable` (planning metadata).
+Outcomes, kinds, step results and providers are closed sets in version 1; adding a value follows the rule in
+[Schema and compatibility](#schema-and-compatibility). Plan rows use the same kinds and only the `unavailable` result.
+Use codes for scripts and message text for people. Sources retain requirements such as `ancestor_policy.read` or
+configured action/global defaults.
 Observed `how` values include `anonymous`, `inactive`, `active`, `no_rule`, `disabled`, `group_member`,
 `not_member`, `observed_boundary`, and Guardian's `object grant`, `model fallback`, `active superuser`.
 The last three describe the real successful grant branch, including direct/group grants, not another permission probe.

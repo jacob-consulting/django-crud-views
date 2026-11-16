@@ -244,6 +244,23 @@ def test_compiled_command_help_and_unknown_user():
             invoke("/author/", "niemand")
 
 
+def test_compiled_schema_help_usage_and_validation_failure(monkeypatch):
+    from crud_views.lib.access_trace import AccessTrace
+    from crud_views.management.commands import cv_access
+
+    # The command reads its own trace_access binding, not this module's import.
+    monkeypatch.setattr(cv_access, "trace_access", lambda path, actor: AccessTrace(path=path, outcome="vielleicht"))
+    with translation.override("de"):
+        help_text = cv_access.Command().create_parser("manage.py", "cv_access").format_help()
+        assert "JSON-Schema" in help_text
+        with pytest.raises(CommandError, match="Geben Sie einen Projektpfad an"):
+            invoke()
+        with pytest.raises(CommandError) as caught:
+            invoke("/author/", "--anonymous")
+    assert str(caught.value).startswith("Ausgabevalidierung fehlgeschlagen (ValidationError)")
+    assert caught.value.returncode == 2
+
+
 @pytest.mark.parametrize("count", [0, 1, 3])
 def test_compiled_plural_resource_counts_from_real_loader(client, host, developer, enabled, count):
     from crud_views.lib.resource import Resource, ResourceViewMixin

@@ -1301,6 +1301,23 @@ msgid "Supply either a user or --anonymous, but not both."
 msgstr ""
 "Geben Sie entweder einen Benutzer oder --anonymous an, aber nicht beides."
 
+#: management/commands/cv_access.py
+msgid "Print the JSON Schema of the version 1 trace document."
+msgstr "Das JSON-Schema des Zugriffsprüfungsdokuments der Version 1 ausgeben."
+
+#: management/commands/cv_access.py
+msgid "--schema does not accept a path, user or --anonymous."
+msgstr "--schema akzeptiert keinen Pfad, keinen Benutzer und kein --anonymous."
+
+#: management/commands/cv_access.py
+msgid "Supply a project path, or use --schema."
+msgstr "Geben Sie einen Projektpfad an oder verwenden Sie --schema."
+
+#: management/commands/cv_access.py
+#, python-format
+msgid "Output validation failed (%(error)s): %(locations)s"
+msgstr "Ausgabevalidierung fehlgeschlagen (%(error)s): %(locations)s"
+
 #: templates/crud_views/view_manage.html
 msgid "This ViewSet"
 msgstr "Dieses ViewSet"

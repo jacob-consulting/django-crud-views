@@ -2045,11 +2045,11 @@ Plans:
 4. Complete, partial and failed version-1 results validate against explicit Pydantic models and their generated schema. Unsupported, null, undeclared and unavailable values remain distinct; section failures preserve good data and produce the defined 0/1/2 exit behavior.
 5. Text/JSON semantic parity, force-color-safe JSON/schema, English/German output, valid subclass overrides, page contracts and normal query costs have regression coverage. Documentation and translations cover the full approved acceptance list; broad pytest runs use multiple workers.
 
-**Plans:** 7 plans
+**Plans:** 1/7 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 06.36-01-PLAN.md — Catalogue tracer and typed core inspection through shared builders
+- [x] 06.36-01-PLAN.md — Catalogue tracer and typed core inspection through shared builders
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.36-02-PLAN.md — Complete bounded values, provenance, customization and selected-view scope

@@ -3,19 +3,19 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.36"
 current_phase_name: "ViewSet configuration CLI and versioned JSON contract (#371)"
-current_plan: Not started
+current_plan: "02"
 status: executing
-stopped_at: Phase 06.36 plan-review convergence complete in 2 cycles; ready to execute
-last_updated: "2026-11-15T23:04:08.159Z"
-last_activity: 2026-11-15
-last_activity_desc: Phase 06.36 plans converged in 2 review cycles; 7 plans/6 waves; no unresolved findings
-state_head: 983d946435db43f08db01d96a3b16b946bf7eeaf
+stopped_at: Completed 06.36-01-PLAN.md; plan 02 is next
+last_updated: "2026-11-16T05:59:00Z"
+last_activity: 2026-11-16
+last_activity_desc: Phase 06.36 plan 01 complete; catalogue and typed core inspection verified; 1/7 plans
+state_head: 94eae43f37363de83d2b03f2817d5c81245d287a
 progress:
   total_phases: 43
   completed_phases: 41
   total_plans: 239
-  completed_plans: 232
-  percent: 95
+  completed_plans: 233
+  percent: 97
 milestone_name: milestone
 ---
 
@@ -32,13 +32,21 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 
 ## Current Position
 
-Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — EXECUTING
+Current Plan: 02 (01 complete)
 Total Plans in Phase: 7
-Status: Ready to execute
-Last activity: 2026-11-15 — Phase 06.36 plans converged in 2 review cycles; 7 plans/6 waves; no unresolved findings
+Status: In Progress — 1/7 plans complete
+Last activity: 2026-11-16 — Catalogue and typed core inspection complete; 150 focused and 78 preservation tests pass
 
 Next: $gsd-execute-phase 06.36
+
+### Phase 06.36 plan 01 completion — 2026-11-16
+
+- Catalogue discovers included URLconfs, sorts registered names and preserves view-key order without diagnostics. Isolated registry/vocabulary/import/URL fixtures close H-01; tracer gate 7 passed.
+- Configured request-free core manage builders feed strict version-1 section models and generated schema. No actor is fabricated. Instance export contexts restore nested success/error state; legacy static helpers retain their signatures, closing M-01.
+- Final plan selection: 150 passed (3.09s); page/Guardian/provenance preservation: 78 passed (3.42s), all with four workers. Exact 9/21 core/Guardian query assertions remain intact. Ruff and whitespace pass; no skipped/unrun plan checks.
+- Approximately 15 minutes, 2 tasks; RED/GREEN commits 96a69a47, 029f380b, 3df653dd, 94eae43f; summary d3f11b91. ROADMAP reports 1/7 In Progress, complete=false. Remaining full-value/Guardian/renderer/schema/delivery acceptance belongs to plans 02–07.
+- STATE.md updated directly to preserve preexisting state.json changes. Unrelated config-default, .gitkeep and 06.35 review inputs remain untouched; no phase-completion claim.
 
 ### Phase 06.35 completion — 2026-11-15
 

@@ -2045,7 +2045,9 @@ Plans:
 4. Complete, partial and failed version-1 results validate against explicit Pydantic models and their generated schema. Unsupported, null, undeclared and unavailable values remain distinct; section failures preserve good data and produce the defined 0/1/2 exit behavior.
 5. Text/JSON semantic parity, force-color-safe JSON/schema, English/German output, valid subclass overrides, page contracts and normal query costs have regression coverage. Documentation and translations cover the full approved acceptance list; broad pytest runs use multiple workers.
 
-**Plans:** 6/7 plans executed
+**Plans:** 7/7 plans executed
+
+**Acceptance:** Incomplete — final source/installed normal and recorder suites pass; the Pydantic 2.2.1 command corpus is blocked by the pre-existing Resource `__pydantic_fields__` incompatibility. Seven other runtime combinations are unexecuted. Independent code/security review and phase verification remain pending; this phase is not marked complete. See `06.36-ACCEPTANCE.md` and `06.36-07-SUMMARY.md`.
 
 Plans:
 **Wave 1**
@@ -2065,7 +2067,7 @@ Plans:
 - [x] 06.36-06-PLAN.md — Command/customization documentation, German catalogs and release notes
 
 **Wave 6** *(blocked on Wave 5 completion)*
-- [ ] 06.36-07-PLAN.md — Dependency-floor, installed-distribution and final regression evidence
+- [x] 06.36-07-PLAN.md — Dependency-floor, installed-distribution and final regression evidence (floor acceptance unresolved)
 
 ### Phase 7: Theme-surface stability policy
 

@@ -5,17 +5,17 @@ current_phase: "06.36"
 current_phase_name: "ViewSet configuration CLI and versioned JSON contract (#371)"
 current_plan: "07"
 status: executing
-stopped_at: Completed 06.36-06-PLAN.md; plan 07 is next
-last_updated: "2026-11-16T07:05:00Z"
+stopped_at: Completed 06.36-07-PLAN.md; floor acceptance blocked; independent reviews pending
+last_updated: "2026-11-16T08:11:00Z"
 last_activity: 2026-11-16
-last_activity_desc: Phase 06.36 plan 06 complete; documentation and German command delivery verified; 6/7 plans
-state_head: 6cf07a0c
+last_activity_desc: Phase 06.36 plan 07 execution complete; four final full suites pass; floor acceptance unresolved; 7/7 plans
+state_head: eaf2d07f
 progress:
   total_phases: 43
   completed_phases: 41
   total_plans: 239
-  completed_plans: 238
-  percent: 99
+  completed_plans: 239
+  percent: 100
 milestone_name: milestone
 ---
 
@@ -33,12 +33,22 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 ## Current Position
 
 Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — EXECUTING
-Current Plan: 07 (01–06 complete)
+Current Plan: 07 (01–07 executed; acceptance incomplete)
 Total Plans in Phase: 7
-Status: In Progress — 6/7 plans complete
-Last activity: 2026-11-16 — Command docs/locales complete; 229 delivery tests and strict MkDocs build pass
+Status: In Progress — 7/7 plans executed; floor compatibility blocked and independent reviews pending
+Last activity: 2026-11-16 — Final source/installed normal and recorder suites each pass 15,599 tests plus one existing skip
 
-Next: $gsd-execute-phase 06.36
+Next: Independent code/security review and phase verification; resolve the declared Pydantic floor incompatibility before unconditional acceptance
+
+### Phase 06.36 plan 07 execution completion — 2026-11-16
+
+- Added an isolated Pydantic2.2.1 nox session with atomic existing-package pins, actual version/site-packages assertions, exact fresh corpus-directory forwarding and real report/command/export/preservation/docs/locale modules. All34 wiring cases pass; ordinary full nox normal/recorder behavior is unchanged.
+- Final frozen runtime `4846f729`: source normal/recorder and fresh installed normal/recorder each pass **15,599 tests plus one existing Django6-only CSP skip**. Pytest times506.50/505.17/568.86/503.88s; installed normal coverage98.19%. Final six-module focused checks pass354 each on Django4.2.30/5.2.19/6.0.10. All use Python3.12.3; primary Pydantic2.14.3, typing-extensions4.16.0.
+- Bounded Rule1 corrections preserve known Django4.2 translation proxies and reject spoofed argument storage without invoking hostile formatting/mapping hooks. Three RED artifacts pass machine/semantic gates. Focused compatibility/adversarial review completed before final runtime freeze; superseded/interrupted receipts are retained and not counted as final acceptance.
+- Actual Pydantic2.2.1 floor still has a **pre-existing Resource incompatibility**: `resource.py:89` reads absent `__pydantic_fields__`. Final57 report-model tests pass, but20 collection errors prevent the actual command corpus. Schema-only succeeds; floor corpus verification is unresolved. No floor increase or prior-phase Resource edit. Seven additional supported matrix combinations remain unexecuted; locally present interpreters are not test evidence.
+- Primary runtime/published schemas independently accept10 and reject15 fixtures each. Final wheel/sdist allowlists and module/catalog bytes pass; all312 installed package files match the checkout. Strict MkDocs1.6.1/no warnings and schema asset comparison remain valid for unchanged docs/catalog inputs. All13 phase Python files pass scoped Ruff; all821 final tracked inputs match stored hashes.
+- Two tasks,13 task/evidence files, seven measured task commits through `7a95817d`; summary committed `eaf2d07f` before progress updates. Actuals136445 chars/4 diff tokens include full retained logs/fingerprints. Approximately62 minutes of execution plus closeout. No publication, phase completion or maintainer approval is claimed.
+- ROADMAP is7/7 executed with phase unchecked and explicit acceptance limits. STATE.md is edited directly to preserve dirty state.json. Windows append failed on pre-existing rendered-table/fenced-JSON disagreement; the committed deferred item and acceptance retain the floor blocker. Original config-default/.gitkeep/06.35 review inputs remain untouched.
 
 ### Phase 06.36 plan 06 completion — 2026-11-16
 
@@ -1751,6 +1761,8 @@ None yet.
 
 ### Blockers/Concerns
 
+- Phase06.36: Pydantic2.2.1 command-corpus acceptance is blocked by pre-existing `Resource.__pydantic_init_subclass__` access to `__pydantic_fields__` at `src/crud_views/lib/resource.py:89`. Plan07's final floor has57 model passes/20 collection errors. Seven matrix combinations are unexecuted; independent code/security review and phase verification remain pending. See06.36-ACCEPTANCE.md and deferred-items.md; do not infer phase acceptance from7/7 executed plans.
+
 - Phase 2: Ruff 0.16.10 is below the manifest range and global formatting flags eight pre-existing planning
   Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
 
@@ -1830,6 +1842,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T07:05:00Z
-Stopped at: Completed 06.36-06-PLAN.md; plan 07 is next
+Last session: 2026-11-16T08:11:00Z
+Stopped at: Completed 06.36-07-PLAN.md; floor acceptance blocked; independent reviews pending
 Resume file: None

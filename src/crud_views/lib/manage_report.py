@@ -113,7 +113,11 @@ def normalize_value(value, *, not_declared=False, _projection=None):
             # Only the two exact Django wrappers with ordinary string arguments.
             # A Promise subclass, arbitrary lazy(), or a wrapped object can execute
             # project code even though it presents itself as a translation string.
-            args, kwargs = item._args, item._kw
+            # Django 4.2 uses name-mangled storage; later releases use _args/_kw.
+            # Read storage only after the exact-type check, before evaluating it.
+            stored = vars(item)
+            args = stored.get("_args", stored.get("_proxy____args"))
+            kwargs = stored.get("_kw", stored.get("_proxy____kw"))
             if type(args) is not tuple or type(kwargs) is not dict:
                 raise ValueError("unsupported translation arguments")
             if any(type(arg) is not str for arg in args) or any(

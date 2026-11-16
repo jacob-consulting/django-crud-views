@@ -4,8 +4,11 @@ import ast
 import copy
 import inspect
 import json
+import os
+import subprocess
+import sys
 import textwrap
-from dataclasses import asdict
+from dataclasses import asdict, fields
 from io import StringIO
 from typing import get_args
 
@@ -16,9 +19,23 @@ from django.utils import translation
 from pydantic import ValidationError
 
 from crud_views.lib.access_trace import AccessStep, AccessTrace
-from crud_views.lib.access_trace_export import AccessTraceExport, Kind, Outcome, Provider, StepResult, validate_export
+from crud_views.lib.access_trace_export import (
+    AccessTraceExport,
+    Kind,
+    Outcome,
+    Provider,
+    StepResult,
+    export_schema,
+    validate_export,
+)
 from crud_views.management.commands import cv_access
-from tests.test1.test_access_trace_command import invoke
+from tests.test1 import test_access_trace_command as command_tests
+from tests.test1.test_access_trace import explode
+
+invoke = command_tests.invoke
+process_env = command_tests.process_env
+run_process = command_tests.run_process
+ANSI = command_tests.ANSI
 
 ESCAPED_KEY = "bad\x1b[31m\nkey"
 EXIT_OUTCOMES = {"allowed", "denied", "not_found", "login_redirect", "no_such_route", "error"}
@@ -382,3 +399,89 @@ def test_real_missing_route_trace_validates_without_drift():
     data = json.loads(stdout)
     assert data["outcome"] == "no_such_route"
     round_trips(data)
+
+
+# Schema mode: exclusive, plain, and free of tracing, actor lookup or database reads (no django_db mark).
+
+
+@pytest.fixture
+def spies(monkeypatch):
+    monkeypatch.setattr(cv_access, "trace_access", explode)
+    monkeypatch.setattr(cv_access, "resolve_trace_user", explode)
+
+
+@pytest.mark.parametrize("flags", [[], ["--as-json"], ["--force-color"], ["--as-json", "--force-color"]])
+def test_schema_mode_prints_the_plain_generated_schema(spies, flags):
+    code, stdout, stderr = invoke("--schema", *flags)
+    assert code == 0
+    assert stderr == ""
+    assert "\x1b" not in stdout
+    assert json.loads(stdout) == export_schema()
+
+
+@pytest.mark.parametrize("args", [["/x/"], ["/x/", "sam"], ["--anonymous"], ["/x/", "--anonymous", "--as-json"]])
+def test_schema_mode_rejects_targets_and_actors(spies, args):
+    error, stdout, stderr = failure("--schema", *args)
+    assert error.returncode == 2
+    assert len(str(error).splitlines()) == 1
+    assert stdout == "" and stderr == ""
+
+
+@pytest.mark.parametrize("args", [[], ["--anonymous"], ["--as-json", "--anonymous"]])
+def test_missing_path_is_a_usage_error(spies, args):
+    error, stdout, stderr = failure(*args)
+    assert error.returncode == 2
+    assert len(str(error).splitlines()) == 1
+    assert stdout == "" and stderr == ""
+
+
+def _closed(node):
+    """Closed values from enum lists and single-value const, on the node and each anyOf branch."""
+    values = set()
+    for branch in [node, *node.get("anyOf", [])]:
+        values.update(branch.get("enum", []))
+        if "const" in branch:
+            values.add(branch["const"])
+    return values
+
+
+def test_schema_structure_matches_the_models_and_dataclasses():
+    schema = export_schema()
+    definitions = schema["$defs"]
+    assert set(definitions) == {"Counts", "ObjectIdentity", "PlanRow", "Step", "TraceException", "TraceUser"}
+    assert schema["required"] == [field.name for field in fields(AccessTrace)]
+    assert definitions["Step"]["required"] == [field.name for field in fields(AccessStep)]
+    assert definitions["PlanRow"]["required"] == ["kind", "viewset"]
+    assert "required" not in definitions["TraceUser"]
+    for node in [schema, *definitions.values()]:
+        assert node["additionalProperties"] is False
+    assert set(definitions["TraceException"]["properties"]) == {"class", "message"}
+    root, step, plan = schema["properties"], definitions["Step"]["properties"], definitions["PlanRow"]["properties"]
+    assert _closed(root["version"]) == {1}
+    assert _closed(root["outcome"]) == set(get_args(Outcome))
+    assert _closed(step["kind"]) == _closed(plan["kind"]) == set(get_args(Kind))
+    assert _closed(step["result"]) == set(get_args(StepResult))
+    assert _closed(plan["result"]) == {"unavailable"}
+    assert _closed(step["provider"]) == _closed(plan["provider"]) == set(get_args(Provider))
+
+
+def test_export_module_imports_without_django():
+    env = {key: value for key, value in os.environ.items() if key != "DJANGO_SETTINGS_MODULE"}
+    code = (
+        "import sys\n"
+        "from crud_views.lib.access_trace_export import export_schema\n"
+        "export_schema()\n"
+        "loaded = [name for name in sys.modules if name == 'django' or name.startswith('django.')]\n"
+        "assert not loaded, loaded\n"
+    )
+    result = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("args,tty", [(["--schema", "--force-color"], True), (["--schema", "--as-json"], False)])
+def test_real_process_schema_is_plain(process_env, args, tty):
+    result = run_process(process_env, *args, tty=tty)
+    assert result.returncode == 0, result.stderr
+    assert not ANSI.search(result.stdout)
+    assert result.stderr == ""
+    assert json.loads(result.stdout) == export_schema()

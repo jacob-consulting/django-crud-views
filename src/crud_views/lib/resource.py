@@ -86,7 +86,7 @@ class Resource(BaseModel):
         # Expose object.pk like Django models. A property on the base class
         # would be a data descriptor shadowing a real "pk" field, so it is
         # attached per subclass and only when no "pk" field exists.
-        if "pk" in cls.__pydantic_fields__:
+        if "pk" in cls.model_fields:
             # a real pk field: unshadow any inherited per-subclass shim so the
             # field value in the instance __dict__ wins again
             if any(isinstance(base.__dict__.get("pk"), _PkShim) for base in cls.__mro__[1:]):

@@ -5,6 +5,7 @@ import re
 from dataclasses import fields
 from io import StringIO
 from pathlib import Path
+from typing import get_args
 
 import pytest
 from django.core.management import call_command
@@ -14,7 +15,7 @@ from django.utils import translation
 from lxml import html
 
 from crud_views.lib.access_trace import AccessStep, AccessTrace, trace_access
-from crud_views.lib.access_trace_export import export_schema
+from crud_views.lib.access_trace_export import Kind, Outcome, PlanRow, Provider, StepResult, export_schema
 from crud_views.lib.settings import CrudViewsSettings, crud_views_settings
 from crud_views.lib.views import DetailViewPermissionRequired
 from crud_views.lib.viewset import ParentViewSet, ViewSet
@@ -417,3 +418,53 @@ def test_documented_empty_user_before_actor_resolution():
     rows = dict(re.findall(r"^\| `(\w+)` \| (.+) \|$", section("Version 1 document"), re.M))
     assert rows["user"].endswith("or `{}` before actor resolution.")
     assert trace_access("http://[bad/x/", None).to_dict()["user"] == {}
+
+
+# Closed version-1 vocabularies and the #375 release entry.
+
+
+def backticked(text):
+    return set(re.findall(r"`([^`]+)`", text))
+
+
+def sentence(text, start):
+    """The sentence starting with ``start``, up to its terminating period."""
+    return re.search(rf"{start} (.+?)\.(?:\s|$)", text).group(1)
+
+
+def test_documented_vocabularies_equal_the_model_literals():
+    text = section("Step fields")
+    provider = re.search(r"^\| `provider` \| (.+) \|$", text, re.M).group(1)
+    assert backticked(provider) == set(get_args(Provider))
+    prose = " ".join(text.split())
+    assert backticked(sentence(prose, "Kinds are")) == set(get_args(Kind))
+    assert backticked(sentence(prose, "Step results are")) == set(get_args(StepResult))
+    assert "Step results include" not in prose
+
+
+def test_documented_vocabularies_are_closed_sets():
+    prose = " ".join(section("Step fields").split())
+    assert "Outcomes, kinds, step results and providers are closed sets in version 1" in prose
+    assert "[Schema and compatibility](#schema-and-compatibility)" in prose
+    assert "Plan rows use the same kinds and only the `unavailable` result" in prose
+    assert PlanRow.model_fields["kind"].annotation == Kind
+    assert set(get_args(PlanRow.model_fields["result"].annotation)) == {"unavailable", type(None)}
+    assert set(get_args(Outcome)) == set(
+        dict(re.findall(r"^\| `(\w+)` \| `(\d)` \|", section("Outcomes and streams"), re.M))
+    )
+
+
+def test_access_trace_contract_release_entry():
+    changelog = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased\n", 1)[1].split("\n## ", 1)[0]
+    entries = []
+    for part in re.split(r"^### ", changelog, flags=re.M)[1:]:
+        heading, body = part.split("\n", 1)
+        entries += [(heading, entry) for entry in re.split(r"^- ", body, flags=re.M)[1:] if "(#375)" in entry]
+    assert len(entries) == 1 and entries[0][0] == "Added"
+    entry = " ".join(entries[0][1].split())
+    assert entry.startswith("**Access trace contract** (#375):")
+    assert "docs/reference/manage.md#schema-and-compatibility" in entry
+    targets = {h.lower().replace(" ", "-") for h in re.findall(r"^#{2,3} ([\w -]+)$", reference(), re.M)}
+    assert "schema-and-compatibility" in targets
+    for phrase in ("cv_access --schema", "exits 2", "not an outcome", "German"):
+        assert phrase in entry, phrase

@@ -2082,14 +2082,14 @@ both text and JSON, and reports a validation failure as one stderr diagnostic wi
 Valid output bytes, colors, outcomes, exit codes and the public `AccessTrace`/`AccessStep.to_dict()` API stay unchanged.
 **Requirements**: None (scope pinned by issue #375 and CONTEXT D-01–D-14)
 **Depends on:** Phase 06.36
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 
 Plans:
 **Wave 1**
 - [x] 06.37-01-PLAN.md — Strict export models, validation gate before both formatters, exclusive plain `--schema`, German text
 
 **Wave 2** *(parallel)*
-- [ ] 06.37-02-PLAN.md — Real-trace corpus (all outcomes, nested/Guardian/Resource/manage), manage-page parity, Pydantic 2.2.1 floor run
+- [x] 06.37-02-PLAN.md — Real-trace corpus (all outcomes, nested/Guardian/Resource/manage), manage-page parity, Pydantic 2.2.1 floor run
 - [ ] 06.37-03-PLAN.md — `## cv_access` schema/compatibility/validation-failure docs, closed vocabularies, CHANGELOG entry
 
 **Wave 3**

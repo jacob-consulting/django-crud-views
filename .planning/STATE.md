@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.37"
 current_phase_name: "cv_access Pydantic JSON contract validation and schema (#375)"
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 06.37-01-PLAN.md
-last_updated: "2026-11-16T19:27:47.446Z"
+stopped_at: Completed 06.37-02-PLAN.md
+last_updated: "2026-11-16T19:45:13.470Z"
 last_activity: 2026-11-16
 last_activity_desc: Phase 06.37 execution started
-state_head: 4be56156cfb4f8824ec71d99c4daf6ead993d04a
+state_head: d525e8644f9471e5b38769a3f52b49f104b899cd
 progress:
   total_phases: 44
   completed_phases: 42
   total_plans: 244
-  completed_plans: 241
+  completed_plans: 242
 milestone_name: milestone
 ---
 
@@ -32,10 +32,10 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 ## Current Position
 
 Phase: 06.37 (cv_access Pydantic JSON contract validation and schema (#375)) — EXECUTING
-Current Plan: 2
+Current Plan: 3
 Total Plans in Phase: 4
-Status: Executing Phase 06.37
-Last activity: 2026-11-16 — Completed 06.37-01-PLAN.md (strict export models, validation gate, --schema, German text)
+Status: Ready to execute
+Last activity: 2026-11-16 — Completed 06.37-02-PLAN.md (real-trace contract corpus, manage-page parity, Pydantic 2.2.1 floor: 487 passed)
 
 Next: $gsd-discuss-phase 06.37 — then plan the #375 contract work before Phase 7.
 
@@ -1471,6 +1471,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P12 | 8min | 2 tasks | 9 files |
 | Phase 06.30 P13 | 15min | 3 tasks | 11 files |
 | Phase 06.37 P01 | 11 min | 3 tasks | 6 files |
+| Phase 06.37 P02 | 8 min | 3 tasks | 5 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1782,6 +1783,9 @@ Recent decisions affecting current work:
 - [Phase 06.37]: 06.37-01: cv_access validates trace.to_dict() through strict internal models (crud_views.lib.access_trace_export, own extra=forbid base, not WireModel) before both formatters; failures are one escaped returncode-2 CommandError naming only locations
 - [Phase 06.37]: 06.37-01: AccessTraceExport version before-validator rejects non-int values (True, 1.0) at Pydantic 2.2.1 and 2.14.3; export_schema() uses mode=validation
 - [Phase 06.37]: 06.37-01: cv_access --schema is exclusive (path/user/--anonymous rejected with returncode 2), plain under --force-color, and branches before actor resolution and tracing; a missing path is now a returncode-2 CommandError
+- [Phase 06.37]: 06.37-02: The real runner carries a non-str cv_get_requirement value through unchanged, so the gate rejects it with no runner change
+- [Phase 06.37]: 06.37-02: No real trace missed a closed value; the plan 01 models stayed untouched and the corpus (outcomes, user == {}, nested, unavailable, Guardian, Resource, manage gate) validates with zero drift
+- [Phase 06.37]: 06.37-02: The trace contract file runs in manage_report_floor and passes at Pydantic 2.2.1 (487 passed)
 
 ### Pending Todos
 
@@ -1871,6 +1875,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T19:27:41.655Z
-Stopped at: Completed 06.37-01-PLAN.md
+Last session: 2026-11-16T19:45:07.661Z
+Stopped at: Completed 06.37-02-PLAN.md
 Resume file: None

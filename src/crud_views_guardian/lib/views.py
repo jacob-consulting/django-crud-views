@@ -9,6 +9,7 @@ from django.utils.translation import gettext as _
 
 from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.ancestors import _immediate_parent_access
+from crud_views.lib.manage_report import SourceRecord, normalize_value
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views import (
     ActionViewPermissionRequired,
@@ -399,7 +400,13 @@ class GuardianManageView(ManageView):
         from crud_views_guardian.checks import collect_guardian_composition_checks
 
         data = super().get_manage_checks(viewset, user)
-        data["messages"] += self._manage_check_messages(collect_guardian_composition_checks([viewset]))
+        messages = collect_guardian_composition_checks([viewset])
+        helper = self._manage_check_messages
+        data["messages"] += (
+            self._manage_check_message_data(messages, export=True)
+            if getattr(self, "_manage_export_enabled", False) and helper is ManageView._manage_check_messages
+            else helper(messages)
+        )
         return data
 
     def _guard_manage_auth(self, viewset, user):
@@ -485,11 +492,13 @@ class GuardianManageView(ManageView):
     def get_manage_views(self, viewset, user):
         self._guard_manage_auth(viewset, user)
         rows = super().get_manage_views(viewset, user)
+        export = getattr(self, "_manage_export_enabled", False)
         for row in rows:
             view = viewset.get_view_class(row["key"])
             labels = [label for cls, label in GUARDIAN_MIXINS if issubclass(view, cls)]
             applicable = self._guardian_global_fallback_applicable(view)
             accept = bool(getattr(view, "cv_guardian_accept_global_perms", False)) if applicable else None
+            policy_code = ("global_fallback" if accept else "strict") if applicable else "not_applicable"
             effective = (_("global fallback") if accept else _("strict")) if applicable else _("not applicable")
             row["parent_only_requirement"] = (
                 viewset.parent is not None and issubclass(view, GuardianParentPermissionMixin) and not applicable
@@ -497,7 +506,7 @@ class GuardianManageView(ManageView):
             row["guardian_policy"] = {
                 "applicable": applicable,
                 "accept_global_perms": accept,
-                "effective_policy": effective,
+                "effective_policy": policy_code if export else effective,
                 "tooltip": (
                     _("Visible rows are filtered by this permission; an empty list is allowed.")
                     if issubclass(view, GuardianQuerysetMixin)
@@ -525,6 +534,22 @@ class GuardianManageView(ManageView):
                     "source": _("effective"),
                     "is_default": False,
                     "unknown": False,
+                    **(
+                        {
+                            "_export": {
+                                "value": normalize_value(
+                                    [
+                                        f"{cls.__module__}.{cls.__qualname__}"
+                                        for cls, _label in GUARDIAN_MIXINS
+                                        if issubclass(view, cls)
+                                    ]
+                                ),
+                                "source": SourceRecord(code="effective"),
+                            }
+                        }
+                        if export
+                        else {}
+                    ),
                 },
             )
             section["entries"].append(
@@ -534,6 +559,16 @@ class GuardianManageView(ManageView):
                     "source": _("effective"),
                     "is_default": False,
                     "unknown": False,
+                    **(
+                        {
+                            "_export": {
+                                "value": normalize_value(policy_code),
+                                "source": SourceRecord(code="effective"),
+                            }
+                        }
+                        if export
+                        else {}
+                    ),
                 }
             )
         return rows

@@ -12,6 +12,236 @@ from tests.test1.test_manage_report import Hostile
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("parent_kind", ["none", "core", "guardian"])
+@pytest.mark.parametrize("mapping", [None, {}, {"inspect": "app.view_publisher"}])
+@pytest.mark.parametrize("selected_actor", [False, True])
+def test_resource_command_is_static_below_each_parent(
+    catalogue, monkeypatch, django_user_model, parent_kind, mapping, selected_actor
+):
+    import json
+
+    from django.contrib.auth.models import Permission
+    from django.contrib.contenttypes.models import ContentType
+
+    from crud_views.lib import access_trace
+    from crud_views.lib.resource import ResourceViewMixin
+    from crud_views.lib.view import CrudView
+    from crud_views.lib.views import DetailView
+    from crud_views.lib.views import manage as manage_module
+    from crud_views.lib.viewset import ParentViewSet
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.test_manage_command import invoke
+    from tests.test1.test_resource_manage import ManageItem
+
+    parent = None
+    if parent_kind != "none":
+        cls = GuardianViewSet if parent_kind == "guardian" else ViewSet
+        parent = cls(model=Publisher, name="static_parent", context_buttons=[])
+    vs = ViewSet(
+        model=ManageItem,
+        name="static_resource",
+        context_buttons=[],
+        resource_permissions=mapping,
+        parent=ParentViewSet(name=parent.name) if parent else None,
+    )
+    actor = django_user_model.objects.create_user(username="resource actor")
+    actor.user_permissions.add(Permission.objects.get(content_type__app_label="app", codename="view_publisher"))
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Static Resource inspection executed a loader, handler, trace, label or parent lookup")
+
+    for base in (ListView, DetailView):
+        type(
+            "Static" + base.__name__,
+            (ResourceViewMixin, base),
+            {
+                "__module__": __name__,
+                "cv_viewset": vs,
+                "get": forbidden,
+                "post": forbidden,
+                "cv_get_action_label": classmethod(forbidden),
+                "cv_get_action_short_label": classmethod(forbidden),
+                "cv_get_breadcrumb_label": classmethod(forbidden),
+            },
+        )
+    for name in ("cv_get_items", "cv_get_item"):
+        monkeypatch.setattr(ManageItem, name, classmethod(forbidden))
+    monkeypatch.setattr(CrudView, "cv_get_parent_object", forbidden)
+    monkeypatch.setattr(ManageView, "get_manage_access_trace", forbidden)
+    monkeypatch.setattr(access_trace, "trace_access", forbidden)
+    monkeypatch.setattr(manage_module, "trace_access", forbidden)
+    get_for_model = ContentType.objects.get_for_model
+
+    def model_content_type(model, *args, **kwargs):
+        assert model is not ManageItem, "Resource must not acquire a ContentType"
+        return get_for_model(model, *args, **kwargs)
+
+    monkeypatch.setattr(ContentType.objects, "get_for_model", model_content_type)
+    code, output = invoke(vs.name, "--as-json", *(["--user", actor.username] if selected_actor else []))
+    report = json.loads(output)
+    assert code == 0 and report["status"] == "complete", report["errors"]
+    data = report["data"]
+    assert data["identity"]["kind"] == "resource" and data["identity"]["parent"] == (parent.name if parent else None)
+    assert data["guardian"]["status"] == "not_applicable"
+    matrix = data["permissions"]["data"]
+    assert matrix["grant_kind"] == "resource" and len(matrix["columns"]) == (1 if mapping else 0)
+    if selected_actor:
+        assert matrix["actor"]["row"]["cells"] == (
+            [{"key": "inspect", "model": True, "object_count": None}] if mapping else []
+        )
+    else:
+        assert matrix["actor"]["row"] is None
+    parents = data["hierarchy"]["data"]["parents"]
+    assert len(parents) == (1 if parent else 0)
+    if parent:
+        assert parents[0]["name"] == parent.name
+        assert any("<" in row["route"] for row in data["routes"]["data"]["entries"])
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "kind,table_name",
+    [
+        ("core", "permission"),
+        ("guardian", "permission"),
+        ("guardian", "generic_user"),
+        ("guardian", "generic_group"),
+        ("guardian", "direct_user"),
+        ("guardian", "direct_group"),
+    ],
+)
+@pytest.mark.parametrize("selected_actor", [False, True])
+@pytest.mark.parametrize("refusal", ["manager", "router"])
+def test_nested_command_auth_refusal_retains_independent_sections(
+    catalogue, monkeypatch, django_user_model, kind, table_name, selected_actor, refusal
+):
+    import json
+
+    from django.contrib.auth.models import Permission
+    from django.db import router
+    from guardian.models import GroupObjectPermission, UserObjectPermission
+
+    from crud_views.lib.views import ListViewPermissionRequired
+    from crud_views.lib.viewset import ParentViewSet
+    from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Book, Shelf, ShelfGroupObjectPermission, ShelfUserObjectPermission
+    from tests.test1.test_manage_command import invoke
+
+    cls = GuardianViewSet if kind == "guardian" else ViewSet
+    table = {
+        "permission": Permission,
+        "generic_user": UserObjectPermission,
+        "generic_group": GroupObjectPermission,
+        "direct_user": ShelfUserObjectPermission,
+        "direct_group": ShelfGroupObjectPermission,
+    }[table_name]
+    direct = table_name.startswith("direct_")
+    parent = cls(model=Publisher, name="routing_parent", context_buttons=[])
+    child = cls(
+        model=Shelf if direct else Book,
+        name="routing_child",
+        context_buttons=[],
+        # The direct-grant fixture exercises static diagnostics only, following
+        # test_ancestor_auth_databases' supplied-model convention; no objects exist.
+        parent=ParentViewSet(name=parent.name, attribute="name" if direct else "publisher"),
+    )
+    base = GuardianListViewPermissionRequired if kind == "guardian" else ListViewPermissionRequired
+    type("RoutingList", (base,), {"__module__": __name__, "cv_viewset": child})
+    actor = django_user_model.objects.create_user(username="routing actor")
+    # Warm static permission maps before refusing reads; the guard must still run.
+    assert parent.permissions and child.permissions
+    if refusal == "manager":
+        monkeypatch.setattr(table.objects, "_db", "forbidden_alias")
+    else:
+
+        class RefusePermission:
+            def db_for_read(self, model, **hints):
+                return "forbidden_alias" if model is table else None
+
+        monkeypatch.setattr(router, "routers", [RefusePermission()])
+    code, output = invoke(child.name, "--as-json", *(["--user", actor.username] if selected_actor else []))
+    report = json.loads(output)
+    assert code == 2 and report["status"] == "partial"
+    assert {error["section"] for error in report["errors"]} == {"views", "permissions"}
+    for error in report["errors"]:
+        assert error["exception_class"] == "ImproperlyConfigured"
+        assert "forbidden_alias" in error["message"] and "not rerouted" in error["message"]
+    for section in ("facts", "presentation", "routes", "hierarchy", "ancestor_policy", "checks"):
+        assert report["data"][section]["status"] == "ok", section
+    assert report["data"]["guardian"]["status"] == ("ok" if kind == "guardian" else "not_applicable")
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "kind,table_name",
+    [
+        ("core", "user"),
+        ("core", "group"),
+        ("core", "permission"),
+        ("core", "content_type"),
+        ("core", "user_groups"),
+        ("core", "user_permissions"),
+        ("core", "group_permissions"),
+        ("guardian", "generic_user"),
+        ("guardian", "generic_group"),
+        ("guardian", "direct_user"),
+        ("guardian", "direct_group"),
+    ],
+)
+@pytest.mark.parametrize("selected_actor", [False, True])
+@pytest.mark.parametrize("refusal", ["manager", "router"])
+def test_supplied_nested_viewset_checks_every_auth_table(
+    catalogue, monkeypatch, django_user_model, django_assert_num_queries, kind, table_name, selected_actor, refusal
+):
+    from django.contrib.auth.models import Group, Permission
+    from django.contrib.contenttypes.models import ContentType
+    from django.core.exceptions import ImproperlyConfigured
+    from django.db import router
+    from guardian.models import GroupObjectPermission, UserObjectPermission
+
+    from crud_views.lib.viewset import ParentViewSet
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Shelf, ShelfGroupObjectPermission, ShelfUserObjectPermission
+
+    tables = {
+        "user": django_user_model,
+        "group": Group,
+        "permission": Permission,
+        "content_type": ContentType,
+        "user_groups": django_user_model.groups.through,
+        "user_permissions": django_user_model.user_permissions.through,
+        "group_permissions": Group.permissions.through,
+        "generic_user": UserObjectPermission,
+        "generic_group": GroupObjectPermission,
+        "direct_user": ShelfUserObjectPermission,
+        "direct_group": ShelfGroupObjectPermission,
+    }
+    table = tables[table_name]
+    cls = GuardianViewSet if kind == "guardian" else ViewSet
+    parent = cls(model=Publisher, name="guard_parent")
+    # Deliberately host the collector on a different top-level compatible ViewSet.
+    host = cls(model=Publisher, name="guard_host")
+    supplied = cls(model=Shelf, name="guard_supplied", parent=ParentViewSet(name=parent.name))
+    actor = django_user_model.objects.create_user(username="guard actor") if selected_actor else None
+    if refusal == "manager":
+        monkeypatch.setattr(table._default_manager, "_db", "forbidden_alias")
+    else:
+
+        class RefuseTable:
+            def db_for_read(self, model, **hints):
+                return "forbidden_alias" if model is table else None
+
+        monkeypatch.setattr(router, "routers", [RefuseTable()])
+    manage = host.get_all_views()["manage"]()
+    with (
+        django_assert_num_queries(0),
+        pytest.raises(ImproperlyConfigured, match=r"guard_supplied.*authorization records.*forbidden_alias"),
+    ):
+        manage.get_manage_permissions(supplied, actor)
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("language", ["en", "de"])
 def test_guardian_policy_exports_stable_codes_and_mixin_paths(catalogue, language):
     from django.utils.translation import override

@@ -489,3 +489,73 @@ def test_holder_identity_uuid_projection_and_strict_rejection(catalogue, monkeyp
     else:
         assert code == 2 and report["data"]["permissions"]["status"] == "error"
         assert report["errors"][0]["code"] == "output_validation_failed"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("model_name", ["Publisher", "Shelf"])
+@pytest.mark.parametrize("actor_kind", ["none", "group", "superuser", "inactive"])
+@pytest.mark.parametrize("shown", [False, True])
+def test_guardian_command_preserves_direct_and_effective_grants(
+    catalogue, monkeypatch, django_user_model, model_name, actor_kind, shown
+):
+    from django.contrib.auth.models import Group
+    from guardian.shortcuts import assign_perm
+
+    from crud_views.lib.settings import crud_views_settings
+    from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+    from tests.test1.app import models
+    from tests.test1.test_manage_guardian import cell, model_grant
+
+    monkeypatch.setattr(crud_views_settings, "manage_show_users", shown)
+    model = getattr(models, model_name)
+    vs = GuardianViewSet(model=model, name="guardian_grants", context_buttons=[])
+    type("GrantedList", (GuardianListViewPermissionRequired,), {"__module__": __name__, "cv_viewset": vs})
+    first, second = [model.objects.create(name=name) for name in ("first", "second")]
+    actor = django_user_model.objects.create_user(
+        username="inspected", is_active=actor_kind != "inactive", is_superuser=actor_kind == "superuser"
+    )
+    group = Group.objects.create(name="grant group")
+    holder = django_user_model.objects.create_user(username="direct holder")
+    actor.groups.add(group)
+    model_grant(group, vs)
+    assign_perm(vs.permissions["view"], group, first)
+    assign_perm(vs.permissions["view"], actor, first)  # duplicate through group must count once
+    assign_perm(vs.permissions["change"], holder, second)
+    args = [] if actor_kind == "none" else ["--user", actor.username]
+    code, output = invoke(vs.name, "--as-json", *args)
+    report = json.loads(output)
+    assert code == 0 and report["status"] == "complete", report["errors"]
+    data = report["data"]
+    matrix = data["permissions"]["data"]
+    assert matrix["superusers"]["meaning"] == "global_grants_not_strict_object_helper"
+    assert matrix["superusers"]["count"] == int(actor_kind == "superuser")
+    assert data["guardian"]["data"]["get_objects_for_user"] == {
+        "policy": "strict",
+        "accept_global_perms": False,
+        "use_groups": True,
+    }
+    assert cell(matrix["groups"][0]) == {"key": "view", "model": True, "object_count": 1}
+    assert matrix["groups"][0]["member_count"] == 1
+    if shown:
+        users = {row["id"]: row for row in matrix["users"]}
+        assert cell(users[actor.pk]) == {"key": "view", "model": False, "object_count": 1}
+        assert cell(users[holder.pk], "change") == {"key": "change", "model": False, "object_count": 1}
+    else:
+        assert matrix["users"] is None and matrix["superusers"]["names"] is None
+        assert holder.username not in output
+    if actor_kind == "none":
+        assert matrix["actor"] == {"state": "not_selected", "row": None}
+    else:
+        assert cell(matrix["actor"]["row"]) == {
+            "key": "view",
+            "model": actor_kind != "inactive",
+            "object_count": {"group": 1, "superuser": 2, "inactive": 0}[actor_kind],
+        }
+    selected_code, output = invoke(vs.name, "list", "--as-json", *args)
+    selected = json.loads(output)["data"]
+    assert (
+        selected_code == 0
+        and selected["permissions"] == data["permissions"]
+        and selected["guardian"] == data["guardian"]
+    )
+    assert [row["key"] for row in selected["views"]["data"]["entries"]] == ["list"]

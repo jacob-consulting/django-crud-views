@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.36"
 current_phase_name: "ViewSet configuration CLI and versioned JSON contract (#371)"
-current_plan: "03"
+current_plan: "04"
 status: executing
-stopped_at: Completed 06.36-02-PLAN.md; plan 03 is next
-last_updated: "2026-11-16T06:13:00Z"
+stopped_at: Completed 06.36-03-PLAN.md; plan 04 is next
+last_updated: "2026-11-16T06:24:00Z"
 last_activity: 2026-11-16
-last_activity_desc: Phase 06.36 plan 02 complete; bounded values and scope contracts verified; 2/7 plans
-state_head: a661cc192f82ee6c435a9292a1f45c2176b94b09
+last_activity_desc: Phase 06.36 plan 03 complete; actor and provider diagnostics verified; 3/7 plans
+state_head: de7295b8763e04e155434ba6b0368aef0d552fc6
 progress:
   total_phases: 43
   completed_phases: 41
   total_plans: 239
-  completed_plans: 234
+  completed_plans: 235
   percent: 98
 milestone_name: milestone
 ---
@@ -33,12 +33,21 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 ## Current Position
 
 Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — EXECUTING
-Current Plan: 03 (01–02 complete)
+Current Plan: 04 (01–03 complete)
 Total Plans in Phase: 7
-Status: In Progress — 2/7 plans complete
-Last activity: 2026-11-16 — Bounded values and selected-view contracts complete; 274 combined tests pass
+Status: In Progress — 3/7 plans complete
+Last activity: 2026-11-16 — Actor, Guardian and Resource diagnostics complete; 442 focused/preservation tests pass
 
 Next: $gsd-execute-phase 06.36
+
+### Phase 06.36 plan 03 completion — 2026-11-16
+
+- Guardian exports share one stable strict/global_fallback/not_applicable code across view policy and synthetic metadata; ordered mixin paths and effective sources are locale-stable. Composition checks use the shared numeric-severity worker while preserving legacy signatures and ordinary dictionaries.
+- Explicit/no/inactive actors, username precedence, unknown-user early failure, all 23 visible holders, hidden identities, UUID IDs and browser-mode independence pass. Task01 preserves already-correct production paths with regression coverage only.
+- Generic/direct user and group grants, deduplicated effective actors, all reached core/Guardian table guards, supplied-ViewSet routing and 18 static Resource configurations are verified. No ancestor/auth code or query construction changed; direct guard calls prove zero SQL before refusal.
+- C05:31 passed (1.67s); C06:442 passed (12.87s), four workers; exact core/Guardian query baselines remain9/21. Ruff/format/whitespace pass; no skipped or unrun plan checks.
+- Approximately10 minutes,2tasks; task commits7b1e9d25,e351f4e3,de7295b8; summary8f115edd. ROADMAP reports3/7 In Progress,complete=false. Docs handoff is recorded in the summary; SQL-failure and transaction boundaries remain plan04.
+- STATE.md updated directly to preserve dirty state.json. Unrelated config-default,.gitkeep and06.35review inputs remain untouched; no phase completion or publication.
 
 ### Phase 06.36 plan 02 completion — 2026-11-16
 
@@ -1413,6 +1422,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 ### Decisions
 
+- [Phase 06.36 plan 03] Preserve already-correct actor/holder paths; Guardian computes one policy code at its owner for both machine representations. Keep authorization guards unchanged and verify supplied-ViewSet table refusals before SQL.
+
 - [Phase 06.33 plan 01] Resolve diagnostic auth routing against the supplied ViewSet's registered manage class; Resource diagnostics fail before reads. Pivot direct holders by PK, split users at 20, and preserve legacy getters behind request-local lazy proxies.
 - [Phase 06.33 plan 02] Describe only effective has_permission ownership automatically; custom dispatch/object/queryset gates require explicit descriptions. Reuse one generated-route projection and the request engine's nearest enforced ancestor selection. Keep unchanged extension gates inherited and verify them with native requests.
 - [Phase 06.33 plan 03] Capture constructor keys before validators and own context-action declarations before registration writes; keep W280 policy unchanged and inspect display data statically. Source labels remain independent from project declaration status; model_construct provenance is unsupported.
@@ -1793,6 +1804,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15T23:04:02.936Z
-Stopped at: Phase 06.36 plan-review convergence complete in 2 cycles; ready to execute
-Resume file: .planning/phases/06.36-viewset-configuration-cli-and-versioned-json-contract-371/06.36-REVIEWS.md
+Last session: 2026-11-16T06:24:00Z
+Stopped at: Completed 06.36-03-PLAN.md; plan 04 is next
+Resume file: None

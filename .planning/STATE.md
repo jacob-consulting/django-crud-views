@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.37"
 current_phase_name: "cv_access Pydantic JSON contract validation and schema (#375)"
-current_plan: Not started
+current_plan: 2
 status: executing
-stopped_at: Phase 06.37 context gathered
-last_updated: "2026-11-16T19:09:14.584Z"
+stopped_at: Completed 06.37-01-PLAN.md
+last_updated: "2026-11-16T19:27:47.446Z"
 last_activity: 2026-11-16
-last_activity_desc: "Phase 06.36 shipped as PR #377"
-state_head: e1f5c5b090e6081c78ba78f530c8a939e2192763
+last_activity_desc: Phase 06.37 execution started
+state_head: 4be56156cfb4f8824ec71d99c4daf6ead993d04a
 progress:
   total_phases: 44
   completed_phases: 42
   total_plans: 244
-  completed_plans: 240
+  completed_plans: 241
 milestone_name: milestone
 ---
 
@@ -31,11 +31,11 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 
 ## Current Position
 
-Phase: 06.37 (cv_access Pydantic JSON contract validation and schema (#375)) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.37 (cv_access Pydantic JSON contract validation and schema (#375)) — EXECUTING
+Current Plan: 2
 Total Plans in Phase: 4
-Status: Ready to execute
-Last activity: 2026-11-16 -- Phase 06.36 shipped as PR #377
+Status: Executing Phase 06.37
+Last activity: 2026-11-16 — Completed 06.37-01-PLAN.md (strict export models, validation gate, --schema, German text)
 
 Next: $gsd-discuss-phase 06.37 — then plan the #375 contract work before Phase 7.
 
@@ -1470,6 +1470,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P11 | 21min | 3 tasks | 12 files |
 | Phase 06.30 P12 | 8min | 2 tasks | 9 files |
 | Phase 06.30 P13 | 15min | 3 tasks | 11 files |
+| Phase 06.37 P01 | 11 min | 3 tasks | 6 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1778,6 +1779,9 @@ Recent decisions affecting current work:
 - [Phase 06.32]: Keep the exact eight transition variants independent of the extensible state badge vocabulary.
 - [Phase 06.32]: Resolve presentation on copied actions and defer the icon helper import to preserve pre-setup WorkflowForm imports.
 - [Phase 06.32]: Preserve the exact submit-label fallback regardless of icons and retain deliberate empty/null class suppression.
+- [Phase 06.37]: 06.37-01: cv_access validates trace.to_dict() through strict internal models (crud_views.lib.access_trace_export, own extra=forbid base, not WireModel) before both formatters; failures are one escaped returncode-2 CommandError naming only locations
+- [Phase 06.37]: 06.37-01: AccessTraceExport version before-validator rejects non-int values (True, 1.0) at Pydantic 2.2.1 and 2.14.3; export_schema() uses mode=validation
+- [Phase 06.37]: 06.37-01: cv_access --schema is exclusive (path/user/--anonymous rejected with returncode 2), plain under --force-color, and branches before actor resolution and tracing; a missing path is now a returncode-2 CommandError
 
 ### Pending Todos
 
@@ -1867,6 +1871,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T16:32:12.101Z
-Stopped at: Phase 06.37 context gathered
-Resume file: .planning/phases/06.37-cv-access-pydantic-json-contract-validation-and-schema-375/06.37-CONTEXT.md
+Last session: 2026-11-16T19:27:41.655Z
+Stopped at: Completed 06.37-01-PLAN.md
+Resume file: None

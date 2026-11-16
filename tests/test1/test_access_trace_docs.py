@@ -8,13 +8,17 @@ from pathlib import Path
 
 import pytest
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.urls import reverse
+from django.utils import translation
 from lxml import html
 
 from crud_views.lib.access_trace import AccessStep, AccessTrace, trace_access
+from crud_views.lib.access_trace_export import export_schema
 from crud_views.lib.settings import CrudViewsSettings, crud_views_settings
 from crud_views.lib.views import DetailViewPermissionRequired
 from crud_views.lib.viewset import ParentViewSet, ViewSet
+from crud_views.management.commands import cv_access
 from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1 import test_manage_docs
@@ -306,3 +310,110 @@ def test_operational_boundaries_and_reference_links():
     release = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased", 1)[1].split("\n## ", 1)[0]
     added = release.split("### Added", 1)[1].split("\n### ", 1)[0]
     assert "cv_access" in added and "CRUD_VIEWS_MANAGE_ACCESS_TRACE" in added
+
+
+# Schema access, streams and validation failures (#375), bound to real command behavior.
+
+
+def cv_access_reference():
+    return reference().split("## cv_access\n", 1)[1].split("\n## ", 1)[0]
+
+
+def invocation_rows():
+    """The second Outcomes and streams table: first cell -> (exit, streams)."""
+    header = "| Invocation or failure | Exit | Streams |"
+    text = section("Outcomes and streams")
+    assert header in text, "Outcomes and streams must document non-outcome invocations"
+    table = text.split(header, 1)[1].split("\n\n", 1)[0]
+    return {
+        cell: (int(code), streams)
+        for cell, code, streams in re.findall(r"^\| (.+?) \| `(\d)` \| (.+) \|$", table, re.M)
+    }
+
+
+def malformed_trace():
+    return AccessTrace(path="/x/", outcome="allowed", steps=[AccessStep(1, "route", result="maybe")])
+
+
+def test_documented_schema_access_matches_the_command():
+    assert "### Schema and compatibility\n" in reference()
+    text = " ".join(section("Schema and compatibility").split())
+    for phrase in (
+        "python manage.py cv_access --schema",
+        "exit `2`",
+        "`--as-json`",
+        "`--force-color`",
+        "No static schema file",
+        "consumers must tolerate them",
+        "version bump or an explicit maintainer decision",
+        "generated schema is authoritative",
+        "not a public Python API",
+        "`to_dict()`",
+    ):
+        assert phrase in text, phrase
+    assert "```json" not in section("Schema and compatibility")
+    examples = cv_access_reference().split("```bash\n", 1)[1].split("```", 1)[0]
+    assert "python manage.py cv_access --schema" in examples.splitlines()
+    for flags in ([], ["--force-color"]):
+        out = StringIO()
+        call_command("cv_access", "--schema", *flags, stdout=out)
+        assert "\x1b" not in out.getvalue()
+        assert json.loads(out.getvalue()) == export_schema()
+
+
+def test_documented_actor_and_color_rules_are_scoped_to_tracing():
+    intro = " ".join(cv_access_reference().split("\n### ", 1)[0].split())
+    assert "For tracing, supply a user or `--anonymous`, never both; `--schema` takes neither." in intro
+    assert "Trace JSON colors keys and result/outcome values." in intro
+    assert "`--schema` output is always plain." in intro
+    assert "DJANGO_COLORS" in intro
+
+
+def test_documented_invocation_streams_match_real_exits(monkeypatch):
+    from tests.test1.test_access_trace_command import invoke
+
+    rows = invocation_rows()
+    assert set(rows) == {"`--schema`", "Output validation failure", "Unknown user or wrong invocation"}
+    code, stdout, stderr = invoke("--schema")
+    assert (code, rows["`--schema`"][0]) == (0, 0)
+    assert json.loads(stdout) == export_schema() and not stderr
+    assert "no trace" in rows["`--schema`"][1]
+    monkeypatch.setattr(cv_access, "trace_access", lambda path, actor: malformed_trace())
+    for mode in ([], ["--as-json"]):
+        out, err = StringIO(), StringIO()
+        with translation.override("en"), pytest.raises(CommandError) as caught:
+            call_command("cv_access", "/x/", "--anonymous", *mode, stdout=out, stderr=err)
+        assert caught.value.returncode == rows["Output validation failure"][0] == 2
+        assert not out.getvalue() and not err.getvalue()
+        assert str(caught.value).startswith("Output validation failed (ValidationError): ")
+    assert "`Output validation failed (ValidationError): ...`" in rows["Output validation failure"][1]
+    assert "no trace document" in rows["Output validation failure"][1]
+    assert rows["Unknown user or wrong invocation"][0] == 2
+    # The six outcome rows remain the only backticked word/digit rows.
+    codes = dict(re.findall(r"^\| `(\w+)` \| `(\d)` \|", section("Outcomes and streams"), re.M))
+    assert set(codes) == {"allowed", "denied", "not_found", "login_redirect", "error", "no_such_route"}
+
+
+def test_documented_validation_failure_is_not_an_outcome():
+    assert "### Schema and compatibility\n" in reference()
+    text = " ".join(section("Schema and compatibility").split())
+    for phrase in (
+        "Output validation failed",
+        "not an outcome",
+        "no trace document",
+        "field locations",
+        "never their values",
+        "cv_get_requirement()",
+        "does not run this validation",
+    ):
+        assert phrase in text, phrase
+    after_tables = section("Outcomes and streams").split("| Invocation or failure | Exit | Streams |", 1)[1]
+    paragraph = " ".join(after_tables.split("\n\n", 1)[1].split("```", 1)[0].split())
+    assert "validation failure" in paragraph and "no trace document" in paragraph and "`--as-json`" in paragraph
+
+
+@pytest.mark.django_db
+def test_documented_empty_user_before_actor_resolution():
+    rows = dict(re.findall(r"^\| `(\w+)` \| (.+) \|$", section("Version 1 document"), re.M))
+    assert rows["user"].endswith("or `{}` before actor resolution.")
+    assert trace_access("http://[bad/x/", None).to_dict()["user"] == {}

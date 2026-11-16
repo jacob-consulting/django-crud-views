@@ -465,7 +465,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
-- **Pydantic 2.2.1 compatibility:** Resource initialization uses public class field metadata, and
+- **Pydantic 2.2.1 compatibility:** Resource initialization uses public class field metadata and
+  preserves real `pk` fields inherited beneath an instance alias. In addition,
   `cv_manage_view` retains partial reports for invalid section data without relying on a newer
   validation-error API. Formset `parent` and `children` declarations use recursive `FormSet` types,
   preventing startup warnings and rejecting invalid nested nodes at the dependency floor. Trees may

@@ -1003,3 +1003,168 @@ def test_django_startup_failure_remains_outside_structured_output(manage_process
     )
     assert result.returncode != 0 and result.stdout == ""
     assert "missing_cv_startup_settings" in result.stderr
+
+
+@pytest.mark.parametrize("mode", ["text", "json", "schema"])
+@pytest.mark.parametrize(
+    "tty,flag,colored",
+    [
+        (False, None, False),
+        (False, "--force-color", True),
+        (True, None, True),
+        (True, "--no-color", False),
+    ],
+)
+def test_real_pipe_and_pty_follow_django_color_options(manage_process_env, mode, tty, flag, colored):
+    import re
+
+    args = ["--schema"] if mode == "schema" else ["process", *(["--as-json"] if mode == "json" else [])]
+    result = manage_process(manage_process_env, *args, *([flag] if flag else []), tty=tty)
+    assert result.returncode == 0 and result.stderr == ""
+    ansi = re.compile(r"\x1b\[[0-9;]*m")
+    assert bool(ansi.search(result.stdout)) is (colored and mode == "text")
+    baseline = manage_process(manage_process_env, *args, "--no-color")
+    assert ansi.sub("", result.stdout) == baseline.stdout
+    if mode != "text":
+        json.loads(result.stdout)
+
+
+def report_leaves(value, prefix=""):
+    """All leaf paths, including empty/null values, form the parity oracle."""
+    if isinstance(value, dict) and value:
+        for key, child in value.items():
+            yield from report_leaves(child, f"{prefix}.{key}" if prefix else key)
+    elif isinstance(value, list) and value:
+        for index, child in enumerate(value):
+            yield from report_leaves(child, f"{prefix}[{index}]")
+    else:
+        yield prefix, value
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("provider", ["model", "guardian", "resource"])
+@pytest.mark.parametrize("partial", [False, True])
+def test_rich_text_retains_every_validated_fact_and_page_values(
+    catalogue, monkeypatch, django_user_model, provider, partial
+):
+    from django.core.management.color import no_style
+
+    from crud_views.lib.manage_report import Report
+    from crud_views.lib.views import ListView
+    from crud_views.management.commands import cv_manage_view
+    from tests.test1.app.models import Book
+
+    parent = ViewSet(model=Publisher, name="text_parent", context_buttons=[])
+    factory = GuardianViewSet if provider == "guardian" else ViewSet
+    model = ManageItem if provider == "resource" else Book
+    vs = factory(
+        model=model,
+        name="rich_text",
+        context_buttons=[],
+        parent=ParentViewSet(name=parent.name, **({} if provider == "resource" else {"attribute": "publisher"})),
+    )
+    type("RichTextList", (ListView,), {"__module__": __name__, "cv_viewset": vs, "cv_extends": ""})
+    actor = django_user_model.objects.create_user(username="actor café 雪")
+    long_value = "full-value-" * 80
+    dynamic = "key\n\t\x1b[31m\x07\r\u202e"
+    raw_value = {dynamic: [None, False, 'quoted \\" café 雪', long_value, list(range(240))]}
+    original = ManageView.get_manage_facts
+
+    def facts(self, viewset, user):
+        return [*original(self, viewset, user), self._manage_field(viewset, dynamic, raw_value)]
+
+    monkeypatch.setattr(ManageView, "get_manage_facts", facts)
+    if partial:
+
+        def fail(*args):
+            raise RuntimeError("error " + dynamic)
+
+        monkeypatch.setattr(ManageView, "get_manage_checks", fail)
+    code, output = invoke(vs.name, "list", "--user", actor.username, "--as-json", "--force-color")
+    data = json.loads(output)
+    assert code == (2 if partial else 0), data["errors"]
+    assert "\x1b" not in output and "café" not in output  # ASCII JSON retains Unicode through escapes.
+    report = Report.validate_python(data)
+    manage = vs.get_all_views()["manage"]()
+    page_facts = manage.get_manage_facts(vs, actor)
+    exported_facts = data["data"]["facts"]["data"]["entries"]
+    assert [row["key"] for row in page_facts] == [row["key"] for row in exported_facts]
+    assert [row["is_default"] for row in page_facts] == [row["is_default"] for row in exported_facts]
+    assert len(page_facts[-1]["value"]) == 201 and long_value not in page_facts[-1]["value"]
+    assert exported_facts[-1]["value"]["value"] == raw_value
+    # Rendering consumes this validated result alone; no additional queries/collection.
+    for name in SECTIONS[:-1]:
+        monkeypatch.setattr(ManageView, "get_manage_" + name, lambda *a: pytest.fail("Renderer recollected facts"))
+    text = cv_manage_view._format_text(report, no_style())
+    for key, value in report_leaves(data):
+        assert f"{cv_manage_view._text(key)}: {cv_manage_view._text(value)}" in text
+    assert long_value in text and "actor café 雪" in text
+    assert all(char.isprintable() or char == "\n" for char in text)
+    for escaped in (r"\n", r"\t", r"\u001b", r"\u0007", r"\r", r"\u202e"):
+        assert escaped in text
+    assert "Facts (ViewSet-wide)" in text and "Permissions (ViewSet-wide)" in text
+    assert "Views (selected view: list)" in text and "Routes (selected view: list)" in text
+    assert "direct grants" in text and "effective grants" in text and "hidden" in text
+    if provider == "resource":
+        assert "Resource grants are global" in text and "no per-item grants" in text
+    if provider == "guardian":
+        assert "Guardian object counts" in text and "strict object helper" in text
+
+
+@pytest.mark.django_db
+def test_english_german_machine_projection_and_exit_are_stable(catalogue, monkeypatch):
+    from types import SimpleNamespace
+
+    from django.core.checks import Error
+    from django.utils.translation import override
+
+    from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+
+    vs = GuardianViewSet(model=Publisher, name="locale_stable", context_buttons=[])
+    type("LocaleList", (GuardianListViewPermissionRequired,), {"__module__": __name__, "cv_viewset": vs})
+    monkeypatch.setattr(
+        ViewSet, "checks", lambda self: iter([SimpleNamespace(messages=lambda: [Error("finding", id="project.E001")])])
+    )
+    results, texts = [], []
+    machine_keys = {
+        "code",
+        "status",
+        "scope",
+        "kind",
+        "key",
+        "name",
+        "version",
+        "level",
+        "severity_code",
+        "state",
+        "holder_visibility",
+        "meaning",
+        "effective_policy",
+        "policy",
+        "selected_view",
+        "declaring_class",
+        "setting",
+        "is_default",
+        "python_type",
+        "class_path",
+        "grant_kind",
+    }
+
+    def machine(value):
+        if isinstance(value, dict):
+            return {key: child if key in machine_keys else machine(child) for key, child in value.items()}
+        if isinstance(value, list):
+            return [machine(child) for child in value]
+        return None
+
+    for language in ("en", "de", "en"):
+        with override(language):
+            code, output = invoke(vs.name, "list", "--as-json")
+            text_code, text = invoke(vs.name, "list", "--no-color")
+        assert code == text_code == 1
+        report = json.loads(output)
+        assert set(report) == {"version", "kind", "status", "selection", "data", "errors"}
+        results.append(machine(report))
+        texts.append(text)
+    assert results[0] == results[1] == results[2]
+    assert texts[0] == texts[2] and texts[0] != texts[1]

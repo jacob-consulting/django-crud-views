@@ -1,113 +1,102 @@
 ---
-last_mapped_at: 2026-11-15
-last_mapped_commit: 892d3fc5adaab1660fe6812b937328efa5d71350
+last_mapped_commit: a78b63db1f637b6b8b4cf6b4aaa24885a061ae26
+last_mapped_at: 2026-11-16
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-15
+**Analysis Date:** 2026-11-16
 
 ## APIs & External Services
 
-**Django host application:**
-- Uses Django app registration, URL routing, templates, settings, ORM, auth/permissions, content types, messages, and system checks (`src/crud_views/apps.py`, `src/crud_views/lib/viewset/`, `src/crud_views/checks.py`).
-  - SDK/Client: Django APIs
-  - Auth: The host project configures users, middleware, backends, and permissions.
-- **Access tracing:** `trace_access()` synthetically resolves and dispatches a CRUD URL with a GET handler stub while observing existing gate results; `python manage.py cv_access <path> <user>` (or `--anonymous`) prints text or versioned JSON (`--as-json`). It does not invoke the real page handler. The `CRUD_VIEWS_MANAGE_ACCESS_TRACE` setting (default `False`) enables the same diagnostics in the normal manage page after its normal authorization; the CLI is an explicit diagnostic operation, not automatic request middleware (`src/crud_views/lib/settings.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/management/commands/cv_access.py`). Traces report limits for non-CRUD routes, other middleware/decorators, host-dependent rules, and handler-phase authorization; synthetic dispatch runs in an atomic transaction marked for rollback (`src/crud_views/lib/access_trace_runner.py`).
-- **Request-access recording in tests:** package gate code reports scalar observations only when the test context has an `AccessRecorder`; the root pytest conftest enables that context when `CV_ACCESS_RECORD_REQUESTS=1` (`src/crud_views/lib/access_trace.py`, `tests/conftest.py`). Nox verifies the normal suite with recording disabled, then re-runs it enabled (`noxfile.py`). This switch is for the test harness, not a required deployment setting.
+**Runtime library integrations:**
+- Django framework APIs - generic class-based views, ORM, auth, forms, templates, URL routing, messages, and system checks (`src/crud_views/`)
+  - SDK/Client: Django itself (`pyproject.toml`)
+  - Auth: supplied by the consuming Django project; core package has no independent credentials
+- django-tables2, django-filter, django-crispy-forms / crispy-bootstrap5 - in-process optional UI packages; there are no remote service calls (`pyproject.toml`, `src/crud_views/`)
+- Asset vendor helper - explicit management-command downloads through Python `urllib.request`; extension packages configure a versioned `VendorSpec` and destination (`src/crud_views/lib/vendor.py`). This is a build/maintenance operation, not an automatic request on normal page handling.
 
-**Forms, tables, and filtering:**
-- django-crispy-forms and crispy-bootstrap5 render Bootstrap forms; django-tables2 and django-filter integrate list tables and filters (`src/crud_views/lib/crispy/`, `src/crud_views/lib/table/`, `src/crud_views/lib/views/mixins.py`).
-  - SDK/Client: `crispy_forms`, `crispy_bootstrap5`, `django_tables2`, `django_filters`
-  - Auth: None; these use host Django configuration.
-- Bootstrap is a host-delivered frontend dependency, not a Python runtime dependency. The getting-started guide shows Bootstrap 5.3.3 CSS and JS from jsDelivr; host projects may instead provide local assets and own version/CSP policy (`docs/getting_started/tutorial-1-setup.md`).
-- Compact formsets explicitly support the exact stock Django `CheckboxInput` with standard template and input type, including Bootstrap styling for package-owned crispy markup. A marked subclass may receive that styling incidentally, but custom widgets/templates are not certified and own accessibility and responsive behavior (`docs/reference/formsets.md`).
-- Theme styling for the `ToggleGroup` and formset `<legend>` elements is exposed through the `conditional:legend` and `formset:legend` button-class slots; it adds no dependency or service integration (`src/crud_views/templates/crud_views/conditional/toggle_group.html`, `src/crud_views/templates/crud_views/formsets/formset.html`, `src/crud_views/lib/button_classes.py`).
-- Compact formsets add explicit `CompactColumn` and `CompactLayout` presentation metadata on top of Django inline formsets and crispy helpers; they introduce no service or package dependency (`src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/formsets.py`, `docs/reference/formsets.md`).
-- Phase 06.30 adds queryset-driven conditional groups through `QuerysetConditions` (`src/crud_views/lib/conditional/queryset.py`). It binds to a native single-select `ModelChoiceField`, reads a direct category attribute or queryset annotation, and validates against the selected object after ordinary field cleaning. This is an internal Django ORM/forms integration; it does not fetch through an external service or broaden controller support to arbitrary widgets (`src/crud_views/lib/conditional/group.py`, `docs/reference/conditional.md`).
-- Compact row borders are opt-in presentation metadata via `CompactLayout.row_border` (default `False`); legend suppression still takes precedence, and no external styling package is added (`src/crud_views/lib/formsets/compact.py`, `docs/reference/formsets.md`).
-- Manage diagnostics are gated by active authenticated membership in a configurable Django `Group`; mode `no` denies all and `debug_only` additionally requires `DEBUG=True`. The `cv_manage_group` management command creates that group but does not assign users or permissions (`src/crud_views/lib/views/manage.py`, `src/crud_views/lib/settings.py`, `src/crud_views/management/commands/cv_manage_group.py`, `docs/reference/settings.md`). Nested manage checks continue to use Django auth data on the configured default database alias (`src/crud_views/lib/views/manage.py`).
-- The manage page projects Django-backed diagnostics as structured context data: effective permission rows, ViewSet and view configuration/provenance, routes and hierarchy, ancestor policy, and ViewSet-scoped check messages (`src/crud_views/lib/views/manage.py`). It uses Django's auth/ORM, URL resolver, and system-check APIs; it does not call an external diagnostics service. Configuration values are read through static attribute inspection; requirement metadata uses the view requirement API, while routing/auth failures remain visible (`src/crud_views/lib/views/manage.py`).
+**Third-party browser assets:**
+- Bootstrap 5.3.3, Font Awesome 6.7.2, and jQuery 3.7.1 are referenced from public CDNs by the example site's base template (`examples/bootstrap5/project/templates/project/base.html`)
+- Mermaid 11.4.1 is loaded from jsDelivr for documentation rendering (`mkdocs.yml`)
+- Core templates can emit configured external asset URLs through `src/crud_views/lib/assets.py`; the helper renders URLs and does not fetch them
 
-**Optional Django extensions:**
-- Install extras independently as `django-crud-views[workflow]`, `[polymorphic]`, `[guardian]`, or `[ordered]`; `[all]` combines them. The apps are shipped in the distribution, but each optional integration requires its corresponding third-party package and app setup (`pyproject.toml`, `src/crud_views_workflow/`, `src/crud_views_polymorphic/`, `src/crud_views_guardian/`).
-- django-fsm-2 and django-fsm-2-admin provide workflow transitions and admin integration (`src/crud_views_workflow/`). `run_transition()` validates actor, object, and transition state and writes history atomically on the selected DB alias (`src/crud_views_workflow/lib/execution.py`); direct FSM method calls bypass that helper behavior.
-- Workflow transition `custom` metadata may supply `variant` and `icon` presentation keys. The workflow widget maps variants through the existing `workflow:transition-*` class slots, resolves icons through the host icon API, and falls back to the standard submit class for unknown variants (`src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`, `docs/reference/workflow_view.md`). This adds no service or dependency.
-- django-polymorphic supports polymorphic querysets and type-specific creation (`src/crud_views_polymorphic/`).
-- django-guardian adds per-object permission checks and uses the host project's auth backend configuration (`src/crud_views_guardian/lib/mixins.py`).
-- django-ordered-model supports ordering actions for host models that opt in (`src/crud_views/lib/ordered.py`, `pyproject.toml`).
-
-**Icons and frontend assets:**
-- `src/crud_views/lib/icons.py` provides plain icon constants and a semantic icon registry; the host template supplies matching icon-font CSS (`docs/reference/icons.md`). Applications and theme apps can register icon mappings/renderers.
-- Django serves package static assets. Optional django-pipeline support is lazy and is not a runtime dependency; with `CRUD_VIEWS_ASSETS_BUNDLED`, package tags emit external bundle entries for the host bundler (`src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`, `docs/reference/assets.md`).
-- Core and extension apps register JS/CSS bundles through `AppConfig.ready()`; registry order follows `INSTALLED_APPS` after the core bundle. Django system checks validate duplicate/reserved keys and external asset integrity (`src/crud_views/lib/assets.py`, `src/crud_views/checks.py`).
-- Optional django-pipeline integration is settings-time safe: `cv_sources()` lazily resolves registered local assets after app setup, filters by bundle key, and leaves external URLs for template tags (`src/crud_views/lib/pipeline.py`, `docs/reference/assets.md`).
-- Asset registrations may use external CDN URLs and SRI/CSP nonce attributes; the host owns Bootstrap/icon CSS delivery and CSP policy (`src/crud_views/lib/assets.py`).
-- Formset client behavior is bundled in `src/crud_views/static/crud_views/js/formset.js`; its supported page integration uses jQuery, while compact layout uses package CSS (`src/crud_views/static/crud_views/css/formset.css`).
-
-**Caller-provided resource sources:**
-- `Resource` is a Pydantic row model for table-shaped non-ORM data. Applications implement `cv_get_items(request, **url_kwargs)` as a plain list producer and may override `cv_get_item(request, pk, **url_kwargs)` for direct lookup; default item lookup scans the list (`src/crud_views/lib/resource.py`).
-- `ResourceViewMixin` must precede the CRUD view class in the MRO. It replaces ORM queryset/object loading, passes parent URL kwargs to the application loader, and does not automatically scope Resource rows to a parent. Resource is supported as a leaf ViewSet; parent ORM authorization still runs before loading the leaf, while Resource cannot be an ancestor (`src/crud_views/lib/resource.py`, `docs/reference/resources.md`, `docs/reference/nested.md`).
-- The package includes no S3, API, or filesystem adapter. All external reads and side effects belong to the application hook; Resource views default to `cv_atomic = False` because a database transaction cannot roll back those effects (`src/crud_views/lib/resource.py`).
-- Resource ViewSets participate in manage diagnostics. The manage page reports effective Resource metadata and explicitly declared permission mappings; it does not invent model permissions or per-item grants for Resource rows (`src/crud_views/lib/views/manage.py`, `docs/reference/manage.md`).
-- `cv_access` and the opt-in manage Access check trace Resource routes through synthetic GET dispatch. Real `cv_get_items()` / `cv_get_item()` loaders run under a freshly loaded traced actor, so external reads can occur; list traces report visible row counts without asserting a total. The synthetic handler does not run the real page handler, and its database work is rolled back, which cannot undo external effects (`src/crud_views/lib/access_trace_runner.py`, `src/crud_views/lib/settings.py`, `docs/reference/manage.md`).
+**Build, hosting, and project services:**
+- Render API - GitHub Actions deploy and restart the public demo via `https://api.render.com/v1` (`.github/workflows/demo.yml`)
+  - Client: `curl` in the workflow
+  - Auth: GitHub Actions secrets `RENDER_API_KEY`, `RENDER_SERVICE_ID`; public URL uses the `DEMO_URL` repository variable. No secret values are stored in this document.
+- Codecov - receives coverage reports from GitHub Actions (`.github/workflows/tests.yml`, `.github/workflows/publish.yml`)
+  - Client: pinned `codecov/codecov-action`
+  - Auth: GitHub Actions secret `CODECOV_TOKEN`
+- PyPI - release publishing through the trusted-publishing GitHub Action (`.github/workflows/publish.yml`)
+  - Client: `pypa/gh-action-pypi-publish`
+  - Auth: GitHub Actions OIDC (`id-token: write`) and the `pypi` environment
+- Read the Docs - hosts built MkDocs documentation; Python/docs configuration is in `.readthedocs.yaml` and `mkdocs.yml`
+- GitHub Actions - CI, release, docs, linting, example checks, and demo automation (`.github/workflows/`)
 
 ## Data Storage
 
 **Databases:**
-- The Django host selects database providers through `DATABASES`; package ORM operations use Django connections.
-- Workflow audit history is stored in the host database, and transition/history writes share a transaction (`src/crud_views_workflow/models.py`, `src/crud_views_workflow/lib/execution.py`).
-- The demo uses SQLite (`examples/bootstrap5/project/settings_demo.py`, `render.yaml`).
+- No database engine or connection is selected by the reusable package. CRUD views use the consumer's Django ORM configuration (`src/crud_views/`)
+- Tests use two in-memory SQLite aliases (`default` and `shard`) configured by `tests/test1/conftest.py`
+- Local example uses SQLite at `examples/bootstrap5/db.sqlite3`; the public Render demo recreates a SQLite database at startup because its filesystem is ephemeral (`examples/bootstrap5/project/settings.py`, `render.yaml`)
 
 **File Storage:**
-- No package-managed file-storage service; the Django host owns storage backends. Demo static files are collected and served by WhiteNoise (`render.yaml`, `requirements/demo.txt`).
+- The core package does not provide an external file-storage service
+- Render example uses local filesystem storage and WhiteNoise compressed manifest static files (`examples/bootstrap5/project/settings_demo.py`)
+- The vendor helper writes downloaded assets under an explicitly configured project static directory (`src/crud_views/lib/vendor.py`)
 
 **Caching:**
-- No external cache or package-managed caching service detected.
+- Core package does not require a cache service
+- Public demo uses Django's process-local `LocMemCache` for rate-limit counters, matching its single Gunicorn worker (`examples/bootstrap5/project/settings_demo.py`)
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Django's configured authentication and permission system (`src/crud_views/lib/view/`); the host owns user models, auth middleware, and permission grants.
-- Optional `src/crud_views_guardian/` integrates django-guardian object permissions and its configured backend.
-- No login implementation or external identity-provider client is included.
+- Django `contrib.auth` is the core integration; projects configure authentication middleware and backends (`src/crud_views/lib/`, `examples/bootstrap5/project/settings.py`)
+- Optional per-object authorization uses django-guardian and `guardian.backends.ObjectPermissionBackend` (`src/crud_views_guardian/`, `examples/bootstrap5/project/settings.py`)
+- No external identity provider or OAuth/OIDC login integration is detected
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- No error-tracking SDK detected in package dependencies or source.
+- No runtime error-tracking SDK is configured
+- Codecov reports test coverage from CI (`.github/workflows/tests.yml`)
 
 **Logs:**
-- No package-specific logging backend; the host Django deployment manages logs. The demo runs under Gunicorn (`render.yaml`).
+- Runtime logging uses Django/Python logging facilities; no centralized logging service is configured
+- The Render demo's scheduled reset/deploy and HTTP smoke checks are implemented in GitHub Actions (`.github/workflows/demo.yml`)
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Hatchling builds the Python wheel and sdist; the reusable library does not prescribe hosting (`pyproject.toml`).
-- The public example deploys to Render with Gunicorn and WhiteNoise (`render.yaml`, `requirements/demo.txt`).
-- Documentation is built with MkDocs on Read the Docs (`mkdocs.yml`, `.readthedocs.yaml`).
+- Reusable library is published to PyPI (`.github/workflows/publish.yml`)
+- Documentation is built/hosted through Read the Docs (`.readthedocs.yaml`)
+- The example/demo site is hosted on Render (`render.yaml`)
 
 **CI Pipeline:**
-- GitHub Actions cover Python/Django tests, lint, docs, JavaScript tests, release publication, demo deployment, and README examples (`.github/workflows/`). Python Nox sessions test both with `CV_ACCESS_RECORD_REQUESTS=0` and `=1`, each using `pytest -n auto` (`noxfile.py`).
-- Release publication uses PyPI trusted publishing; coverage uploads to Codecov (`.github/workflows/publish.yml`, `.github/workflows/tests.yml`).
-- The demo workflow deploys release tags through the Render API; credentials are configured in GitHub/Render settings (`.github/workflows/demo.yml`).
-- Optional local tunnel uses Cloudflare Tunnel through Docker Compose (`dev/docker-compose.yaml`); `dev/.env.example` documents local configuration keys. No populated `dev/.env` file is present.
+- GitHub Actions runs Nox Python/Django matrices, examples, JS tests, Ruff, and docs builds; coverage uploads to Codecov (`.github/workflows/`)
+- Release tags trigger package build/publish and Render demo deployment (`.github/workflows/publish.yml`, `.github/workflows/demo.yml`)
 
 ## Environment Configuration
 
 **Required env vars:**
-- None for the reusable package. Host Django settings provide project database and secret configuration; demo settings require `SECRET_KEY` and optionally read `RENDER_EXTERNAL_HOSTNAME` (`examples/bootstrap5/project/settings_demo.py`).
+- Core library: none; settings are supplied by the host Django project (`src/crud_views/lib/settings.py`)
+- Render demo: `SECRET_KEY` and Render-provided `RENDER_EXTERNAL_HOSTNAME` (`examples/bootstrap5/project/settings_demo.py`)
+- GitHub workflows: `CODECOV_TOKEN`, `RENDER_API_KEY`, `RENDER_SERVICE_ID`, and repository variable `DEMO_URL` as applicable (`.github/workflows/tests.yml`, `.github/workflows/demo.yml`)
 
 **Secrets location:**
-- Host/deployment environment; `dev/.env.example` is a template only. Secret file contents are not inspected. Deployment secret names are documented in `docs/development/index.md`.
+- Deployment and CI credentials are referenced by name from GitHub Actions secrets; the Render demo key is generated by the Render Blueprint (`.github/workflows/`, `render.yaml`)
+- Local tunnel setup can use `dev/.env`; its contents are intentionally not inspected (`taskfile.yaml`)
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- None provided by the package; host applications define their request endpoints.
+- No external webhook endpoint is provided by the reusable package. The example site exposes ordinary Django URLs only (`examples/bootstrap5/project/urls.py`, `examples/bootstrap5/project/urls_demo.py`)
 
 **Outgoing:**
-- No package-managed webhook delivery. Workflow views register follow-up work with Django `transaction.on_commit()` (`src/crud_views_workflow/lib/views.py`).
+- No runtime webhook delivery is implemented
+- CI workflow calls Render's deploy/restart API during release or scheduled demo maintenance (`.github/workflows/demo.yml`)
 
 ---
 
-*Integration audit: 2026-11-15*
+*Integration audit: 2026-11-16*

@@ -27,6 +27,17 @@ def explode(*args, **kwargs):
     raise AssertionError("handler/context must not run")
 
 
+def test_trace_helper_rejects_a_trace_outside_the_export_contract(monkeypatch):
+    from pydantic import ValidationError
+
+    from crud_views.lib import access_trace
+
+    malformed = access_trace.AccessTrace(path="/x/", outcome="granted")
+    monkeypatch.setattr(access_trace, "trace_access", lambda path, user: malformed)
+    with pytest.raises(ValidationError):
+        trace("/x/", None)
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize("allowed", [True, False])
 def test_core_trace_contract(allowed, monkeypatch):

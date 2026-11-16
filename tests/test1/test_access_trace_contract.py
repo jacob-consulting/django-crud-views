@@ -18,7 +18,7 @@ from django.core.management.base import CommandError
 from django.utils import translation
 from pydantic import ValidationError
 
-from crud_views.lib.access_trace import AccessStep, AccessTrace
+from crud_views.lib.access_trace import AccessStep, AccessTrace, trace_access
 from crud_views.lib.access_trace_export import (
     AccessTraceExport,
     Kind,
@@ -28,9 +28,14 @@ from crud_views.lib.access_trace_export import (
     export_schema,
     validate_export,
 )
+from crud_views.lib.views import DetailViewPermissionRequired
+from crud_views.lib.viewset import ViewSet
 from crud_views.management.commands import cv_access
 from tests.test1 import test_access_trace_command as command_tests
-from tests.test1.test_access_trace import explode
+from tests.test1.app.models import Publisher
+from tests.test1.test_access_trace import assert_export_contract, explode
+from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
+from tests.test1.test_manage_requirements import grant, register
 
 invoke = command_tests.invoke
 process_env = command_tests.process_env
@@ -485,3 +490,88 @@ def test_real_process_schema_is_plain(process_env, args, tty):
     assert not ANSI.search(result.stdout)
     assert result.stderr == ""
     assert json.loads(result.stdout) == export_schema()
+
+
+# The shape corpus: real runner traces validate without drift and equal the cv_access --as-json document.
+
+OUTCOME_CODES = {"allowed": 0, "denied": 1, "not_found": 1, "login_redirect": 1, "no_such_route": 2, "error": 2}
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("outcome", list(OUTCOME_CODES))
+def test_real_outcome_traces_validate_and_match_the_cli(outcome):
+    def build(sfx):
+        vs = ViewSet(model=Publisher, name="contractoutcome" + sfx)
+        attrs = {}
+        if outcome == "error":
+
+            def broken_gate(self):
+                raise ValueError("contract failure")
+
+            attrs["has_permission"] = broken_gate
+        register(DetailViewPermissionRequired, vs, **attrs)
+        return vs, [vs]
+
+    with isolated_routes(build) as vs:
+        obj = Publisher.objects.create(name="never published")
+        actor = _user("contract outcomes")
+        if outcome in {"allowed", "not_found"}:
+            grant(actor, vs, "view")
+        path = _url(vs, "tested", pk=99999 if outcome == "not_found" else obj.pk)
+        if outcome == "no_such_route":
+            path = "/missing/"
+        anonymous = outcome == "login_redirect"
+        trace = trace_access(path, None if anonymous else actor)
+        data = trace.to_dict()
+        assert data["outcome"] == outcome
+        assert_export_contract(data)
+        selector = ["--anonymous"] if anonymous else [actor.username]
+        code, stdout, stderr = invoke(path, *selector, "--as-json", "--no-color")
+    assert code == OUTCOME_CODES[outcome]
+    assert stderr == ""
+    assert json.loads(stdout) == data
+    if outcome == "allowed":
+        assert any(step["kind"] == "own_permission" and step["provider"] == "core" for step in data["steps"])
+
+
+@pytest.mark.django_db
+def test_real_pre_actor_error_trace_has_an_empty_user():
+    data = trace_access("http://[bad/x/", None).to_dict()
+    assert data["user"] == {}
+    assert data["outcome"] == "error"
+    assert any(step["exception"] is not None for step in data["steps"])
+    assert_export_contract(data)
+    code, stdout, stderr = invoke("http://[bad/x/", "--anonymous", "--as-json", "--no-color")
+    assert code == 2
+    assert stderr == ""
+    assert json.loads(stdout)["user"] == {}
+
+
+@pytest.mark.django_db
+def test_real_non_str_requirement_hook_fails_closed():
+    # The runner carries a project hook's value through unchanged; the gate rejects it in both modes.
+    def requirement(cls):
+        return {"kind": "permission", "value": 7, "ancestor_applies": False}
+
+    def build(sfx):
+        vs = ViewSet(model=Publisher, name="contracthook" + sfx)
+        register(DetailViewPermissionRequired, vs, cv_get_requirement=classmethod(requirement))
+        return vs, [vs]
+
+    with isolated_routes(build) as vs:
+        obj = Publisher.objects.create(name="hooked")
+        actor = _user("contract hook")
+        path = _url(vs, "tested", pk=obj.pk)
+        data = trace_access(path, actor).to_dict()
+        with pytest.raises(ValidationError) as caught:
+            validate_export(data)
+        assert any(
+            error["type"] == "string_type" and error["loc"][0] == "plan" and error["loc"][-1] == "key"
+            for error in caught.value.errors()
+        )
+        for mode in ([], ["--as-json"]):
+            with translation.override("en"):
+                error, stdout, stderr = failure(path, actor.username, *mode)
+            assert error.returncode == 2
+            assert stdout == "" and stderr == ""
+            assert "Output validation failed (ValidationError)" in str(error)

@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.36"
 current_phase_name: "ViewSet configuration CLI and versioned JSON contract (#371)"
-current_plan: "05"
+current_plan: "06"
 status: executing
-stopped_at: Completed 06.36-04-PLAN.md; plans 05 and 06 are next
-last_updated: "2026-11-16T06:39:00Z"
+stopped_at: Completed 06.36-05-PLAN.md; plan 06 is next
+last_updated: "2026-11-16T06:51:00Z"
 last_activity: 2026-11-16
-last_activity_desc: Phase 06.36 plan 04 complete; partial failures and terminal rendering verified; 4/7 plans
-state_head: afca17cb3eb89eac2b1277ecd7b26fcf7f1af77f
+last_activity_desc: Phase 06.36 plan 05 complete; independent schema and exact preservation verified; 5/7 plans
+state_head: 2fecbd68d2791cef3fa2c85be07b2be1679092c3
 progress:
   total_phases: 43
   completed_phases: 41
   total_plans: 239
-  completed_plans: 236
+  completed_plans: 237
   percent: 99
 milestone_name: milestone
 ---
@@ -33,12 +33,21 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 ## Current Position
 
 Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — EXECUTING
-Current Plan: 05 (01–04 complete)
+Current Plan: 06 (01–05 complete)
 Total Plans in Phase: 7
-Status: In Progress — 4/7 plans complete
-Last activity: 2026-11-16 — Partial failures and terminal rendering complete; 604 focused/preservation tests pass
+Status: In Progress — 5/7 plans complete
+Last activity: 2026-11-16 — Generated-schema conformance and exact preservation complete; 1270 runtime tests pass
 
 Next: $gsd-execute-phase 06.36
+
+### Phase 06.36 plan 05 completion — 2026-11-16
+
+- Published full version-1 serialization schema from actual command output under Pydantic 2.14.3. System jsonschema 4.10.3 independently accepts 10 and rejects 15 corpus documents against both runtime/published schemas; five fail-closed checker probes pass. Full fingerprints and fresh corpus directory are recorded in evidence/05-schema-conformance.json.
+- Behavioral corpus conformance replaces schema equality assumptions; cross-field coherence stays separately tested in Pydantic. Single-writer fresh-directory exports are atomic and never silently reuse stale fixtures or skip a missing validator. No dependency installed.
+- Repeated success/error/legacy exports preserve exact normal dictionaries on the same instance/class for core/Guardian/Resource, including shown/hidden direct/group holders. Original exact 9/21 page queries and per-table counts, and 5-query holder batching across 1/4 columns and 1/21 holders, pass after command use.
+- C09: 181 passed (8.76s); C10 exact 22-module runtime selection: 1270 passed (46.06s), four workers. Ruff/format/whitespace pass. No production/template changes, skips, unrun plan checks or new security surface beyond the planned verification tool.
+- Approximately 10 minutes, 2 tasks; commits 99e626a3, b07fd700, 2fecbd68; summary 509aad04. ROADMAP reports 5/7 In Progress, complete=false. Plans 06/07 retain docs/locale, floor/supported-runtime, installed and final full-suite acceptance; no phase completion claim.
+- STATE.md updated directly to preserve dirty state.json. Unrelated config-default, .gitkeep and 06.35 review inputs remain untouched; no publication.
 
 ### Phase 06.36 plan 04 completion — 2026-11-16
 

@@ -76,6 +76,21 @@ def test_known_translation_wrappers_support_supported_django_versions():
 
 
 @pytest.mark.parametrize(
+    "factory", [gettext_lazy, lambda value: pgettext_lazy("context", value)], ids=["gettext", "pgettext"]
+)
+@pytest.mark.parametrize("hostile_real", [True, False])
+def test_translation_storage_uses_django_layout_not_spoofed_alternative(factory, hostile_real):
+    value = factory(Hostile() if hostile_real else "hello")
+    stored = vars(value)
+    alternative = ("_proxy____args", "_proxy____kw") if "_args" in stored else ("_args", "_kw")
+    stored[alternative[0]], stored[alternative[1]] = ("harmless" if hostile_real else Hostile(),), {}
+    record = normalize_value(value)
+    assert record.kind == ("unsupported" if hostile_real else "native")
+    if not hostile_real:
+        assert record.value == str(value)
+
+
+@pytest.mark.parametrize(
     "model,data",
     [
         (PermissionCell, {"key": "view", "model": "false", "object_count": None}),

@@ -11,6 +11,103 @@ from tests.test1.test_manage_command import catalogue as catalogue
 from tests.test1.test_manage_report import Hostile
 
 
+@pytest.mark.django_db
+@pytest.mark.parametrize("language", ["en", "de"])
+def test_guardian_policy_exports_stable_codes_and_mixin_paths(catalogue, language):
+    from django.utils.translation import override
+
+    from crud_views.lib.manage_report import adapt_section
+    from crud_views_guardian.lib.views import GUARDIAN_MIXINS, GuardianDetailViewPermissionRequired, GuardianManageView
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+
+    vs = GuardianViewSet(model=Publisher, name="guardian_policy_export", context_buttons=[])
+    for key, accept in (("strict", False), ("fallback", True)):
+        type(
+            "Policy" + key,
+            (GuardianDetailViewPermissionRequired,),
+            {
+                "__module__": __name__,
+                "cv_viewset": vs,
+                "cv_key": key,
+                "cv_path": key,
+                "cv_guardian_accept_global_perms": accept,
+            },
+        )
+    manage = GuardianManageView()
+    with override(language):
+        ordinary = manage.get_manage_views(vs, None)
+        with manage.manage_export():
+            raw = manage.get_manage_views(vs, None)
+        for row in raw:
+            expected = {"strict": "strict", "fallback": "global_fallback", "manage": "not_applicable"}[row["key"]]
+            assert row["guardian_policy"]["effective_policy"] == expected
+            entries = {entry["key"]: entry for group in row["sections"] for entry in group["entries"]}
+            for key in ("guardian_mixin", "effective_policy"):
+                assert "_export" in entries[key], "Guardian synthetic entries require machine metadata"
+                assert entries[key]["_export"]["source"].code == "effective"
+                assert entries[key]["_export"]["value"].kind == "native"
+            assert entries["effective_policy"]["_export"]["value"].value == expected
+            view = vs.get_all_views()[row["key"]]
+            assert entries["guardian_mixin"]["_export"]["value"].value == [
+                f"{cls.__module__}.{cls.__qualname__}" for cls, _label in GUARDIAN_MIXINS if issubclass(view, cls)
+            ]
+        adapted = adapt_section("views", raw, kind="guardian")
+        assert len(adapted.entries) == 3
+        assert manage.get_manage_views(vs, None) == ordinary
+        for row in ordinary:
+            for group in row["sections"]:
+                for entry in group["entries"]:
+                    assert "_export" not in entry
+                    if entry["key"] in {"guardian_mixin", "effective_policy"}:
+                        assert set(entry) == {"key", "value", "source", "is_default", "unknown"}
+
+
+@pytest.mark.django_db
+def test_guardian_composition_checks_export_and_static_compatibility(catalogue):
+    from crud_views.lib.views import ListViewPermissionRequired
+    from crud_views.lib.viewset import ParentViewSet
+    from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin
+    from crud_views_guardian.lib.views import GuardianManageView
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Book
+
+    parent = GuardianViewSet(model=Publisher, name="composition_parent")
+    vs = GuardianViewSet(
+        model=Book,
+        name="guardian_bad_composition",
+        context_buttons=[],
+        parent=ParentViewSet(name=parent.name, attribute="publisher"),
+    )
+    type(
+        "BadGuardianList",
+        (GuardianParentPermissionMixin, ListViewPermissionRequired),
+        {"__module__": __name__, "cv_viewset": vs},
+    )
+    manage = GuardianManageView()
+    ordinary = manage.get_manage_checks(vs, None)
+    with manage.manage_export():
+        raw = manage.get_manage_checks(vs, None)
+    message = next(row for row in raw["messages"] if row["id"] == "crud_views_guardian.E001")
+    assert message.get("level") == 40, "Guardian composition checks need numeric severity"
+    assert message["severity_code"] == "error"
+    assert manage.get_manage_checks(vs, None) == ordinary
+    assert all("level" not in row and "severity_code" not in row for row in ordinary["messages"])
+    messages = [Error("legacy", id="test.E001")]
+    expected = ManageView._manage_check_messages(messages)
+    assert GuardianManageView._manage_check_messages(messages) == manage._manage_check_messages(messages) == expected
+
+    class Legacy(GuardianManageView):
+        @staticmethod
+        def _manage_check_messages(messages):
+            return ManageView._manage_check_messages(messages)
+
+    legacy = Legacy()
+    with legacy.manage_export():
+        rows = legacy.get_manage_checks(vs, None)["messages"]
+    assert any(row["id"] == "crud_views_guardian.E001" for row in rows)
+    assert all("level" not in row for row in rows)
+
+
 def make_view(catalogue, **attrs):
     vs = ViewSet(model=Publisher, name="export_core", context_buttons=[])
     view = type("ExportList", (ListView,), {"__module__": __name__, "cv_viewset": vs, **attrs})

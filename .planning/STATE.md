@@ -3,19 +3,19 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.36"
 current_phase_name: "ViewSet configuration CLI and versioned JSON contract (#371)"
-current_plan: "04"
+current_plan: "05"
 status: executing
-stopped_at: Completed 06.36-03-PLAN.md; plan 04 is next
-last_updated: "2026-11-16T06:24:00Z"
+stopped_at: Completed 06.36-04-PLAN.md; plans 05 and 06 are next
+last_updated: "2026-11-16T06:39:00Z"
 last_activity: 2026-11-16
-last_activity_desc: Phase 06.36 plan 03 complete; actor and provider diagnostics verified; 3/7 plans
-state_head: de7295b8763e04e155434ba6b0368aef0d552fc6
+last_activity_desc: Phase 06.36 plan 04 complete; partial failures and terminal rendering verified; 4/7 plans
+state_head: afca17cb3eb89eac2b1277ecd7b26fcf7f1af77f
 progress:
   total_phases: 43
   completed_phases: 41
   total_plans: 239
-  completed_plans: 235
-  percent: 98
+  completed_plans: 236
+  percent: 99
 milestone_name: milestone
 ---
 
@@ -33,12 +33,21 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 ## Current Position
 
 Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — EXECUTING
-Current Plan: 04 (01–03 complete)
+Current Plan: 05 (01–04 complete)
 Total Plans in Phase: 7
-Status: In Progress — 3/7 plans complete
-Last activity: 2026-11-16 — Actor, Guardian and Resource diagnostics complete; 442 focused/preservation tests pass
+Status: In Progress — 4/7 plans complete
+Last activity: 2026-11-16 — Partial failures and terminal rendering complete; 604 focused/preservation tests pass
 
 Next: $gsd-execute-phase 06.36
+
+### Phase 06.36 plan 04 completion — 2026-11-16
+
+- Valid identity survives all collector failures as partial/exit 2. Collection versus adapter/assembly errors are explicit; duplicate/orphan references are rejected; minimal catalogue/inspection fallback preserves selection. Existing numeric findings, silencing and check-object counts remain unchanged.
+- Dependency-aware route/auth matrices and real SQLite invalid reads pass. Autocommit permits later reads; a caller-owned atomic block stays rollback-only until caller exit. No command rollback/retry/transaction machinery was added; PostgreSQL runtime behavior remains untested.
+- Text retains every validated leaf with translated scope headings and permission explanations. Real pipe/PTY tests cover automatic/forced/disabled color and always-plain JSON/schema. Rich model/Guardian/Resource page/JSON/text parity, controls, complete values, locale-stable machine fields and process boundaries pass.
+- Final C07/C08 scope: 189 passed (10.79s); focused preservation: 604 passed (19.76s), four workers. Exact page query baselines remain 9/21; Ruff/format/whitespace pass. No skipped/unrun plan checks.
+- Recorded execution 9 minutes, 2 tasks; commits cf4c6c83, e2e363c4, 50e3ca6f, d266baf4, 83e884ef, afca17cb; summary e5cfd9a6. ROADMAP reports 4/7 In Progress, complete=false. Plans 05/06 own schema artifacts and German/docs delivery; plan 07 owns final installed/floor/full-suite acceptance.
+- STATE.md updated directly to preserve dirty state.json. Unrelated config-default, .gitkeep and 06.35 review inputs remain untouched; no phase completion or publication.
 
 ### Phase 06.36 plan 03 completion — 2026-11-16
 
@@ -1804,6 +1813,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T06:24:00Z
-Stopped at: Completed 06.36-03-PLAN.md; plan 04 is next
+Last session: 2026-11-16T06:39:00Z
+Stopped at: Completed 06.36-04-PLAN.md; plans 05 and 06 are next
 Resume file: None

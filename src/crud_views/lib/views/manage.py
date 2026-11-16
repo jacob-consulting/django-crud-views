@@ -575,11 +575,6 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 rows.append(row)
             sections.append({"key": key, "label": label, "entries": rows})
         source = self._manage_class_source(viewset)
-        if getattr(self, "_manage_export_enabled", False) and not viewset.manage_view_class:
-            source = SourceRecord(
-                code="global_setting" if crud_views_settings.manage_view_class else "default",
-                setting="CRUD_VIEWS_MANAGE_VIEW_CLASS" if crud_views_settings.manage_view_class else None,
-            )
         sections.append(
             {
                 "key": "other",
@@ -600,11 +595,12 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             "set_count": sum(not entry["is_default"] for entry in entries),
         }
 
-    @staticmethod
-    def _manage_class_source(viewset):
+    def _manage_class_source(self, viewset):
         if viewset.manage_view_class:
             return None
-        return "CRUD_VIEWS_MANAGE_VIEW_CLASS" if crud_views_settings.manage_view_class else _("default")
+        if crud_views_settings.manage_view_class:
+            return "CRUD_VIEWS_MANAGE_VIEW_CLASS"
+        return SourceRecord(code="default") if getattr(self, "_manage_export_enabled", False) else _("default")
 
     def _manage_requirement(self, viewset, user, view):
         """Resolve presentation metadata narrowly; auth/database failures remain visible."""

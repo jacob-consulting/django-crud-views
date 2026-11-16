@@ -361,6 +361,59 @@ def test_builder_translation_instance_cast_hooks_are_never_called(catalogue, con
     assert entries["action_label"]["_export"]["value"].value == "hello"
 
 
+@pytest.mark.django_db
+@pytest.mark.parametrize("guardian", [False, True], ids=["core", "guardian"])
+@pytest.mark.parametrize("core_setting", [False, True])
+@pytest.mark.parametrize("guardian_setting", [False, True])
+@pytest.mark.parametrize("declaration", ["absent", "none", "override"])
+@pytest.mark.parametrize("language", ["en", "de"])
+def test_manage_class_provenance_uses_resolution_owner(
+    catalogue, monkeypatch, guardian, core_setting, guardian_setting, declaration, language
+):
+    import json
+
+    from django.utils.translation import gettext, override
+
+    from crud_views.lib.settings import crud_views_settings
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.test_manage_command import invoke
+
+    core_path = "crud_views.lib.views.manage.ManageView"
+    guardian_path = "crud_views_guardian.lib.views.GuardianManageView"
+    monkeypatch.setattr(crud_views_settings, "manage_view_class", core_path if core_setting else None)
+    monkeypatch.setattr(crud_views_settings, "guardian_manage_view_class", guardian_path if guardian_setting else None)
+    path = guardian_path if guardian else core_path
+    declared = {} if declaration == "absent" else {"manage_view_class": path if declaration == "override" else None}
+    cls = GuardianViewSet if guardian else ViewSet
+    vs = cls(model=Publisher, name="owner_source", context_buttons=[], **declared)
+    manage = vs.get_all_views()["manage"]()
+    configured = guardian_setting if guardian else core_setting
+    setting = "CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS" if guardian else "CRUD_VIEWS_MANAGE_VIEW_CLASS"
+    code = "set" if declaration == "override" else "global_setting" if configured else "default"
+
+    def manage_row(data):
+        return next(row for group in data["sections"] for row in group["entries"] if row["key"] == "manage_view_class")
+
+    with override(language):
+        ordinary = manage_row(manage.get_manage_presentation(vs, None))
+        with manage.manage_export():
+            exported = manage_row(manage.get_manage_presentation(vs, None))
+        assert ordinary["source"] == (setting if code == "global_setting" else gettext(code))
+        assert exported["_export"]["source"].model_dump() == {
+            "code": code,
+            "setting": setting if code == "global_setting" else None,
+            "declaring_class": None,
+        }
+        assert ordinary["is_default"] == exported["is_default"] == (declaration == "absent")
+        assert exported["_export"]["value"].value == path
+        exit_code, output = invoke(vs.name, "--as-json")
+        report = json.loads(output)
+        assert exit_code == 0, report["errors"]
+        actual = manage_row(report["data"]["presentation"]["data"])
+        assert actual["source"] == exported["_export"]["source"].model_dump()
+        assert actual["value"]["value"] == path
+
+
 def test_export_context_exists_and_restores_nested_success_and_error():
     manage = ManageView()
     assert callable(getattr(manage, "manage_export", None)), "Manage builders need an opt-in export context"

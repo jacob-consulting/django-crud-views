@@ -386,13 +386,12 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
 
 
 class GuardianManageView(ManageView):
-    @staticmethod
-    def _manage_class_source(viewset):
+    def _manage_class_source(self, viewset):
         if viewset.manage_view_class:
             return None
-        return (
-            "CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS" if crud_views_settings.guardian_manage_view_class else _("default")
-        )
+        if crud_views_settings.guardian_manage_view_class:
+            return "CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS"
+        return SourceRecord(code="default") if getattr(self, "_manage_export_enabled", False) else _("default")
 
     template_name = "crud_views/view_guardian_manage.html"
 

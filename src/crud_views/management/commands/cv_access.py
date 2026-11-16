@@ -9,8 +9,10 @@ from django.core.management.color import supports_color
 from django.utils.termcolors import make_style
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
+from pydantic import ValidationError
 
 from crud_views.lib.access_trace import resolve_trace_user, trace_access
+from crud_views.lib.access_trace_export import validate_export
 
 
 def _style(value, role, enabled):
@@ -201,6 +203,16 @@ class Command(BaseCommand):
         if not anonymous and actor is None:
             raise CommandError(_("Unknown user: %(user)s") % {"user": _text(user)}, returncode=2)
         trace = trace_access(path, actor)
+        try:
+            validate_export(trace.to_dict())  # A gate only: valid traces keep their exact output bytes.
+        except ValidationError as exc:
+            # Only the class name and escaped locations; input values and messages may carry project data.
+            locations = dict.fromkeys(".".join(_text(part) for part in error["loc"]) for error in exc.errors())
+            raise CommandError(
+                _("Output validation failed (%(error)s): %(locations)s")
+                % {"error": type(exc).__name__, "locations": "; ".join(locations)},
+                returncode=2,
+            ) from None
         color = not options["no_color"] and (options["force_color"] or (self.stdout.isatty() and supports_color()))
         if trace.outcome == "no_such_route" and not as_json:
             self.stderr.write(_("No such CRUD view route: %(path)s") % {"path": _text(trace.path)})

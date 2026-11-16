@@ -4,12 +4,12 @@ milestone: v1.0
 current_phase: "06.36"
 current_phase_name: "ViewSet configuration CLI and versioned JSON contract (#371)"
 current_plan: "07"
-status: executing
-stopped_at: Completed 06.36-07-PLAN.md; floor acceptance blocked; independent reviews pending
-last_updated: "2026-11-16T08:11:00Z"
+status: gaps_found
+stopped_at: Phase 06.36 verified with gaps; 8/9 truths; Pydantic floor Resource compatibility remains
+last_updated: "2026-11-16T09:25:03Z"
 last_activity: 2026-11-16
-last_activity_desc: Phase 06.36 plan 07 execution complete; four final full suites pass; floor acceptance unresolved; 7/7 plans
-state_head: eaf2d07f
+last_activity_desc: Phase 06.36 review fixes and refreshed acceptance complete; canonical verification gaps_found; plan floor fix next
+state_head: 322b5a9f
 progress:
   total_phases: 43
   completed_phases: 41
@@ -32,13 +32,22 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 
 ## Current Position
 
-Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — EXECUTING
+Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — GAPS FOUND
 Current Plan: 07 (01–07 executed; acceptance incomplete)
 Total Plans in Phase: 7
-Status: In Progress — 7/7 plans executed; floor compatibility blocked and independent reviews pending
-Last activity: 2026-11-16 — Final source/installed normal and recorder suites each pass 15,599 tests plus one existing skip
+Status: Gaps found — 7/7 plans executed; 8/9 truths verified; floor compatibility remains blocked
+Last activity: 2026-11-16 — Three review defects fixed and independently verified; four final full suites each 15,665 passed plus one existing skip; canonical verification gaps_found
 
-Next: Independent code/security review and phase verification; resolve the declared Pydantic floor incompatibility before unconditional acceptance
+Next: $gsd-plan-phase 06.36 --gaps — restore Resource initialization at the declared Pydantic floor and rerun actual floor command/schema acceptance
+
+### Phase 06.36 verification with gaps — 2026-11-16
+
+- Canonical verification is `gaps_found`, current fingerprint and **8/9 merged truths verified**. All seven execution plans are committed; phase remains unchecked. No formal requirement IDs were declared, so no unrelated requirement status was reverted.
+- Three deep-review blockers fixed in `b915c526`, `bc2e8d15`, `f7de1d77`: trusted eager translation evaluation, recursive wire-model instance validation, and core/Guardian source ownership. Independent recheck passes 67 targeted cases with zero new findings; disposition 3 fixed/0 open. Security 18/18 threats closed again; UI browser N/A with two CLI usability advisories.
+- Final product source `f7de1d77`: source normal/recorder and fresh installed normal/recorder each **15,665 passed + 1 existing skip**, installed coverage 98.19%. Six-module selections 420 each on Django 4.2/5.2/6.0. All 821 final inputs unchanged; 312 installed files match. Fresh build/schema/lint pass; unchanged strict docs evidence retained. Acceptance refresh `023a07cf`.
+- Additional regressions: JS 457, integration 2, Node harness 177, examples 548 plus 264 subtests pass. Two runner setup failures were corrected without product edits or installation; historical external Tabler runtime checks remain unverified. Gate/evidence commit `322b5a9f`.
+- **Only blocking gap:** actual installed Pydantic 2.2.1 command corpus fails because pre-existing `Resource.__pydantic_init_subclass__` reads unavailable `__pydantic_fields__` at resource.py:89. Fresh full floor run 67 model passes/20 collection errors; verifier independently reproduced the failure. No dependency-floor increase or fixture weakening. Seven other matrix combinations remain unexecuted.
+- Verifier independently checks 28 named cases, both schemas' 10 valid/15 invalid documents, and all 821 fingerprints. No human approval or publication is claimed. Original dirty state.json/config-default/.gitkeep/06.35 review inputs preserved.
 
 ### Phase 06.36 plan 07 execution completion — 2026-11-16
 
@@ -1842,6 +1851,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T08:11:00Z
-Stopped at: Completed 06.36-07-PLAN.md; floor acceptance blocked; independent reviews pending
-Resume file: None
+Last session: 2026-11-16T09:25:03Z
+Stopped at: Phase 06.36 canonical gaps_found; all review fixes verified; floor compatibility gap requires plan
+Resume file: .planning/phases/06.36-viewset-configuration-cli-and-versioned-json-contract-371/06.36-VERIFICATION.md

@@ -2047,7 +2047,7 @@ Plans:
 
 **Plans:** 7/7 plans executed
 
-**Acceptance:** Incomplete — final source/installed normal and recorder suites pass; the Pydantic 2.2.1 command corpus is blocked by the pre-existing Resource `__pydantic_fields__` incompatibility. Seven other runtime combinations are unexecuted. Independent code/security review and phase verification remain pending; this phase is not marked complete. See `06.36-ACCEPTANCE.md` and `06.36-07-SUMMARY.md`.
+**Acceptance:** Incomplete — final source/installed normal and recorder suites pass; the Pydantic 2.2.1 command corpus is blocked by the pre-existing Resource `__pydantic_fields__` incompatibility. Seven other runtime combinations are unexecuted. Independent review fixes are complete and canonical verification is `gaps_found` (8/9 truths); this phase is not marked complete. Final four full suites each pass 15,665 with one existing skip. See `06.36-VERIFICATION.md`, `06.36-ACCEPTANCE.md` and `06.36-REVIEW-DISPOSITION.md`. Next: `$gsd-plan-phase 06.36 --gaps`.
 
 Plans:
 **Wave 1**

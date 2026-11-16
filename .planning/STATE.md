@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.37"
 current_phase_name: "cv_access Pydantic JSON contract validation and schema (#375)"
-current_plan: 3
+current_plan: 4
 status: executing
-stopped_at: Completed 06.37-02-PLAN.md
-last_updated: "2026-11-16T19:45:13.470Z"
+stopped_at: Completed 06.37-03-PLAN.md
+last_updated: "2026-11-16T19:57:02.534Z"
 last_activity: 2026-11-16
 last_activity_desc: Phase 06.37 execution started
-state_head: d525e8644f9471e5b38769a3f52b49f104b899cd
+state_head: 23641718b4a5f528841f41ee1c5d669b9c1458f6
 progress:
   total_phases: 44
   completed_phases: 42
   total_plans: 244
-  completed_plans: 242
+  completed_plans: 243
 milestone_name: milestone
 ---
 
@@ -32,7 +32,7 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 ## Current Position
 
 Phase: 06.37 (cv_access Pydantic JSON contract validation and schema (#375)) — EXECUTING
-Current Plan: 3
+Current Plan: 4
 Total Plans in Phase: 4
 Status: Ready to execute
 Last activity: 2026-11-16 — Completed 06.37-02-PLAN.md (real-trace contract corpus, manage-page parity, Pydantic 2.2.1 floor: 487 passed)
@@ -1472,6 +1472,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P13 | 15min | 3 tasks | 11 files |
 | Phase 06.37 P01 | 11 min | 3 tasks | 6 files |
 | Phase 06.37 P02 | 8 min | 3 tasks | 5 files |
+| Phase 06.37 P03 | 8min | 2 tasks | 3 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1786,6 +1787,9 @@ Recent decisions affecting current work:
 - [Phase 06.37]: 06.37-02: The real runner carries a non-str cv_get_requirement value through unchanged, so the gate rejects it with no runner change
 - [Phase 06.37]: 06.37-02: No real trace missed a closed value; the plan 01 models stayed untouched and the corpus (outcomes, user == {}, nested, unavailable, Guardian, Resource, manage gate) validates with zero drift
 - [Phase 06.37]: 06.37-02: The trace contract file runs in manage_report_floor and passes at Pydantic 2.2.1 (487 passed)
+- [Phase 06.37]: 06.37-03: The #375 CHANGELOG entry is Added, not Breaking, so docs/migrating-1.0.md stays unchanged
+- [Phase 06.37]: 06.37-03: Non-outcome cv_access invocations get a separate Invocation or failure | Exit | Streams table so the six-outcome parser is untouched
+- [Phase 06.37]: 06.37-03: Pre-existing xdist-order failure of test_published_command_examples logged to deferred-items.md, reproduced at base c56ef82d
 
 ### Pending Todos
 
@@ -1875,6 +1879,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T19:45:07.661Z
-Stopped at: Completed 06.37-02-PLAN.md
+Last session: 2026-11-16T19:56:56.780Z
+Stopped at: Completed 06.37-03-PLAN.md
 Resume file: None

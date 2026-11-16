@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.test import RequestFactory
 from django.utils import translation
 
+from crud_views.lib.access_trace_export import validate_export
 from crud_views.lib.views import DetailView, DetailViewPermissionRequired, ListView, ListViewPermissionRequired
 from crud_views.lib.viewset import AncestorPolicy, ParentViewSet, ViewSet
 from tests.test1.app.models import Author, Book, Publisher
@@ -16,11 +17,21 @@ from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
 from tests.test1.test_manage_requirements import grant, register
 
 
+def assert_export_contract(data):
+    """Validate one exported trace and assert the models reproduce it exactly (D-07 drift check)."""
+    model = validate_export(data)
+    # exclude_unset: plan rows and an empty user omit keys that the models would otherwise dump as None.
+    assert model.model_dump(mode="json", by_alias=True, exclude_unset=True) == data
+    return model
+
+
 def trace(path, user):
     assert importlib.util.find_spec("crud_views.lib.access_trace"), "the scalar trace entry point must exist"
     from crud_views.lib.access_trace import trace_access
 
-    return trace_access(path, user)
+    result = trace_access(path, user)
+    assert_export_contract(result.to_dict())
+    return result
 
 
 def explode(*args, **kwargs):

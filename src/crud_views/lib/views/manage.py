@@ -1,5 +1,6 @@
 import inspect
 from collections import OrderedDict
+from contextlib import contextmanager
 from types import SimpleNamespace
 from urllib.parse import urlsplit
 
@@ -21,11 +22,26 @@ from crud_views.lib.check import (
     _registry_vocabulary,
 )
 from crud_views.lib.exceptions import ViewSetError, ViewSetNotFoundError
+from crud_views.lib.manage_report import SourceRecord, normalize_value
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 
 
 class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
+    @contextmanager
+    def manage_export(self):
+        """Opt in to complete machine metadata on this collector instance only."""
+        missing = object()
+        previous = self.__dict__.get("_manage_export_enabled", missing)
+        self._manage_export_enabled = True
+        try:
+            yield self
+        finally:
+            if previous is missing:
+                del self._manage_export_enabled
+            else:
+                self._manage_export_enabled = previous
+
     template_name = "crud_views/view_manage.html"
     manage_docs_base_url = "https://django-crud-views.readthedocs.io/en/stable/reference/manage/"
 
@@ -217,7 +233,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         superusers = user_model.objects.filter(is_active=True, is_superuser=True)
         return {
             "columns": columns,
-            "actor": self.get_manage_actor_row(viewset, user),
+            "actor": self.get_manage_actor_row(viewset, user) if user is not None else None,
             "groups": groups,
             "users": users[:20],
             "show_users": show_users,
@@ -298,6 +314,21 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
 
     def _manage_field(self, viewset, key, value, source=None):
         is_default = key not in viewset._manage_constructor_fields
+        if getattr(self, "_manage_export_enabled", False):
+            if not isinstance(source, SourceRecord):
+                source = (
+                    SourceRecord(code="global_setting", setting=source)
+                    if source and source.startswith("CRUD_VIEWS_")
+                    else SourceRecord(code="default" if is_default else "set")
+                )
+            record = normalize_value(value)
+            return {
+                "key": key,
+                "value": record.value,
+                "source": source.code,
+                "is_default": is_default,
+                "_export": {"value": record, "source": source, "declared_value": None},
+            }
         return {
             "key": key,
             "value": self._manage_display(value),
@@ -309,6 +340,8 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         """Effective identity with constructor provenance independent of value source."""
         rows = []
         metadata_source = _("Resource metadata") if viewset.is_resource else _("model Meta")
+        if getattr(self, "_manage_export_enabled", False):
+            metadata_source = SourceRecord(code="resource_meta" if viewset.is_resource else "model_meta")
         for key in (
             "name",
             "prefix",
@@ -330,7 +363,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             elif key == "pk" and key not in viewset._manage_constructor_fields:
                 source = metadata_source
             row = self._manage_field(viewset, key, value, source)
-            if key in {"verbose_name", "verbose_name_plural"}:
+            if key in {"verbose_name", "verbose_name_plural"} and not getattr(self, "_manage_export_enabled", False):
                 row["value"] = str(value)
             if key == "icon_header":
                 row["icon"] = value
@@ -408,14 +441,16 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             ),
             None,
         )
+        export = getattr(self, "_manage_export_enabled", False)
+        display = self._manage_export_display if export else self._manage_display
         row = self._manage_field(viewset, "context_buttons", button)
-        row.update(key=button.key, type=self._manage_display(type(button)), is_button=True)
+        row.update(key=button.key, type=display(type(button)), is_button=True)
         target = None
         unavailable = _("Target unavailable; review this button's configuration.")
         if builtin is None:
             points_to = _("custom button: %(type)s · template: %(template)s") % {
                 "type": row["type"],
-                "template": self._manage_display(button.template),
+                "template": display(button.template),
             }
         elif builtin is FilterContextButton:
             points_to = _("toggles the list filter") + " · " + str(button.template)
@@ -452,7 +487,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         if button.label_template:
             label = _("Template: %(template)s") % {"template": button.label_template}
         elif button.label_template_code:
-            label = _("Inline template: %(code)s") % {"code": self._manage_display(button.label_template_code)}
+            label = _("Inline template: %(code)s") % {"code": display(button.label_template_code)}
         else:
             label = _("Target view label") if target is not None else _("Dynamic/custom label")
         row.update(points_to=points_to, label=label)
@@ -509,9 +544,16 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 row = self._manage_field(viewset, field, value, source)
                 if field == "extends" and declared == "":
                     row["declared_value"] = "''"
+                    if getattr(self, "_manage_export_enabled", False):
+                        row["_export"]["declared_value"] = normalize_value(declared)
                 rows.append(row)
             sections.append({"key": key, "label": label, "entries": rows})
         source = self._manage_class_source(viewset)
+        if getattr(self, "_manage_export_enabled", False) and not viewset.manage_view_class:
+            source = SourceRecord(
+                code="global_setting" if crud_views_settings.manage_view_class else "default",
+                setting="CRUD_VIEWS_MANAGE_VIEW_CLASS" if crud_views_settings.manage_view_class else None,
+            )
         sections.append(
             {
                 "key": "other",
@@ -632,9 +674,17 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         curated = {name for _, _, names in groups for name in names}
         groups.append(("other", _("Other"), sorted(values.keys() - curated)))
         sections = []
+        entry_helper = self._manage_view_entry
+        if getattr(self, "_manage_export_enabled", False) and entry_helper is ManageView._manage_view_entry:
+
+            def entry_helper(view, name, value, declarations, unknown, missing):
+                return ManageView._manage_view_entry_data(
+                    view, name, value, declarations, unknown, missing, export=True
+                )
+
         for key, label, names in groups:
             entries = [
-                self._manage_view_entry(view, name, values[name], declarations, unknown, missing)
+                entry_helper(view, name, values[name], declarations, unknown, missing)
                 for name in names
                 if name in values
             ]
@@ -650,8 +700,21 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
 
     @staticmethod
     def _manage_view_entry(view, name, value, declarations, unknown, missing):
+        return ManageView._manage_view_entry_data(view, name, value, declarations, unknown, missing)
+
+    @staticmethod
+    def _manage_export_display(value):
+        record = normalize_value(value)
+        if record.kind == "class_path":
+            return record.value
+        return repr(record.value) if record.kind == "native" else record.kind
+
+    @staticmethod
+    def _manage_view_entry_data(view, name, value, declarations, unknown, missing, export=False):
         owner = declarations.get(name)
         source = _("default") if owner is None else (_("set") if owner is view else _("inherited"))
+        source_code = "default" if owner is None else ("set" if owner is view else "inherited")
+        setting = None
         declared_value = value
         # Only known, request-independent fallback paths. Empty/False are values, not missing data.
         field = name.removeprefix("cv_")
@@ -669,6 +732,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         ) is inspect.getattr_static(ManageView, "cv_get_inaccessible_actions"):
             value = ManageView.cv_get_inaccessible_actions()
             source = "ManageView.cv_get_inaccessible_actions"
+            source_code = "fixed"
         elif value is None and field in layered:
             viewset_value = getattr(view.cv_viewset, field)
             value = (
@@ -677,13 +741,38 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                 else CrudView.cv_first_inline_keys.__func__(view, value, field)
             )
             source = _("from ViewSet") if viewset_value is not None else _("global setting")
+            source_code = "viewset" if viewset_value is not None else "global_setting"
+            setting = "CRUD_VIEWS_" + field.upper() if viewset_value is None else None
         elif field == "extends_template" and not value:
             resolver = SimpleNamespace(cv_viewset=view.cv_viewset, cv_extends_template=value)
             value = CrudView.cv_get_extends_template(resolver)
             source = _("from ViewSet") if view.cv_viewset.extends else _("global setting")
+            source_code = "viewset" if view.cv_viewset.extends else "global_setting"
+            setting = None if view.cv_viewset.extends else "CRUD_VIEWS_EXTENDS"
         elif value is None and field in {"icon_header", "context_buttons"}:
             value = getattr(view.cv_viewset, field)
             source = _("from ViewSet")
+            source_code = "viewset"
+        if export:
+            record = normalize_value(value, not_declared=value is missing)
+            return {
+                "key": field,
+                "value": record.value,
+                "source": source,
+                "is_default": owner is None,
+                "unknown": name in unknown,
+                "_export": {
+                    "value": record,
+                    "source": SourceRecord(
+                        code="not_declared" if value is missing else source_code,
+                        setting=setting,
+                        declaring_class=f"{owner.__module__}.{owner.__qualname__}" if owner else None,
+                    ),
+                    "declared_value": normalize_value(declared_value)
+                    if field == "extends_template" and declared_value == ""
+                    else None,
+                },
+            }
         if value is missing:
             display = _("not declared")
             source = _("not declared")
@@ -713,6 +802,10 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
 
     @staticmethod
     def _manage_check_messages(messages):
+        return ManageView._manage_check_message_data(messages)
+
+    @staticmethod
+    def _manage_check_message_data(messages, export=False):
         """Prepare Django messages without hiding collector or database failures."""
         from django.core.checks import CRITICAL, DEBUG, ERROR, INFO, WARNING
 
@@ -723,12 +816,14 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             ERROR: _("Error"),
             CRITICAL: _("Critical"),
         }
+        codes = {DEBUG: "debug", INFO: "info", WARNING: "warning", ERROR: "error", CRITICAL: "critical"}
         return [
             {
                 "id": message.id,
                 "severity": severity.get(message.level, str(message.level)),
                 "message": message.msg,
                 "hint": message.hint,
+                **({"level": message.level, "severity_code": codes.get(message.level, "unknown")} if export else {}),
             }
             for message in messages
             if not message.is_silenced()
@@ -743,7 +838,13 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         messages += collect_ancestor_checks([viewset])
         messages += collect_conditional_checks([viewset])
         messages += collect_viewset_icon_checks([viewset])
-        return {"count": len(checks), "messages": self._manage_check_messages(messages)}
+        helper = self._manage_check_messages
+        rows = (
+            self._manage_check_message_data(messages, export=True)
+            if getattr(self, "_manage_export_enabled", False) and helper is ManageView._manage_check_messages
+            else helper(messages)
+        )
+        return {"count": len(checks), "messages": rows}
 
     def get_manage_access_trace(self, viewset, user, *, mode, object_pk=None, path=None, route_kwargs=None):
         """Prepare scalar diagnostics from explicit inputs; never change the hosting actor."""

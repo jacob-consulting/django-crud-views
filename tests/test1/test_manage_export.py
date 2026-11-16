@@ -118,3 +118,39 @@ def test_no_actor_skips_actor_builder_and_retains_holders(catalogue, monkeypatch
     result = ManageView().get_manage_permissions(vs, None)
     assert result["actor"] is None
     assert result["columns"] and result["superusers"]["count"] == 0
+
+
+def test_normalization_is_bounded_and_never_formats_unknown_instances():
+    from crud_views.lib.manage_report import normalize_value
+
+    class Opaque:
+        def __repr__(self):
+            pytest.fail("Arbitrary instances must not be formatted")
+
+    assert normalize_value(Opaque()).kind == "unsupported"
+    assert normalize_value(None).kind == "native"
+    assert normalize_value(None, not_declared=True).kind == "not_declared"
+    assert normalize_value(Publisher).kind == "class_path"
+    assert normalize_value({1: "bad"}).kind == "unsupported"
+    assert normalize_value(float("nan")).kind == "unsupported"
+    cycle = []
+    cycle.append(cycle)
+    assert normalize_value(cycle).kind == "unsupported"
+    value = normalize_value({"tuple": (True, "x" * 400, None)})
+    assert value.value == {"tuple": [True, "x" * 400, None]}
+    assert value.normalizations[0].path == ["tuple"]
+
+
+def test_known_wire_fields_are_strict_and_statuses_are_consistent():
+    from pydantic import ValidationError
+
+    from crud_views.lib.manage_report import ActorSelection, PermissionCell, Section, ValueRecord
+
+    with pytest.raises(ValidationError):
+        PermissionCell(key="view", model="false", object_count=None)
+    with pytest.raises(ValidationError):
+        ActorSelection(state="selected", row=None)
+    with pytest.raises(ValidationError):
+        Section[ValueRecord](status="error", data=ValueRecord(kind="native"), errors=[0])
+    with pytest.raises(ValidationError):
+        ValueRecord(kind="unsupported", value="invented")

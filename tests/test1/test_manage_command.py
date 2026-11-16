@@ -165,10 +165,15 @@ def test_core_inspection_uses_configured_builders_without_actor(catalogue, monke
         def get_manage_actor_row(self, viewset, user):
             pytest.fail("No actor was selected")
 
-    vs = ViewSet(model=Publisher, name="core_inspect", context_buttons=[])
+    monkeypatch.setattr(sys.modules[__name__], "ConfiguredProjectManage", ProjectManage, raising=False)
+    vs = ViewSet(
+        model=Publisher,
+        name="core_inspect",
+        context_buttons=[],
+        manage_view_class=__name__ + ".ConfiguredProjectManage",
+    )
     type("InspectList", (ListView,), {"__module__": __name__, "cv_viewset": vs})
-    # Use the actual registered class selector, without dispatching or registering a second view.
-    monkeypatch.setitem(vs._views, "manage", ProjectManage)
+    assert issubclass(vs.get_all_views()["manage"], ProjectManage)
     code, output = invoke(vs.name, "--as-json")
     report = json.loads(output)
     assert report["kind"] == "inspection", "A selected ViewSet must produce an inspection"
@@ -195,3 +200,34 @@ def test_schema_is_complete_and_does_not_discover(catalogue, monkeypatch):
     schema = json.loads(output)
     assert "\x1b" not in output and "oneOf" in schema
     assert {"CatalogueResult", "InspectionResult", "PermissionsData", "ValueRecord"} <= schema["$defs"].keys()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("legacy_helper", [False, True])
+def test_custom_metadata_unavailability_preserves_independent_sections(catalogue, monkeypatch, legacy_helper):
+    class ProjectManage(ManageView):
+        def get_manage_facts(self, viewset, user):
+            rows = super().get_manage_facts(viewset, user)
+            if not legacy_helper:
+                rows[0]["is_default"] = "false"
+            return rows
+
+        @staticmethod
+        def _manage_view_entry(view, name, value, declarations, unknown, missing):
+            # Published legacy signature still works; it cannot promise complete export values.
+            return ManageView._manage_view_entry(view, name, value, declarations, unknown, missing)
+
+    monkeypatch.setattr(sys.modules[__name__], "ConfiguredProjectManage", ProjectManage, raising=False)
+    vs = ViewSet(model=Publisher, name="custom_partial", manage_view_class=__name__ + ".ConfiguredProjectManage")
+    code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    assert code == 2 and report["status"] == "partial"
+    assert report["data"]["views"]["status"] == "error"
+    assert report["data"]["facts"]["status"] == ("ok" if legacy_helper else "error")
+    assert report["data"]["permissions"]["status"] == "ok"
+    for name in ("facts", "views"):
+        for index in report["data"][name]["errors"]:
+            assert report["errors"][index]["section"] == name
+    from crud_views.lib.manage_report import Report
+
+    assert Report.validate_python(report).status == "partial"

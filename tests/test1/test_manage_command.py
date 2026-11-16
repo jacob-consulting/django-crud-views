@@ -231,3 +231,113 @@ def test_custom_metadata_unavailability_preserves_independent_sections(catalogue
     from crud_views.lib.manage_report import Report
 
     assert Report.validate_python(report).status == "partial"
+
+
+@pytest.mark.django_db
+def test_selected_view_keeps_all_viewset_wide_evidence(catalogue):
+    from crud_views.lib.views import DetailView, ListView
+
+    vs = ViewSet(model=Publisher, name="selected_scope", context_buttons=[])
+    type("SelectedList", (ListView,), {"__module__": __name__, "cv_viewset": vs})
+    # An unrelated view has a real scoped error: selecting list must not hide it.
+    type("UnrelatedDetail", (DetailView,), {"__module__": __name__, "cv_viewset": vs, "cv_icon_header": 12})
+    full_code, output = invoke(vs.name, "--as-json")
+    full = json.loads(output)
+    selected_code, output = invoke(vs.name, "list", "--as-json")
+    selected = json.loads(output)
+    assert full_code == selected_code == 1
+    for name in ("facts", "presentation", "hierarchy", "ancestor_policy", "permissions", "checks", "guardian"):
+        assert selected["data"][name] == full["data"][name]
+    assert selected["data"]["checks"]["data"]["messages"]
+    for name in ("views", "routes"):
+        data = selected["data"][name]["data"]
+        assert data["scope"] == "selected_view" and data["selected_view"] == "list"
+        assert [r["key"] for r in data["entries"]] == ["list"]
+        assert data["entries"] == [r for r in full["data"][name]["data"]["entries"] if r["key"] == "list"]
+
+
+def test_unregistered_list_selection_never_aliases_to_card(catalogue, monkeypatch):
+    from crud_views.lib.views import ListView
+
+    vs = ViewSet(model=Publisher, name="only_card", context_buttons=[])
+    card = type("OnlyCard", (ListView,), {"__module__": __name__, "cv_viewset": vs, "cv_key": "card"})
+    assert vs.get_view_class("list") is card
+    monkeypatch.setattr(ManageView, "get_manage_permissions", lambda *args: pytest.fail("Invalid selection collected"))
+    code, output = invoke(vs.name, "list", "--as-json")
+    result = json.loads(output)
+    assert code == 2 and result["status"] == "failed"
+    assert result["errors"][0]["code"] == "unknown_view"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("configured_by", ["viewset", "setting"])
+@pytest.mark.parametrize("legacy", [False, True])
+def test_configured_override_metadata_and_export_restoration(catalogue, monkeypatch, configured_by, legacy):
+    from crud_views.lib.settings import crud_views_settings
+
+    instances = []
+
+    class ProjectManage(ManageView):
+        def get_manage_facts(self, viewset, user):
+            instances.append(self)
+            assert self._manage_export_enabled
+            rows = super().get_manage_facts(viewset, user)
+            if legacy:
+                rows[0] = {"key": "name", "value": "legacy shortened display", "source": "set", "is_default": False}
+            else:
+                rows[0]["custom_additive_field"] = "allowed"
+            return rows
+
+    monkeypatch.setattr(sys.modules[__name__], "ConfiguredMetadataManage", ProjectManage, raising=False)
+    path = __name__ + ".ConfiguredMetadataManage"
+    if configured_by == "setting":
+        monkeypatch.setattr(crud_views_settings, "manage_view_class", path)
+    vs = ViewSet(
+        model=Publisher,
+        name="override_metadata",
+        context_buttons=[],
+        **({"manage_view_class": path} if configured_by == "viewset" else {}),
+    )
+    registered = dict(vs.get_all_views())
+    registry = dict(_REGISTRY)
+    code, output = invoke(vs.name, "--as-json")
+    result = json.loads(output)
+    assert code == (2 if legacy else 0)
+    assert result["data"]["facts"]["status"] == ("error" if legacy else "ok")
+    assert all(result["data"][name]["status"] == "ok" for name in ("presentation", "views", "checks", "permissions"))
+    if legacy:
+        assert [(e["section"], e["code"]) for e in result["errors"]] == [("facts", "output_validation_failed")]
+    assert len(instances) == 1 and type(instances[0]) is registered["manage"]
+    assert "_manage_export_enabled" not in instances[0].__dict__
+    assert dict(vs.get_all_views()) == registered and dict(_REGISTRY) == registry
+
+
+@pytest.mark.django_db
+def test_custom_requirements_and_requirement_errors_remain_data(catalogue):
+    from django.core.exceptions import ImproperlyConfigured
+
+    from crud_views.lib.views import DetailView, ListView
+
+    vs = ViewSet(model=Publisher, name="requirement_data", context_buttons=[])
+
+    class CustomList(ListView):
+        cv_viewset = vs
+
+        @classmethod
+        def cv_get_requirement(cls):
+            return {"kind": "custom", "value": "project rule", "ancestor_applies": False}
+
+    class BrokenDetail(DetailView):
+        cv_viewset = vs
+
+        @classmethod
+        def cv_get_requirement(cls):
+            raise ImproperlyConfigured("invalid requirement metadata")
+
+    code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    assert code in (0, 1) and report["data"]["views"]["status"] == "ok"
+    rows = {r["key"]: r for r in report["data"]["views"]["data"]["entries"]}
+    assert rows["list"]["requirement"] == {"kind": "custom", "value": "project rule", "ancestor_applies": False}
+    assert rows["detail"]["requirement_metadata_error"]
+    assert rows["detail"]["permission"] is None

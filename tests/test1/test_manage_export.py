@@ -350,3 +350,78 @@ def test_checked_invalid_value_formatter_failure_is_checks_error(catalogue):
     }
     assert entries["icon_header"]["value"]["kind"] == "unsupported"
     assert "object at 0x" not in text
+
+
+@pytest.mark.parametrize("value", [None, False, [], (), {}])
+def test_declaration_state_is_independent_of_effective_source(catalogue, value):
+    vs, view = make_view(catalogue, cv_list_actions_inline=value)
+    vs.list_actions_inline = ["detail"]
+    row = export_entries(ManageView(), view)["list_actions_inline"]
+    assert row["is_default"] is False
+    assert row["_export"]["source"].code == ("viewset" if value is None else "set")
+    assert row["_export"]["source"].declaring_class == f"{view.__module__}.{view.__qualname__}"
+    assert row["_export"]["value"].value == (["detail"] if value is None else [] if type(value) is tuple else value)
+
+
+def test_all_provenance_branches_are_locale_independent(catalogue, monkeypatch):
+    from django.utils.translation import override
+
+    from crud_views.lib.settings import crud_views_settings
+    from tests.test1.test_resource_manage import ManageItem
+
+    class ProjectMixin:
+        cv_home_key = None
+        cv_custom_empty = ""
+        cv_annotation_only: str
+
+    vs = ViewSet(model=Publisher, name="source_model", extends="", context_buttons=[], verbose_name=None)
+    view = type(
+        "InheritedList", (ProjectMixin, ListView), {"__module__": __name__, "cv_viewset": vs, "cv_extends_template": ""}
+    )
+    resource = ViewSet(model=ManageItem, name="source_resource", context_buttons=[])
+    monkeypatch.setattr(crud_views_settings, "extends", "project/global.html")
+    manage = ManageView()
+    languages = []
+    for language in ("en", "de"):
+        with override(language), manage.manage_export():
+            facts = {r["key"]: r for r in manage.get_manage_facts(vs, None)}
+            resources = {r["key"]: r for r in manage.get_manage_facts(resource, None)}
+            presentation = {
+                r["key"]: r for s in manage.get_manage_presentation(vs, None)["sections"] for r in s["entries"]
+            }
+            views = export_entries(manage, view)
+            fixed = export_entries(manage, vs.get_all_views()["manage"])
+            rows = [*facts.values(), *resources.values(), *presentation.values(), *views.values(), *fixed.values()]
+            languages.append([(r["key"], r["is_default"], r["_export"]["source"].model_dump()) for r in rows])
+    assert languages[0] == languages[1]
+    assert facts["verbose_name"]["is_default"] is False
+    assert facts["verbose_name"]["_export"]["source"].code == "model_meta"
+    assert facts["prefix"]["is_default"] is True
+    assert resources["verbose_name"]["_export"]["source"].code == "resource_meta"
+    assert resources["pk_type"]["_export"]["source"].code == "resource_meta"
+    assert views["home_key"]["_export"]["source"].code == "inherited"
+    assert views["home_key"]["_export"]["value"].kind == "native"
+    assert views["home_key"]["_export"]["value"].value is None
+    assert views["annotation_only"]["_export"]["value"].kind == "not_declared"
+    assert views["annotation_only"]["_export"]["source"].code == "not_declared"
+    assert views["context_actions"]["is_default"] is True
+    assert views["context_actions"]["_export"]["source"].code == "default"
+    assert fixed["inaccessible_actions"]["_export"]["source"].code == "fixed"
+    for row in (presentation["extends"], views["extends_template"]):
+        assert row["is_default"] is False
+        assert row["_export"]["declared_value"].value == ""
+        assert row["_export"]["source"].code == "global_setting"
+        assert row["_export"]["source"].setting == "CRUD_VIEWS_EXTENDS"
+        assert row["_export"]["value"].value == "project/global.html"
+
+
+def test_export_does_not_change_subsequent_page_dictionaries(catalogue):
+    vs, _ = make_view(catalogue, cv_context_actions_inline=False)
+    manage = ManageView()
+    builders = (manage.get_manage_facts, manage.get_manage_presentation, manage.get_manage_views)
+    before = [builder(vs, None) for builder in builders]
+    with manage.manage_export():
+        for builder in builders:
+            builder(vs, None)
+    assert before == [builder(vs, None) for builder in builders]
+    assert "_manage_export_enabled" not in manage.__dict__

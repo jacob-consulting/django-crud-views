@@ -817,7 +817,8 @@ Core `crud_views/view_manage.html` owns the shared page; Guardian's
 `crud_views/view_guardian_manage.html` extends it. The [manage reference](manage.md) explains the visible
 semantics. This inventory is the public theme surface before the 1.0 freeze, including the default-off
 [Access check](manage.md#access-check) card and [cv_access](manage.md#cv_access) command (#370).
-#371's configuration-dump command remains a separate follow-up.
+[The delivered `cv_manage_view` command](manage.md#cv_manage_view) (#371) provides catalogue, configuration
+inspection and generated schema output through these same configured builders.
 
 ### Manage blocks
 
@@ -989,6 +990,59 @@ auth-read dependency. View metadata that needs permission maps, and Guardian's e
 the auth guard. Pass `route_kwargs` explicitly for hierarchy links instead of inventing an object or request.
 For traces, pass those coordinates explicitly to the trace builder too. It does not enforce the web opt-in setting
 or host admission itself, matching the always-available command; callers own their exposure policy.
+
+### Configuration export customization
+
+The [configuration command](manage.md#cv_manage_view) uses the registered manage class selected by
+`manage_view_class` (or the core/Guardian global setting). Preserve `super()` and its complete rows to retain
+bounded `_export` metadata. For example, put this class in `myapp/manage.py`:
+
+<!-- cv-manage-export-recipe -->
+```python
+from crud_views.lib.views.manage import ManageView
+
+
+class ProjectManageView(ManageView):
+    def get_manage_facts(self, viewset, user):
+        rows = super().get_manage_facts(viewset, user)
+        rows.append(self._manage_field(viewset, "project_note", "Supported by the project team"))
+        return rows
+```
+
+Select `manage_view_class="myapp.manage.ProjectManageView"` when constructing the ViewSet, before automatic
+registration. For Guardian, subclass `GuardianManageView` to retain its policy/count builders. Then
+`python manage.py cv_manage_view author --as-json` includes the additional complete fact. The helper follows
+page/export mode; prefer it to parsing display text or recreating metadata.
+
+The command enters `manage.manage_export()` on one instance. Previous mode is restored on success and exception,
+including nested calls; the class and ordinary page dictionaries remain unchanged. A request-free caller can use
+the same context around existing builders. Permissions accepts `user=None` for no actor; the trace builder still
+requires its explicit actor and is not called by configuration export.
+
+Full replacements keep ordinary row `key`, `value`, `source`, `is_default` and section-specific fields. Export mode
+additionally supplies `_export` with `value` (complete value record), `source` (source record) and `declared_value`
+(null or complete declaration record). Its plain mapping shape is:
+
+```json
+{
+  "value": {"kind": "native", "value": "complete text", "python_type": null, "normalizations": []},
+  "source": {"code": "set", "setting": null, "declaring_class": null},
+  "declared_value": null
+}
+```
+
+Shipped helpers also use equivalent typed records internally. Their Python names/imports are not an SDK;
+the [versioned JSON/schema](manage.md#versioned-configuration-contract) defines the consumer contract. Keep raw
+values and provenance together during collection. Replacements must satisfy the complete section shape, including
+machine check levels/severity or Guardian policy metadata where applicable.
+
+Legacy replacements without full metadata retain their ordinary page behavior, but the affected export section
+becomes unavailable (`status="error"`, `output_validation_failed`), preserving other sections. The adapter never
+reconstructs complete values from shortened display strings. Static helpers
+`_manage_view_entry(view, name, value, declarations, unknown, missing)` and `_manage_check_messages(messages)`
+retain their signatures and ordinary shapes. Export uses shipped metadata-aware workers only when those helpers
+are unchanged; legacy replacements still receive their original arguments, and missing metadata makes only their
+affected section unavailable. Public `super()` builder overrides preserve participation.
 
 ### Requirement descriptions
 

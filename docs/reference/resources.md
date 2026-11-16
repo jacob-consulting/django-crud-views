@@ -1,5 +1,13 @@
 # Resources — non-ORM data in ViewSets
 
+The [cv_manage_view command](manage.md#cv_manage_view) provides catalogue, configuration inspection and schema
+output for standalone and model-nested Resources. Its built-in collectors are static: no Resource identifier,
+external service connection, item/list reads, handlers, access traces or dynamic labels are needed. Explicit
+Resource permission mappings describe global Django grants, never per-item permissions. Holder rows show direct
+grants; an optional selected actor shows effective grants. Ancestor providers and reached database guards retain
+their existing meanings, including a Resource beneath Guardian. This configuration report does not decide URL
+access; see [read and override limits](manage.md#configuration-read-and-execution-boundaries).
+
 `ViewSet` normally wraps a Django model. `Resource` lets it wrap anything
 table-shaped that isn't backed by the database — S3 bucket listings, config
 trees, results from an external API — and still get the same chrome: list and

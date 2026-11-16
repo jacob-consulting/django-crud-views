@@ -1,0 +1,50 @@
+{
+  "fixture_directory": "/tmp/cv-0636-schema.Tyl79v",
+  "fixtures": {
+    "catalogue": "256aa12f916243c84b4bf50ca666fea8294178f66d8f171197a103ee9377501a",
+    "failed": "11834cc0bf9ed9090fc676a5c5f43b2e91746b1a67da54bd76c51edc138c94c9",
+    "failed-catalogue": "4941043c2d727d0d9c9fbd92c6e8f5ee743b46184fbdf7e56ad051b045a29ab8",
+    "inspection": "76193a27b68ee7d62af064fed6a9806d50814dd1525fa1d431cae404ff14a7e9",
+    "inspection-additive": "3d3366248ef9364ea4818d6b16e33c6d1184ef750ca10dac73d2f515a98008dd",
+    "inspection-guardian": "4920228ff8aae756b9766466ddda6722ed6d2fe38114c083d1a19da81005164d",
+    "inspection-resource": "5835b72f5d4723ea719657d6d6c223798a5d8b5f6bb2e83fa9dbce3c54d76b39",
+    "inspection-selected": "dfc718d549f74e012a607761a7567eddf36d9f8eb7669f6f74df7f3d1cab8c8a",
+    "inspection-shown": "f768e5bc9b1279b66009571d1586c863fea168a9bc53f5bffebbd92184541aed",
+    "invalid": "0d7256e223084822256b7b5e4904ba2ec2dead3b7cb8c8707ffc7a05feed6c85",
+    "invalid-actor": "2a3b373b4ddb620599c8b5739254ddbdaaa913c2982796d9ff4e20bf0f62608f",
+    "invalid-count": "6372c7cf83e5faf9f0c3508043e48c03a7858b7dfe0b273c33ec12aa5721c877",
+    "invalid-enum": "70e5a8e4f628723e1cbf839f225f4bcc45272428d63edb1157af61fecd5a81dc",
+    "invalid-error": "e34c44f6b36954657e13b57759894fe07c14aedb4fbe41bcd55da0ba44b0781a",
+    "invalid-identity": "5c7e131ca4bf8f081c3a3d1a51ad36abda8b241eab7aee40ec5e6a69bf689ae6",
+    "invalid-kind": "7469b2f6366adda8837efa83ae81479c59056077ac5a03318649e31b52a710ec",
+    "invalid-policy": "d707006dfd656e8064fd6328f6303a91397a8fed56d725b776ff801b8d92f3ae",
+    "invalid-required": "cc0283415e0e43fee7c7d559c53e2633fb0e38a7827535e209eb002da68356b6",
+    "invalid-section": "182c05529135f40a799ac43e37492f23cac5bb4f4bc2c3dd8ccc57042e0f1a49",
+    "invalid-source": "661dfcb18124a8576b0087879bda41af8aa8aea59616e5f114c1fb7e95aa5fb2",
+    "invalid-type": "25452144388e9ec94aba84716f43473266078afada55dbc45256fe0fc857b2c2",
+    "invalid-union": "7f11ad03b9e684ead0463908398c5830091387cb100310ac4900dfc5ef6a4cf8",
+    "invalid-value": "c25dfa9898f949856e8b7ede6c00d5aef2f31bf1b612f5d689305d67f3740fe5",
+    "invalid-visibility": "567259c470aa92460d02ead7a75bc91d3431cef3802d8185c2f242fa66b7871f",
+    "partial": "ea3712f849cce6bbcd0221559f3a2a7bedec0c248daaf941ff693efc93e9263f",
+    "schema": "e27eb2791a831636cbaadfb4a132745108e45d69d16ee596447ae3294b4c0b95"
+  },
+  "jsonschema_module": "/usr/lib/python3/dist-packages/jsonschema/__init__.py",
+  "jsonschema_version": "4.10.3",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "schemas": {
+    "published": {
+      "accepted": 10,
+      "path": "/home/alex/projects/alex/django-crud-views/docs/reference/cv_manage_view.schema.json",
+      "rejected": 15,
+      "sha256": "e27eb2791a831636cbaadfb4a132745108e45d69d16ee596447ae3294b4c0b95",
+      "validator": "Draft202012Validator"
+    },
+    "runtime": {
+      "accepted": 10,
+      "path": "/tmp/cv-0636-schema.Tyl79v/schema.json",
+      "rejected": 15,
+      "sha256": "e27eb2791a831636cbaadfb4a132745108e45d69d16ee596447ae3294b4c0b95",
+      "validator": "Draft202012Validator"
+    }
+  }
+}

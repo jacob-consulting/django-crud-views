@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.755" timestamp="2026-11-16T06:42:27.004121+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_manage_command" name="test_schema_conformance_exports_actual_command_corpus" time="0.457"><failure message="AssertionError: Independent schema checker must be shipped&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = (PosixPath('/home/alex/projects/alex/django-crud-views') / 'tests/check_manage_schema.py').is_file">catalogue = (&lt;module 'manage_command_urls'&gt;, &lt;_pytest.monkeypatch.MonkeyPatch object at 0x74bf882e3bc0&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x74bf882e3320&gt;
+django_user_model = &lt;class 'django.contrib.auth.models.User'&gt;
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3388/test_schema_conformance_export0')
+
+    @pytest.mark.django_db
+    def test_schema_conformance_exports_actual_command_corpus(catalogue, monkeypatch, django_user_model, tmp_path):
+        """One xdist case owns all fixed names; callers supply a fresh export directory."""
+        from pydantic import ValidationError
+    
+        from crud_views.lib.manage_report import Report
+        from crud_views.lib.settings import crud_views_settings
+        from crud_views.lib.views import ListView
+    
+        directory = Path(os.environ.get("CV_MANAGE_SCHEMA_EXPORT_DIR", tmp_path))
+        assert directory.is_dir(), "Create a fresh CV_MANAGE_SCHEMA_EXPORT_DIR before running pytest"
+        assert not list(directory.iterdir()), "Schema corpus directory must be fresh, including on reruns"
+        documents = {}
+    
+        def emit(name, *args, code=0):
+            actual_code, stdout = invoke(*args, "--force-color")
+            assert actual_code == code, stdout
+            assert "\x1b" not in stdout
+            documents[name] = json.loads(stdout)
+            if name != "schema":
+                Report.validate_python(documents[name])
+            return documents[name]
+    
+        for name, factory, model in (
+            ("schema_core", ViewSet, Publisher),
+            ("schema_guardian", GuardianViewSet, Publisher),
+            ("schema_resource", ViewSet, ManageItem),
+        ):
+            vs = factory(model=model, name=name, context_buttons=[])
+            type("SchemaList", (ListView,), {"__module__": __name__, "cv_viewset": vs})
+        actor = django_user_model.objects.create_user(username="schema actor")
+        monkeypatch.setattr(crud_views_settings, "manage_show_users", False)
+        emit("schema", "--schema")
+        emit("catalogue", "--list", "--as-json")
+        inspection = emit("inspection", "schema_core", "--as-json")
+        emit("inspection-guardian", "schema_guardian", "--as-json")
+        emit("inspection-resource", "schema_resource", "--as-json")
+        emit("inspection-selected", "schema_core", "list", "--user", actor.username, "--as-json")
+        monkeypatch.setattr(crud_views_settings, "manage_show_users", True)
+        emit("inspection-shown", "schema_core", "--as-json")
+        with monkeypatch.context() as patch:
+            def broken(*args):
+                raise RuntimeError("schema fixture collection failed")
+    
+            patch.setattr(ManageView, "get_manage_facts", broken)
+            emit("partial", "schema_core", "--as-json", code=2)
+        emit("failed", "missing_schema_viewset", "--as-json", code=2)
+        emit("failed-catalogue", "--list", "--user", actor.username, "--as-json", code=2)
+    
+        # Independent one-field mutations, never represented as actual command output.
+        for name, path, value in (
+            ("invalid", ("version",), 2),
+            ("invalid-type", ("data", "facts", "data", "entries", 0, "is_default"), "false"),
+            ("invalid-enum", ("status",), "future"),
+            ("invalid-kind", ("kind",), "future"),
+            ("invalid-section", ("data", "facts", "status"), "future"),
+            ("invalid-source", ("data", "facts", "data", "entries", 0, "source", "code"), "future"),
+            ("invalid-value", ("data", "facts", "data", "entries", 0, "value", "kind"), "future"),
+            ("invalid-visibility", ("data", "permissions", "data", "holder_visibility"), "future"),
+            ("invalid-actor", ("data", "permissions", "data", "actor", "state"), "future"),
+            ("invalid-policy", ("data", "ancestor_policy", "data", "as_ancestor", "effective_provider"), "future"),
+            ("invalid-count", ("data", "checks", "data", "count"), "0"),
+            ("invalid-identity", ("data", "identity", "kind"), "future"),
+        ):
+            mutated = deepcopy(inspection)
+            node = mutated
+            for key in path[:-1]:
+                node = node[key]
+            node[path[-1]] = value
+            documents[name] = mutated
+        missing = deepcopy(inspection)
+        del missing["data"]["identity"]["name"]
+        documents["invalid-required"] = missing
+        wrong_union = deepcopy(inspection)
+        wrong_union["data"] = deepcopy(documents["catalogue"]["data"])
+        documents["invalid-union"] = wrong_union
+        bad_error = deepcopy(documents["failed"])
+        bad_error["errors"][0]["code"] = "future"
+        documents["invalid-error"] = bad_error
+        additive = deepcopy(inspection)
+        for node in (additive, additive["data"], additive["data"]["facts"]["data"]["entries"][0]):
+            node["future_additive_field"] = {"ignored": True}
+        documents["inspection-additive"] = additive
+        for name, document in documents.items():
+            if name.startswith("invalid"):
+                with pytest.raises(ValidationError):
+                    Report.validate_python(document)
+            elif name != "schema":
+                Report.validate_python(document)
+            temporary = directory / f"{name}.json.tmp"
+            temporary.write_text(json.dumps(document, ensure_ascii=True, allow_nan=False, indent=2) + "\n")
+            temporary.replace(directory / f"{name}.json")
+    
+        root = Path(__file__).resolve().parents[2]
+&gt;       assert (root / "tests/check_manage_schema.py").is_file(), "Independent schema checker must be shipped"
+E       AssertionError: Independent schema checker must be shipped
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = (PosixPath('/home/alex/projects/alex/django-crud-views') / 'tests/check_manage_schema.py').is_file
+
+tests/test1/test_manage_command.py:176: AssertionError</failure></testcase></testsuite></testsuites>

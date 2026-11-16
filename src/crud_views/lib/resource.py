@@ -55,15 +55,25 @@ class ResourceOptions:
 class _PkShim(property):
     """Marker type for the per-subclass pk property, so descendants can detect it."""
 
+    def __get__(self, instance, owner=None):
+        if instance is None:
+            # A row-only alias must not look like a class default when Pydantic
+            # checks whether a descendant may declare a real pk field.
+            raise AttributeError("pk")
+        return super().__get__(instance, owner)
+
 
 class _PkShimNeutralized:
     """
-    Non-descriptor placeholder assigned onto a subclass that declares a real
-    ``pk`` field while inheriting a _PkShim from an ancestor: because it is
-    not a data descriptor, the field value in the instance __dict__ wins again.
+    Non-data descriptor assigned onto a subclass that declares a real ``pk``
+    field while inheriting a _PkShim. The instance __dict__ wins, and class
+    lookup stays absent so further descendants can inherit the field.
     """
 
     __slots__ = ()
+
+    def __get__(self, instance, owner=None):
+        raise AttributeError("pk")
 
 
 class Resource(BaseModel):
@@ -86,7 +96,7 @@ class Resource(BaseModel):
         # Expose object.pk like Django models. A property on the base class
         # would be a data descriptor shadowing a real "pk" field, so it is
         # attached per subclass and only when no "pk" field exists.
-        if "pk" in cls.__pydantic_fields__:
+        if "pk" in cls.model_fields:
             # a real pk field: unshadow any inherited per-subclass shim so the
             # field value in the instance __dict__ wins again
             if any(isinstance(base.__dict__.get("pk"), _PkShim) for base in cls.__mro__[1:]):

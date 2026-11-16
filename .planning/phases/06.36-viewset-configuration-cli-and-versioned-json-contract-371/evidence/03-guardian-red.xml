@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="1.574" timestamp="2026-11-16T06:17:47.886053+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_manage_export" name="test_guardian_composition_checks_export_and_static_compatibility" time="0.276"><failure message="AssertionError: Guardian composition checks need numeric severity&#10;assert None == 40&#10; +  where None = &lt;built-in method get of dict object at 0x7c8206bd0f00&gt;('level')&#10; +    where &lt;built-in method get of dict object at 0x7c8206bd0f00&gt; = {'id': 'crud_views_guardian.E001', 'severity': 'Error', 'message': 'List child views using GuardianParentPermissionMix... Guardian view, or add the required GuardianObjectPermissionMixin / GuardianQuerysetMixin before the core view class.'}.get">catalogue = (&lt;module 'manage_command_urls'&gt;, &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7c8206ccd1f0&gt;)
+
+    @pytest.mark.django_db
+    def test_guardian_composition_checks_export_and_static_compatibility(catalogue):
+        from crud_views.lib.views import ListViewPermissionRequired
+        from crud_views.lib.viewset import ParentViewSet
+        from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin
+        from crud_views_guardian.lib.views import GuardianManageView
+        from crud_views_guardian.lib.viewset import GuardianViewSet
+        from tests.test1.app.models import Book
+    
+        parent = GuardianViewSet(model=Publisher, name="composition_parent")
+        vs = GuardianViewSet(
+            model=Book,
+            name="guardian_bad_composition",
+            context_buttons=[],
+            parent=ParentViewSet(name=parent.name, attribute="publisher"),
+        )
+        type(
+            "BadGuardianList",
+            (GuardianParentPermissionMixin, ListViewPermissionRequired),
+            {"__module__": __name__, "cv_viewset": vs},
+        )
+        manage = GuardianManageView()
+        ordinary = manage.get_manage_checks(vs, None)
+        with manage.manage_export():
+            raw = manage.get_manage_checks(vs, None)
+        message = next(row for row in raw["messages"] if row["id"] == "crud_views_guardian.E001")
+&gt;       assert message.get("level") == 40, "Guardian composition checks need numeric severity"
+E       AssertionError: Guardian composition checks need numeric severity
+E       assert None == 40
+E        +  where None = &lt;built-in method get of dict object at 0x7c8206bd0f00&gt;('level')
+E        +    where &lt;built-in method get of dict object at 0x7c8206bd0f00&gt; = {'id': 'crud_views_guardian.E001', 'severity': 'Error', 'message': 'List child views using GuardianParentPermissionMix... Guardian view, or add the required GuardianObjectPermissionMixin / GuardianQuerysetMixin before the core view class.'}.get
+
+tests/test1/test_manage_export.py:91: AssertionError</failure></testcase><testcase classname="tests.test1.test_manage_export" name="test_guardian_policy_exports_stable_codes_and_mixin_paths[de]" time="0.269"><failure message="AssertionError: assert 'nicht anwendbar' == 'not_applicable'&#10;  &#10;  - not_applicable&#10;  + nicht anwendbar">catalogue = (&lt;module 'manage_command_urls'&gt;, &lt;_pytest.monkeypatch.MonkeyPatch object at 0x75e66eab17c0&gt;)
+language = 'de'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("language", ["en", "de"])
+    def test_guardian_policy_exports_stable_codes_and_mixin_paths(catalogue, language):
+        from django.utils.translation import override
+    
+        from crud_views.lib.manage_report import adapt_section
+        from crud_views_guardian.lib.views import GUARDIAN_MIXINS, GuardianDetailViewPermissionRequired, GuardianManageView
+        from crud_views_guardian.lib.viewset import GuardianViewSet
+    
+        vs = GuardianViewSet(model=Publisher, name="guardian_policy_export", context_buttons=[])
+        for key, accept in (("strict", False), ("fallback", True)):
+            type(
+                "Policy" + key,
+                (GuardianDetailViewPermissionRequired,),
+                {
+                    "__module__": __name__,
+                    "cv_viewset": vs,
+                    "cv_key": key,
+                    "cv_path": key,
+                    "cv_guardian_accept_global_perms": accept,
+                },
+            )
+        manage = GuardianManageView()
+        with override(language):
+            ordinary = manage.get_manage_views(vs, None)
+            with manage.manage_export():
+                raw = manage.get_manage_views(vs, None)
+            for row in raw:
+                expected = {"strict": "strict", "fallback": "global_fallback", "manage": "not_applicable"}[row["key"]]
+&gt;               assert row["guardian_policy"]["effective_policy"] == expected
+E               AssertionError: assert 'nicht anwendbar' == 'not_applicable'
+E                 
+E                 - not_applicable
+E                 + nicht anwendbar
+
+tests/test1/test_manage_export.py:43: AssertionError</failure></testcase><testcase classname="tests.test1.test_manage_export" name="test_guardian_policy_exports_stable_codes_and_mixin_paths[en]" time="0.360"><failure message="AssertionError: assert 'not applicable' == 'not_applicable'&#10;  &#10;  - not_applicable&#10;  ?    ^&#10;  + not applicable&#10;  ?    ^">catalogue = (&lt;module 'manage_command_urls'&gt;, &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7c04d886a210&gt;)
+language = 'en'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("language", ["en", "de"])
+    def test_guardian_policy_exports_stable_codes_and_mixin_paths(catalogue, language):
+        from django.utils.translation import override
+    
+        from crud_views.lib.manage_report import adapt_section
+        from crud_views_guardian.lib.views import GUARDIAN_MIXINS, GuardianDetailViewPermissionRequired, GuardianManageView
+        from crud_views_guardian.lib.viewset import GuardianViewSet
+    
+        vs = GuardianViewSet(model=Publisher, name="guardian_policy_export", context_buttons=[])
+        for key, accept in (("strict", False), ("fallback", True)):
+            type(
+                "Policy" + key,
+                (GuardianDetailViewPermissionRequired,),
+                {
+                    "__module__": __name__,
+                    "cv_viewset": vs,
+                    "cv_key": key,
+                    "cv_path": key,
+                    "cv_guardian_accept_global_perms": accept,
+                },
+            )
+        manage = GuardianManageView()
+        with override(language):
+            ordinary = manage.get_manage_views(vs, None)
+            with manage.manage_export():
+                raw = manage.get_manage_views(vs, None)
+            for row in raw:
+                expected = {"strict": "strict", "fallback": "global_fallback", "manage": "not_applicable"}[row["key"]]
+&gt;               assert row["guardian_policy"]["effective_policy"] == expected
+E               AssertionError: assert 'not applicable' == 'not_applicable'
+E                 
+E                 - not_applicable
+E                 ?    ^
+E                 + not applicable
+E                 ?    ^
+
+tests/test1/test_manage_export.py:43: AssertionError</failure></testcase></testsuite></testsuites>

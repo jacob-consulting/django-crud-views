@@ -1,0 +1,23 @@
+{
+  "plan": "06.36-06",
+  "runtime": ".nox/tests-3-12-django-5-2/bin/python",
+  "workers": 4,
+  "checks": {
+    "task01_docs_and_existing_references": {"passed": 44, "seconds": 2.85},
+    "task02_locales_and_existing_catalogs": {"passed": 184, "seconds": 5.27},
+    "task03_release_and_migration": {"passed": 9, "seconds": 1.73},
+    "final_combined": {"passed": 229, "seconds": 6.17, "junit": "06-docs-locales.xml"},
+    "strict_mkdocs": {"exit_code": 0, "seconds": 1.49, "output": "/tmp/cv-06-36-plan06-site"},
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "git_diff_check": "passed"
+  },
+  "catalogs": {
+    "core_new_human_msgids": 19,
+    "core_mo": "compiled with already-installed polib via temporary file and atomic replacement",
+    "guardian": "existing translations already cover all emitted human strings; unchanged PO/MO verified",
+    "coverage": "AST messages() inventory includes cv_manage_view.py and manage_report.py; empty lazy type-probe msgids are gettext metadata, not human copy; named placeholders and plural PO/MO semantics verified"
+  },
+  "scope": "Documentation, executable examples and locales only; no runtime, schema, page, query, or trace changes",
+  "remaining": "Plan07 dependency-floor, installed-distribution and final full-suite acceptance"
+}

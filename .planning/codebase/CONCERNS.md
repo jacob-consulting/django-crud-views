@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 892d3fc5adaab1660fe6812b937328efa5d71350
-last_mapped_at: 2026-11-15
+last_mapped_commit: a78b63db1f637b6b8b4cf6b4aaa24885a061ae26
+last_mapped_at: 2026-11-16
 ---
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-15
+**Analysis Date:** 2026-11-16
 
 ## Tech Debt
 
@@ -21,8 +21,8 @@ last_mapped_at: 2026-11-15
 - Fix approach: implement a bounded ViewSet/URL report or remove the command from the public command surface.
 
 **Large central modules:**
-- Issue: shared behavior is concentrated in several large modules: `base.py` (1,229 lines), `checks.py` (625), template tags (667), buttons (599), ancestors (607), formsets (546), and ViewSet registration (532).
-- Files: `src/crud_views/lib/view/base.py`, `src/crud_views/checks.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/viewset/__init__.py`
+- Issue: shared behavior is concentrated in large modules: `base.py` (1,330 lines), manage views (1,125), Guardian views (666), template tags (667), checks (644), buttons (599), Guardian mixins (560), formsets (556), ancestors (686), ViewSet registration (540), manage reporting (516), and icon handling (495).
+- Files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/views.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/checks.py`, `src/crud_views/lib/view/buttons.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/manage_report.py`, `src/crud_views/lib/icons.py`
 - Impact: shared changes have broad regression surfaces and require navigating several responsibilities in large files.
 - Fix approach: preserve public APIs and extract cohesive subsystems only when a concrete maintenance need justifies the added abstraction. Project decisions are constrained by developer maintainability; see `AGENTS.md` and `superpowers/notes/2026-11-04-opt-in-url-helper-decision.md`.
 
@@ -232,4 +232,4 @@ Phase 06.34's access trace is verified at 36/36 in `.planning/phases/06.34-acces
 
 ---
 
-*Concerns audit: 2026-11-15*
+*Concerns audit: 2026-11-16*

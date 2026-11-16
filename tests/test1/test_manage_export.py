@@ -1,0 +1,824 @@
+"""Export is opt-in; shared builders and legacy static helpers retain their contracts."""
+
+import pytest
+from django.core.checks import Error
+
+from crud_views.lib.views import ListView
+from crud_views.lib.views.manage import ManageView
+from crud_views.lib.viewset import ViewSet
+from tests.test1.app.models import Publisher
+from tests.test1.test_manage_command import catalogue as catalogue
+from tests.test1.test_manage_report import Hostile
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("parent_kind", ["none", "core", "guardian"])
+@pytest.mark.parametrize("mapping", [None, {}, {"inspect": "app.view_publisher"}])
+@pytest.mark.parametrize("selected_actor", [False, True])
+def test_resource_command_is_static_below_each_parent(
+    catalogue, monkeypatch, django_user_model, parent_kind, mapping, selected_actor
+):
+    import json
+
+    from django.contrib.auth.models import Permission
+    from django.contrib.contenttypes.models import ContentType
+
+    from crud_views.lib import access_trace
+    from crud_views.lib.resource import ResourceViewMixin
+    from crud_views.lib.view import CrudView
+    from crud_views.lib.views import DetailView
+    from crud_views.lib.views import manage as manage_module
+    from crud_views.lib.viewset import ParentViewSet
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.test_manage_command import invoke
+    from tests.test1.test_resource_manage import ManageItem
+
+    parent = None
+    if parent_kind != "none":
+        cls = GuardianViewSet if parent_kind == "guardian" else ViewSet
+        parent = cls(model=Publisher, name="static_parent", context_buttons=[])
+    vs = ViewSet(
+        model=ManageItem,
+        name="static_resource",
+        context_buttons=[],
+        resource_permissions=mapping,
+        parent=ParentViewSet(name=parent.name) if parent else None,
+    )
+    actor = django_user_model.objects.create_user(username="resource actor")
+    actor.user_permissions.add(Permission.objects.get(content_type__app_label="app", codename="view_publisher"))
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Static Resource inspection executed a loader, handler, trace, label or parent lookup")
+
+    for base in (ListView, DetailView):
+        type(
+            "Static" + base.__name__,
+            (ResourceViewMixin, base),
+            {
+                "__module__": __name__,
+                "cv_viewset": vs,
+                "get": forbidden,
+                "post": forbidden,
+                "cv_get_action_label": classmethod(forbidden),
+                "cv_get_action_short_label": classmethod(forbidden),
+                "cv_get_breadcrumb_label": classmethod(forbidden),
+            },
+        )
+    for name in ("cv_get_items", "cv_get_item"):
+        monkeypatch.setattr(ManageItem, name, classmethod(forbidden))
+    monkeypatch.setattr(CrudView, "cv_get_parent_object", forbidden)
+    monkeypatch.setattr(ManageView, "get_manage_access_trace", forbidden)
+    monkeypatch.setattr(access_trace, "trace_access", forbidden)
+    monkeypatch.setattr(manage_module, "trace_access", forbidden)
+    get_for_model = ContentType.objects.get_for_model
+
+    def model_content_type(model, *args, **kwargs):
+        assert model is not ManageItem, "Resource must not acquire a ContentType"
+        return get_for_model(model, *args, **kwargs)
+
+    monkeypatch.setattr(ContentType.objects, "get_for_model", model_content_type)
+    code, output = invoke(vs.name, "--as-json", *(["--user", actor.username] if selected_actor else []))
+    report = json.loads(output)
+    assert code == 0 and report["status"] == "complete", report["errors"]
+    data = report["data"]
+    assert data["identity"]["kind"] == "resource" and data["identity"]["parent"] == (parent.name if parent else None)
+    assert data["guardian"]["status"] == "not_applicable"
+    matrix = data["permissions"]["data"]
+    assert matrix["grant_kind"] == "resource" and len(matrix["columns"]) == (1 if mapping else 0)
+    if selected_actor:
+        assert matrix["actor"]["row"]["cells"] == (
+            [{"key": "inspect", "model": True, "object_count": None}] if mapping else []
+        )
+    else:
+        assert matrix["actor"]["row"] is None
+    parents = data["hierarchy"]["data"]["parents"]
+    assert len(parents) == (1 if parent else 0)
+    if parent:
+        assert parents[0]["name"] == parent.name
+        assert any("<" in row["route"] for row in data["routes"]["data"]["entries"])
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "kind,table_name",
+    [
+        ("core", "permission"),
+        ("guardian", "permission"),
+        ("guardian", "generic_user"),
+        ("guardian", "generic_group"),
+        ("guardian", "direct_user"),
+        ("guardian", "direct_group"),
+    ],
+)
+@pytest.mark.parametrize("selected_actor", [False, True])
+@pytest.mark.parametrize("refusal", ["manager", "router"])
+def test_nested_command_auth_refusal_retains_independent_sections(
+    catalogue, monkeypatch, django_user_model, kind, table_name, selected_actor, refusal
+):
+    import json
+
+    from django.contrib.auth.models import Permission
+    from django.db import router
+    from guardian.models import GroupObjectPermission, UserObjectPermission
+
+    from crud_views.lib.views import ListViewPermissionRequired
+    from crud_views.lib.viewset import ParentViewSet
+    from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Book, Shelf, ShelfGroupObjectPermission, ShelfUserObjectPermission
+    from tests.test1.test_manage_command import invoke
+
+    cls = GuardianViewSet if kind == "guardian" else ViewSet
+    table = {
+        "permission": Permission,
+        "generic_user": UserObjectPermission,
+        "generic_group": GroupObjectPermission,
+        "direct_user": ShelfUserObjectPermission,
+        "direct_group": ShelfGroupObjectPermission,
+    }[table_name]
+    direct = table_name.startswith("direct_")
+    parent = cls(model=Publisher, name="routing_parent", context_buttons=[])
+    child = cls(
+        model=Shelf if direct else Book,
+        name="routing_child",
+        context_buttons=[],
+        # The direct-grant fixture exercises static diagnostics only, following
+        # test_ancestor_auth_databases' supplied-model convention; no objects exist.
+        parent=ParentViewSet(name=parent.name, attribute="name" if direct else "publisher"),
+    )
+    base = GuardianListViewPermissionRequired if kind == "guardian" else ListViewPermissionRequired
+    type("RoutingList", (base,), {"__module__": __name__, "cv_viewset": child})
+    actor = django_user_model.objects.create_user(username="routing actor")
+    # Warm static permission maps before refusing reads; the guard must still run.
+    assert parent.permissions and child.permissions
+    if refusal == "manager":
+        monkeypatch.setattr(table.objects, "_db", "forbidden_alias")
+    else:
+
+        class RefusePermission:
+            def db_for_read(self, model, **hints):
+                return "forbidden_alias" if model is table else None
+
+        monkeypatch.setattr(router, "routers", [RefusePermission()])
+    code, output = invoke(child.name, "--as-json", *(["--user", actor.username] if selected_actor else []))
+    report = json.loads(output)
+    assert code == 2 and report["status"] == "partial"
+    assert {error["section"] for error in report["errors"]} == {"views", "permissions"}
+    for error in report["errors"]:
+        assert error["exception_class"] == "ImproperlyConfigured"
+        assert "forbidden_alias" in error["message"] and "not rerouted" in error["message"]
+    for section in ("facts", "presentation", "routes", "hierarchy", "ancestor_policy", "checks"):
+        assert report["data"][section]["status"] == "ok", section
+    assert report["data"]["guardian"]["status"] == ("ok" if kind == "guardian" else "not_applicable")
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "kind,table_name",
+    [
+        ("core", "user"),
+        ("core", "group"),
+        ("core", "permission"),
+        ("core", "content_type"),
+        ("core", "user_groups"),
+        ("core", "user_permissions"),
+        ("core", "group_permissions"),
+        ("guardian", "generic_user"),
+        ("guardian", "generic_group"),
+        ("guardian", "direct_user"),
+        ("guardian", "direct_group"),
+    ],
+)
+@pytest.mark.parametrize("selected_actor", [False, True])
+@pytest.mark.parametrize("refusal", ["manager", "router"])
+def test_supplied_nested_viewset_checks_every_auth_table(
+    catalogue, monkeypatch, django_user_model, django_assert_num_queries, kind, table_name, selected_actor, refusal
+):
+    from django.contrib.auth.models import Group, Permission
+    from django.contrib.contenttypes.models import ContentType
+    from django.core.exceptions import ImproperlyConfigured
+    from django.db import router
+    from guardian.models import GroupObjectPermission, UserObjectPermission
+
+    from crud_views.lib.viewset import ParentViewSet
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Shelf, ShelfGroupObjectPermission, ShelfUserObjectPermission
+
+    tables = {
+        "user": django_user_model,
+        "group": Group,
+        "permission": Permission,
+        "content_type": ContentType,
+        "user_groups": django_user_model.groups.through,
+        "user_permissions": django_user_model.user_permissions.through,
+        "group_permissions": Group.permissions.through,
+        "generic_user": UserObjectPermission,
+        "generic_group": GroupObjectPermission,
+        "direct_user": ShelfUserObjectPermission,
+        "direct_group": ShelfGroupObjectPermission,
+    }
+    table = tables[table_name]
+    cls = GuardianViewSet if kind == "guardian" else ViewSet
+    parent = cls(model=Publisher, name="guard_parent")
+    # Deliberately host the collector on a different top-level compatible ViewSet.
+    host = cls(model=Publisher, name="guard_host")
+    supplied = cls(model=Shelf, name="guard_supplied", parent=ParentViewSet(name=parent.name))
+    actor = django_user_model.objects.create_user(username="guard actor") if selected_actor else None
+    if refusal == "manager":
+        monkeypatch.setattr(table._default_manager, "_db", "forbidden_alias")
+    else:
+
+        class RefuseTable:
+            def db_for_read(self, model, **hints):
+                return "forbidden_alias" if model is table else None
+
+        monkeypatch.setattr(router, "routers", [RefuseTable()])
+    manage = host.get_all_views()["manage"]()
+    with (
+        django_assert_num_queries(0),
+        pytest.raises(ImproperlyConfigured, match=r"guard_supplied.*authorization records.*forbidden_alias"),
+    ):
+        manage.get_manage_permissions(supplied, actor)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("language", ["en", "de"])
+def test_guardian_policy_exports_stable_codes_and_mixin_paths(catalogue, language):
+    from django.utils.translation import override
+
+    from crud_views.lib.manage_report import adapt_section
+    from crud_views_guardian.lib.views import GUARDIAN_MIXINS, GuardianDetailViewPermissionRequired, GuardianManageView
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+
+    vs = GuardianViewSet(model=Publisher, name="guardian_policy_export", context_buttons=[])
+    for key, accept in (("strict", False), ("fallback", True)):
+        type(
+            "Policy" + key,
+            (GuardianDetailViewPermissionRequired,),
+            {
+                "__module__": __name__,
+                "cv_viewset": vs,
+                "cv_key": key,
+                "cv_path": key,
+                "cv_guardian_accept_global_perms": accept,
+            },
+        )
+    manage = GuardianManageView()
+    with override(language):
+        ordinary = manage.get_manage_views(vs, None)
+        with manage.manage_export():
+            raw = manage.get_manage_views(vs, None)
+        for row in raw:
+            expected = {"strict": "strict", "fallback": "global_fallback", "manage": "not_applicable"}[row["key"]]
+            assert row["guardian_policy"]["effective_policy"] == expected
+            entries = {entry["key"]: entry for group in row["sections"] for entry in group["entries"]}
+            for key in ("guardian_mixin", "effective_policy"):
+                assert "_export" in entries[key], "Guardian synthetic entries require machine metadata"
+                assert entries[key]["_export"]["source"].code == "effective"
+                assert entries[key]["_export"]["value"].kind == "native"
+            assert entries["effective_policy"]["_export"]["value"].value == expected
+            view = vs.get_all_views()[row["key"]]
+            assert entries["guardian_mixin"]["_export"]["value"].value == [
+                f"{cls.__module__}.{cls.__qualname__}" for cls, _label in GUARDIAN_MIXINS if issubclass(view, cls)
+            ]
+        adapted = adapt_section("views", raw, kind="guardian")
+        assert len(adapted.entries) == 3
+        assert manage.get_manage_views(vs, None) == ordinary
+        for row in ordinary:
+            for group in row["sections"]:
+                for entry in group["entries"]:
+                    assert "_export" not in entry
+                    if entry["key"] in {"guardian_mixin", "effective_policy"}:
+                        assert set(entry) == {"key", "value", "source", "is_default", "unknown"}
+
+
+@pytest.mark.django_db
+def test_guardian_composition_checks_export_and_static_compatibility(catalogue):
+    from crud_views.lib.views import ListViewPermissionRequired
+    from crud_views.lib.viewset import ParentViewSet
+    from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin
+    from crud_views_guardian.lib.views import GuardianManageView
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Book
+
+    parent = GuardianViewSet(model=Publisher, name="composition_parent")
+    vs = GuardianViewSet(
+        model=Book,
+        name="guardian_bad_composition",
+        context_buttons=[],
+        parent=ParentViewSet(name=parent.name, attribute="publisher"),
+    )
+    type(
+        "BadGuardianList",
+        (GuardianParentPermissionMixin, ListViewPermissionRequired),
+        {"__module__": __name__, "cv_viewset": vs},
+    )
+    manage = GuardianManageView()
+    ordinary = manage.get_manage_checks(vs, None)
+    with manage.manage_export():
+        raw = manage.get_manage_checks(vs, None)
+    message = next(row for row in raw["messages"] if row["id"] == "crud_views_guardian.E001")
+    assert message.get("level") == 40, "Guardian composition checks need numeric severity"
+    assert message["severity_code"] == "error"
+    assert manage.get_manage_checks(vs, None) == ordinary
+    assert all("level" not in row and "severity_code" not in row for row in ordinary["messages"])
+    messages = [Error("legacy", id="test.E001")]
+    expected = ManageView._manage_check_messages(messages)
+    assert GuardianManageView._manage_check_messages(messages) == manage._manage_check_messages(messages) == expected
+
+    class Legacy(GuardianManageView):
+        @staticmethod
+        def _manage_check_messages(messages):
+            return ManageView._manage_check_messages(messages)
+
+    legacy = Legacy()
+    with legacy.manage_export():
+        rows = legacy.get_manage_checks(vs, None)["messages"]
+    assert any(row["id"] == "crud_views_guardian.E001" for row in rows)
+    assert all("level" not in row for row in rows)
+
+
+def make_view(catalogue, **attrs):
+    vs = ViewSet(model=Publisher, name="export_core", context_buttons=[])
+    view = type("ExportList", (ListView,), {"__module__": __name__, "cv_viewset": vs, **attrs})
+    return vs, view
+
+
+@pytest.mark.parametrize("contextual", [False, True], ids=["gettext", "pgettext"])
+def test_builder_translation_instance_cast_hooks_are_never_called(catalogue, contextual):
+    from django.utils.translation import gettext_lazy, pgettext_lazy
+
+    value = pgettext_lazy(context="context", message="hello") if contextual else gettext_lazy(message="hello")
+    for name in ("_proxy____cast", "_proxy____text_cast", "_proxy____bytes_cast"):
+        setattr(value, name, Hostile().fail)
+    vs, view = make_view(catalogue, cv_action_label=value)
+    vs.verbose_name = value
+    manage = ManageView()
+    with manage.manage_export():
+        facts = {row["key"]: row for row in manage.get_manage_facts(vs, None)}
+        entries = export_entries(manage, view)
+    assert facts["verbose_name"]["_export"]["value"].value == "hello"
+    assert entries["action_label"]["_export"]["value"].value == "hello"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("guardian", [False, True], ids=["core", "guardian"])
+@pytest.mark.parametrize("core_setting", [False, True])
+@pytest.mark.parametrize("guardian_setting", [False, True])
+@pytest.mark.parametrize("declaration", ["absent", "none", "override"])
+@pytest.mark.parametrize("language", ["en", "de"])
+def test_manage_class_provenance_uses_resolution_owner(
+    catalogue, monkeypatch, guardian, core_setting, guardian_setting, declaration, language
+):
+    import json
+
+    from django.utils.translation import gettext, override
+
+    from crud_views.lib.settings import crud_views_settings
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.test_manage_command import invoke
+
+    core_path = "crud_views.lib.views.manage.ManageView"
+    guardian_path = "crud_views_guardian.lib.views.GuardianManageView"
+    monkeypatch.setattr(crud_views_settings, "manage_view_class", core_path if core_setting else None)
+    monkeypatch.setattr(crud_views_settings, "guardian_manage_view_class", guardian_path if guardian_setting else None)
+    path = guardian_path if guardian else core_path
+    declared = {} if declaration == "absent" else {"manage_view_class": path if declaration == "override" else None}
+    cls = GuardianViewSet if guardian else ViewSet
+    vs = cls(model=Publisher, name="owner_source", context_buttons=[], **declared)
+    manage = vs.get_all_views()["manage"]()
+    configured = guardian_setting if guardian else core_setting
+    setting = "CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS" if guardian else "CRUD_VIEWS_MANAGE_VIEW_CLASS"
+    code = "set" if declaration == "override" else "global_setting" if configured else "default"
+
+    def manage_row(data):
+        return next(row for group in data["sections"] for row in group["entries"] if row["key"] == "manage_view_class")
+
+    with override(language):
+        ordinary = manage_row(manage.get_manage_presentation(vs, None))
+        with manage.manage_export():
+            exported = manage_row(manage.get_manage_presentation(vs, None))
+        assert ordinary["source"] == (setting if code == "global_setting" else gettext(code))
+        assert exported["_export"]["source"].model_dump() == {
+            "code": code,
+            "setting": setting if code == "global_setting" else None,
+            "declaring_class": None,
+        }
+        assert ordinary["is_default"] == exported["is_default"] == (declaration == "absent")
+        assert exported["_export"]["value"].value == path
+        exit_code, output = invoke(vs.name, "--as-json")
+        report = json.loads(output)
+        assert exit_code == 0, report["errors"]
+        actual = manage_row(report["data"]["presentation"]["data"])
+        assert actual["source"] == exported["_export"]["source"].model_dump()
+        assert actual["value"]["value"] == path
+
+
+def test_export_context_exists_and_restores_nested_success_and_error():
+    manage = ManageView()
+    assert callable(getattr(manage, "manage_export", None)), "Manage builders need an opt-in export context"
+    assert "_manage_export_enabled" not in manage.__dict__
+    with manage.manage_export():
+        assert manage._manage_export_enabled is True
+        with pytest.raises(RuntimeError), manage.manage_export():
+            raise RuntimeError("inner")
+        assert manage._manage_export_enabled is True
+    assert "_manage_export_enabled" not in manage.__dict__
+    manage._manage_export_enabled = False
+    with pytest.raises(RuntimeError), manage.manage_export():
+        raise RuntimeError("outer")
+    assert manage._manage_export_enabled is False
+
+
+def test_stock_metadata_precedes_display_and_retains_full_values(catalogue, monkeypatch):
+    vs, view = make_view(catalogue, cv_cancel_keys=("long" * 200, "detail"))
+    manage = ManageView()
+    assert callable(getattr(manage, "manage_export", None)), "Export metadata must be available"
+    ordinary = manage.get_manage_views(vs, None)
+
+    def forbidden(value):
+        pytest.fail("Export must not call the legacy display helper")
+
+    monkeypatch.setattr(manage, "_manage_display", forbidden)
+    with manage.manage_export():
+        facts = manage.get_manage_facts(vs, None)
+        presentation = manage.get_manage_presentation(vs, None)
+        rows = manage.get_manage_views(vs, None)
+    assert all("_export" in row for row in facts)
+    assert all("_export" in row for section in presentation["sections"] for row in section["entries"])
+    entries = {
+        entry["key"]: entry
+        for row in rows
+        if row["key"] == "list"
+        for section in row["sections"]
+        for entry in section["entries"]
+    }
+    assert entries["cancel_keys"]["_export"]["value"].value == list(view.cv_cancel_keys)
+    assert entries["cancel_keys"]["_export"]["source"].code == "set"
+    assert all(
+        "_export" not in entry for row in ordinary for section in row["sections"] for entry in section["entries"]
+    )
+
+
+def test_static_helpers_class_instance_and_subclass_compatibility(catalogue):
+    vs, view = make_view(catalogue)
+    missing = object()
+    args = (view, "cv_cancel_key", None, {}, set(), missing)
+    expected = ManageView._manage_view_entry(*args)
+    assert ManageView()._manage_view_entry(*args) == expected
+    messages = [Error("broken", id="test.E001")]
+    assert ManageView._manage_check_messages(messages) == ManageView()._manage_check_messages(messages)
+
+    class Custom(ManageView):
+        @staticmethod
+        def _manage_display(value):
+            return "custom display"
+
+        @staticmethod
+        def _manage_view_entry(view, name, value, declarations, unknown, missing):
+            row = ManageView._manage_view_entry(view, name, value, declarations, unknown, missing)
+            return {**row, "custom": True}
+
+        @staticmethod
+        def _manage_check_messages(messages):
+            return ManageView._manage_check_messages(messages)
+
+    custom = Custom()
+    assert custom._manage_field(vs, "name", vs.name)["value"] == "custom display"
+    assert custom._manage_view_entry(*args)["custom"] is True
+    assert custom._manage_check_messages(messages) == ManageView._manage_check_messages(messages)
+    assert callable(getattr(custom, "manage_export", None))
+    with custom.manage_export():
+        rows = custom._manage_view_sections(view)
+    assert all(entry["custom"] for section in rows for entry in section["entries"])
+    assert all("_export" not in entry for section in rows for entry in section["entries"])
+
+
+def test_export_checks_add_machine_severity_only_in_context(catalogue, monkeypatch):
+    vs, _view = make_view(catalogue)
+    from types import SimpleNamespace
+
+    monkeypatch.setattr(ViewSet, "checks", lambda self: [SimpleNamespace(messages=lambda: [Error("broken")])])
+    manage = ManageView()
+    ordinary = manage.get_manage_checks(vs, None)
+    assert "level" not in ordinary["messages"][0]
+    assert callable(getattr(manage, "manage_export", None))
+    with manage.manage_export():
+        exported = manage.get_manage_checks(vs, None)
+    assert exported["messages"][0]["level"] == 40
+    assert exported["messages"][0]["severity_code"] == "error"
+
+
+@pytest.mark.django_db
+def test_no_actor_skips_actor_builder_and_retains_holders(catalogue, monkeypatch):
+    vs, _view = make_view(catalogue)
+    monkeypatch.setattr(ManageView, "get_manage_actor_row", lambda *args: pytest.fail("No implicit actor"))
+    result = ManageView().get_manage_permissions(vs, None)
+    assert result["actor"] is None
+    assert result["columns"] and result["superusers"]["count"] == 0
+
+
+def test_normalization_is_bounded_and_never_formats_unknown_instances():
+    from crud_views.lib.manage_report import normalize_value
+
+    class Opaque:
+        def __repr__(self):
+            pytest.fail("Arbitrary instances must not be formatted")
+
+    assert normalize_value(Opaque()).kind == "unsupported"
+    assert normalize_value(None).kind == "native"
+    assert normalize_value(None, not_declared=True).kind == "not_declared"
+    assert normalize_value(Publisher).kind == "class_path"
+    assert normalize_value({1: "bad"}).kind == "unsupported"
+    assert normalize_value(float("nan")).kind == "unsupported"
+    cycle = []
+    cycle.append(cycle)
+    assert normalize_value(cycle).kind == "unsupported"
+    value = normalize_value({"tuple": (True, "x" * 400, None)})
+    assert value.value == {"tuple": [True, "x" * 400, None]}
+    assert value.normalizations[0].path == ["tuple"]
+
+
+def test_known_wire_fields_are_strict_and_statuses_are_consistent():
+    from pydantic import ValidationError
+
+    from crud_views.lib.manage_report import ActorSelection, PermissionCell, Section, ValueRecord
+
+    with pytest.raises(ValidationError):
+        PermissionCell(key="view", model="false", object_count=None)
+    with pytest.raises(ValidationError):
+        ActorSelection(state="selected", row=None)
+    with pytest.raises(ValidationError):
+        Section[ValueRecord](status="error", data=ValueRecord(kind="native"), errors=[0])
+    with pytest.raises(ValidationError):
+        ValueRecord(kind="unsupported", value="invented")
+
+
+def export_entries(manage, view):
+    with manage.manage_export():
+        return {entry["key"]: entry for section in manage._manage_view_sections(view) for entry in section["entries"]}
+
+
+@pytest.mark.parametrize(
+    "family",
+    ["ContextButton", "ParentContextButton", "ChildContextButton", "SiblingContextButton", "FilterContextButton"],
+)
+def test_owned_button_projection_preserves_every_raw_field_in_both_locations(catalogue, family):
+    from crud_views.lib.view import buttons
+
+    cls = getattr(buttons, family)
+    extra = (
+        {"child_name": "absent"}
+        if family == "ChildContextButton"
+        else {"sibling_name": "absent"}
+        if family == "SiblingContextButton"
+        else {}
+    )
+    button = cls(
+        key="custom",
+        label_template="label/" + "l" * 300,
+        label_template_code="label" * 80,
+        template="template/" + "t" * 300,
+        template_code="code" * 90,
+        **extra,
+    )
+    vs, view = make_view(catalogue, cv_context_buttons=[button])
+    vs.context_buttons = [button]
+    expected = dict(button.__dict__)
+    manage = ManageView()
+    with manage.manage_export():
+        row = manage.get_manage_presentation(vs, None)["sections"][0]["entries"][0]
+    record = row["_export"]["value"]
+    assert record.kind == "native", "Shipped buttons need bounded owned projections"
+    assert record.value == expected and record.python_type.endswith("." + family)
+    nested = export_entries(manage, view)["context_buttons"]["_export"]["value"]
+    assert nested.value == [expected]
+    assert [(m.path, m.python_type) for m in nested.normalizations] == [([0], record.python_type)]
+    assert record.value["variant"] is None and record.value["label_mode"] is None
+
+
+def test_parent_projection_retains_unresolved_raw_declarations(catalogue, monkeypatch):
+    from crud_views.lib.viewset import ParentViewSet
+
+    vs, _ = make_view(catalogue)
+    parent = ParentViewSet(name="absent")
+    vs.parent = parent
+    monkeypatch.setattr(ParentViewSet, "viewset", property(lambda self: pytest.fail("Projection resolved parent")))
+    with ManageView().manage_export() as manage:
+        rows = {r["key"]: r for r in manage.get_manage_facts(vs, None)}
+    record = rows["parent"]["_export"]["value"]
+    assert record.kind == "native", "Parent declaration must survive missing registry entries"
+    assert record.value == {
+        "name": "absent",
+        "attribute": None,
+        "pk_name": None,
+        "many_to_many_through_attribute": None,
+    }
+    assert record.python_type.endswith(".ParentViewSet")
+
+
+def test_unchecked_other_values_and_descriptors_do_not_run_hooks(catalogue):
+    class Descriptor:
+        def __get__(self, instance, owner):
+            pytest.fail("Descriptor executed")
+
+    class Callable:
+        def __call__(self):
+            pytest.fail("Callable executed")
+
+    _vs, view = make_view(
+        catalogue,
+        cv_unchecked=Hostile(),
+        cv_callable=Callable(),
+        cv_descriptor=Descriptor(),
+        cv_check_ignore_attributes=["cv_unchecked", "cv_callable", "cv_descriptor"],
+    )
+    entries = export_entries(ManageView(), view)
+    assert entries["unchecked"]["_export"]["value"].kind == "unsupported"
+    assert "callable" not in entries and "descriptor" not in entries
+
+
+def test_unsupported_fallback_values_never_execute_truthiness(catalogue):
+    vs, view = make_view(catalogue, cv_extends_template=Hostile())
+    assert export_entries(ManageView(), view)["extends_template"]["_export"]["value"].kind == "unsupported"
+    view.cv_extends_template = None
+    vs.extends = Hostile()
+    assert export_entries(ManageView(), view)["extends_template"]["_export"]["value"].kind == "unsupported"
+    with ManageView().manage_export() as manage:
+        rows = {e["key"]: e for s in manage.get_manage_presentation(vs, None)["sections"] for e in s["entries"]}
+    assert rows["extends"]["_export"]["value"].kind == "unsupported"
+
+
+def test_custom_button_behavior_and_field_descriptors_stay_opaque(catalogue):
+    from crud_views.lib.view.buttons import ContextButton
+
+    class CustomButton(ContextButton):
+        def get_context(self, context):
+            pytest.fail("custom button executed")
+
+        @property
+        def label_template(self):
+            pytest.fail("label descriptor executed")
+
+    vs, _ = make_view(catalogue)
+    vs.context_buttons = [CustomButton(key="custom")]
+    with ManageView().manage_export() as manage:
+        row = manage.get_manage_presentation(vs, None)["sections"][0]["entries"][0]
+    assert row["_export"]["value"].kind == "unsupported"
+
+
+@pytest.mark.django_db
+def test_missing_parent_facts_survive_other_collection_errors(catalogue):
+    import json
+
+    from crud_views.lib.viewset import ParentViewSet
+    from tests.test1.test_manage_command import invoke
+
+    vs, _ = make_view(catalogue)
+    vs.parent = ParentViewSet(name="absent")
+    code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    assert code == 1
+    facts = {e["key"]: e for e in report["data"]["facts"]["data"]["entries"]}
+    assert facts["parent"]["value"]["value"]["name"] == "absent"
+    assert report["data"]["checks"]["data"]["messages"]
+    assert report["data"]["hierarchy"]["data"]["route_error"]
+
+
+@pytest.mark.django_db
+def test_full_long_values_reach_json_and_text(catalogue):
+    import json
+
+    from tests.test1.test_manage_command import invoke
+
+    long_value = "xyz" * 300
+    vs, _ = make_view(
+        catalogue,
+        cv_custom_value=long_value,
+        cv_custom_list=list(range(300)),
+        cv_check_ignore_attributes=["cv_custom_value", "cv_custom_list"],
+    )
+    json_code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    entries = {
+        e["key"]: e
+        for r in report["data"]["views"]["data"]["entries"]
+        if r["key"] == "list"
+        for s in r["sections"]
+        for e in s["entries"]
+    }
+    assert entries["custom_value"]["value"]["value"] == long_value
+    assert entries["custom_list"]["value"]["value"] == list(range(300))
+    text_code, output = invoke(vs.name)
+    assert json_code == text_code == 0 and long_value in output
+    assert "value.value[299]: 299" in output
+
+
+@pytest.mark.django_db
+def test_checked_invalid_value_formatter_failure_is_checks_error(catalogue):
+    import json
+
+    from tests.test1.test_manage_command import invoke
+
+    calls = []
+
+    class InvalidIcon:
+        def __repr__(self):
+            calls.append("repr")
+            raise RuntimeError("invalid icon diagnostic formatting")
+
+        def __str__(self):
+            calls.append("str")
+            raise RuntimeError("invalid icon diagnostic formatting")
+
+    vs, _ = make_view(catalogue, cv_icon_header=InvalidIcon())
+    code, text = invoke(vs.name, "--as-json")
+    report = json.loads(text)
+    assert code == 2 and calls
+    assert report["data"]["views"]["status"] == "ok"
+    assert report["data"]["checks"]["status"] == "error"
+    assert any(e["section"] == "checks" and e["code"] == "collection_failed" for e in report["errors"])
+    entries = {
+        e["key"]: e
+        for row in report["data"]["views"]["data"]["entries"]
+        if row["key"] == "list"
+        for section in row["sections"]
+        for e in section["entries"]
+    }
+    assert entries["icon_header"]["value"]["kind"] == "unsupported"
+    assert "object at 0x" not in text
+
+
+@pytest.mark.parametrize("value", [None, False, [], (), {}])
+def test_declaration_state_is_independent_of_effective_source(catalogue, value):
+    vs, view = make_view(catalogue, cv_list_actions_inline=value)
+    vs.list_actions_inline = ["detail"]
+    row = export_entries(ManageView(), view)["list_actions_inline"]
+    assert row["is_default"] is False
+    assert row["_export"]["source"].code == ("viewset" if value is None else "set")
+    assert row["_export"]["source"].declaring_class == f"{view.__module__}.{view.__qualname__}"
+    assert row["_export"]["value"].value == (["detail"] if value is None else [] if type(value) is tuple else value)
+
+
+def test_all_provenance_branches_are_locale_independent(catalogue, monkeypatch):
+    from django.utils.translation import override
+
+    from crud_views.lib.settings import crud_views_settings
+    from tests.test1.test_resource_manage import ManageItem
+
+    class ProjectMixin:
+        cv_home_key = None
+        cv_custom_empty = ""
+        cv_annotation_only: str
+
+    vs = ViewSet(model=Publisher, name="source_model", extends="", context_buttons=[], verbose_name=None)
+    view = type(
+        "InheritedList", (ProjectMixin, ListView), {"__module__": __name__, "cv_viewset": vs, "cv_extends_template": ""}
+    )
+    resource = ViewSet(model=ManageItem, name="source_resource", context_buttons=[])
+    monkeypatch.setattr(crud_views_settings, "extends", "project/global.html")
+    manage = ManageView()
+    languages = []
+    for language in ("en", "de"):
+        with override(language), manage.manage_export():
+            facts = {r["key"]: r for r in manage.get_manage_facts(vs, None)}
+            resources = {r["key"]: r for r in manage.get_manage_facts(resource, None)}
+            presentation = {
+                r["key"]: r for s in manage.get_manage_presentation(vs, None)["sections"] for r in s["entries"]
+            }
+            views = export_entries(manage, view)
+            fixed = export_entries(manage, vs.get_all_views()["manage"])
+            rows = [*facts.values(), *resources.values(), *presentation.values(), *views.values(), *fixed.values()]
+            languages.append([(r["key"], r["is_default"], r["_export"]["source"].model_dump()) for r in rows])
+    assert languages[0] == languages[1]
+    assert facts["verbose_name"]["is_default"] is False
+    assert facts["verbose_name"]["_export"]["source"].code == "model_meta"
+    assert facts["prefix"]["is_default"] is True
+    assert resources["verbose_name"]["_export"]["source"].code == "resource_meta"
+    assert resources["pk_type"]["_export"]["source"].code == "resource_meta"
+    assert views["home_key"]["_export"]["source"].code == "inherited"
+    assert views["home_key"]["_export"]["value"].kind == "native"
+    assert views["home_key"]["_export"]["value"].value is None
+    assert views["annotation_only"]["_export"]["value"].kind == "not_declared"
+    assert views["annotation_only"]["_export"]["source"].code == "not_declared"
+    assert views["context_actions"]["is_default"] is True
+    assert views["context_actions"]["_export"]["source"].code == "default"
+    assert fixed["inaccessible_actions"]["_export"]["source"].code == "fixed"
+    for row in (presentation["extends"], views["extends_template"]):
+        assert row["is_default"] is False
+        assert row["_export"]["declared_value"].value == ""
+        assert row["_export"]["source"].code == "global_setting"
+        assert row["_export"]["source"].setting == "CRUD_VIEWS_EXTENDS"
+        assert row["_export"]["value"].value == "project/global.html"
+
+
+def test_export_does_not_change_subsequent_page_dictionaries(catalogue):
+    vs, _ = make_view(catalogue, cv_context_actions_inline=False)
+    manage = ManageView()
+    builders = (manage.get_manage_facts, manage.get_manage_presentation, manage.get_manage_views)
+    before = [builder(vs, None) for builder in builders]
+    with manage.manage_export():
+        for builder in builders:
+            builder(vs, None)
+    assert before == [builder(vs, None) for builder in builders]
+    assert "_manage_export_enabled" not in manage.__dict__

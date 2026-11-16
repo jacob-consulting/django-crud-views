@@ -59,9 +59,9 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
     fields: list[str] | None = None
     pk_field: str | None = None
     cv_view: CrudView | None = None
-    parent: Self | None = None
+    parent: FormSet | None = None
     klass: type[BaseInlineFormSet]
-    children: dict[str, Self] = Field(default_factory=lambda: OrderedDict())
+    children: dict[str, FormSet] = Field(default_factory=lambda: OrderedDict())
     path: str | None = None
     pk: PK = PK.INT
     form_show_labels: bool = False

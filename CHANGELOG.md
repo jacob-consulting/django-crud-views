@@ -465,6 +465,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Pydantic 2.2.1 compatibility:** Resource initialization uses public class field metadata and
+  preserves real `pk` fields inherited beneath an instance alias. In addition,
+  `cv_manage_view` retains partial reports for invalid section data without relying on a newer
+  validation-error API. Formset `parent` and `children` declarations use recursive `FormSet` types,
+  preventing startup warnings and rejecting invalid nested nodes at the dependency floor. Trees may
+  mix base and subclass declarations instead of requiring subclass-only related nodes on newer Pydantic.
+
 - Read class annotations through Python's public inspection API so Python 3.15 manage diagnostics include annotation-only attributes and Guardian policies do not trigger false W280 warnings.
 
 - Invalid nested formset fields now redisplay their errors instead of raising an `AttributeError`
@@ -632,6 +639,14 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   does (#231).
 
 ### Added
+
+- **ViewSet configuration command** (#371): `cv_manage_view --list` discovers registered ViewSets;
+  targeted inspection accepts an optional view key and explicit `--user`, while `--schema` publishes the
+  complete version-1 JSON contract. Text and validated JSON preserve defaults, full supported values,
+  provenance, no-actor/selected-actor diagnostics, holder visibility and partial failures with exits 0/1/2.
+  Core, Guardian and static Resource inspection reuse configured manage builders; existing page dictionaries,
+  query costs and access-trace contracts are preserved. Includes German command text and executable customization
+  examples. See the [command reference](docs/reference/manage.md#cv_manage_view).
 
 - **Resource manage pages** (#372): Resource ViewSets use the shared developer-only manage page, including
   nested model/Guardian ancestry, metadata provenance, explicit permission mappings and real hierarchy routes.

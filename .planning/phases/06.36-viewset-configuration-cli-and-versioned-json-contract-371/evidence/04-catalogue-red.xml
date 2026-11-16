@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="1.238" timestamp="2026-11-16T06:34:37.013638+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_manage_command" name="test_catalogue_assembly_failures_are_validation_errors[invalid_identity]" time="0.006"><failure message="AssertionError: assert (1 == 1 and 'collection_failed' == 'output_validation_failed'&#10; +  where 1 = len([ReportError(code='collection_failed', section=None, message='Input should be a valid string; Field required; Field required; Field required', exception_class='ValidationError', location=['name'])])&#10;[+4 more lines; full report in element text]">catalogue = (&lt;module 'manage_command_urls'&gt;, &lt;_pytest.monkeypatch.MonkeyPatch object at 0x752cc2244f50&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x752cc2246300&gt;
+kind = 'invalid_identity'
+
+    @pytest.mark.parametrize("kind", ["invalid_identity", "assembly_exception"])
+    def test_catalogue_assembly_failures_are_validation_errors(catalogue, monkeypatch, kind):
+        from crud_views.management.commands import cv_manage_view
+        from crud_views.lib.manage_report import Report
+    
+        ViewSet(model=Publisher, name="invalid_catalogue")
+        if kind == "invalid_identity":
+            monkeypatch.setattr(cv_manage_view, "_identity", lambda entry: {"name": 12})
+        else:
+    
+            def fail(**kwargs):
+                raise RuntimeError("catalogue assembly failed")
+    
+            monkeypatch.setattr(cv_manage_view, "CatalogueData", fail)
+        code, output = invoke("--list", "--as-json")
+        report = Report.validate_json(output)
+        assert code == 2 and report.status == "failed" and report.data is None
+&gt;       assert len(report.errors) == 1 and report.errors[0].code == "output_validation_failed"
+E       AssertionError: assert (1 == 1 and 'collection_failed' == 'output_validation_failed'
+E        +  where 1 = len([ReportError(code='collection_failed', section=None, message='Input should be a valid string; Field required; Field required; Field required', exception_class='ValidationError', location=['name'])])
+E        +    where [ReportError(code='collection_failed', section=None, message='Input should be a valid string; Field required; Field required; Field required', exception_class='ValidationError', location=['name'])] = CatalogueResult(version=1, kind='catalogue', status='failed', selection=Selection(viewset=None, view=None, user=None),... valid string; Field required; Field required; Field required', exception_class='ValidationError', location=['name'])]).errors
+E         
+E         - output_validation_failed
+E         + collection_failed)
+
+tests/test1/test_manage_command.py:844: AssertionError</failure></testcase><testcase classname="tests.test1.test_manage_command" name="test_catalogue_assembly_failures_are_validation_errors[assembly_exception]" time="0.006"><failure message="AssertionError: assert (1 == 1 and 'collection_failed' == 'output_validation_failed'&#10; +  where 1 = len([ReportError(code='collection_failed', section=None, message='catalogue assembly failed', exception_class='RuntimeError', location=[])])&#10;[+4 more lines; full report in element text]">catalogue = (&lt;module 'manage_command_urls'&gt;, &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7445fff25880&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7445fff25700&gt;
+kind = 'assembly_exception'
+
+    @pytest.mark.parametrize("kind", ["invalid_identity", "assembly_exception"])
+    def test_catalogue_assembly_failures_are_validation_errors(catalogue, monkeypatch, kind):
+        from crud_views.management.commands import cv_manage_view
+        from crud_views.lib.manage_report import Report
+    
+        ViewSet(model=Publisher, name="invalid_catalogue")
+        if kind == "invalid_identity":
+            monkeypatch.setattr(cv_manage_view, "_identity", lambda entry: {"name": 12})
+        else:
+    
+            def fail(**kwargs):
+                raise RuntimeError("catalogue assembly failed")
+    
+            monkeypatch.setattr(cv_manage_view, "CatalogueData", fail)
+        code, output = invoke("--list", "--as-json")
+        report = Report.validate_json(output)
+        assert code == 2 and report.status == "failed" and report.data is None
+&gt;       assert len(report.errors) == 1 and report.errors[0].code == "output_validation_failed"
+E       AssertionError: assert (1 == 1 and 'collection_failed' == 'output_validation_failed'
+E        +  where 1 = len([ReportError(code='collection_failed', section=None, message='catalogue assembly failed', exception_class='RuntimeError', location=[])])
+E        +    where [ReportError(code='collection_failed', section=None, message='catalogue assembly failed', exception_class='RuntimeError', location=[])] = CatalogueResult(version=1, kind='catalogue', status='failed', selection=Selection(viewset=None, view=None, user=None),...='collection_failed', section=None, message='catalogue assembly failed', exception_class='RuntimeError', location=[])]).errors
+E         
+E         - output_validation_failed
+E         + collection_failed)
+
+tests/test1/test_manage_command.py:844: AssertionError</failure></testcase></testsuite></testsuites>

@@ -637,6 +637,15 @@ Team Handbook's notes but cannot add one.
 
 ## GuardianManageView
 
+The [cv_manage_view command](manage.md#cv_manage_view) uses the configured Guardian manage builders without
+browser admission gates. Object counts remain separate from global grants; direct User/Group holders differ from
+the selected actor's effective grants. The helper's fixed strict/group policy retains Guardian's active-superuser
+shortcut. Per-view `strict`, `global_fallback`, `not_applicable` codes describe its own policy independently of
+ancestor providers. Exported synthetic `effective_policy` values use those same codes with source `effective`;
+`guardian_mixin` retains ordered dotted class paths in English and German. A Resource nested below Guardian stays
+kind `resource`, with global Resource grants and its ancestor provider described separately. Existing reached
+database guards apply to no-actor inspection too. See [visibility and read boundaries](manage.md#actors-and-holder-visibility).
+
 Guardian-enabled ViewSets provide an enhanced manage page at `/<prefix>/manage/`. Like core manage pages, it
 requires an active, authenticated member of `CRUD_VIEWS_MANAGE_GROUP` (default `CRUD_VIEWS_MANAGE`), including
 for staff and superusers. `CRUD_VIEWS_MANAGE_VIEWS_ENABLED="yes"` is the default and permits those members

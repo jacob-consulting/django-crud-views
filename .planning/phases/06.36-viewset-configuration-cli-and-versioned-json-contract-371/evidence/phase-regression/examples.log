@@ -1,0 +1,51 @@
+bringing up nodes...
+bringing up nodes...
+
+........................................u.u..uu..u.u...u.u..uuu.u..u.uuu [ 10%]
+u.uu.u.uuu.u............uu.uuu....uu.uu.uu.......uuuu....uu..uu.uu..uuuu [ 17%]
+u.u.uuuuuuuu.uuu.u.uuuuuuuuuuuu.uu..uu.u...............................u [ 25%]
+uuuuu.........uuuu.uuuuuu........uu...uuuuuuu....uu............uuuuuu.u. [ 32%]
+uuuuuuuuuuu.uuu.uuuu.uuu..........u.........u...u......................u [ 41%]
+uu........uuuuuuuuuuuu.u.uu.uuuuuu...uu............uu.uu........uuuu.... [ 48%]
+..uuu...uu...uu......uu.uu.uu.uu.uuuu.......uu..uuuuuuuuu......uuu...uuu [ 55%]
+uuuuuu..uuuuuu...uu..................................................... [ 65%]
+........................................................................ [ 79%]
+........................................................................ [ 92%]
+..............uuuuuuuuuuuuuuuuuuuuu......uuuuuuuuuuuuuuu.........uuuuuu. [ 97%]
+...........                                                              [100%]
+==================================== ERRORS ====================================
+__________________ ERROR collecting project/test_ratelimit.py __________________
+ImportError while importing test module '/home/alex/projects/alex/django-crud-views/examples/bootstrap5/project/test_ratelimit.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+examples/bootstrap5/project/test_ratelimit.py:7: in <module>
+    from project.ratelimit import client_ip
+examples/bootstrap5/project/ratelimit.py:7: in <module>
+    from django_ratelimit.core import is_ratelimited
+E   ModuleNotFoundError: No module named 'django_ratelimit'
+=============================== warnings summary ===============================
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1148: 16 warnings
+action_menus/tests.py: 2 warnings
+conditional/tests.py: 2 warnings
+context_buttons/tests.py: 2 warnings
+delete_demo/tests.py: 2 warnings
+queryset_conditional/tests.py: 8 warnings
+  /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1148: RemovedInDjango60Warning: The default scheme will be changed from 'http' to 'https' in Django 6.0. Pass the forms.URLField.assume_scheme argument to silence this warning, or set the FORMS_URLFIELD_ASSUME_HTTPS transitional setting to True to opt into using 'https' as the new default scheme.
+    return form_class(**defaults)
+
+project/tests.py::NavGroupsTest::test_feature_page_marks_its_group_active
+project/tests.py::HomePageTest::test_every_feature_landing_page_renders
+project/tests.py::ExampleAboutTest::test_every_feature_page_shows_about
+workflow/tests.py::CampaignWorkflowTest::test_list_renders_with_snippets
+project/tests.py::BreadcrumbAdoptionTest::test_every_feature_landing_page_shows_breadcrumb
+project/tests.py::DocRefsPanelTest::test_every_feature_page_lists_its_doc_refs
+  /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/views/generic/list.py:91: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'workflow.models.Campaign'> QuerySet.
+    return self.paginator_class(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR examples/bootstrap5/project/test_ratelimit.py - ImportError while impor...
+539 passed, 38 warnings, 1 error, 264 subtests passed in 44.00s

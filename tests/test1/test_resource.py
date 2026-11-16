@@ -126,6 +126,16 @@ def test_intermediate_base_pk_shim_does_not_shadow_subclass_pk_field():
     obj = Concrete(key="k", pk="real-pk")
     assert obj.pk == "real-pk"
 
+    class Grandchild(Concrete):
+        pass
+
+    assert Grandchild(key="k", pk="inherited-pk").pk == "inherited-pk"
+
+    class DefaultPk(Concrete):
+        pk: str = "default-pk"
+
+    assert DefaultPk(key="k").pk == "default-pk"
+
 
 def test_meta_pk_field_pk_with_only_inherited_shim_raises():
     class IntermediateBase2(Resource):

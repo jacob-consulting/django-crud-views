@@ -206,6 +206,158 @@ The one context value `manage_docs_base_url` supplies every card/section link. P
 help anchors above in your hosted page, plus `access-check` when the opt-in card is enabled. See
 [the public template and builder inventory](theme.md#structured-manage-contracts).
 
+## cv_manage_view
+
+`cv_manage_view` inspects registered configuration through the configured manage class without opening a page.
+Start with the catalogue, choose a registered ViewSet name, then optionally a registered view key. For a project
+registering `author` and its `list` view, these are executable examples:
+
+```bash
+python manage.py cv_manage_view --list
+python manage.py cv_manage_view --list --as-json
+python manage.py cv_manage_view author
+python manage.py cv_manage_view author list --as-json
+python manage.py cv_manage_view author --user alice --as-json
+python manage.py cv_manage_view --schema
+```
+
+Use your project's names and existing user in place of `author`/`alice`. Models, dotted imports, URLs and Resource
+identifiers are not selectors. There is no bulk full-report mode. No selector yields `invalid_arguments`, exit 2.
+`--list` and `--schema` are mutually exclusive and reject positional selectors and `--user`. `--as-json` works
+with `--list` and is redundant with `--schema`. Normal `--help` remains available.
+
+The catalogue loads configured URLconf/includes, snapshots registered entries, sorts by name and retains registered
+view order. Entries have `name`, `kind` (`model`, `guardian`, `resource`), dotted `backing_class`, nullable parent
+name and `views`. An empty catalogue is valid. A Resource below Guardian remains `resource`. Catalogue and schema
+do not run live permission/check collectors; schema needs neither registry discovery nor actor lookup after startup.
+
+### Configuration report scope
+
+Inspection contains `identity` and nine typed sections:
+
+| Section | Contents |
+|---|---|
+| `facts` | Effective ViewSet facts, constructor defaults and provenance |
+| `presentation` | Shared presentation groups, complete values and default counts |
+| `views` | Registered classes, requirements, all collected defaults/configuration and Guardian policies |
+| `routes` | Generated relative routes and names |
+| `hierarchy` | Descriptive parent/child configuration and available routes |
+| `ancestor_policy` | This ViewSet as an ancestor and its own ancestor requirements/providers |
+| `permissions` | Direct holders, counts and optional effective actor diagnostics |
+| `checks` | Page-equivalent scoped system checks, numeric levels and severity codes |
+| `guardian` | Strict helper policy for Guardian; `not_applicable` otherwise |
+
+Selecting a view filters only `views` and `routes`, whose scope becomes `selected_view`. All other facts,
+permissions, checks and contextual policies remain ViewSet-wide, explicitly labelled in text. There is no Show
+defaults filter: defaults and complete supported values are included. Hierarchy does not fetch parents or invent
+coordinates to produce links. An unrelated view's scoped check can still affect a selected-view report.
+
+### Actors and holder visibility
+
+Without `--user`, `actor.state` is `not_selected` and `actor.row` is null: no anonymous actor is fabricated.
+Live holder diagnostics still run. `--user` resolves username first, then primary key, and accepts inactive actors
+for inspection. Unknown users fail before holder collection. Effective grants do not certify URL access,
+especially for inactive accounts; use [cv_access](#cv_access) for that separate question.
+
+Group/User holder rows show **direct** grants; the actor row includes effective grants through groups. Model grants
+are global; Resource grants are explicitly mapped global Django permissions with no per-item grants. Guardian
+object counts are separate and support configured generic and direct-FK permission models. Holder IDs retain
+integer or string identity; UUID identities serialize as strings.
+
+`CRUD_VIEWS_MANAGE_SHOW_USERS=False` produces `holder_visibility="hidden"`, `users=null` and
+`superusers.names=null`, with counts visible. Hidden is not a measured empty set. When enabled, visibility is
+`shown` and arrays contain **all** collected users, including the page's overflow after 20 rows; an empty array
+means no collected holders. An explicitly selected actor's identity remains visible either way.
+Active-superuser totals describe global grants; on Guardian their meaning is
+`global_grants_not_strict_object_helper`. The strict helper excludes global fallback, includes groups and retains
+Guardian's active-superuser all-object shortcut. Per-view `strict`, `global_fallback` or `not_applicable` describes
+the view's own gate independently of that helper and ancestor policy.
+
+### Versioned configuration contract
+
+The machine contract is JSON version 1 and the [complete generated JSON Schema](cv_manage_view.schema.json).
+`--schema` emits that serialization schema directly, without a report envelope. Internal Python model names/import
+paths are not a public SDK. Consumers must tolerate additive fields; changes to types, meanings, removals or closed
+enums require compatibility review and, for breaking changes, a new version. New closed-enum variants are not
+automatically additive-compatible. Human labels/messages may be translated; machine keys, source/status/provider/
+severity codes and policy values stay locale-independent.
+
+| Envelope field | Meaning |
+|---|---|
+| `version` | Integer `1` |
+| `kind` | `catalogue` or `inspection` |
+| `status` | `complete`, `partial` or `failed` |
+| `selection` | Nullable `viewset`, `view` and typed user selector `user` |
+| `data` | Catalogue `entries`, inspection identity/sections, or null on failure |
+| `errors` | Structured errors: `code`, nullable `section`, human `message`, nullable `exception_class`, `location` path |
+
+Each section has `status`, `data` and `errors` (indices into envelope errors). Section statuses are `ok`, `error`
+and `not_applicable`; the last two have null data. Only `error` has error references. Error codes are
+`invalid_arguments`, `unknown_viewset`, `unknown_view`, `unknown_user`, `collection_failed` and
+`output_validation_failed`. Errors contain no tracebacks/raw objects. Collection and conversion failures are
+distinct. Valid sections survive independently; even identity alone can make inspection useful and `partial`.
+`failed` has no usable data. Assembly failure falls back to a minimal validated failed envelope.
+
+| Exit | Meaning |
+|---|---|
+| `0` | Complete report without unsilenced error/critical checks; successful schema output |
+| `1` | Complete report with unsilenced error/critical checks (numeric level at least 40) |
+| `2` | Input/runtime/incomplete report, whether `partial` or `failed` |
+
+Incomplete takes precedence over check findings. Scoped checks respect `SILENCED_SYSTEM_CHECKS`; automatic global
+checks do not preempt the report. Handled JSON failures produce one validated stdout result and no command-owned
+progress. JSON/schema remain plain and parseable under `--force-color`; text follows Django automatic color,
+`--force-color`/`--no-color` conventions and escapes terminal controls, retaining every validated leaf.
+Startup/import failures, parser errors and conflicting color flags can happen before handling and are outside the
+versioned envelope. Process termination is not converted into a report. Arbitrary startup/custom code can write
+to streams too.
+
+### Complete values and unsupported declarations
+
+Configuration entries carry `key`, `value`, `source`, `is_default` and optional declaration/presentation metadata.
+Value records distinguish `native` (including explicit null, false and empty values), `class_path` (dotted class),
+`not_declared` (annotation-only) and `unsupported`. A failed section is **unavailable**, not empty/default.
+`python_type` and `normalizations` preserve original types and nested paths when normalization occurs. Ordinary
+tuples become arrays with tuple markers. Long strings/lists are not truncated. Source codes are `default`, `set`,
+`inherited`, `viewset`, `global_setting`, `model_meta`, `resource_meta`, `fixed`, `not_declared` and `effective`,
+with optional setting/declaring-class paths. Explicit declarations equal to defaults remain declarations;
+supported fallback values retain provenance.
+
+Only native JSON values, classes and bounded owned projections are serialized. Non-string mapping keys (never
+coerced), sets, cycles, non-finite floats and arbitrary instances are unsupported. Only exact Django `gettext_lazy`/
+`pgettext_lazy` wrappers with ordinary string arguments resolve; arbitrary lazy callables, proxy subclasses and
+object arguments are unsupported. Serialization does not execute arbitrary `repr`, descriptors or callables or
+traverse arbitrary object graphs.
+
+The exact shipped `ParentViewSet` projects raw `name`, `attribute`, `pk_name`, `many_to_many_through_attribute`,
+even for unresolved parent declarations. The exact shipped `ContextButton`, `ParentContextButton`,
+`ChildContextButton`, `SiblingContextButton`, `FilterContextButton` project raw `key`, `key_target`,
+`label_template`, `label_template_code`, `template`, `template_code`, `variant`, `label_mode`; child/sibling
+variants add `child_name`/`child_key` or `sibling_name`/`sibling_key`. Full strings and nulls survive with original-type
+markers without resolving targets or registry properties. Custom subclasses and descriptor fields remain unsupported.
+
+Serialization does not sandbox validation: **existing built-in checks** for invalid checked attributes may format
+diagnostic values. A raising formatter produces an explicit checks `collection_failed` error/exit 2 while surviving
+metadata remains available. This is not limited to custom checks. See [builder participation](theme.md#configuration-export-customization)
+for overrides and missing metadata.
+
+### Configuration read and execution boundaries
+
+The management environment authorizes use. Browser manage modes, developer-group membership and the selected
+actor's permissions are not command admission gates. The command does not dispatch the web view or fabricate
+privileges. Existing reached diagnostic database guards remain active, including no-actor collection; there is no
+database-selection flag or bypass for cross-database auth/Guardian configurations.
+
+Inspection may query live auth/permissions and Guardian counts. Built-in Resource inspection is static: no Resource
+identifier, service connection, item/list loader, trace, handler or dynamic label is required or invoked. Configuration
+policy is descriptive and separate from concrete URL authorization. Arbitrary application startup, custom checks
+and configured overrides are **not sandboxed**.
+
+Sections recover independently under normal database autocommit. Inside a caller-owned transaction, a database
+failure can leave it rollback-only, preventing later reads until the caller exits; custom transaction management
+can impose similar limits. The command adds no rollback, retry, cache or transactional snapshot promise. Different
+sections may observe live changes. Normal page dictionaries and query behavior remain unchanged.
+
 ## Access check
 
 Set `CRUD_VIEWS_MANAGE_ACCESS_TRACE = True` to show the Access check card under Permissions. Its default is

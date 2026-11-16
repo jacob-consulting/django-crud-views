@@ -5,27 +5,27 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.35 complete, ready to plan Phase 7
-last_updated: "2026-11-15T20:20:58.750Z"
-last_activity: 2026-11-15
-last_activity_desc: "Phase 06.35 shipped as PR #376"
-state_head: af2946cdcebbd61fccfef8a55e89a4d56544e4ea
+stopped_at: Phase 06.36 complete, ready to plan Phase 7
+last_updated: "2026-11-16T11:04:16.114Z"
+last_activity: 2026-11-16
+last_activity_desc: "Phase 06.36 shipped as PR #377"
+state_head: 98520f8f9c8abbc1347e73598b7b006e290828a4
 progress:
-  total_phases: 42
-  completed_phases: 41
-  total_plans: 232
-  completed_plans: 232
-  percent: 98
+  total_phases: 43
+  completed_phases: 42
+  total_plans: 240
+  completed_plans: 240
+  percent: 100
 milestone_name: milestone
 ---
 
-Total Phases: 42
+Total Phases: 43
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-15)
+See: .planning/PROJECT.md (updated 2026-11-16)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -34,11 +34,96 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 
 Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: 0
+Total Plans in Phase: Not planned
 Status: Ready to plan
-Last activity: 2026-11-15 — Phase 06.35 shipped as PR #376
+Last activity: 2026-11-16 -- Phase 06.36 shipped as PR #377
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-discuss-phase 7 — settle the theme-surface stability review scope.
+
+### Phase 06.36 gap closure completed — 2026-11-16
+
+- Plan08 complete; all8 plans summarized. Canonical independent verification passed9/9 with current covered-input fingerprint. Product0876d769; review4 fixed/0 open; security21/21closed.
+- Actual installed Pydantic2.2.1 suite420 plus40 Resource/import/formset cases pass; independent schemas10valid/15invalid each. Public model_fields, safe validation-error projection, explicit recursive FormSet nodes and private descriptor class lookup resolve demonstrated floor incompatibilities.
+- Four final source/installed normal/recorder runs each15673passed+one existing skip; installed coverage98.19%. All822 primary+262 supplementary hashes and312 installed files per environment match. Build/docs/supplementary regression gates pass.
+- Seven runtime combinations remain unexecuted; Nyquist false remains explicit. Prior failed/interrupted receipts are historical. Codebase-map drift advisory remains for the required post-ship refresh; no publication or merge performed.
+- Completion CLI warnings reconciled: phase-relative05-schema-conformance.json exists; no formal requirement IDs were declared, so ROADMAP now separates Requirements: None from the preserved approved contract. Pre-existing dirty state.json was preserved byte-for-byte; STATE.md carries this handoff.
+
+### Phase 06.36 gap-closure planning — 2026-11-16
+
+- Added plan 08, three tasks in wave 7 after completed plan 07: bounded Resource field lookup, fresh installed Pydantic 2.2.1 command corpus and independent two-schema checks, then affected regression/install/build/fingerprint evidence.
+- Independent plan checker passed with zero findings; structure/frontmatter and all nine failure-direction checks pass; decision coverage is 9/9. No formal requirement IDs exist; approved source decisions and acceptance groups remain mapped across the complete plan set.
+- Plans 01–07 and the canonical gaps_found verdict remain unchanged. Planning does not close the defect or satisfy execution acceptance. Seven unexecuted runtime combinations remain explicit limitations.
+- STATE.md updated directly to preserve pre-existing dirty state.json, as in prior phase updates. Unrelated configuration and phase files remain untouched.
+
+### Phase 06.36 verification with gaps — 2026-11-16
+
+- Canonical verification is `gaps_found`, current fingerprint and **8/9 merged truths verified**. All seven execution plans are committed; phase remains unchecked. No formal requirement IDs were declared, so no unrelated requirement status was reverted.
+- Three deep-review blockers fixed in `b915c526`, `bc2e8d15`, `f7de1d77`: trusted eager translation evaluation, recursive wire-model instance validation, and core/Guardian source ownership. Independent recheck passes 67 targeted cases with zero new findings; disposition 3 fixed/0 open. Security 18/18 threats closed again; UI browser N/A with two CLI usability advisories.
+- Final product source `f7de1d77`: source normal/recorder and fresh installed normal/recorder each **15,665 passed + 1 existing skip**, installed coverage 98.19%. Six-module selections 420 each on Django 4.2/5.2/6.0. All 821 final inputs unchanged; 312 installed files match. Fresh build/schema/lint pass; unchanged strict docs evidence retained. Acceptance refresh `023a07cf`.
+- Additional regressions: JS 457, integration 2, Node harness 177, examples 548 plus 264 subtests pass. Two runner setup failures were corrected without product edits or installation; historical external Tabler runtime checks remain unverified. Gate/evidence commit `322b5a9f`.
+- **Only blocking gap:** actual installed Pydantic 2.2.1 command corpus fails because pre-existing `Resource.__pydantic_init_subclass__` reads unavailable `__pydantic_fields__` at resource.py:89. Fresh full floor run 67 model passes/20 collection errors; verifier independently reproduced the failure. No dependency-floor increase or fixture weakening. Seven other matrix combinations remain unexecuted.
+- Verifier independently checks 28 named cases, both schemas' 10 valid/15 invalid documents, and all 821 fingerprints. No human approval or publication is claimed. Original dirty state.json/config-default/.gitkeep/06.35 review inputs preserved.
+
+### Phase 06.36 plan 07 execution completion — 2026-11-16
+
+- Added an isolated Pydantic2.2.1 nox session with atomic existing-package pins, actual version/site-packages assertions, exact fresh corpus-directory forwarding and real report/command/export/preservation/docs/locale modules. All34 wiring cases pass; ordinary full nox normal/recorder behavior is unchanged.
+- Final frozen runtime `4846f729`: source normal/recorder and fresh installed normal/recorder each pass **15,599 tests plus one existing Django6-only CSP skip**. Pytest times506.50/505.17/568.86/503.88s; installed normal coverage98.19%. Final six-module focused checks pass354 each on Django4.2.30/5.2.19/6.0.10. All use Python3.12.3; primary Pydantic2.14.3, typing-extensions4.16.0.
+- Bounded Rule1 corrections preserve known Django4.2 translation proxies and reject spoofed argument storage without invoking hostile formatting/mapping hooks. Three RED artifacts pass machine/semantic gates. Focused compatibility/adversarial review completed before final runtime freeze; superseded/interrupted receipts are retained and not counted as final acceptance.
+- Actual Pydantic2.2.1 floor still has a **pre-existing Resource incompatibility**: `resource.py:89` reads absent `__pydantic_fields__`. Final57 report-model tests pass, but20 collection errors prevent the actual command corpus. Schema-only succeeds; floor corpus verification is unresolved. No floor increase or prior-phase Resource edit. Seven additional supported matrix combinations remain unexecuted; locally present interpreters are not test evidence.
+- Primary runtime/published schemas independently accept10 and reject15 fixtures each. Final wheel/sdist allowlists and module/catalog bytes pass; all312 installed package files match the checkout. Strict MkDocs1.6.1/no warnings and schema asset comparison remain valid for unchanged docs/catalog inputs. All13 phase Python files pass scoped Ruff; all821 final tracked inputs match stored hashes.
+- Two tasks,13 task/evidence files, seven measured task commits through `7a95817d`; summary committed `eaf2d07f` before progress updates. Actuals136445 chars/4 diff tokens include full retained logs/fingerprints. Approximately62 minutes of execution plus closeout. No publication, phase completion or maintainer approval is claimed.
+- ROADMAP is7/7 executed with phase unchecked and explicit acceptance limits. STATE.md is edited directly to preserve dirty state.json. Windows append failed on pre-existing rendered-table/fenced-JSON disagreement; the committed deferred item and acceptance retain the floor blocker. Original config-default/.gitkeep/06.35 review inputs remain untouched.
+
+### Phase 06.36 plan 06 completion — 2026-11-16
+
+- Published command modes, nine sections, complete values/provenance, versioned schema/status/error/exit contracts and live-read/visibility/transaction boundaries. Explicitly distinguishes serialization safety from built-in invalid-check diagnostic formatting. Executable configured-builder recipe preserves metadata and restores isolated registry/URL/module state on success/error.
+- Nineteen core German msgids compiled atomically with installed polib; existing Guardian translations already complete and verified unchanged. Real en/de core/Guardian/Resource output covers policy and synthetic mixin values, sources, actor/holder visibility, unsupported values, failures/checks and parseable forced-color JSON/schema.
+- Additive release entry and unconditional delivered-command #371 migration/theme corrections pass. Task selections 44/184/9 passed; final seven-module selection 229 passed (6.17s), four workers. Strict MkDocs build, Ruff/format and whitespace checks pass. Evidence in evidence/06-delivery.json and 06-docs-locales.xml.
+- Approximately 11 minutes, 3 tasks; commits a1a1a51b, cd36444a, 215e0984, 69f8c754, ac2d6531; summary 6cf07a0c. ROADMAP reports 6/7 In Progress, complete=false. No runtime changes, dependencies, skips, unrun checks or publication. Plan07 owns dependency-floor/installed/final full-suite acceptance; it has not started.
+- STATE.md updated directly to preserve dirty state.json. Unrelated config-default, .gitkeep and 06.35 review inputs remain untouched; no phase completion claim.
+
+### Phase 06.36 plan 05 completion — 2026-11-16
+
+- Published full version-1 serialization schema from actual command output under Pydantic 2.14.3. System jsonschema 4.10.3 independently accepts 10 and rejects 15 corpus documents against both runtime/published schemas; five fail-closed checker probes pass. Full fingerprints and fresh corpus directory are recorded in evidence/05-schema-conformance.json.
+- Behavioral corpus conformance replaces schema equality assumptions; cross-field coherence stays separately tested in Pydantic. Single-writer fresh-directory exports are atomic and never silently reuse stale fixtures or skip a missing validator. No dependency installed.
+- Repeated success/error/legacy exports preserve exact normal dictionaries on the same instance/class for core/Guardian/Resource, including shown/hidden direct/group holders. Original exact 9/21 page queries and per-table counts, and 5-query holder batching across 1/4 columns and 1/21 holders, pass after command use.
+- C09: 181 passed (8.76s); C10 exact 22-module runtime selection: 1270 passed (46.06s), four workers. Ruff/format/whitespace pass. No production/template changes, skips, unrun plan checks or new security surface beyond the planned verification tool.
+- Approximately 10 minutes, 2 tasks; commits 99e626a3, b07fd700, 2fecbd68; summary 509aad04. ROADMAP reports 5/7 In Progress, complete=false. Plans 06/07 retain docs/locale, floor/supported-runtime, installed and final full-suite acceptance; no phase completion claim.
+- STATE.md updated directly to preserve dirty state.json. Unrelated config-default, .gitkeep and 06.35 review inputs remain untouched; no publication.
+
+### Phase 06.36 plan 04 completion — 2026-11-16
+
+- Valid identity survives all collector failures as partial/exit 2. Collection versus adapter/assembly errors are explicit; duplicate/orphan references are rejected; minimal catalogue/inspection fallback preserves selection. Existing numeric findings, silencing and check-object counts remain unchanged.
+- Dependency-aware route/auth matrices and real SQLite invalid reads pass. Autocommit permits later reads; a caller-owned atomic block stays rollback-only until caller exit. No command rollback/retry/transaction machinery was added; PostgreSQL runtime behavior remains untested.
+- Text retains every validated leaf with translated scope headings and permission explanations. Real pipe/PTY tests cover automatic/forced/disabled color and always-plain JSON/schema. Rich model/Guardian/Resource page/JSON/text parity, controls, complete values, locale-stable machine fields and process boundaries pass.
+- Final C07/C08 scope: 189 passed (10.79s); focused preservation: 604 passed (19.76s), four workers. Exact page query baselines remain 9/21; Ruff/format/whitespace pass. No skipped/unrun plan checks.
+- Recorded execution 9 minutes, 2 tasks; commits cf4c6c83, e2e363c4, 50e3ca6f, d266baf4, 83e884ef, afca17cb; summary e5cfd9a6. ROADMAP reports 4/7 In Progress, complete=false. Plans 05/06 own schema artifacts and German/docs delivery; plan 07 owns final installed/floor/full-suite acceptance.
+- STATE.md updated directly to preserve dirty state.json. Unrelated config-default, .gitkeep and 06.35 review inputs remain untouched; no phase completion or publication.
+
+### Phase 06.36 plan 03 completion — 2026-11-16
+
+- Guardian exports share one stable strict/global_fallback/not_applicable code across view policy and synthetic metadata; ordered mixin paths and effective sources are locale-stable. Composition checks use the shared numeric-severity worker while preserving legacy signatures and ordinary dictionaries.
+- Explicit/no/inactive actors, username precedence, unknown-user early failure, all 23 visible holders, hidden identities, UUID IDs and browser-mode independence pass. Task01 preserves already-correct production paths with regression coverage only.
+- Generic/direct user and group grants, deduplicated effective actors, all reached core/Guardian table guards, supplied-ViewSet routing and 18 static Resource configurations are verified. No ancestor/auth code or query construction changed; direct guard calls prove zero SQL before refusal.
+- C05:31 passed (1.67s); C06:442 passed (12.87s), four workers; exact core/Guardian query baselines remain9/21. Ruff/format/whitespace pass; no skipped or unrun plan checks.
+- Approximately10 minutes,2tasks; task commits7b1e9d25,e351f4e3,de7295b8; summary8f115edd. ROADMAP reports3/7 In Progress,complete=false. Docs handoff is recorded in the summary; SQL-failure and transaction boundaries remain plan04.
+- STATE.md updated directly to preserve dirty state.json. Unrelated config-default,.gitkeep and06.35review inputs remain untouched; no phase completion or publication.
+
+### Phase 06.36 plan 02 completion — 2026-11-16
+
+- Exact shipped parent/button projections preserve complete raw values and type/path markers without registry/property traversal. Unknown hooks and translation proxy subclasses remain unsupported; built-in invalid-check formatting failures remain explicit checks errors.
+- Stable en/de provenance, None/False/empty declarations, selected-view scope, configured override participation, legacy metadata unavailability and export restoration are covered. Existing task02 production paths already met the contracts, so that task adds regression coverage only.
+- C03:72 passed (1.54s); C04:83 passed (2.12s); combined task/preservation selection:274 passed (5.54s), four workers. Core/Guardian query baselines remain9/21; Ruff/format/whitespace pass. No skipped or unrun plan checks.
+- Approximately12 minutes,2tasks; task commits d445ee80,9d588a66,a661cc19; summary24601984. ROADMAP reports2/7 In Progress,complete=false. Exact projection/lazy/check-boundary documentation is handed to06; Guardian work remains03.
+- STATE.md updated directly to preserve dirty state.json. Unrelated config-default,.gitkeep and06.35review inputs remain untouched; no phase completion or publication.
+
+### Phase 06.36 plan 01 completion — 2026-11-16
+
+- Catalogue discovers included URLconfs, sorts registered names and preserves view-key order without diagnostics. Isolated registry/vocabulary/import/URL fixtures close H-01; tracer gate 7 passed.
+- Configured request-free core manage builders feed strict version-1 section models and generated schema. No actor is fabricated. Instance export contexts restore nested success/error state; legacy static helpers retain their signatures, closing M-01.
+- Final plan selection: 150 passed (3.09s); page/Guardian/provenance preservation: 78 passed (3.42s), all with four workers. Exact 9/21 core/Guardian query assertions remain intact. Ruff and whitespace pass; no skipped/unrun plan checks.
+- Approximately 15 minutes, 2 tasks; RED/GREEN commits 96a69a47, 029f380b, 3df653dd, 94eae43f; summary d3f11b91. ROADMAP reports 1/7 In Progress, complete=false. Remaining full-value/Guardian/renderer/schema/delivery acceptance belongs to plans 02–07.
+- STATE.md updated directly to preserve preexisting state.json changes. Unrelated config-default, .gitkeep and 06.35 review inputs remain untouched; no phase-completion claim.
 
 ### Phase 06.35 completion — 2026-11-15
 
@@ -1165,7 +1250,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 223
+- Total plans completed: 231
 
 - Total plans completed: 186
 - Average duration: -
@@ -1213,6 +1298,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.33 | 10 | - | - |
 | 06.34 | 12 | - | - |
 | 06.35 | 7 | - | - |
+| 06.36 | 8 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1396,6 +1482,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 ## Accumulated Context
 
 ### Decisions
+
+- [Phase 06.36 plan 03] Preserve already-correct actor/holder paths; Guardian computes one policy code at its owner for both machine representations. Keep authorization guards unchanged and verify supplied-ViewSet table refusals before SQL.
 
 - [Phase 06.33 plan 01] Resolve diagnostic auth routing against the supplied ViewSet's registered manage class; Resource diagnostics fail before reads. Pivot direct holders by PK, split users at 20, and preserve legacy getters behind request-local lazy proxies.
 - [Phase 06.33 plan 02] Describe only effective has_permission ownership automatically; custom dispatch/object/queryset gates require explicit descriptions. Reuse one generated-route projection and the request engine's nearest enforced ancestor selection. Keep unchanged extension gates inherited and verify them with native requests.
@@ -1698,6 +1786,8 @@ None yet.
 
 ### Blockers/Concerns
 
+- Phase06.36: Pydantic2.2.1 command-corpus acceptance is blocked by pre-existing `Resource.__pydantic_init_subclass__` access to `__pydantic_fields__` at `src/crud_views/lib/resource.py:89`. Plan07's final floor has57 model passes/20 collection errors. Seven matrix combinations are unexecuted; independent code/security review and phase verification remain pending. See06.36-ACCEPTANCE.md and deferred-items.md; do not infer phase acceptance from7/7 executed plans.
+
 - Phase 2: Ruff 0.16.10 is below the manifest range and global formatting flags eight pre-existing planning
   Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
 
@@ -1767,6 +1857,7 @@ None yet.
 - Phase 06.33 inserted after Phase 06.32: Structured manage page (#366); approved D-01–D-30 handover, before Phase 7 theme-surface freeze (URGENT)
 - Phase 06.34 inserted after Phase 06.33: Access trace: cv_access command and manage page form (#370); approved design D-01–D-23 (URGENT)
 - Phase 06.35 inserted after Phase 06.34: Approved issue #372; corrected from initial 06.25.2 at maintainer request; D-01–D-07 context captured
+- Phase 06.36 inserted after Phase 06.35: ViewSet configuration CLI and versioned JSON contract (#371); approved D-01–D-09, A-01–A-04 and acceptance items 1–10; builds on completed #372 before Phase 7 (URGENT)
 
 ## Deferred Items
 
@@ -1776,6 +1867,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-15T20:21:44Z
-Stopped at: Phase 06.35 complete, ready to plan Phase 7
+Last session: 2026-11-16T10:39:16.342397+00:00
+Stopped at: Phase 06.36 complete, ready to plan Phase 7
 Resume file: None

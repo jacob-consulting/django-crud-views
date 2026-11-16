@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 892d3fc5adaab1660fe6812b937328efa5d71350
-last_mapped_at: 2026-11-15
+last_mapped_commit: a78b63db1f637b6b8b4cf6b4aaa24885a061ae26
+last_mapped_at: 2026-11-16
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-15
+**Analysis Date:** 2026-11-16
 
 ## Directory Layout
 
@@ -222,4 +222,4 @@ django-crud-views/
 
 ---
 
-*Structure analysis: 2026-11-15*
+*Structure analysis: 2026-11-16*

@@ -94,7 +94,7 @@ class SourceRecord(WireModel):
     declaring_class: str | None = None
 
 
-def normalize_value(value, *, not_declared=False):
+def normalize_value(value, *, not_declared=False, _projection=None):
     """Bounded JSON projection; no arbitrary instance formatting or traversal."""
     if not_declared:
         return ValueRecord(kind="not_declared")
@@ -109,8 +109,28 @@ def normalize_value(value, *, not_declared=False):
             return item
         if type(item) is float and math.isfinite(item):
             return item
-        if isinstance(item, translation_types):
+        if type(item) in translation_types:
+            # Only the two exact Django wrappers with ordinary string arguments.
+            # A Promise subclass, arbitrary lazy(), or a wrapped object can execute
+            # project code even though it presents itself as a translation string.
+            args, kwargs = item._args, item._kw
+            if type(args) is not tuple or type(kwargs) is not dict:
+                raise ValueError("unsupported translation arguments")
+            if any(type(arg) is not str for arg in args) or any(
+                type(key) is not str or type(arg) is not str for key, arg in kwargs.items()
+            ):
+                raise ValueError("unsupported translation arguments")
             return str(item)
+        projected = _projection(item) if _projection is not None else None
+        if projected is not None:
+            if id(item) in active:
+                raise ValueError("cyclic projection")
+            active.add(id(item))
+            markers.append(Normalization(path=path, python_type=f"{type(item).__module__}.{type(item).__qualname__}"))
+            try:
+                return project(projected, path)
+            finally:
+                active.remove(id(item))
         if type(item) not in (list, tuple, dict) or id(item) in active:
             raise ValueError("unsupported configuration value")
         active.add(id(item))

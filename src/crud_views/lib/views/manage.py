@@ -321,7 +321,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                     if source and source.startswith("CRUD_VIEWS_")
                     else SourceRecord(code="default" if is_default else "set")
                 )
-            record = normalize_value(value)
+            record = self._manage_value(value)
             return {
                 "key": key,
                 "value": record.value,
@@ -366,7 +366,9 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             if key in {"verbose_name", "verbose_name_plural"} and not getattr(self, "_manage_export_enabled", False):
                 row["value"] = str(value)
             if key == "icon_header":
-                row["icon"] = value
+                row["icon"] = (
+                    value if not getattr(self, "_manage_export_enabled", False) or type(value) is str else None
+                )
             rows.append(row)
         if viewset.is_resource:
             for key in ("app_label", "pk_field", "pk_type"):
@@ -444,7 +446,22 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         export = getattr(self, "_manage_export_enabled", False)
         display = self._manage_export_display if export else self._manage_display
         row = self._manage_field(viewset, "context_buttons", button)
-        row.update(key=button.key, type=display(type(button)), is_button=True)
+        if export:
+            record = row["_export"]["value"]
+            if record.kind != "native":
+                # Unknown behavior and descriptors remain opaque, including their
+                # label and target descriptions. Never execute them for export.
+                key = inspect.getattr_static(button, "key", None)
+                row.update(
+                    key=key if type(key) is str else "context_buttons", type=display(type(button)), is_button=True
+                )
+                return row
+            # The owned raw projection is also the safe input to descriptions.
+            button_type = type(button)
+            button = SimpleNamespace(**record.value)
+        else:
+            button_type = type(button)
+        row.update(key=button.key, type=display(button_type), is_button=True)
         target = None
         unavailable = _("Target unavailable; review this button's configuration.")
         if builtin is None:
@@ -533,7 +550,12 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             for field in fields:
                 declared = getattr(viewset, field)
                 inherited = declared is None
-                if field == "extends":
+                if (
+                    getattr(self, "_manage_export_enabled", False)
+                    and self._manage_value(declared).kind == "unsupported"
+                ):
+                    value = declared
+                elif field == "extends":
                     value = CrudView.cv_get_extends_template(resolver)
                     inherited = not declared
                 elif field == "inaccessible_actions":
@@ -542,7 +564,11 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                     value = CrudView.cv_first_inline_keys.__func__(resolver, None, field)
                 source = "CRUD_VIEWS_" + field.upper() if inherited else None
                 row = self._manage_field(viewset, field, value, source)
-                if field == "extends" and declared == "":
+                if field == "extends" and (
+                    (type(declared) is str and declared == "")
+                    if getattr(self, "_manage_export_enabled", False)
+                    else declared == ""
+                ):
                     row["declared_value"] = "''"
                     if getattr(self, "_manage_export_enabled", False):
                         row["_export"]["declared_value"] = normalize_value(declared)
@@ -703,8 +729,49 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         return ManageView._manage_view_entry_data(view, name, value, declarations, unknown, missing)
 
     @staticmethod
+    def _manage_owned_projection(value):
+        """Only shipped stored declarations; no model dumps, properties or registry reads."""
+        from crud_views.lib.view.buttons import (
+            ChildContextButton,
+            ContextButton,
+            FilterContextButton,
+            ParentContextButton,
+            SiblingContextButton,
+        )
+        from crud_views.lib.viewset.parentviewset import ParentViewSet
+
+        cls = type(value)
+        if cls is ParentViewSet:
+            fields = ("name", "attribute", "pk_name", "many_to_many_through_attribute")
+        elif cls in (ContextButton, ParentContextButton, ChildContextButton, SiblingContextButton, FilterContextButton):
+            fields = (
+                "key",
+                "key_target",
+                "label_template",
+                "label_template_code",
+                "template",
+                "template_code",
+                "variant",
+                "label_mode",
+            )
+            if cls is ChildContextButton:
+                fields += ("child_name", "child_key")
+            elif cls is SiblingContextButton:
+                fields += ("sibling_name", "sibling_key")
+        else:
+            return None
+        stored = object.__getattribute__(value, "__dict__")
+        if any(field not in stored or inspect.getattr_static(cls, field, None) is not None for field in fields):
+            return None
+        return {field: stored[field] for field in fields}
+
+    @staticmethod
+    def _manage_value(value, *, not_declared=False):
+        return normalize_value(value, not_declared=not_declared, _projection=ManageView._manage_owned_projection)
+
+    @staticmethod
     def _manage_export_display(value):
-        record = normalize_value(value)
+        record = ManageView._manage_value(value)
         if record.kind == "class_path":
             return record.value
         return repr(record.value) if record.kind == "native" else record.kind
@@ -743,18 +810,24 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
             source = _("from ViewSet") if viewset_value is not None else _("global setting")
             source_code = "viewset" if viewset_value is not None else "global_setting"
             setting = "CRUD_VIEWS_" + field.upper() if viewset_value is None else None
-        elif field == "extends_template" and not value:
-            resolver = SimpleNamespace(cv_viewset=view.cv_viewset, cv_extends_template=value)
-            value = CrudView.cv_get_extends_template(resolver)
-            source = _("from ViewSet") if view.cv_viewset.extends else _("global setting")
-            source_code = "viewset" if view.cv_viewset.extends else "global_setting"
-            setting = None if view.cv_viewset.extends else "CRUD_VIEWS_EXTENDS"
+        elif field == "extends_template" and (
+            (value is None or (type(value) is str and value == "")) if export else not value
+        ):
+            if export and ManageView._manage_value(view.cv_viewset.extends).kind == "unsupported":
+                value = view.cv_viewset.extends
+                source, source_code = _("from ViewSet"), "viewset"
+            else:
+                resolver = SimpleNamespace(cv_viewset=view.cv_viewset, cv_extends_template=value)
+                value = CrudView.cv_get_extends_template(resolver)
+                source = _("from ViewSet") if view.cv_viewset.extends else _("global setting")
+                source_code = "viewset" if view.cv_viewset.extends else "global_setting"
+                setting = None if view.cv_viewset.extends else "CRUD_VIEWS_EXTENDS"
         elif value is None and field in {"icon_header", "context_buttons"}:
             value = getattr(view.cv_viewset, field)
             source = _("from ViewSet")
             source_code = "viewset"
         if export:
-            record = normalize_value(value, not_declared=value is missing)
+            record = ManageView._manage_value(value, not_declared=value is missing)
             return {
                 "key": field,
                 "value": record.value,
@@ -769,7 +842,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                         declaring_class=f"{owner.__module__}.{owner.__qualname__}" if owner else None,
                     ),
                     "declared_value": normalize_value(declared_value)
-                    if field == "extends_template" and declared_value == ""
+                    if field == "extends_template" and type(declared_value) is str and declared_value == ""
                     else None,
                 },
             }

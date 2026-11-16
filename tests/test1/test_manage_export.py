@@ -229,7 +229,7 @@ def test_unchecked_other_values_and_descriptors_do_not_run_hooks(catalogue):
         def __call__(self):
             pytest.fail("Callable executed")
 
-    vs, view = make_view(
+    _vs, view = make_view(
         catalogue,
         cv_unchecked=Hostile(),
         cv_callable=Callable(),
@@ -241,9 +241,86 @@ def test_unchecked_other_values_and_descriptors_do_not_run_hooks(catalogue):
     assert "callable" not in entries and "descriptor" not in entries
 
 
+def test_unsupported_fallback_values_never_execute_truthiness(catalogue):
+    vs, view = make_view(catalogue, cv_extends_template=Hostile())
+    assert export_entries(ManageView(), view)["extends_template"]["_export"]["value"].kind == "unsupported"
+    view.cv_extends_template = None
+    vs.extends = Hostile()
+    assert export_entries(ManageView(), view)["extends_template"]["_export"]["value"].kind == "unsupported"
+    with ManageView().manage_export() as manage:
+        rows = {e["key"]: e for s in manage.get_manage_presentation(vs, None)["sections"] for e in s["entries"]}
+    assert rows["extends"]["_export"]["value"].kind == "unsupported"
+
+
+def test_custom_button_behavior_and_field_descriptors_stay_opaque(catalogue):
+    from crud_views.lib.view.buttons import ContextButton
+
+    class CustomButton(ContextButton):
+        def get_context(self, context):
+            pytest.fail("custom button executed")
+
+        @property
+        def label_template(self):
+            pytest.fail("label descriptor executed")
+
+    vs, _ = make_view(catalogue)
+    vs.context_buttons = [CustomButton(key="custom")]
+    with ManageView().manage_export() as manage:
+        row = manage.get_manage_presentation(vs, None)["sections"][0]["entries"][0]
+    assert row["_export"]["value"].kind == "unsupported"
+
+
+@pytest.mark.django_db
+def test_missing_parent_facts_survive_other_collection_errors(catalogue):
+    import json
+
+    from crud_views.lib.viewset import ParentViewSet
+    from tests.test1.test_manage_command import invoke
+
+    vs, _ = make_view(catalogue)
+    vs.parent = ParentViewSet(name="absent")
+    code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    assert code == 1
+    facts = {e["key"]: e for e in report["data"]["facts"]["data"]["entries"]}
+    assert facts["parent"]["value"]["value"]["name"] == "absent"
+    assert report["data"]["checks"]["data"]["messages"]
+    assert report["data"]["hierarchy"]["data"]["route_error"]
+
+
+@pytest.mark.django_db
+def test_full_long_values_reach_json_and_text(catalogue):
+    import json
+
+    from tests.test1.test_manage_command import invoke
+
+    long_value = "xyz" * 300
+    vs, _ = make_view(
+        catalogue,
+        cv_custom_value=long_value,
+        cv_custom_list=list(range(300)),
+        cv_check_ignore_attributes=["cv_custom_value", "cv_custom_list"],
+    )
+    json_code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    entries = {
+        e["key"]: e
+        for r in report["data"]["views"]["data"]["entries"]
+        if r["key"] == "list"
+        for s in r["sections"]
+        for e in s["entries"]
+    }
+    assert entries["custom_value"]["value"]["value"] == long_value
+    assert entries["custom_list"]["value"]["value"] == list(range(300))
+    text_code, output = invoke(vs.name)
+    assert json_code == text_code == 0 and long_value in output
+    assert "value.value[299]: 299" in output
+
+
 @pytest.mark.django_db
 def test_checked_invalid_value_formatter_failure_is_checks_error(catalogue):
     import json
+
     from tests.test1.test_manage_command import invoke
 
     calls = []

@@ -77,7 +77,9 @@ def identity_only_report():
 
     sections = [name for name in InspectionData.model_fields if name not in {"identity", "guardian"}]
     return {
-        "kind": "inspection", "status": "partial", "selection": {},
+        "kind": "inspection",
+        "status": "partial",
+        "selection": {},
         "data": {
             "identity": {"name": "example", "kind": "model", "backing_class": "app.Model", "parent": None},
             "guardian": {"status": "not_applicable", "data": None, "errors": []},
@@ -105,16 +107,26 @@ def test_section_error_references_are_exact_and_typed(mutation):
         raw["errors"][0]["section"] = "facts"
     else:
         raw["data"]["presentation"]["errors"] = {
-            "negative": [-1], "out_of_bounds": [100], "wrong_section": [2], "duplicate": [1, 1], "coercion": ["1"]
+            "negative": [-1],
+            "out_of_bounds": [100],
+            "wrong_section": [2],
+            "duplicate": [1, 1],
+            "coercion": ["1"],
         }[mutation]
     with pytest.raises(ValidationError):
         Report.validate_python(raw)
 
 
-@pytest.mark.parametrize("status,data,errors", [
-    ("ok", None, []), ("error", None, []), ("not_applicable", None, [0]),
-    ("error", {"entries": []}, [0]), ("ok", {"entries": []}, [0]),
-])
+@pytest.mark.parametrize(
+    "status,data,errors",
+    [
+        ("ok", None, []),
+        ("error", None, []),
+        ("not_applicable", None, [0]),
+        ("error", {"entries": []}, [0]),
+        ("ok", {"entries": []}, [0]),
+    ],
+)
 def test_section_status_data_and_errors_must_agree(status, data, errors):
     from crud_views.lib.manage_report import FactsData, Section
 

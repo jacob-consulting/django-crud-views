@@ -1,6 +1,8 @@
 """Real management-command integration with process-global discovery isolation."""
 
 import json
+import os
+import subprocess
 import sys
 from contextlib import contextmanager
 from io import StringIO
@@ -20,7 +22,15 @@ from tests.test1.app.models import Publisher
 from tests.test1.test_resource_manage import ManageItem
 
 SECTIONS = (
-    "facts", "presentation", "views", "routes", "hierarchy", "ancestor_policy", "permissions", "checks", "guardian"
+    "facts",
+    "presentation",
+    "views",
+    "routes",
+    "hierarchy",
+    "ancestor_policy",
+    "permissions",
+    "checks",
+    "guardian",
 )
 
 
@@ -620,18 +630,25 @@ def test_identity_survives_when_every_applicable_collector_fails(catalogue, monk
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("owner,failed", [
-    ("get_manage_routes", {"presentation", "views", "routes", "hierarchy"}),
-    ("_guard_manage_auth", {"views", "permissions"}),
-])
+@pytest.mark.parametrize(
+    "owner,failed",
+    [
+        ("get_manage_routes", {"presentation", "views", "routes", "hierarchy"}),
+        ("_guard_manage_auth", {"views", "permissions"}),
+    ],
+)
 def test_shared_owner_failures_follow_reached_dependencies(catalogue, monkeypatch, owner, failed):
     from crud_views.lib.view.buttons import ContextButton
     from crud_views.lib.views import ListViewPermissionRequired
     from tests.test1.app.models import Book
 
     parent = ViewSet(model=Publisher, name="dependency_parent", context_buttons=[])
-    vs = ViewSet(model=Book, name="dependency_child", parent=ParentViewSet(name=parent.name, attribute="publisher"),
-                 context_buttons=[ContextButton(key="list", key_target="list")])
+    vs = ViewSet(
+        model=Book,
+        name="dependency_child",
+        parent=ParentViewSet(name=parent.name, attribute="publisher"),
+        context_buttons=[ContextButton(key="list", key_target="list")],
+    )
     type("DependencyList", (ListViewPermissionRequired,), {"__module__": __name__, "cv_viewset": vs})
     reached = []
 
@@ -666,22 +683,34 @@ def test_caught_route_unavailability_is_successful_data(catalogue, monkeypatch):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("level,silenced,broken,expected", [
-    (30, False, False, 0), (40, True, False, 0), (40, False, False, 1),
-    (50, False, False, 1), (41, False, False, 1), (50, False, True, 2),
-])
+@pytest.mark.parametrize(
+    "level,silenced,broken,expected",
+    [
+        (30, False, False, 0),
+        (40, True, False, 0),
+        (40, False, False, 1),
+        (50, False, False, 1),
+        (41, False, False, 1),
+        (50, False, True, 2),
+    ],
+)
 def test_exit_precedence_uses_unsilenced_numeric_findings(catalogue, monkeypatch, level, silenced, broken, expected):
     from types import SimpleNamespace
+
     from django.core.checks import CheckMessage
 
     vs = ViewSet(model=Publisher, name="numeric_findings", context_buttons=[])
     message = CheckMessage(level, "finding", id="project.E001")
-    monkeypatch.setattr(ViewSet, "checks", lambda self: iter([
-        SimpleNamespace(messages=lambda: [message, message]), SimpleNamespace(messages=lambda: [])
-    ]))
+    monkeypatch.setattr(
+        ViewSet,
+        "checks",
+        lambda self: iter([SimpleNamespace(messages=lambda: [message, message]), SimpleNamespace(messages=lambda: [])]),
+    )
     if broken:
+
         def fail(*args):
             raise RuntimeError("facts unavailable")
+
         monkeypatch.setattr(ManageView, "get_manage_facts", fail)
     with override_settings(SILENCED_SYSTEM_CHECKS=[message.id] if silenced else []):
         code, output = invoke(vs.name, "--as-json")
@@ -696,6 +725,7 @@ def test_exit_precedence_uses_unsilenced_numeric_findings(catalogue, monkeypatch
 @pytest.mark.parametrize("caller_atomic", [False, True])
 def test_sql_failure_respects_caller_transaction_ownership(catalogue, monkeypatch, caller_atomic):
     from contextlib import nullcontext
+
     from django.db import connection, transaction
     from django.db.transaction import TransactionManagementError
 
@@ -742,8 +772,10 @@ def test_sql_failure_respects_caller_transaction_ownership(catalogue, monkeypatc
 @pytest.mark.parametrize("termination", [KeyboardInterrupt, SystemExit])
 def test_process_termination_propagates_without_report(catalogue, monkeypatch, termination):
     vs = ViewSet(model=Publisher, name="termination", context_buttons=[])
+
     def fail(*args):
         raise termination(7)
+
     monkeypatch.setattr(ManageView, "get_manage_facts", fail)
     output = StringIO()
     with pytest.raises(termination):
@@ -751,8 +783,17 @@ def test_process_termination_propagates_without_report(catalogue, monkeypatch, t
     assert output.getvalue() == ""
 
 
-@pytest.mark.parametrize("args", [[], ["--list", "--schema"], ["--list", "x"], ["--schema", "x", "list"],
-    ["--list", "--user", "x"], ["--schema", "--user", "x"]])
+@pytest.mark.parametrize(
+    "args",
+    [
+        [],
+        ["--list", "--schema"],
+        ["--list", "x"],
+        ["--schema", "x", "list"],
+        ["--list", "--user", "x"],
+        ["--schema", "--user", "x"],
+    ],
+)
 def test_recognized_argument_conflicts_have_one_failed_document(catalogue, args):
     code, output = invoke(*args, "--as-json")
     result = json.loads(output)
@@ -760,7 +801,9 @@ def test_recognized_argument_conflicts_have_one_failed_document(catalogue, args)
     assert result["errors"][0]["code"] == "invalid_arguments"
 
 
-@pytest.mark.parametrize("viewset,view,expected", [("absent", None, "unknown_viewset"), ("known", "absent", "unknown_view")])
+@pytest.mark.parametrize(
+    "viewset,view,expected", [("absent", None, "unknown_viewset"), ("known", "absent", "unknown_view")]
+)
 def test_unknown_selectors_fail_before_collection(catalogue, monkeypatch, viewset, view, expected):
     ViewSet(model=Publisher, name="known")
     monkeypatch.setattr(ManageView, "get_manage_facts", lambda *a: pytest.fail("Invalid selector collected"))
@@ -779,3 +822,184 @@ def test_assembly_failure_is_minimal_and_preserves_selection(catalogue, monkeypa
     assert code == 2 and result["data"] is None and result["status"] == "failed"
     assert result["selection"] == {"viewset": vs.name, "view": "manage", "user": None}
     assert len(result["errors"]) == 1 and result["errors"][0]["code"] == "output_validation_failed"
+
+
+@pytest.mark.django_db
+def test_unrelated_failing_global_check_cannot_preempt_report(catalogue):
+    from django.core.checks import Error, register
+    from django.core.checks.registry import registry
+
+    calls = []
+
+    def unrelated(**kwargs):
+        calls.append(True)
+        return [Error("Unrelated global failure", id="project.E999")]
+
+    registered = registry.registered_checks.copy()
+    try:
+        register(unrelated)
+        vs = ViewSet(model=Publisher, name="scoped_checks", context_buttons=[])
+        code, output = invoke(vs.name, "--as-json")
+        assert code == 0 and json.loads(output)["status"] == "complete"
+        assert calls == []
+        assert unrelated()[0].level == 40
+    finally:
+        registry.registered_checks = registered
+
+
+@pytest.mark.django_db
+def test_validation_errors_exclude_raw_inputs_and_context(catalogue, monkeypatch):
+    vs = ViewSet(model=Publisher, name="private_validation", context_buttons=[])
+    original = ManageView.get_manage_checks
+
+    def malformed(self, viewset, user):
+        data = original(self, viewset, user)
+        data["count"] = {"private_input": "must never be serialized"}
+        return data
+
+    monkeypatch.setattr(ManageView, "get_manage_checks", malformed)
+    code, output = invoke(vs.name, "--as-json")
+    assert code == 2
+    report = json.loads(output)
+    assert_section_failures(report, ["checks"])
+    assert report["errors"][0]["location"] == ["count"]
+    assert report["errors"][0]["exception_class"] == "ValidationError"
+    assert "private_input" not in output and "must never be serialized" not in output
+    assert "Traceback" not in output and "input_value" not in output and '"ctx"' not in output
+
+
+MANAGE_PROCESS = """
+import os, sys
+from types import ModuleType
+from tests.test1.conftest import pytest_configure
+pytest_configure()
+from django.conf import settings
+from django.core.management import call_command
+from crud_views.lib.viewset import ViewSet
+from crud_views.lib.views import ListView
+from crud_views.lib.views.manage import ManageView
+from crud_views.management.commands.cv_manage_view import Command
+from tests.test1.app.models import Publisher
+settings.DATABASES['default']['NAME'] = os.environ['CV_MANAGE_TEST_DATABASE']
+urls = ModuleType('manage_process_urls')
+urls.urlpatterns = []
+settings.ROOT_URLCONF = urls
+vs = ViewSet(model=Publisher, name='process', context_buttons=[])
+class ProcessList(ListView):
+    cv_viewset = vs
+    cv_icon_header = 12 if os.environ.get('CV_MANAGE_FINDING') else None
+if os.environ.get('CV_MANAGE_FAILURE'):
+    def fail(*args):
+        raise RuntimeError('collector failed')
+    ManageView.get_manage_permissions = fail
+if sys.argv[1:] == ['--prepare']:
+    call_command('migrate', run_syncdb=True, verbosity=0)
+else:
+    Command().run_from_argv(['manage.py', 'cv_manage_view', *sys.argv[1:]])
+"""
+
+
+@pytest.fixture(scope="module")
+def manage_process_env(tmp_path_factory):
+    env = {
+        **os.environ,
+        "CV_MANAGE_TEST_DATABASE": str(tmp_path_factory.mktemp("manage-process") / "db.sqlite3"),
+        "TERM": "xterm",
+        "DJANGO_COLORS": "light",
+    }
+    result = subprocess.run(
+        [sys.executable, "-c", MANAGE_PROCESS, "--prepare"], env=env, capture_output=True, text=True, timeout=30
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    return env
+
+
+def manage_process(env, *args, tty=False):
+    argv = [sys.executable, "-c", MANAGE_PROCESS, *args]
+    if not tty:
+        return subprocess.run(argv, env=env, capture_output=True, text=True, timeout=30)
+    import errno
+    import pty
+    from concurrent.futures import ThreadPoolExecutor
+
+    master, slave = pty.openpty()
+
+    def read_terminal():
+        chunks = []
+        while True:
+            try:
+                data = os.read(master, 65536)
+            except OSError as exc:
+                if exc.errno == errno.EIO:
+                    break
+                raise
+            if not data:
+                break
+            chunks.append(data)
+        return b"".join(chunks).decode().replace("\r\n", "\n")
+
+    try:
+        with subprocess.Popen(argv, env=env, stdout=slave, stderr=subprocess.PIPE, text=True) as process:
+            os.close(slave)
+            slave = None
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                output = pool.submit(read_terminal)
+                try:
+                    _, stderr = process.communicate(timeout=30)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.communicate()
+                    raise
+                return subprocess.CompletedProcess(argv, process.returncode, output.result(timeout=5), stderr)
+    finally:
+        os.close(master)
+        if slave is not None:
+            os.close(slave)
+
+
+@pytest.mark.parametrize("finding,failed,expected", [(False, False, 0), (True, False, 1), (True, True, 2)])
+def test_real_process_exit_and_single_document(manage_process_env, finding, failed, expected):
+    env = {
+        **manage_process_env,
+        "CV_MANAGE_FINDING": "1" if finding else "",
+        "CV_MANAGE_FAILURE": "1" if failed else "",
+    }
+    result = manage_process(env, "process", "--as-json")
+    assert result.returncode == expected and result.stderr == ""
+    report = json.loads(result.stdout)  # Rejects a second stdout document.
+    assert report["status"] == ("partial" if failed else "complete")
+
+
+@pytest.mark.parametrize(
+    "args,code,structured",
+    [
+        (["--help"], 0, False),
+        (["--unknown-option"], 2, False),
+        (["a", "b", "c"], 2, False),
+        (["--list", "--no-color", "--force-color"], 1, False),
+        (["--as-json"], 2, True),
+        (["--list", "--schema", "--as-json"], 2, True),
+    ],
+)
+def test_real_framework_and_command_usage_boundaries(manage_process_env, args, code, structured):
+    result = manage_process(manage_process_env, *args)
+    assert result.returncode == code
+    if structured:
+        assert result.stderr == "" and json.loads(result.stdout)["errors"][0]["code"] == "invalid_arguments"
+    elif code:
+        assert result.stdout == "" and result.stderr and "Traceback" not in result.stderr
+    else:
+        assert "Inspect registered ViewSet" in result.stdout and "--schema" in result.stdout
+        assert result.stderr == ""
+
+
+def test_django_startup_failure_remains_outside_structured_output(manage_process_env):
+    result = subprocess.run(
+        [sys.executable, "-m", "django", "cv_manage_view", "--as-json"],
+        env={**manage_process_env, "DJANGO_SETTINGS_MODULE": "missing_cv_startup_settings"},
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode != 0 and result.stdout == ""
+    assert "missing_cv_startup_settings" in result.stderr

@@ -418,17 +418,17 @@ class InspectionResult(CatalogueResult):
     @model_validator(mode="after")
     def coherent_sections(self):
         if self.data is not None:
-            useful = False
+            referenced = set()
             for name in InspectionData.model_fields:
                 if name == "identity":
                     continue
                 section = getattr(self.data, name)
-                useful |= section.status == "ok"
                 for index in section.errors:
-                    if not 0 <= index < len(self.errors) or self.errors[index].section != name:
+                    if index in referenced or not 0 <= index < len(self.errors) or self.errors[index].section != name:
                         raise ValueError("Invalid section error reference")
-            if self.status == "partial" and not useful:
-                raise ValueError("Partial reports require a useful surviving section")
+                    referenced.add(index)
+            if any(error.section is not None and index not in referenced for index, error in enumerate(self.errors)):
+                raise ValueError("Section errors must be referenced by their section")
         return self
 
 

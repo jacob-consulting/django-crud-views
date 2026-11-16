@@ -81,15 +81,14 @@ def _exit_code(report):
     return 0
 
 
-def _error(exc, section=None):
+def _error(exc, section=None, *, code="collection_failed"):
+    validation = exc.errors(include_input=False, include_context=False) if isinstance(exc, ValidationError) else []
     return ReportError(
-        code="output_validation_failed" if isinstance(exc, (ValidationError, KeyError)) else "collection_failed",
+        code=code,
         section=section,
-        message="; ".join(error["msg"] for error in exc.errors(include_input=False))
-        if isinstance(exc, ValidationError)
-        else str(exc),
+        message="; ".join(error["msg"] for error in validation) if validation else str(exc),
         exception_class=type(exc).__name__,
-        location=list(exc.errors(include_input=False)[0]["loc"]) if isinstance(exc, ValidationError) else [],
+        location=list(validation[0]["loc"]) if validation else [],
     )
 
 
@@ -115,18 +114,31 @@ def _inspect(viewset, selection, actor):
                 continue
             try:
                 raw = getattr(manage, method)(viewset, actor)
+            except Exception as exc:
+                sections[name] = {"status": "error", "data": None, "errors": [len(errors)]}
+                errors.append(_error(exc, name))
+                continue
+            try:
                 data = adapt_section(name, raw, kind=identity["kind"], selected_view=selection.view)
                 sections[name] = {"status": "ok", "data": data, "errors": []}
             except Exception as exc:
                 sections[name] = {"status": "error", "data": None, "errors": [len(errors)]}
-                errors.append(_error(exc, name))
-    useful = any(section["status"] == "ok" for section in sections.values())
-    return InspectionResult(
-        status="complete" if not errors else "partial" if useful else "failed",
-        selection=selection,
-        data=InspectionData(identity=identity, **sections) if useful else None,
-        errors=errors,
-    )
+                errors.append(_error(exc, name, code="output_validation_failed"))
+    try:
+        # A valid identity is useful even when all applicable collectors failed.
+        return InspectionResult(
+            status="partial" if errors else "complete",
+            selection=selection,
+            data=InspectionData(identity=identity, **sections),
+            errors=errors,
+        )
+    except Exception as exc:
+        return InspectionResult(
+            status="failed",
+            selection=selection,
+            data=None,
+            errors=[_error(exc, code="output_validation_failed")],
+        )
 
 
 class Command(BaseCommand):
@@ -195,9 +207,17 @@ class Command(BaseCommand):
                             if user is not None and actor is None
                             else _inspect(selected, selection, actor)
                         )
-            report = Report.validate_python(report)
         except Exception as exc:
             report = result_type(status="failed", selection=selection, data=None, errors=[_error(exc)])
+        try:
+            report = Report.validate_python(report)
+        except Exception as exc:
+            report = result_type(
+                status="failed",
+                selection=selection,
+                data=None,
+                errors=[_error(exc, code="output_validation_failed")],
+            )
         self.stdout.write(_format_json(report) if as_json else _format_text(report), style_func=lambda value: value)
         code = _exit_code(report)
         if code:

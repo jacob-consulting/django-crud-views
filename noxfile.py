@@ -61,6 +61,50 @@ def tests(session, django):
 # installed in the same resolver transaction as the project and its extras, so nothing can upgrade them.
 CRISPY_FLOOR = {"django-crispy-forms": "2.0", "crispy-bootstrap5": "2023.10"}
 
+# Real command/model, builder preservation, documentation and bilingual delivery tests.
+MANAGE_REPORT_TESTS = [
+    "tests/test1/test_manage_report.py",
+    "tests/test1/test_manage_command.py",
+    "tests/test1/test_manage_export.py",
+    "tests/test1/test_manage_preservation.py",
+    "tests/test1/test_manage_command_docs.py",
+    "tests/test1/test_manage_command_locales.py",
+]
+
+_MANAGE_FLOOR_VERSIONS = """
+import importlib.metadata as metadata
+import platform
+import pydantic
+
+found = {name: metadata.version(name) for name in ("django", "pydantic", "typing-extensions")}
+print(f"manage_report_floor: python {platform.python_version()}; " + "; ".join(f"{n} {v}" for n, v in found.items()))
+assert found["pydantic"] == pydantic.__version__ == "2.2.1", found
+assert found["django"].startswith("5.2."), found
+"""
+
+
+@nox.session(python="3.12", venv_backend="uv", default=False)
+def manage_report_floor(session):
+    """Prove report behavior at Pydantic 2.2.1; independently check the exported corpus afterwards."""
+    import os
+
+    directory = os.environ.get("CV_MANAGE_SCHEMA_EXPORT_DIR")
+    if not directory:
+        session.error("Create a fresh directory and set CV_MANAGE_SCHEMA_EXPORT_DIR before running this session")
+    session.install("django~=5.2.0", ".[polymorphic,workflow,ordered,test]", "pydantic==2.2.1")
+    import_env = {"PYTHONPATH": "", "CV_ACCESS_RECORD_REQUESTS": "0"}
+    session.run("python", "-c", _MANAGE_FLOOR_VERSIONS + _INSTALLED_PROJECT_ORIGIN, env=import_env)
+    session.run(
+        "pytest",
+        *MANAGE_REPORT_TESTS,
+        "-n",
+        "4",
+        "-q",
+        *session.posargs,
+        env={**import_env, "CV_MANAGE_SCHEMA_EXPORT_DIR": directory},
+    )
+
+
 # The form-button leaf feature suite (Phase 06): crispy adapters and goldens, the normalizer, host icons, the filter
 # helper, owner/config resolution, system checks, workflow forms, CRUD pages, modals and cancel origins.
 # Phase 06.6 adds page ownership, theme defaults/groups, request/migration contracts, alerts and the full key table.

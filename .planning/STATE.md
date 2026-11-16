@@ -1,20 +1,21 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.37"
-current_phase_name: "cv_access Pydantic JSON contract validation and schema (#375)"
-current_plan: 4
-status: verifying
-stopped_at: Completed 06.37-04-PLAN.md
-last_updated: "2026-11-16T20:20:26.765Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.37 complete, ready to plan Phase 7
+last_updated: "2026-11-16T21:02:12.915Z"
 last_activity: 2026-11-16
-last_activity_desc: Phase 06.37 execution started
-state_head: 7f8fbb10678ee74db821da3608bdd3cef57238bf
+last_activity_desc: Phase 06.37 complete, transitioned to Phase 7
+state_head: 45fb5f2e9ab0a85ee8451e151d4ccbf4771e371b
 progress:
   total_phases: 44
   completed_phases: 42
   total_plans: 244
   completed_plans: 244
+  percent: 95
 milestone_name: milestone
 ---
 
@@ -31,11 +32,11 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 
 ## Current Position
 
-Phase: 06.37 (cv_access Pydantic JSON contract validation and schema (#375)) — EXECUTING
-Current Plan: 4
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
 Total Plans in Phase: 4
-Status: Phase complete — ready for verification
-Last activity: 2026-11-16 — Completed 06.37-02-PLAN.md (real-trace contract corpus, manage-page parity, Pydantic 2.2.1 floor: 487 passed)
+Status: Ready to plan
+Last activity: 2026-11-16 — Phase 06.37 complete, transitioned to Phase 7
 
 Next: $gsd-discuss-phase 06.37 — then plan the #375 contract work before Phase 7.
 
@@ -1249,7 +1250,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 231
+- Total plans completed: 235
 
 - Total plans completed: 186
 - Average duration: -
@@ -1298,6 +1299,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.34 | 12 | - | - |
 | 06.35 | 7 | - | - |
 | 06.36 | 8 | - | - |
+| 06.37 | 4 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1882,5 +1884,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-16T20:20:20.536Z
-Stopped at: Completed 06.37-04-PLAN.md
+Stopped at: Phase 06.37 complete, ready to plan Phase 7
 Resume file: None

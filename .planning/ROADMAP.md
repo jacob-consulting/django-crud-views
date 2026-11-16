@@ -63,7 +63,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.34: Access trace: cv_access command and manage page form (#370) (INSERTED)** - approved D-01–D-23 design; real authorization trace, shell command and opt-in manage form. (completed 2026-11-15)
 - [x] **Phase 06.35: Resource manage pages with cv_access parity (#372) (INSERTED)** - approved D-01–D-07 handover; shared ManageView, Resource permission badges, and UI/CLI trace parity. (completed 2026-11-15)
 - [x] **Phase 06.36: ViewSet configuration CLI and versioned JSON contract (#371) (INSERTED)** - approved diagnostic command, catalogue and validated text/JSON output. (completed 2026-11-16)
-- [ ] **Phase 06.37: cv_access Pydantic JSON contract validation and schema (#375) (INSERTED)** - validate the existing version-1 trace with Pydantic output models and add `cv_access --schema`.
+- [x] **Phase 06.37: cv_access Pydantic JSON contract validation and schema (#375) (INSERTED)** - validate the existing version-1 trace with Pydantic output models and add `cv_access --schema`. (completed 2026-11-16)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2082,7 +2082,7 @@ both text and JSON, and reports a validation failure as one stderr diagnostic wi
 Valid output bytes, colors, outcomes, exit codes and the public `AccessTrace`/`AccessStep.to_dict()` API stay unchanged.
 **Requirements**: None (scope pinned by issue #375 and CONTEXT D-01–D-14)
 **Depends on:** Phase 06.36
-**Plans:** 4/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 **Wave 1**

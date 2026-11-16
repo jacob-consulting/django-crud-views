@@ -341,3 +341,151 @@ def test_custom_requirements_and_requirement_errors_remain_data(catalogue):
     assert rows["list"]["requirement"] == {"kind": "custom", "value": "project rule", "ancestor_applies": False}
     assert rows["detail"]["requirement_metadata_error"]
     assert rows["detail"]["permission"] is None
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("actor_kind", ["none", "username", "pk", "collision", "inactive"])
+def test_actor_selection_is_explicit_and_username_first(catalogue, monkeypatch, django_user_model, actor_kind):
+    from crud_views.management.commands import cv_manage_view
+
+    vs = ViewSet(model=Publisher, name="actor_selection", context_buttons=[])
+    actor = django_user_model.objects.create_user(username="selected actor", is_active=actor_kind != "inactive")
+    selector = str(actor.pk) if actor_kind in {"pk", "collision"} else actor.username
+    if actor_kind == "collision":
+        actor = django_user_model.objects.create_user(username=selector)
+    if actor_kind == "none":
+        monkeypatch.setattr(cv_manage_view, "resolve_trace_user", lambda *a: pytest.fail("Implicit actor lookup"))
+        monkeypatch.setattr(ManageView, "get_manage_actor_row", lambda *a: pytest.fail("Implicit actor evaluation"))
+    code, output = invoke(vs.name, "--as-json", *([] if actor_kind == "none" else ["--user", selector]))
+    report = json.loads(output)
+    assert code == 0 and report["status"] == "complete", report["errors"]
+    selected = report["data"]["permissions"]["data"]["actor"]
+    if actor_kind == "none":
+        assert selected == {"state": "not_selected", "row": None}
+    else:
+        assert selected["state"] == "selected"
+        assert selected["row"]["id"] == actor.pk and selected["row"]["label"] == actor.username
+        assert all(not cell["model"] for cell in selected["row"]["cells"])
+
+
+@pytest.mark.django_db
+def test_unknown_actor_fails_before_collectors(catalogue, monkeypatch):
+    vs = ViewSet(model=Publisher, name="unknown_actor")
+    for method in ("get_manage_facts", "get_manage_permissions", "get_manage_checks"):
+        monkeypatch.setattr(ManageView, method, lambda *a: pytest.fail("Invalid actor collected diagnostics"))
+    code, output = invoke(vs.name, "--user", "missing actor", "--as-json")
+    report = json.loads(output)
+    assert code == 2 and report["status"] == "failed" and report["data"] is None
+    assert [error["code"] for error in report["errors"]] == ["unknown_user"]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("shown", [False, True])
+def test_holder_visibility_overflow_and_effective_actor(catalogue, monkeypatch, django_user_model, shown):
+    from django.contrib.auth.models import Group, Permission
+
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "manage_show_users", shown)
+    vs = ViewSet(model=Publisher, name="holder_visibility", context_buttons=[])
+    permission = Permission.objects.get(content_type__app_label="app", codename="view_publisher")
+    group = Group.objects.create(name="direct group")
+    group.permissions.add(permission)
+    actor = django_user_model.objects.create_user(username="explicit group actor")
+    actor.groups.add(group)
+    holders = []
+    for index in range(23):
+        holder = django_user_model.objects.create_user(username=f"private holder {index:02}")
+        holder.user_permissions.add(permission)
+        holders.append(holder)
+    root = django_user_model.objects.create_user(username="private root", is_superuser=True)
+    django_user_model.objects.create_user(username="inactive root", is_superuser=True, is_active=False)
+    code, output = invoke(vs.name, "--user", actor.username, "--as-json")
+    report = json.loads(output)
+    assert code == 0, report["errors"]
+    data = report["data"]["permissions"]["data"]
+    assert data["actor"]["row"]["label"] == actor.username
+    assert next(c for c in data["actor"]["row"]["cells"] if c["key"] == "view")["model"] is True
+    assert data["groups"][0]["id"] == group.pk and data["groups"][0]["member_count"] == 1
+    assert data["holder_visibility"] == ("shown" if shown else "hidden")
+    assert data["superusers"] == {"count": 1, "names": [root.username] if shown else None, "meaning": "global_grants"}
+    if shown:
+        assert [r["id"] for r in data["users"]] == [holder.pk for holder in holders]
+        assert actor.pk not in [r["id"] for r in data["users"]]
+    else:
+        assert data["users"] is None
+        assert all(holder.username not in output for holder in holders) and root.username not in output
+    text_code, text = invoke(vs.name, "--user", actor.username)
+    assert text_code == code and actor.username in text
+    assert (holders[-1].username in text) is shown
+    assert (root.username in text) is shown
+
+
+@pytest.mark.django_db
+def test_shown_empty_holders_are_arrays(catalogue, monkeypatch):
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "manage_show_users", True)
+    vs = ViewSet(model=Publisher, name="empty_holders", context_buttons=[])
+    code, output = invoke(vs.name, "--as-json")
+    assert code == 0
+    data = json.loads(output)["data"]["permissions"]["data"]
+    assert data["users"] == data["groups"] == data["superusers"]["names"] == []
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("mode", ["no", "yes", "debug_only"])
+@pytest.mark.parametrize("debug", [False, True])
+@pytest.mark.parametrize("actor_kind", ["none", "denied", "inactive"])
+def test_manage_mode_does_not_authorize_command(
+    catalogue, monkeypatch, settings, django_user_model, mode, debug, actor_kind
+):
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", mode)
+    settings.DEBUG = debug
+    vs = ViewSet(model=Publisher, name="mode_independent", context_buttons=[])
+    actor = django_user_model.objects.create_user(username="nondeveloper", is_active=actor_kind != "inactive")
+    assert not actor.groups.exists()
+    for method in ("_cv_manage_allowed", "has_permission", "dispatch"):
+        monkeypatch.setattr(ManageView, method, lambda *a: pytest.fail("Command must not evaluate page admission"))
+    code, output = invoke(vs.name, "--as-json", *([] if actor_kind == "none" else ["--user", actor.username]))
+    assert code == 0 and json.loads(output)["status"] == "complete"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("identity", ["uuid", "bad_id", "bad_label"])
+def test_holder_identity_uuid_projection_and_strict_rejection(catalogue, monkeypatch, identity):
+    from uuid import UUID
+
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "manage_show_users", True)
+    vs = ViewSet(model=Publisher, name="holder_identity", context_buttons=[])
+    original = ManageView.get_manage_permissions
+    pk = UUID("6ca87b8f-d1a7-42bf-81d0-041de47911fa")
+
+    class Unformattable:
+        def __str__(self):
+            pytest.fail("Malformed identity must not be formatted")
+
+    def permissions(self, viewset, user):
+        raw = original(self, viewset, user)
+        raw["users"] = [
+            {
+                "id": Unformattable() if identity == "bad_id" else pk,
+                "label": Unformattable() if identity == "bad_label" else "UUID holder",
+                "member_count": None,
+                "cells": [],
+            }
+        ]
+        return raw
+
+    monkeypatch.setattr(ManageView, "get_manage_permissions", permissions)
+    code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    if identity == "uuid":
+        assert code == 0 and report["data"]["permissions"]["data"]["users"][0]["id"] == str(pk)
+    else:
+        assert code == 2 and report["data"]["permissions"]["status"] == "error"
+        assert report["errors"][0]["code"] == "output_validation_failed"

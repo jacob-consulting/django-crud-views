@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bulk delete · design preview</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#243047;background:#f4f6f9;font-size:15px;line-height:1.5;--border:#dce2e9;--blue:#1764c0;--red:#b42332}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button,a,input,select{outline-offset:4px}button{cursor:pointer;border:1px solid #bdc8d5;border-radius:6px;background:white;color:#243047;padding:8px 13px;font-weight:550}button:hover:not(:disabled){background:#edf2f7}button:disabled{cursor:not-allowed;opacity:.5}.primary{background:var(--blue);border-color:var(--blue);color:white}.primary:hover:not(:disabled){background:#11549f}.danger{background:var(--red);border-color:var(--red);color:white}.danger:hover:not(:disabled){background:#8e1724}.link{border:0;padding:0;background:transparent;color:var(--blue);text-decoration:underline;text-underline-offset:3px}.quiet{color:#627086}.small{font-size:13px}.pill{display:inline-block;font-size:12px;padding:2px 8px;background:#edf1f6;border-radius:20px;color:#53627a}.draft{background:#eaf5f1;color:#296449}.published{background:#f0edfc;color:#6a4a9a}
+.preview{background:#15253b;color:#e3ebf6;padding:18px max(24px,calc((100vw - 1120px)/2));}.preview h1{font-size:18px;letter-spacing:.02em;margin:0 0 4px}.preview p{margin:0;color:#b9c9dd;font-size:13px}.controls{display:flex;flex-wrap:wrap;align-items:end;gap:16px;margin-top:16px}.controls label{font-size:12px;color:#cfdae9;display:flex;flex-direction:column;gap:5px}.controls select,.controls input[type=number]{border:1px solid #6c7b90;border-radius:5px;background:#24364f;color:white;padding:6px 9px;min-height:35px}.controls .check{flex-direction:row;align-items:center;align-self:center;font-size:13px;padding-top:16px}.controls input[type=number]{width:130px}.controls .reset{align-self:end;background:transparent;color:white;border-color:#6c7b90;padding:6px 12px}
+main{max-width:1120px;margin:30px auto 70px;padding:0 24px}.crumb{font-size:13px;color:#6a7788;margin:0 0 12px}.heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:16px}h2{margin:0;font-size:28px;font-weight:650;letter-spacing:-.025em}h3{font-size:17px;margin:0 0 8px}p{margin:0 0 12px}.panel{background:white;border:1px solid var(--border);border-radius:9px;overflow:hidden;box-shadow:0 2px 3px #19345404}.filter{display:flex;gap:12px;align-items:end;padding:20px;border-bottom:1px solid var(--border);flex-wrap:wrap}.filter label{font-size:13px;display:flex;flex-direction:column;gap:6px}.filter input,.filter select{border:1px solid #bdc8d5;border-radius:5px;padding:8px 10px;background:white;color:#243047}.filter input{width:250px}.filter .end{margin-left:auto;align-self:center}.toolbar{display:flex;gap:16px;align-items:center;padding:15px 20px;background:#fbfcfe;border-bottom:1px solid var(--border);flex-wrap:wrap}.toolbar .count{font-weight:650}.toolbar .push{margin-left:auto}.toolbar select{padding:8px 30px 8px 10px;border:1px solid #bdc8d5;border-radius:5px;background:white}.selection{background:#eff5ff;color:#224e87;padding:12px 20px;border-bottom:1px solid #d7e6fa;display:flex;gap:10px 18px;flex-wrap:wrap;align-items:center}.selection .small{flex-basis:100%;margin:0}.notice{padding:15px 18px;border:1px solid #ecd6a1;border-radius:7px;background:#fff9e9;color:#795715;margin:18px 0}.notice.error{border-color:#efc9ce;background:#fff3f4;color:#8e2633}.notice.success{border-color:#c5e2d2;background:#edf8f1;color:#225e3e}.notice p:last-child{margin:0}.table-scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;text-align:left}th{font-size:12px;color:#64738a;background:#fcfdff;text-transform:uppercase;letter-spacing:.04em;font-weight:600}td,th{padding:13px 20px;border-bottom:1px solid #e7ebf0}td{font-size:14px}td:first-child,th:first-child{width:45px;padding-right:0}input[type=checkbox]{accent-color:var(--blue);width:17px;height:17px;cursor:pointer;vertical-align:middle}.name{font-weight:600}.sub{display:block;font-size:12px;color:#738096;margin-top:3px}tr.chosen{background:#f5f9ff}.row-action{color:#65758d;font-size:13px}.pagination{padding:15px 20px;display:flex;align-items:center;gap:10px}.pagination span:first-child{margin-right:auto}.pagination button{padding:5px 11px}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:20px;gap:16px}.record-card{border:1px solid var(--border);border-radius:7px;padding:16px;position:relative;min-height:155px}.record-card.chosen{border-color:#81abe0;background:#f5f9ff}.record-card .top{display:flex;gap:12px;align-items:start}.record-card h3{font-size:15px;margin:0}.record-card .meta{margin:20px 0 0 29px;font-size:13px;color:#627086}.card-select{padding:12px 20px;border-bottom:1px solid var(--border);font-size:13px}.note{margin:18px 0;color:#728096;font-size:13px}.confirm{padding:24px}.summary{display:flex;gap:36px;padding:18px 0 24px;margin-bottom:8px;border-bottom:1px solid var(--border)}.summary strong{font-size:28px;display:block;line-height:1.2}.summary span{font-size:13px;color:#68778b}.targets{max-height:270px;overflow:auto;border:1px solid var(--border);border-radius:6px;margin:16px 0 20px}.targets td{padding:10px 15px}.targets td:first-child{width:auto}.confirm-actions{display:flex;align-items:center;gap:12px;margin-top:20px}.confirm-check{display:flex;gap:10px;align-items:start;margin-top:22px}.empty{padding:45px 20px;text-align:center}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}[hidden]{display:none!important}
+@media(max-width:720px){.preview{padding:18px}.controls{gap:12px}.controls .check{padding-top:0}main{padding:0 14px;margin-top:22px}.heading{align-items:start}h2{font-size:24px}.filter{padding:16px}.filter input{width:100%}.filter label:first-child{flex:1;min-width:150px}.filter .end{margin-left:0}.toolbar{padding:14px;gap:12px}.toolbar .push{margin-left:0}.toolbar .count{flex-basis:100%}.selection{padding:12px 14px}td,th{padding:12px}.cards{grid-template-columns:1fr;padding:14px}.summary{gap:24px}.confirm{padding:18px}.row-action{display:none}.pagination{padding:14px;flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<aside class="preview" aria-label="Prototype controls">
+  <h1>Bulk delete · interactive design preview</h1>
+  <p>Fictional data. Try selecting records, applying a filter, and reviewing a deletion. All changes stay in this browser tab.</p>
+  <div class="controls">
+    <label>Layout<select id="layout"><option value="table">Table list</option><option value="cards">Card list</option></select></label>
+    <label>Scenario<select id="scenario"><option value="eligible">All records eligible</option><option value="protected">One protected record</option><option value="permission">One record without permission</option><option value="changed">Record changes after review</option></select></label>
+    <label class="check"><input id="enabled" type="checkbox" checked>Bulk delete enabled</label>
+    <label class="check"><input id="allow-all" type="checkbox" checked>Select all enabled</label>
+    <label>Maximum items<input id="maximum" type="number" min="1" value="100" placeholder="None (no limit)"></label>
+    <button class="reset" id="reset">Reset demo</button>
+  </div>
+  <p style="margin-top:12px">Preview values, not settled defaults. Empty maximum means no limit. “Select all enabled” is independent.</p>
+</aside>
+<main id="app"></main>
+<script>
+(() => {
+  const names = ['Ada Mercer','Ben Okafor','Clara Rossi','Daniel Park','Elena Novak','Felix Martin','Grace Chen','Hugo Silva','Iris Laurent','Jonas Berg','Kira Patel','Leo Fischer','Maya Wilson','Noah Reed','Olivia Santos','Pavel Ivanov','Quinn Taylor','Rosa Costa','Samir Khan','Tessa Brown','Uma Shah','Victor Lee','Willa Evans','Yusuf Ali'];
+  const original = names.map((name,i) => ({id:i+1,name,status:i%3===0?'Published':'Draft',books:i%3===0?2:0}));
+  let records=original.map(x=>({...x})), selected=new Set(), frozen=[], page=1, query='', status='', screen='list', result='', finalError='';
+  const size=6, app=document.getElementById('app'), el=id=>document.getElementById(id);
+  const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const enabled=()=>el('enabled').checked, maximum=()=>el('maximum').value===''?Infinity:Math.max(1,Number(el('maximum').value));
+  const filtered=()=>records.filter(r=>(!status||r.status===status)&&r.name.toLowerCase().includes(query.toLowerCase()));
+  const current=()=>filtered().slice((page-1)*size,page*size);
+  const recordLabel=r=>`${escape(r.name)}<span class="sub">Author #${String(r.id).padStart(3,'0')}</span>`;
+  const check=r=>`<input type="checkbox" data-record="${r.id}" aria-label="Select ${escape(r.name)}" ${selected.has(r.id)?'checked':''}>`;
+  const protectedRecord=()=>frozen.some(r=>r.id===4)&&el('scenario').value==='protected';
+  const permissionDenied=()=>frozen.some(r=>r.id===4)&&el('scenario').value==='permission';
+  function render(){screen==='list'?renderList():renderConfirm();}
+  function renderList(){
+    const matches=filtered(), pages=Math.max(1,Math.ceil(matches.length/size));page=Math.min(page,pages);
+    const rows=current(), active=enabled(), all=matches.length>0&&matches.every(r=>selected.has(r.id)), allPage=rows.length>0&&rows.every(r=>selected.has(r.id));
+    const over=selected.size>maximum(), filteredLabel=query||status?'Select all filtered':'Select all';
+    app.innerHTML=`<p class="crumb">Library / Authors</p><div class="heading"><div><h2>Authors</h2><p class="quiet" style="margin:5px 0 0">Manage the authors in your library.</p></div><span class="pill">${records.length} records</span></div>
+      ${result?`<div class="notice success" role="status">${escape(result)}</div>`:''}
+      <section class="panel" aria-label="Authors">
+        <form id="filters" class="filter"><label>Search authors<input id="query" value="${escape(query)}" placeholder="Search by name"></label><label>Status<select id="status"><option value="">All statuses</option><option ${status==='Draft'?'selected':''}>Draft</option><option ${status==='Published'?'selected':''}>Published</option></select></label><button type="submit">Apply filter</button>${query||status?'<button type="button" id="clear-filter" class="link">Reset</button>':''}<span class="quiet small end">${matches.length} matching records</span></form>
+        ${active?`<div class="toolbar"><span class="count" role="status" aria-live="polite">${selected.size} selected</span><label class="sr-only" for="action">Bulk action</label><select id="action"><option value="">Choose bulk action…</option><option value="delete">Delete selected</option></select><button id="review" class="primary" disabled>Continue</button>${selected.size?'<button id="clear" class="link push">Clear selection</button>':''}</div>
+        <div class="selection">${all?`All ${matches.length} matching records are selected.`:allPage?`All ${rows.length} records on this page are selected.`:'Select records individually or use the page checkbox.'}${el('allow-all').checked&&!all&&matches.length?`<button id="select-all" class="link" ${matches.length>maximum()?'disabled':''}>${filteredLabel} (${matches.length})</button>`:''}${el('allow-all').checked&&matches.length>maximum()?`<p class="small">${matches.length} records match, exceeding the ${maximum()}-record limit. Narrow the filters or select up to ${maximum()} records manually.</p>`:''}</div>
+        ${over?`<div class="notice error" style="margin:16px" role="alert">You selected ${selected.size} records. The maximum is ${maximum()}. Reduce the selection to continue.</div>`:''}`:''}
+        ${!matches.length?'<div class="empty">No authors match these filters.</div>':el('layout').value==='table'?`
+        <div class="table-scroll"><table><thead><tr>${active?`<th><input id="select-page" type="checkbox" aria-label="Select all records on this page" ${allPage?'checked':''}></th>`:''}<th>Author</th><th>Status</th><th>Books</th><th class="row-action">Row actions</th></tr></thead><tbody>${rows.map(r=>`<tr class="${selected.has(r.id)?'chosen':''}">${active?`<td>${check(r)}</td>`:''}<td class="name">${recordLabel(r)}</td><td><span class="pill ${r.status.toLowerCase()}">${r.status}</span></td><td>${r.books}</td><td class="row-action">View · Edit</td></tr>`).join('')}</tbody></table></div>`:`
+        ${active?`<div class="card-select"><label><input id="select-page" type="checkbox" ${allPage?'checked':''}> Select this page</label></div>`:''}<div class="cards">${rows.map(r=>`<article class="record-card ${selected.has(r.id)?'chosen':''}"><div class="top">${active?check(r):''}<div><h3>${escape(r.name)}</h3><span class="sub">Author #${String(r.id).padStart(3,'0')}</span></div></div><div class="meta"><span class="pill ${r.status.toLowerCase()}">${r.status}</span> · ${r.books} books<p style="margin:12px 0 0">View · Edit</p></div></article>`).join('')}</div>`}
+        <div class="pagination"><span class="small quiet">${matches.length?`${(page-1)*size+1}–${Math.min(page*size,matches.length)} of ${matches.length}`:'0 records'}</span><button id="prev" ${page===1?'disabled':''}>Previous</button><span class="small">Page ${page} of ${pages}</span><button id="next" ${page===pages?'disabled':''}>Next</button></div>
+      </section><p class="note">Approved flow: manual selection persists across pages; applying filters clears it. Deletion opens a dedicated confirmation page. This is a throwaway design preview, not product code.</p>`;
+    el('filters').onsubmit=e=>{e.preventDefault();query=el('query').value.trim();status=el('status').value;page=1;selected.clear();result='';render();};
+    if(el('clear-filter'))el('clear-filter').onclick=()=>{query='';status='';page=1;selected.clear();render();};
+    el('prev').onclick=()=>{page--;render();};el('next').onclick=()=>{page++;render();};
+    if(!active)return;
+    app.querySelectorAll('[data-record]').forEach(cb=>cb.onchange=()=>{const id=Number(cb.dataset.record);cb.checked?selected.add(id):selected.delete(id);render();});
+    if(el('select-page')){el('select-page').indeterminate=!allPage&&rows.some(r=>selected.has(r.id));el('select-page').onchange=e=>{rows.forEach(r=>e.target.checked?selected.add(r.id):selected.delete(r.id));render();};}
+    if(el('select-all'))el('select-all').onclick=()=>{selected=new Set(matches.map(r=>r.id));render();};
+    if(el('clear'))el('clear').onclick=()=>{selected.clear();render();};
+    el('action').onchange=()=>{el('review').disabled=el('action').value!=='delete'||!selected.size||over;};
+    el('review').onclick=()=>{frozen=records.filter(r=>selected.has(r.id)).map(r=>({...r}));screen='confirm';finalError='';render();window.scrollTo(0,0);};
+  }
+  function renderConfirm(){
+    const blocked=protectedRecord()||permissionDenied()||Boolean(finalError), related=frozen.reduce((sum,r)=>sum+r.books,0);
+    app.innerHTML=`<p class="crumb">Library / Authors / Bulk delete</p><div class="heading"><div><h2>${blocked?'Deletion blocked':'Review deletion'}</h2><p class="quiet" style="margin:6px 0 0">${blocked?'Nothing has been deleted.':'Review the selection and its related records before confirming.'}</p></div><span class="pill">Step 2 of 2</span></div>
+      <section class="panel"><div class="confirm">
+      ${blocked?`<div class="notice error" role="alert"><h3>Cannot delete this selection</h3><p>${finalError?escape(finalError):protectedRecord()?'Daniel Park cannot be deleted because published books are protected.':'You no longer have permission to delete one of the selected records.'}</p><p>The entire operation is blocked. Return to the list to review your selection.</p></div>`:'<div class="notice"><strong>This action cannot be undone.</strong> Related records listed below will also be deleted.</div>'}
+      <div class="summary"><div><strong>${frozen.length}</strong><span>selected authors</span></div><div><strong>${related}</strong><span>related books${blocked?' in the preview':''}</span></div></div>
+      <h3>Selected authors</h3><p class="quiet small">This selection is fixed. Newly matching authors will not be added when you confirm.</p>
+      <div class="targets"><table><thead><tr><th>Author</th><th>Related records</th></tr></thead><tbody>${frozen.map(r=>`<tr><td class="name">${recordLabel(r)}</td><td>${r.books} books${protectedRecord()&&r.id===4?' <span class="pill" style="color:#9a2534;background:#ffe3e6">Protected</span>':''}</td></tr>`).join('')}</tbody></table></div>
+      ${related?`<details><summary>Related records to review (${related} books)</summary><p class="quiet small" style="margin-top:10px">Illustrative cascade preview. A real implementation must respect related-record visibility and existing deletion-preview rules.</p>${frozen.filter(r=>r.books).map(r=>`<p class="small">${escape(r.name)}: <strong>Collected essays</strong>, <strong>Short stories</strong></p>`).join('')}</details>`:''}
+      ${blocked?'':`<label class="confirm-check"><input id="confirm-check" type="checkbox"><span>I confirm deletion of these ${frozen.length} authors and their ${related} related books.</span></label><p class="quiet small" style="margin:12px 0">Permissions and deletion checks will run again before any records are deleted.</p>`}
+      <div class="confirm-actions"><button id="back">${blocked?'Back to selection':'Cancel'}</button>${blocked?'':`<button id="delete" class="danger" disabled>Delete ${frozen.length} authors</button>`}</div></div></section>`;
+    el('back').onclick=()=>{screen='list';render();window.scrollTo(0,0);};
+    if(!blocked){el('confirm-check').onchange=e=>{el('delete').disabled=!e.target.checked;};el('delete').onclick=()=>{
+      if(el('scenario').value==='changed'){finalError='A selected author became protected after this review was prepared. No records were deleted. Review the selection again.';render();return;}
+      const ids=new Set(frozen.map(r=>r.id));records=records.filter(r=>!ids.has(r.id));result=`Demo only: ${frozen.length} authors and ${related} related books deleted. No real data was changed.`;selected.clear();screen='list';render();window.scrollTo(0,0);
+    };}
+  }
+  ['layout','scenario','enabled','allow-all','maximum'].forEach(id=>el(id).addEventListener('change',()=>{if(id==='enabled')selected.clear();if(id!=='scenario'||screen==='list')screen='list';finalError='';render();}));
+  el('reset').onclick=()=>{records=original.map(x=>({...x}));selected.clear();page=1;query='';status='';screen='list';result='';finalError='';render();};
+  render();
+})();
+</script>
+</body>
+</html>

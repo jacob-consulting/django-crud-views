@@ -148,3 +148,50 @@ def test_catalogue_isolation_restores_same_worker(monkeypatch, raise_error):
     assert dict(_REGISTRY) == original and vocabulary == check._VOCAB_CACHE
     assert root == settings.ROOT_URLCONF and get_resolver().url_patterns == patterns
     assert "temporary_catalogue_module" not in sys.modules
+
+
+@pytest.mark.django_db
+def test_core_inspection_uses_configured_builders_without_actor(catalogue, monkeypatch):
+    from crud_views.lib.views import ListView
+
+    calls = []
+
+    class ProjectManage(ManageView):
+        def get_manage_facts(self, viewset, user):
+            assert user is None and not hasattr(self, "request")
+            calls.append(viewset.name)
+            return super().get_manage_facts(viewset, user)
+
+        def get_manage_actor_row(self, viewset, user):
+            pytest.fail("No actor was selected")
+
+    vs = ViewSet(model=Publisher, name="core_inspect", context_buttons=[])
+    type("InspectList", (ListView,), {"__module__": __name__, "cv_viewset": vs})
+    # Use the actual registered class selector, without dispatching or registering a second view.
+    monkeypatch.setitem(vs._views, "manage", ProjectManage)
+    code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    assert report["kind"] == "inspection", "A selected ViewSet must produce an inspection"
+    assert report["status"] == "complete", report["errors"]
+    assert code in (0, 1) and calls == [vs.name]
+    data = report["data"]
+    assert data["identity"]["name"] == vs.name
+    for key in ("facts", "presentation", "views", "routes", "hierarchy", "ancestor_policy", "permissions", "checks"):
+        assert data[key]["status"] == "ok", key
+        assert data[key]["data"]["scope"] == "viewset"
+    assert data["guardian"] == {"status": "not_applicable", "data": None, "errors": []}
+    assert data["permissions"]["data"]["actor"] == {"state": "not_selected", "row": None}
+    assert data["facts"]["data"]["entries"]
+    assert data["presentation"]["data"]["sections"]
+    assert data["views"]["data"]["entries"]
+
+
+def test_schema_is_complete_and_does_not_discover(catalogue, monkeypatch):
+    from crud_views.management.commands import cv_manage_view
+
+    monkeypatch.setattr(cv_manage_view, "_load_catalogue", lambda: pytest.fail("Schema must not discover"))
+    code, output = invoke("--schema", "--force-color")
+    assert code == 0
+    schema = json.loads(output)
+    assert "\x1b" not in output and "oneOf" in schema
+    assert {"CatalogueResult", "InspectionResult", "PermissionsData", "ValueRecord"} <= schema["$defs"].keys()

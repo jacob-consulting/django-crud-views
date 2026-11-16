@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="1.587" timestamp="2026-11-16T05:51:14.177600+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_manage_command" name="test_schema_is_complete_and_does_not_discover" time="0.007"><failure message="Failed: Schema must not discover">catalogue = (&lt;module 'manage_command_urls'&gt;, &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7ed6b8526cf0&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7ed6b85270b0&gt;
+
+    def test_schema_is_complete_and_does_not_discover(catalogue, monkeypatch):
+        from crud_views.management.commands import cv_manage_view
+    
+        monkeypatch.setattr(cv_manage_view, "_load_catalogue", lambda: pytest.fail("Schema must not discover"))
+&gt;       code, output = invoke("--schema", "--force-color")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_manage_command.py:193: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_manage_command.py:56: in invoke
+    result = call_command("cv_manage_view", *args, stdout=stdout, stderr=stderr, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/management/__init__.py:194: in call_command
+    return command.execute(*args, **defaults)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/django/core/management/base.py:464: in execute
+    output = self.handle(*args, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/management/commands/cv_manage_view.py:98: in handle
+    entries = _load_catalogue()
+              ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+&gt;   monkeypatch.setattr(cv_manage_view, "_load_catalogue", lambda: pytest.fail("Schema must not discover"))
+                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: Schema must not discover
+
+tests/test1/test_manage_command.py:192: Failed</failure></testcase><testcase classname="tests.test1.test_manage_export" name="test_export_context_exists_and_restores_nested_success_and_error" time="0.004"><failure message="AssertionError: Manage builders need an opt-in export context&#10;assert False&#10; +  where False = callable(None)&#10; +    where None = getattr(&lt;crud_views.lib.views.manage.ManageView object at 0x71fce4267b60&gt;, 'manage_export', None)">def test_export_context_exists_and_restores_nested_success_and_error():
+        manage = ManageView()
+&gt;       assert callable(getattr(manage, "manage_export", None)), "Manage builders need an opt-in export context"
+E       AssertionError: Manage builders need an opt-in export context
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(&lt;crud_views.lib.views.manage.ManageView object at 0x71fce4267b60&gt;, 'manage_export', None)
+
+tests/test1/test_manage_export.py:21: AssertionError</failure></testcase><testcase classname="tests.test1.test_manage_command" name="test_core_inspection_uses_configured_builders_without_actor" time="0.344"><failure message="AssertionError: A selected ViewSet must produce an inspection&#10;assert 'catalogue' == 'inspection'&#10;  &#10;  - inspection&#10;  + catalogue">catalogue = (&lt;module 'manage_command_urls'&gt;, &lt;_pytest.monkeypatch.MonkeyPatch object at 0x797f4a3faa80&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x797f4a3f8860&gt;
+
+    @pytest.mark.django_db
+    def test_core_inspection_uses_configured_builders_without_actor(catalogue, monkeypatch):
+        from crud_views.lib.views import ListView
+    
+        calls = []
+    
+        class ProjectManage(ManageView):
+            def get_manage_facts(self, viewset, user):
+                assert user is None and not hasattr(self, "request")
+                calls.append(viewset.name)
+                return super().get_manage_facts(viewset, user)
+    
+            def get_manage_actor_row(self, viewset, user):
+                pytest.fail("No actor was selected")
+    
+        vs = ViewSet(model=Publisher, name="core_inspect", context_buttons=[])
+        type("InspectList", (ListView,), {"__module__": __name__, "cv_viewset": vs})
+        # Use the actual registered class selector, without dispatching or registering a second view.
+        monkeypatch.setitem(vs._views, "manage", ProjectManage)
+        code, output = invoke(vs.name, "--as-json")
+        report = json.loads(output)
+&gt;       assert report["kind"] == "inspection", "A selected ViewSet must produce an inspection"
+E       AssertionError: A selected ViewSet must produce an inspection
+E       assert 'catalogue' == 'inspection'
+E         
+E         - inspection
+E         + catalogue
+
+tests/test1/test_manage_command.py:174: AssertionError</failure></testcase></testsuite></testsuites>

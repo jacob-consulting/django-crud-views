@@ -2045,9 +2045,9 @@ Plans:
 4. Complete, partial and failed version-1 results validate against explicit Pydantic models and their generated schema. Unsupported, null, undeclared and unavailable values remain distinct; section failures preserve good data and produce the defined 0/1/2 exit behavior.
 5. Text/JSON semantic parity, force-color-safe JSON/schema, English/German output, valid subclass overrides, page contracts and normal query costs have regression coverage. Documentation and translations cover the full approved acceptance list; broad pytest runs use multiple workers.
 
-**Plans:** 7/7 plans executed
+**Plans:** 8 plans — 7 executed; 1 gap-closure plan pending
 
-**Acceptance:** Incomplete — final source/installed normal and recorder suites pass; the Pydantic 2.2.1 command corpus is blocked by the pre-existing Resource `__pydantic_fields__` incompatibility. Seven other runtime combinations are unexecuted. Independent review fixes are complete and canonical verification is `gaps_found` (8/9 truths); this phase is not marked complete. Final four full suites each pass 15,665 with one existing skip. See `06.36-VERIFICATION.md`, `06.36-ACCEPTANCE.md` and `06.36-REVIEW-DISPOSITION.md`. Next: `$gsd-plan-phase 06.36 --gaps`.
+**Acceptance:** Incomplete — final source/installed normal and recorder suites pass; the Pydantic 2.2.1 command corpus is blocked by the pre-existing Resource `__pydantic_fields__` incompatibility. Seven other runtime combinations are unexecuted. Independent review fixes are complete and canonical verification is `gaps_found` (8/9 truths); this phase is not marked complete. Final four full suites each pass 15,665 with one existing skip. See `06.36-VERIFICATION.md`, `06.36-ACCEPTANCE.md` and `06.36-REVIEW-DISPOSITION.md`. Gap-closure plan 08 passed independent checking; next: `$gsd-execute-phase 06.36 --gaps-only`.
 
 Plans:
 **Wave 1**
@@ -2068,6 +2068,9 @@ Plans:
 
 **Wave 6** *(blocked on Wave 5 completion)*
 - [x] 06.36-07-PLAN.md — Dependency-floor, installed-distribution and final regression evidence (floor acceptance unresolved)
+
+**Wave 7** *(gap closure after executed plan 07)*
+- [ ] 06.36-08-PLAN.md — Restore Resource initialization at the Pydantic floor and refresh actual command/schema acceptance
 
 ### Phase 7: Theme-surface stability policy
 

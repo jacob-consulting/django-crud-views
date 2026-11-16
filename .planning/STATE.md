@@ -3,19 +3,19 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.36"
 current_phase_name: "ViewSet configuration CLI and versioned JSON contract (#371)"
-current_plan: "07"
-status: gaps_found
-stopped_at: Phase 06.36 verified with gaps; 8/9 truths; Pydantic floor Resource compatibility remains
-last_updated: "2026-11-16T09:25:03Z"
+current_plan: "08"
+status: ready_to_execute
+stopped_at: Phase 06.36 gap-closure plan 08 verified and ready to execute; floor compatibility remains uncorrected
+last_updated: "2026-11-16T09:42:09Z"
 last_activity: 2026-11-16
-last_activity_desc: Phase 06.36 review fixes and refreshed acceptance complete; canonical verification gaps_found; plan floor fix next
+last_activity_desc: Phase 06.36 gap-closure plan 08 passed independent checking; ready to execute
 state_head: 322b5a9f
 progress:
   total_phases: 43
   completed_phases: 41
-  total_plans: 239
+  total_plans: 240
   completed_plans: 239
-  percent: 100
+  percent: 99.6
 milestone_name: milestone
 ---
 
@@ -32,13 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 
 ## Current Position
 
-Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — GAPS FOUND
-Current Plan: 07 (01–07 executed; acceptance incomplete)
-Total Plans in Phase: 7
-Status: Gaps found — 7/7 plans executed; 8/9 truths verified; floor compatibility remains blocked
-Last activity: 2026-11-16 — Three review defects fixed and independently verified; four final full suites each 15,665 passed plus one existing skip; canonical verification gaps_found
+Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — GAP CLOSURE READY
+Current Plan: 08 (01–07 executed; gap-closure plan pending)
+Total Plans in Phase: 8
+Status: Ready to execute — 7/8 plans executed; plan 08 independently checked; canonical verification remains gaps_found
+Last activity: 2026-11-16 — Gap-closure plan 08 created and independently checked with zero findings; 9/9 decisions covered
 
-Next: $gsd-plan-phase 06.36 --gaps — restore Resource initialization at the declared Pydantic floor and rerun actual floor command/schema acceptance
+Next: $gsd-execute-phase 06.36 --gaps-only — run plan 08 to correct Resource floor compatibility, prove actual floor/schema output and refresh affected evidence
+
+### Phase 06.36 gap-closure planning — 2026-11-16
+
+- Added plan 08, three tasks in wave 7 after completed plan 07: bounded Resource field lookup, fresh installed Pydantic 2.2.1 command corpus and independent two-schema checks, then affected regression/install/build/fingerprint evidence.
+- Independent plan checker passed with zero findings; structure/frontmatter and all nine failure-direction checks pass; decision coverage is 9/9. No formal requirement IDs exist; approved source decisions and acceptance groups remain mapped across the complete plan set.
+- Plans 01–07 and the canonical gaps_found verdict remain unchanged. Planning does not close the defect or satisfy execution acceptance. Seven unexecuted runtime combinations remain explicit limitations.
+- STATE.md updated directly to preserve pre-existing dirty state.json, as in prior phase updates. Unrelated configuration and phase files remain untouched.
 
 ### Phase 06.36 verification with gaps — 2026-11-16
 
@@ -1851,6 +1858,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T09:25:03Z
-Stopped at: Phase 06.36 canonical gaps_found; all review fixes verified; floor compatibility gap requires plan
-Resume file: .planning/phases/06.36-viewset-configuration-cli-and-versioned-json-contract-371/06.36-VERIFICATION.md
+Last session: 2026-11-16T09:42:09Z
+Stopped at: Phase 06.36 gap-closure plan 08 checked and ready; no implementation performed
+Resume file: .planning/phases/06.36-viewset-configuration-cli-and-versioned-json-contract-371/06.36-08-PLAN.md

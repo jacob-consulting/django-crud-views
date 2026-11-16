@@ -3,19 +3,19 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.36"
 current_phase_name: "ViewSet configuration CLI and versioned JSON contract (#371)"
-current_plan: "02"
+current_plan: "03"
 status: executing
-stopped_at: Completed 06.36-01-PLAN.md; plan 02 is next
-last_updated: "2026-11-16T05:59:00Z"
+stopped_at: Completed 06.36-02-PLAN.md; plan 03 is next
+last_updated: "2026-11-16T06:13:00Z"
 last_activity: 2026-11-16
-last_activity_desc: Phase 06.36 plan 01 complete; catalogue and typed core inspection verified; 1/7 plans
-state_head: 94eae43f37363de83d2b03f2817d5c81245d287a
+last_activity_desc: Phase 06.36 plan 02 complete; bounded values and scope contracts verified; 2/7 plans
+state_head: a661cc192f82ee6c435a9292a1f45c2176b94b09
 progress:
   total_phases: 43
   completed_phases: 41
   total_plans: 239
-  completed_plans: 233
-  percent: 97
+  completed_plans: 234
+  percent: 98
 milestone_name: milestone
 ---
 
@@ -33,12 +33,20 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 ## Current Position
 
 Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — EXECUTING
-Current Plan: 02 (01 complete)
+Current Plan: 03 (01–02 complete)
 Total Plans in Phase: 7
-Status: In Progress — 1/7 plans complete
-Last activity: 2026-11-16 — Catalogue and typed core inspection complete; 150 focused and 78 preservation tests pass
+Status: In Progress — 2/7 plans complete
+Last activity: 2026-11-16 — Bounded values and selected-view contracts complete; 274 combined tests pass
 
 Next: $gsd-execute-phase 06.36
+
+### Phase 06.36 plan 02 completion — 2026-11-16
+
+- Exact shipped parent/button projections preserve complete raw values and type/path markers without registry/property traversal. Unknown hooks and translation proxy subclasses remain unsupported; built-in invalid-check formatting failures remain explicit checks errors.
+- Stable en/de provenance, None/False/empty declarations, selected-view scope, configured override participation, legacy metadata unavailability and export restoration are covered. Existing task02 production paths already met the contracts, so that task adds regression coverage only.
+- C03:72 passed (1.54s); C04:83 passed (2.12s); combined task/preservation selection:274 passed (5.54s), four workers. Core/Guardian query baselines remain9/21; Ruff/format/whitespace pass. No skipped or unrun plan checks.
+- Approximately12 minutes,2tasks; task commits d445ee80,9d588a66,a661cc19; summary24601984. ROADMAP reports2/7 In Progress,complete=false. Exact projection/lazy/check-boundary documentation is handed to06; Guardian work remains03.
+- STATE.md updated directly to preserve dirty state.json. Unrelated config-default,.gitkeep and06.35review inputs remain untouched; no phase completion or publication.
 
 ### Phase 06.36 plan 01 completion — 2026-11-16
 

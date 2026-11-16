@@ -1,0 +1,2044 @@
+{
+  "$defs": {
+    "ActorSelection": {
+      "properties": {
+        "state": {
+          "enum": [
+            "not_selected",
+            "selected"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "row": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HolderRow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "row"
+      ],
+      "title": "ActorSelection",
+      "type": "object"
+    },
+    "AncestorPair": {
+      "properties": {
+        "nearest": {
+          "title": "Nearest",
+          "type": "string"
+        },
+        "higher": {
+          "title": "Higher",
+          "type": "string"
+        }
+      },
+      "required": [
+        "nearest",
+        "higher"
+      ],
+      "title": "AncestorPair",
+      "type": "object"
+    },
+    "AncestorPolicyData": {
+      "properties": {
+        "scope": {
+          "const": "viewset",
+          "default": "viewset",
+          "title": "Scope",
+          "type": "string"
+        },
+        "as_ancestor": {
+          "$ref": "#/$defs/AsAncestor"
+        },
+        "requests": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AncestorRequests"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "as_ancestor",
+        "requests"
+      ],
+      "title": "AncestorPolicyData",
+      "type": "object"
+    },
+    "AncestorRequests": {
+      "properties": {
+        "cascade": {
+          "$ref": "#/$defs/PolicyValue_bool_"
+        },
+        "read": {
+          "$ref": "#/$defs/PolicyValue_AncestorPair_"
+        },
+        "write": {
+          "$ref": "#/$defs/PolicyValue_AncestorPair_"
+        },
+        "actions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/AncestorPair"
+          },
+          "title": "Actions",
+          "type": "object"
+        }
+      },
+      "required": [
+        "cascade",
+        "read",
+        "write",
+        "actions"
+      ],
+      "title": "AncestorRequests",
+      "type": "object"
+    },
+    "AsAncestor": {
+      "properties": {
+        "provider": {
+          "anyOf": [
+            {
+              "enum": [
+                "model",
+                "guardian",
+                "none"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Provider"
+        },
+        "effective_provider": {
+          "enum": [
+            "model",
+            "guardian",
+            "none"
+          ],
+          "title": "Effective Provider",
+          "type": "string"
+        },
+        "accept_global_perms": {
+          "title": "Accept Global Perms",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "provider",
+        "effective_provider",
+        "accept_global_perms"
+      ],
+      "title": "AsAncestor",
+      "type": "object"
+    },
+    "CatalogueData": {
+      "properties": {
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/CatalogueEntry"
+          },
+          "title": "Entries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "entries"
+      ],
+      "title": "CatalogueData",
+      "type": "object"
+    },
+    "CatalogueEntry": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "model",
+            "guardian",
+            "resource"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "backing_class": {
+          "title": "Backing Class",
+          "type": "string"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Parent"
+        },
+        "views": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Views",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "kind",
+        "backing_class",
+        "parent",
+        "views"
+      ],
+      "title": "CatalogueEntry",
+      "type": "object"
+    },
+    "CatalogueResult": {
+      "properties": {
+        "version": {
+          "const": 1,
+          "default": 1,
+          "title": "Version",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "catalogue",
+          "default": "catalogue",
+          "title": "Kind",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "selection": {
+          "$ref": "#/$defs/Selection"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CatalogueData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "items": {
+            "$ref": "#/$defs/ReportError"
+          },
+          "title": "Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "selection",
+        "data"
+      ],
+      "title": "CatalogueResult",
+      "type": "object"
+    },
+    "CheckMessage": {
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Id"
+        },
+        "severity": {
+          "title": "Severity",
+          "type": "string"
+        },
+        "level": {
+          "title": "Level",
+          "type": "integer"
+        },
+        "severity_code": {
+          "enum": [
+            "debug",
+            "info",
+            "warning",
+            "error",
+            "critical",
+            "unknown"
+          ],
+          "title": "Severity Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "hint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Hint"
+        }
+      },
+      "required": [
+        "id",
+        "severity",
+        "level",
+        "severity_code",
+        "message",
+        "hint"
+      ],
+      "title": "CheckMessage",
+      "type": "object"
+    },
+    "ChecksData": {
+      "properties": {
+        "scope": {
+          "const": "viewset",
+          "default": "viewset",
+          "title": "Scope",
+          "type": "string"
+        },
+        "count": {
+          "title": "Count",
+          "type": "integer"
+        },
+        "messages": {
+          "items": {
+            "$ref": "#/$defs/CheckMessage"
+          },
+          "title": "Messages",
+          "type": "array"
+        }
+      },
+      "required": [
+        "count",
+        "messages"
+      ],
+      "title": "ChecksData",
+      "type": "object"
+    },
+    "ConfigEntry": {
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/ValueRecord"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceRecord"
+        },
+        "is_default": {
+          "title": "Is Default",
+          "type": "boolean"
+        },
+        "unknown": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unknown"
+        },
+        "declared_value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ValueRecord"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "icon": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Icon"
+        },
+        "type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Type"
+        },
+        "is_button": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Is Button"
+        },
+        "empty_buttons": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Empty Buttons"
+        },
+        "points_to": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Points To"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        }
+      },
+      "required": [
+        "key",
+        "value",
+        "source",
+        "is_default"
+      ],
+      "title": "ConfigEntry",
+      "type": "object"
+    },
+    "ConfigGroup": {
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/ConfigEntry"
+          },
+          "title": "Entries",
+          "type": "array"
+        },
+        "default_count": {
+          "title": "Default Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "entries",
+        "default_count"
+      ],
+      "title": "ConfigGroup",
+      "type": "object"
+    },
+    "FactsData": {
+      "properties": {
+        "scope": {
+          "const": "viewset",
+          "default": "viewset",
+          "title": "Scope",
+          "type": "string"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/ConfigEntry"
+          },
+          "title": "Entries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "entries"
+      ],
+      "title": "FactsData",
+      "type": "object"
+    },
+    "GuardianData": {
+      "properties": {
+        "scope": {
+          "const": "viewset",
+          "default": "viewset",
+          "title": "Scope",
+          "type": "string"
+        },
+        "get_objects_for_user": {
+          "$ref": "#/$defs/GuardianHelper"
+        }
+      },
+      "required": [
+        "get_objects_for_user"
+      ],
+      "title": "GuardianData",
+      "type": "object"
+    },
+    "GuardianHelper": {
+      "properties": {
+        "policy": {
+          "title": "Policy",
+          "type": "string"
+        },
+        "accept_global_perms": {
+          "title": "Accept Global Perms",
+          "type": "boolean"
+        },
+        "use_groups": {
+          "title": "Use Groups",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "policy",
+        "accept_global_perms",
+        "use_groups"
+      ],
+      "title": "GuardianHelper",
+      "type": "object"
+    },
+    "HierarchyData": {
+      "properties": {
+        "scope": {
+          "const": "viewset",
+          "default": "viewset",
+          "title": "Scope",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "$ref": "#/$defs/HierarchyItem"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "children": {
+          "items": {
+            "$ref": "#/$defs/HierarchyItem"
+          },
+          "title": "Children",
+          "type": "array"
+        },
+        "route_error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Route Error"
+        }
+      },
+      "required": [
+        "parents",
+        "children",
+        "route_error"
+      ],
+      "title": "HierarchyData",
+      "type": "object"
+    },
+    "HierarchyItem": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "resource": {
+          "title": "Resource",
+          "type": "boolean"
+        },
+        "route_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Route Name"
+        },
+        "route": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Route"
+        },
+        "route_error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Route Error"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Url"
+        }
+      },
+      "required": [
+        "name",
+        "model",
+        "resource",
+        "route_name",
+        "route",
+        "route_error",
+        "url"
+      ],
+      "title": "HierarchyItem",
+      "type": "object"
+    },
+    "HolderRow": {
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Id"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "member_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Member Count"
+        },
+        "cells": {
+          "items": {
+            "$ref": "#/$defs/PermissionCell"
+          },
+          "title": "Cells",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "member_count",
+        "cells"
+      ],
+      "title": "HolderRow",
+      "type": "object"
+    },
+    "Identity": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "model",
+            "guardian",
+            "resource"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "backing_class": {
+          "title": "Backing Class",
+          "type": "string"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Parent"
+        }
+      },
+      "required": [
+        "name",
+        "kind",
+        "backing_class",
+        "parent"
+      ],
+      "title": "Identity",
+      "type": "object"
+    },
+    "InspectionData": {
+      "properties": {
+        "identity": {
+          "$ref": "#/$defs/Identity"
+        },
+        "facts": {
+          "$ref": "#/$defs/Section_FactsData_"
+        },
+        "presentation": {
+          "$ref": "#/$defs/Section_PresentationData_"
+        },
+        "views": {
+          "$ref": "#/$defs/Section_ViewsData_"
+        },
+        "routes": {
+          "$ref": "#/$defs/Section_RoutesData_"
+        },
+        "hierarchy": {
+          "$ref": "#/$defs/Section_HierarchyData_"
+        },
+        "ancestor_policy": {
+          "$ref": "#/$defs/Section_AncestorPolicyData_"
+        },
+        "permissions": {
+          "$ref": "#/$defs/Section_PermissionsData_"
+        },
+        "checks": {
+          "$ref": "#/$defs/Section_ChecksData_"
+        },
+        "guardian": {
+          "$ref": "#/$defs/Section_GuardianData_"
+        }
+      },
+      "required": [
+        "identity",
+        "facts",
+        "presentation",
+        "views",
+        "routes",
+        "hierarchy",
+        "ancestor_policy",
+        "permissions",
+        "checks",
+        "guardian"
+      ],
+      "title": "InspectionData",
+      "type": "object"
+    },
+    "InspectionResult": {
+      "properties": {
+        "version": {
+          "const": 1,
+          "default": 1,
+          "title": "Version",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "inspection",
+          "default": "inspection",
+          "title": "Kind",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "selection": {
+          "$ref": "#/$defs/Selection"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InspectionData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "items": {
+            "$ref": "#/$defs/ReportError"
+          },
+          "title": "Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "selection",
+        "data"
+      ],
+      "title": "InspectionResult",
+      "type": "object"
+    },
+    "JsonValue": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "type": "array"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "Normalization": {
+      "properties": {
+        "path": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "title": "Path",
+          "type": "array"
+        },
+        "python_type": {
+          "title": "Python Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "python_type"
+      ],
+      "title": "Normalization",
+      "type": "object"
+    },
+    "ParentRequirement": {
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "permission": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Permission"
+        }
+      },
+      "required": [
+        "key",
+        "permission"
+      ],
+      "title": "ParentRequirement",
+      "type": "object"
+    },
+    "PermissionCell": {
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "boolean"
+        },
+        "object_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Object Count"
+        }
+      },
+      "required": [
+        "key",
+        "model",
+        "object_count"
+      ],
+      "title": "PermissionCell",
+      "type": "object"
+    },
+    "PermissionColumn": {
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "permission": {
+          "title": "Permission",
+          "type": "string"
+        },
+        "codename": {
+          "title": "Codename",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "permission",
+        "codename"
+      ],
+      "title": "PermissionColumn",
+      "type": "object"
+    },
+    "PermissionsData": {
+      "properties": {
+        "scope": {
+          "const": "viewset",
+          "default": "viewset",
+          "title": "Scope",
+          "type": "string"
+        },
+        "columns": {
+          "items": {
+            "$ref": "#/$defs/PermissionColumn"
+          },
+          "title": "Columns",
+          "type": "array"
+        },
+        "grant_kind": {
+          "enum": [
+            "model",
+            "resource"
+          ],
+          "title": "Grant Kind",
+          "type": "string"
+        },
+        "actor": {
+          "$ref": "#/$defs/ActorSelection"
+        },
+        "groups": {
+          "items": {
+            "$ref": "#/$defs/HolderRow"
+          },
+          "title": "Groups",
+          "type": "array"
+        },
+        "holder_visibility": {
+          "enum": [
+            "hidden",
+            "shown"
+          ],
+          "title": "Holder Visibility",
+          "type": "string"
+        },
+        "users": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/HolderRow"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Users"
+        },
+        "superusers": {
+          "$ref": "#/$defs/Superusers"
+        }
+      },
+      "required": [
+        "columns",
+        "grant_kind",
+        "actor",
+        "groups",
+        "holder_visibility",
+        "users",
+        "superusers"
+      ],
+      "title": "PermissionsData",
+      "type": "object"
+    },
+    "PolicyValue_AncestorPair_": {
+      "properties": {
+        "declared": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AncestorPair"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "effective": {
+          "$ref": "#/$defs/AncestorPair"
+        }
+      },
+      "required": [
+        "declared",
+        "effective"
+      ],
+      "title": "PolicyValue[AncestorPair]",
+      "type": "object"
+    },
+    "PolicyValue_bool_": {
+      "properties": {
+        "declared": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Declared"
+        },
+        "effective": {
+          "title": "Effective",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "declared",
+        "effective"
+      ],
+      "title": "PolicyValue[bool]",
+      "type": "object"
+    },
+    "PresentationData": {
+      "properties": {
+        "scope": {
+          "const": "viewset",
+          "default": "viewset",
+          "title": "Scope",
+          "type": "string"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/ConfigGroup"
+          },
+          "title": "Sections",
+          "type": "array"
+        },
+        "default_count": {
+          "title": "Default Count",
+          "type": "integer"
+        },
+        "set_count": {
+          "title": "Set Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sections",
+        "default_count",
+        "set_count"
+      ],
+      "title": "PresentationData",
+      "type": "object"
+    },
+    "ReportError": {
+      "properties": {
+        "code": {
+          "enum": [
+            "invalid_arguments",
+            "unknown_viewset",
+            "unknown_view",
+            "unknown_user",
+            "collection_failed",
+            "output_validation_failed"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "section": {
+          "anyOf": [
+            {
+              "enum": [
+                "facts",
+                "presentation",
+                "views",
+                "routes",
+                "hierarchy",
+                "ancestor_policy",
+                "permissions",
+                "checks",
+                "guardian"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Section"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "exception_class": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exception Class"
+        },
+        "location": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "title": "Location",
+          "type": "array"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "ReportError",
+      "type": "object"
+    },
+    "Requirement": {
+      "properties": {
+        "kind": {
+          "enum": [
+            "permission",
+            "group",
+            "none",
+            "custom"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "ancestor_applies": {
+          "title": "Ancestor Applies",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "value",
+        "ancestor_applies"
+      ],
+      "title": "Requirement",
+      "type": "object"
+    },
+    "RouteRow": {
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "route": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Route"
+        },
+        "route_error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Route Error"
+        }
+      },
+      "required": [
+        "key",
+        "name",
+        "route",
+        "route_error"
+      ],
+      "title": "RouteRow",
+      "type": "object"
+    },
+    "RoutesData": {
+      "properties": {
+        "scope": {
+          "default": "viewset",
+          "enum": [
+            "viewset",
+            "selected_view"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "selected_view": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Selected View"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/RouteRow"
+          },
+          "title": "Entries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "entries"
+      ],
+      "title": "RoutesData",
+      "type": "object"
+    },
+    "Section_AncestorPolicyData_": {
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "error",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AncestorPolicyData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "data"
+      ],
+      "title": "Section[AncestorPolicyData]",
+      "type": "object"
+    },
+    "Section_ChecksData_": {
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "error",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ChecksData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "data"
+      ],
+      "title": "Section[ChecksData]",
+      "type": "object"
+    },
+    "Section_FactsData_": {
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "error",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FactsData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "data"
+      ],
+      "title": "Section[FactsData]",
+      "type": "object"
+    },
+    "Section_GuardianData_": {
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "error",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GuardianData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "data"
+      ],
+      "title": "Section[GuardianData]",
+      "type": "object"
+    },
+    "Section_HierarchyData_": {
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "error",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HierarchyData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "data"
+      ],
+      "title": "Section[HierarchyData]",
+      "type": "object"
+    },
+    "Section_PermissionsData_": {
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "error",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PermissionsData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "data"
+      ],
+      "title": "Section[PermissionsData]",
+      "type": "object"
+    },
+    "Section_PresentationData_": {
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "error",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PresentationData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "data"
+      ],
+      "title": "Section[PresentationData]",
+      "type": "object"
+    },
+    "Section_RoutesData_": {
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "error",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoutesData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "data"
+      ],
+      "title": "Section[RoutesData]",
+      "type": "object"
+    },
+    "Section_ViewsData_": {
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "error",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ViewsData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "data"
+      ],
+      "title": "Section[ViewsData]",
+      "type": "object"
+    },
+    "Selection": {
+      "properties": {
+        "viewset": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Viewset"
+        },
+        "view": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "View"
+        },
+        "user": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "User"
+        }
+      },
+      "title": "Selection",
+      "type": "object"
+    },
+    "SourceRecord": {
+      "properties": {
+        "code": {
+          "enum": [
+            "default",
+            "set",
+            "inherited",
+            "viewset",
+            "global_setting",
+            "model_meta",
+            "resource_meta",
+            "fixed",
+            "not_declared",
+            "effective"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Setting"
+        },
+        "declaring_class": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declaring Class"
+        }
+      },
+      "required": [
+        "code"
+      ],
+      "title": "SourceRecord",
+      "type": "object"
+    },
+    "Superusers": {
+      "properties": {
+        "count": {
+          "title": "Count",
+          "type": "integer"
+        },
+        "names": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Names"
+        },
+        "meaning": {
+          "enum": [
+            "global_grants",
+            "global_grants_not_strict_object_helper"
+          ],
+          "title": "Meaning",
+          "type": "string"
+        }
+      },
+      "required": [
+        "count",
+        "names",
+        "meaning"
+      ],
+      "title": "Superusers",
+      "type": "object"
+    },
+    "ValueRecord": {
+      "properties": {
+        "kind": {
+          "enum": [
+            "native",
+            "class_path",
+            "unsupported",
+            "not_declared"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/JsonValue",
+          "default": null
+        },
+        "python_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Python Type"
+        },
+        "normalizations": {
+          "items": {
+            "$ref": "#/$defs/Normalization"
+          },
+          "title": "Normalizations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "ValueRecord",
+      "type": "object"
+    },
+    "ViewPolicy": {
+      "properties": {
+        "applicable": {
+          "title": "Applicable",
+          "type": "boolean"
+        },
+        "accept_global_perms": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Accept Global Perms"
+        },
+        "effective_policy": {
+          "enum": [
+            "strict",
+            "global_fallback",
+            "not_applicable"
+          ],
+          "title": "Effective Policy",
+          "type": "string"
+        },
+        "tooltip": {
+          "title": "Tooltip",
+          "type": "string"
+        }
+      },
+      "required": [
+        "applicable",
+        "accept_global_perms",
+        "effective_policy",
+        "tooltip"
+      ],
+      "title": "ViewPolicy",
+      "type": "object"
+    },
+    "ViewRow": {
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "route_name": {
+          "title": "Route Name",
+          "type": "string"
+        },
+        "route": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Route"
+        },
+        "route_error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Route Error"
+        },
+        "class_path": {
+          "title": "Class Path",
+          "type": "string"
+        },
+        "requirement": {
+          "$ref": "#/$defs/Requirement"
+        },
+        "permission": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Permission"
+        },
+        "parent_requirement": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ParentRequirement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requirement_metadata_error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Requirement Metadata Error"
+        },
+        "guardian_policy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ViewPolicy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parent_only_requirement": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Only Requirement"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/ConfigGroup"
+          },
+          "title": "Sections",
+          "type": "array"
+        }
+      },
+      "required": [
+        "key",
+        "route_name",
+        "route",
+        "route_error",
+        "class_path",
+        "requirement",
+        "permission",
+        "parent_requirement",
+        "requirement_metadata_error",
+        "guardian_policy",
+        "sections"
+      ],
+      "title": "ViewRow",
+      "type": "object"
+    },
+    "ViewsData": {
+      "properties": {
+        "scope": {
+          "default": "viewset",
+          "enum": [
+            "viewset",
+            "selected_view"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "selected_view": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Selected View"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/ViewRow"
+          },
+          "title": "Entries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "entries"
+      ],
+      "title": "ViewsData",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "catalogue": "#/$defs/CatalogueResult",
+      "inspection": "#/$defs/InspectionResult"
+    },
+    "propertyName": "kind"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/CatalogueResult"
+    },
+    {
+      "$ref": "#/$defs/InspectionResult"
+    }
+  ]
+}

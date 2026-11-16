@@ -108,12 +108,24 @@ def test_schema_conformance_exports_actual_command_corpus(catalogue, monkeypatch
         ("schema_resource", ViewSet, ManageItem),
     ):
         vs = factory(model=model, name=name, context_buttons=[])
-        type("SchemaList", (ListView,), {"__module__": __name__, "cv_viewset": vs})
+        type(
+            "SchemaList",
+            (ListView,),
+            {"__module__": __name__, "cv_viewset": vs, "__annotations__": {"cv_annotation_only": str}},
+        )
     actor = django_user_model.objects.create_user(username="schema actor")
     monkeypatch.setattr(crud_views_settings, "manage_show_users", False)
     emit("schema", "--schema")
     emit("catalogue", "--list", "--as-json")
     inspection = emit("inspection", "schema_core", "--as-json")
+    values = [
+        row["value"]
+        for view in inspection["data"]["views"]["data"]["entries"]
+        for group in view["sections"]
+        for row in group["entries"]
+    ]
+    values.extend(row["value"] for row in inspection["data"]["facts"]["data"]["entries"])
+    assert {value["kind"] for value in values} == {"native", "class_path", "unsupported", "not_declared"}
     emit("inspection-guardian", "schema_guardian", "--as-json")
     emit("inspection-resource", "schema_resource", "--as-json")
     emit("inspection-selected", "schema_core", "list", "--user", actor.username, "--as-json")

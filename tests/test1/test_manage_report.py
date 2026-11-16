@@ -178,3 +178,24 @@ def test_envelope_status_and_surviving_data_must_agree(status, data, errors):
 
     with pytest.raises(ValidationError):
         CatalogueResult(status=status, selection={}, data=data, errors=errors)
+
+
+@pytest.mark.parametrize(
+    "kind,value", [("class_path", None), ("class_path", 5), ("unsupported", "invented"), ("not_declared", False)]
+)
+def test_value_coherence_is_a_model_invariant(kind, value):
+    """Cross-field validators are deliberately separate from schema type/enum checks."""
+    from crud_views.lib.manage_report import ValueRecord
+
+    with pytest.raises(ValidationError):
+        ValueRecord(kind=kind, value=value)
+
+
+@pytest.mark.parametrize(
+    "state,row", [("selected", None), ("not_selected", {"id": 1, "label": "x", "member_count": None, "cells": []})]
+)
+def test_actor_coherence_is_a_model_invariant(state, row):
+    from crud_views.lib.manage_report import ActorSelection
+
+    with pytest.raises(ValidationError):
+        ActorSelection(state=state, row=row)

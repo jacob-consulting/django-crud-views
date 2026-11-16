@@ -5,7 +5,9 @@ import os
 import subprocess
 import sys
 from contextlib import contextmanager
+from copy import deepcopy
 from io import StringIO
+from pathlib import Path
 from types import ModuleType
 
 import pytest
@@ -75,6 +77,105 @@ def invoke(*args, **kwargs):
         code = 0
     assert stderr.getvalue() == ""
     return code, stdout.getvalue()
+
+
+@pytest.mark.django_db
+def test_schema_conformance_exports_actual_command_corpus(catalogue, monkeypatch, django_user_model, tmp_path):
+    """One xdist case owns all fixed names; callers supply a fresh export directory."""
+    from pydantic import ValidationError
+
+    from crud_views.lib.manage_report import Report
+    from crud_views.lib.settings import crud_views_settings
+    from crud_views.lib.views import ListView
+
+    directory = Path(os.environ.get("CV_MANAGE_SCHEMA_EXPORT_DIR", tmp_path))
+    assert directory.is_dir(), "Create a fresh CV_MANAGE_SCHEMA_EXPORT_DIR before running pytest"
+    assert not list(directory.iterdir()), "Schema corpus directory must be fresh, including on reruns"
+    documents = {}
+
+    def emit(name, *args, code=0):
+        actual_code, stdout = invoke(*args, "--force-color")
+        assert actual_code == code, stdout
+        assert "\x1b" not in stdout
+        documents[name] = json.loads(stdout)
+        if name != "schema":
+            Report.validate_python(documents[name])
+        return documents[name]
+
+    for name, factory, model in (
+        ("schema_core", ViewSet, Publisher),
+        ("schema_guardian", GuardianViewSet, Publisher),
+        ("schema_resource", ViewSet, ManageItem),
+    ):
+        vs = factory(model=model, name=name, context_buttons=[])
+        type("SchemaList", (ListView,), {"__module__": __name__, "cv_viewset": vs})
+    actor = django_user_model.objects.create_user(username="schema actor")
+    monkeypatch.setattr(crud_views_settings, "manage_show_users", False)
+    emit("schema", "--schema")
+    emit("catalogue", "--list", "--as-json")
+    inspection = emit("inspection", "schema_core", "--as-json")
+    emit("inspection-guardian", "schema_guardian", "--as-json")
+    emit("inspection-resource", "schema_resource", "--as-json")
+    emit("inspection-selected", "schema_core", "list", "--user", actor.username, "--as-json")
+    monkeypatch.setattr(crud_views_settings, "manage_show_users", True)
+    emit("inspection-shown", "schema_core", "--as-json")
+    with monkeypatch.context() as patch:
+
+        def broken(*args):
+            raise RuntimeError("schema fixture collection failed")
+
+        patch.setattr(ManageView, "get_manage_facts", broken)
+        emit("partial", "schema_core", "--as-json", code=2)
+    emit("failed", "missing_schema_viewset", "--as-json", code=2)
+    emit("failed-catalogue", "--list", "--user", actor.username, "--as-json", code=2)
+
+    # Independent one-field mutations, never represented as actual command output.
+    for name, field_path, value in (
+        ("invalid", ("version",), 2),
+        ("invalid-type", ("data", "facts", "data", "entries", 0, "is_default"), "false"),
+        ("invalid-enum", ("status",), "future"),
+        ("invalid-kind", ("kind",), "future"),
+        ("invalid-section", ("data", "facts", "status"), "future"),
+        ("invalid-source", ("data", "facts", "data", "entries", 0, "source", "code"), "future"),
+        ("invalid-value", ("data", "facts", "data", "entries", 0, "value", "kind"), "future"),
+        ("invalid-visibility", ("data", "permissions", "data", "holder_visibility"), "future"),
+        ("invalid-actor", ("data", "permissions", "data", "actor", "state"), "future"),
+        ("invalid-policy", ("data", "ancestor_policy", "data", "as_ancestor", "effective_provider"), "future"),
+        ("invalid-count", ("data", "checks", "data", "count"), "0"),
+        ("invalid-identity", ("data", "identity", "kind"), "future"),
+    ):
+        mutated = deepcopy(inspection)
+        node = mutated
+        for key in field_path[:-1]:
+            node = node[key]
+        node[field_path[-1]] = value
+        documents[name] = mutated
+    missing = deepcopy(inspection)
+    del missing["data"]["identity"]["name"]
+    documents["invalid-required"] = missing
+    wrong_union = deepcopy(inspection)
+    wrong_union["data"] = deepcopy(documents["catalogue"]["data"])
+    documents["invalid-union"] = wrong_union
+    bad_error = deepcopy(documents["failed"])
+    bad_error["errors"][0]["code"] = "future"
+    documents["invalid-error"] = bad_error
+    additive = deepcopy(inspection)
+    for node in (additive, additive["data"], additive["data"]["facts"]["data"]["entries"][0]):
+        node["future_additive_field"] = {"ignored": True}
+    documents["inspection-additive"] = additive
+    for name, document in documents.items():
+        if name.startswith("invalid"):
+            with pytest.raises(ValidationError):
+                Report.validate_python(document)
+        elif name != "schema":
+            Report.validate_python(document)
+        temporary = directory / f"{name}.json.tmp"
+        temporary.write_text(json.dumps(document, ensure_ascii=True, allow_nan=False, indent=2) + "\n")
+        temporary.replace(directory / f"{name}.json")
+
+    root = Path(__file__).resolve().parents[2]
+    assert (root / "tests/check_manage_schema.py").is_file(), "Independent schema checker must be shipped"
+    assert (root / "docs/reference/cv_manage_view.schema.json").is_file(), "Full generated schema must be published"
 
 
 def test_catalogue_command_is_discoverable():

@@ -18,6 +18,7 @@ EXPECTED_TESTS = {
     "tests/test1/test_manage_preservation.py",
     "tests/test1/test_manage_command_docs.py",
     "tests/test1/test_manage_command_locales.py",
+    "tests/test1/test_access_trace_contract.py",
 }
 
 

@@ -51,7 +51,7 @@ def _format_json(report):
     return json.dumps(report.model_dump(mode="json"), ensure_ascii=True, allow_nan=False, indent=2)
 
 
-def _format_text(report):
+def _format_text(report, style):
     # An explicit field tree retains every validated fact, including empty/default values.
     lines = []
 
@@ -65,7 +65,57 @@ def _format_text(report):
         else:
             lines.append(f"{_text(prefix)}: {_text(value)}")
 
-    render(report.model_dump(mode="json"))
+    def heading(label):
+        lines.append(style.MIGRATE_HEADING(_text(label)))
+
+    data = report.model_dump(mode="json")
+    heading(_("ViewSet configuration"))
+    for key in ("version", "kind", "status", "selection"):
+        render(data[key], key)
+    if report.data is None:
+        render(None, "data")
+    elif report.kind == "catalogue":
+        heading(_("Catalogue"))
+        render(data["data"], "data")
+    else:
+        heading(_("Identity"))
+        render(data["data"]["identity"], "data.identity")
+        for key, label in (
+            ("facts", _("Facts")),
+            ("presentation", _("Presentation")),
+            ("views", _("Views")),
+            ("routes", _("Routes")),
+            ("hierarchy", _("Hierarchy")),
+            ("ancestor_policy", _("Ancestor policy")),
+            ("permissions", _("Permissions")),
+            ("checks", _("System checks")),
+            ("guardian", _("Guardian")),
+        ):
+            if key in {"views", "routes"} and report.selection.view is not None:
+                heading(_("%(section)s (selected view: %(view)s)") % {"section": label, "view": report.selection.view})
+            else:
+                heading(_("%(section)s (ViewSet-wide)") % {"section": label})
+            if key == "permissions" and report.data.permissions.data is not None:
+                permissions = report.data.permissions.data
+                lines.append(_text(_("Holder rows show direct grants; the selected actor row shows effective grants.")))
+                lines.append(
+                    _text(
+                        _("Resource grants are global; there are no per-item grants.")
+                        if permissions.grant_kind == "resource"
+                        else _(
+                            "Model grants are global; Guardian object counts are reported separately where applicable."
+                        )
+                    )
+                )
+                if permissions.holder_visibility == "hidden":
+                    lines.append(_text(_("User-holder details and superuser names are hidden; counts remain visible.")))
+                if permissions.superusers.meaning == "global_grants_not_strict_object_helper":
+                    lines.append(
+                        _text(_("Active superuser totals describe global grants, not the strict object helper."))
+                    )
+            render(data["data"][key], f"data.{key}")
+    heading(_("Errors"))
+    render(data["errors"], "errors")
     return "\n".join(lines)
 
 
@@ -184,16 +234,24 @@ class Command(BaseCommand):
             else:
                 entries = _load_catalogue()
                 if list_viewsets:
-                    report = CatalogueResult(
-                        status="complete",
-                        selection=selection,
-                        data=CatalogueData(
-                            entries=[
-                                CatalogueEntry(**_identity(entry), views=list(entry.get_all_views()))
-                                for entry in entries
-                            ]
-                        ),
-                    )
+                    try:
+                        report = CatalogueResult(
+                            status="complete",
+                            selection=selection,
+                            data=CatalogueData(
+                                entries=[
+                                    CatalogueEntry(**_identity(entry), views=list(entry.get_all_views()))
+                                    for entry in entries
+                                ]
+                            ),
+                        )
+                    except Exception as exc:
+                        report = CatalogueResult(
+                            status="failed",
+                            selection=selection,
+                            data=None,
+                            errors=[_error(exc, code="output_validation_failed")],
+                        )
                 else:
                     selected = next((entry for entry in entries if entry.name == viewset), None)
                     if selected is None:
@@ -218,7 +276,9 @@ class Command(BaseCommand):
                 data=None,
                 errors=[_error(exc, code="output_validation_failed")],
             )
-        self.stdout.write(_format_json(report) if as_json else _format_text(report), style_func=lambda value: value)
+        self.stdout.write(
+            _format_json(report) if as_json else _format_text(report, self.style), style_func=lambda value: value
+        )
         code = _exit_code(report)
         if code:
             raise SystemExit(code)

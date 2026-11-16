@@ -826,8 +826,8 @@ def test_assembly_failure_is_minimal_and_preserves_selection(catalogue, monkeypa
 
 @pytest.mark.parametrize("kind", ["invalid_identity", "assembly_exception"])
 def test_catalogue_assembly_failures_are_validation_errors(catalogue, monkeypatch, kind):
-    from crud_views.management.commands import cv_manage_view
     from crud_views.lib.manage_report import Report
+    from crud_views.management.commands import cv_manage_view
 
     ViewSet(model=Publisher, name="invalid_catalogue")
     if kind == "invalid_identity":

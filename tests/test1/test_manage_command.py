@@ -824,6 +824,26 @@ def test_assembly_failure_is_minimal_and_preserves_selection(catalogue, monkeypa
     assert len(result["errors"]) == 1 and result["errors"][0]["code"] == "output_validation_failed"
 
 
+@pytest.mark.parametrize("kind", ["invalid_identity", "assembly_exception"])
+def test_catalogue_assembly_failures_are_validation_errors(catalogue, monkeypatch, kind):
+    from crud_views.management.commands import cv_manage_view
+    from crud_views.lib.manage_report import Report
+
+    ViewSet(model=Publisher, name="invalid_catalogue")
+    if kind == "invalid_identity":
+        monkeypatch.setattr(cv_manage_view, "_identity", lambda entry: {"name": 12})
+    else:
+
+        def fail(**kwargs):
+            raise RuntimeError("catalogue assembly failed")
+
+        monkeypatch.setattr(cv_manage_view, "CatalogueData", fail)
+    code, output = invoke("--list", "--as-json")
+    report = Report.validate_json(output)
+    assert code == 2 and report.status == "failed" and report.data is None
+    assert len(report.errors) == 1 and report.errors[0].code == "output_validation_failed"
+
+
 @pytest.mark.django_db
 def test_unrelated_failing_global_check_cannot_preempt_report(catalogue):
     from django.core.checks import Error, register
@@ -1092,6 +1112,16 @@ def test_rich_text_retains_every_validated_fact_and_page_values(
     assert [row["is_default"] for row in page_facts] == [row["is_default"] for row in exported_facts]
     assert len(page_facts[-1]["value"]) == 201 and long_value not in page_facts[-1]["value"]
     assert exported_facts[-1]["value"]["value"] == raw_value
+    assert data["data"]["routes"]["data"]["entries"] == [
+        row for row in manage.get_manage_routes(vs, actor) if row["key"] == "list"
+    ]
+    assert data["data"]["hierarchy"]["data"] == {"scope": "viewset", **manage.get_manage_hierarchy(vs, actor)}
+    page_permissions = manage.get_manage_permissions(vs, actor)
+    matrix = data["data"]["permissions"]["data"]
+    assert matrix["columns"] == page_permissions["columns"]
+    assert matrix["actor"]["row"] == page_permissions["actor"]
+    assert matrix["groups"] == page_permissions["groups"]
+    assert matrix["superusers"]["count"] == page_permissions["superusers"]["count"]
     # Rendering consumes this validated result alone; no additional queries/collection.
     for name in SECTIONS[:-1]:
         monkeypatch.setattr(ManageView, "get_manage_" + name, lambda *a: pytest.fail("Renderer recollected facts"))

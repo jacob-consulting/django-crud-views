@@ -140,3 +140,41 @@ def test_error_locations_are_only_strict_strings_and_integers(location):
 
     with pytest.raises(ValidationError):
         ReportError(code="output_validation_failed", message="invalid", location=location)
+
+
+@pytest.mark.parametrize("field", ["code", "status", "kind", "version"])
+def test_closed_report_vocabularies_reject_new_variants(field):
+    from crud_views.lib.manage_report import Report
+
+    raw = {
+        "version": 1,
+        "kind": "inspection",
+        "status": "failed",
+        "selection": {},
+        "data": None,
+        "errors": [{"code": "collection_failed", "message": "unavailable"}],
+    }
+    if field == "code":
+        raw["errors"][0]["code"] = "new_error"
+    else:
+        raw[field] = 2 if field == "version" else "new_variant"
+    with pytest.raises(ValidationError):
+        Report.validate_python(raw)
+
+
+@pytest.mark.parametrize(
+    "status,data,errors",
+    [
+        ("complete", None, []),
+        ("complete", {"entries": []}, [{"code": "collection_failed", "message": "error"}]),
+        ("failed", {"entries": []}, [{"code": "collection_failed", "message": "error"}]),
+        ("failed", None, []),
+        ("partial", None, [{"code": "collection_failed", "message": "error"}]),
+        ("partial", {"entries": []}, []),
+    ],
+)
+def test_envelope_status_and_surviving_data_must_agree(status, data, errors):
+    from crud_views.lib.manage_report import CatalogueResult
+
+    with pytest.raises(ValidationError):
+        CatalogueResult(status=status, selection={}, data=data, errors=errors)

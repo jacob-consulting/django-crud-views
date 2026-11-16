@@ -8,6 +8,7 @@ from crud_views.lib.views.manage import ManageView
 from crud_views.lib.viewset import ViewSet
 from tests.test1.app.models import Publisher
 from tests.test1.test_manage_command import catalogue as catalogue
+from tests.test1.test_manage_report import Hostile
 
 
 def make_view(catalogue, **attrs):
@@ -154,3 +155,121 @@ def test_known_wire_fields_are_strict_and_statuses_are_consistent():
         Section[ValueRecord](status="error", data=ValueRecord(kind="native"), errors=[0])
     with pytest.raises(ValidationError):
         ValueRecord(kind="unsupported", value="invented")
+
+
+def export_entries(manage, view):
+    with manage.manage_export():
+        return {entry["key"]: entry for section in manage._manage_view_sections(view) for entry in section["entries"]}
+
+
+@pytest.mark.parametrize(
+    "family",
+    ["ContextButton", "ParentContextButton", "ChildContextButton", "SiblingContextButton", "FilterContextButton"],
+)
+def test_owned_button_projection_preserves_every_raw_field_in_both_locations(catalogue, family):
+    from crud_views.lib.view import buttons
+
+    cls = getattr(buttons, family)
+    extra = (
+        {"child_name": "absent"}
+        if family == "ChildContextButton"
+        else {"sibling_name": "absent"}
+        if family == "SiblingContextButton"
+        else {}
+    )
+    button = cls(
+        key="custom",
+        label_template="label/" + "l" * 300,
+        label_template_code="label" * 80,
+        template="template/" + "t" * 300,
+        template_code="code" * 90,
+        **extra,
+    )
+    vs, view = make_view(catalogue, cv_context_buttons=[button])
+    vs.context_buttons = [button]
+    expected = dict(button.__dict__)
+    manage = ManageView()
+    with manage.manage_export():
+        row = manage.get_manage_presentation(vs, None)["sections"][0]["entries"][0]
+    record = row["_export"]["value"]
+    assert record.kind == "native", "Shipped buttons need bounded owned projections"
+    assert record.value == expected and record.python_type.endswith("." + family)
+    nested = export_entries(manage, view)["context_buttons"]["_export"]["value"]
+    assert nested.value == [expected]
+    assert [(m.path, m.python_type) for m in nested.normalizations] == [([0], record.python_type)]
+    assert record.value["variant"] is None and record.value["label_mode"] is None
+
+
+def test_parent_projection_retains_unresolved_raw_declarations(catalogue, monkeypatch):
+    from crud_views.lib.viewset import ParentViewSet
+
+    vs, _ = make_view(catalogue)
+    parent = ParentViewSet(name="absent")
+    vs.parent = parent
+    monkeypatch.setattr(ParentViewSet, "viewset", property(lambda self: pytest.fail("Projection resolved parent")))
+    with ManageView().manage_export() as manage:
+        rows = {r["key"]: r for r in manage.get_manage_facts(vs, None)}
+    record = rows["parent"]["_export"]["value"]
+    assert record.kind == "native", "Parent declaration must survive missing registry entries"
+    assert record.value == {
+        "name": "absent",
+        "attribute": None,
+        "pk_name": None,
+        "many_to_many_through_attribute": None,
+    }
+    assert record.python_type.endswith(".ParentViewSet")
+
+
+def test_unchecked_other_values_and_descriptors_do_not_run_hooks(catalogue):
+    class Descriptor:
+        def __get__(self, instance, owner):
+            pytest.fail("Descriptor executed")
+
+    class Callable:
+        def __call__(self):
+            pytest.fail("Callable executed")
+
+    vs, view = make_view(
+        catalogue,
+        cv_unchecked=Hostile(),
+        cv_callable=Callable(),
+        cv_descriptor=Descriptor(),
+        cv_check_ignore_attributes=["cv_unchecked", "cv_callable", "cv_descriptor"],
+    )
+    entries = export_entries(ManageView(), view)
+    assert entries["unchecked"]["_export"]["value"].kind == "unsupported"
+    assert "callable" not in entries and "descriptor" not in entries
+
+
+@pytest.mark.django_db
+def test_checked_invalid_value_formatter_failure_is_checks_error(catalogue):
+    import json
+    from tests.test1.test_manage_command import invoke
+
+    calls = []
+
+    class InvalidIcon:
+        def __repr__(self):
+            calls.append("repr")
+            raise RuntimeError("invalid icon diagnostic formatting")
+
+        def __str__(self):
+            calls.append("str")
+            raise RuntimeError("invalid icon diagnostic formatting")
+
+    vs, _ = make_view(catalogue, cv_icon_header=InvalidIcon())
+    code, text = invoke(vs.name, "--as-json")
+    report = json.loads(text)
+    assert code == 2 and calls
+    assert report["data"]["views"]["status"] == "ok"
+    assert report["data"]["checks"]["status"] == "error"
+    assert any(e["section"] == "checks" and e["code"] == "collection_failed" for e in report["errors"])
+    entries = {
+        e["key"]: e
+        for row in report["data"]["views"]["data"]["entries"]
+        if row["key"] == "list"
+        for section in row["sections"]
+        for e in section["entries"]
+    }
+    assert entries["icon_header"]["value"]["kind"] == "unsupported"
+    assert "object at 0x" not in text

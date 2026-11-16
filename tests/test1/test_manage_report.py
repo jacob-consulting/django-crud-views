@@ -129,6 +129,42 @@ def test_known_nested_fields_reject_coercion(model, data):
         model.model_validate(data)
 
 
+METADATA_MUTATIONS = ("value_kind", "source_code", "source_setting", "nested_list", "nested_mapping", "marker_path")
+
+
+def mutate_typed_metadata(metadata, mutation):
+    """Emulate a super-preserving builder changing already constructed records."""
+    from crud_views.lib.manage_report import Normalization
+
+    value, source = metadata["value"], metadata["source"]
+    if mutation == "value_kind":
+        value.kind = "invalid_kind"
+    elif mutation == "source_code":
+        source.code = "invalid_source"
+    elif mutation == "source_setting":
+        source.setting = 12
+    elif mutation == "nested_list":
+        value.value = {"nested": ["safe"]}
+        value.value["nested"].append(object())
+    elif mutation == "nested_mapping":
+        value.value = {"nested": {"safe": True}}
+        value.value["nested"]["invalid"] = object()
+    elif mutation == "marker_path":
+        value.normalizations.append(Normalization(path=[], python_type="builtins.tuple"))
+        value.normalizations[0].path.append(False)
+
+
+@pytest.mark.parametrize("mutation", METADATA_MUTATIONS)
+def test_nested_typed_metadata_is_revalidated(mutation):
+    from crud_views.lib.manage_report import ConfigEntry, ConfigGroup
+
+    entry = ConfigEntry(key="name", value=normalize_value("safe"), source=SourceRecord(code="set"), is_default=False)
+    group = ConfigGroup(key="facts", label="Facts", entries=[entry], default_count=0)
+    mutate_typed_metadata({"value": group.entries[0].value, "source": group.entries[0].source}, mutation)
+    with pytest.raises(ValidationError):
+        ConfigGroup.model_validate(group)
+
+
 def identity_only_report():
     from crud_views.lib.manage_report import InspectionData
 

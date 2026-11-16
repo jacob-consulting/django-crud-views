@@ -18,7 +18,7 @@ SectionKey = Literal[
 
 class WireModel(BaseModel):
     # Consumers tolerate additive fields. Known fields never accept coercion.
-    model_config = ConfigDict(strict=True, allow_inf_nan=False)
+    model_config = ConfigDict(strict=True, allow_inf_nan=False, revalidate_instances="always")
 
 
 class Selection(WireModel):

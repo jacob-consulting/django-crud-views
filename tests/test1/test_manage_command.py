@@ -80,6 +80,34 @@ def invoke(*args, **kwargs):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize(
+    "mutation", ["value_kind", "source_code", "source_setting", "nested_list", "nested_mapping", "marker_path"]
+)
+def test_mutated_typed_metadata_fails_only_its_section(catalogue, monkeypatch, mutation):
+    from crud_views.lib.manage_report import Report
+    from tests.test1.test_manage_report import mutate_typed_metadata
+
+    vs = ViewSet(model=Publisher, name="mutated_metadata", context_buttons=[])
+    original = ManageView.get_manage_facts
+
+    def mutated_facts(self, viewset, user):
+        rows = original(self, viewset, user)
+        mutate_typed_metadata(rows[0]["_export"], mutation)
+        return rows
+
+    monkeypatch.setattr(ManageView, "get_manage_facts", mutated_facts)
+    code, output = invoke(vs.name, "--as-json")
+    raw = json.loads(output)
+    assert code == 2 and raw["status"] == "partial"
+    assert raw["data"]["facts"]["status"] == "error"
+    assert {error["code"] for error in raw["errors"]} == {"output_validation_failed"}
+    assert {error["section"] for error in raw["errors"]} == {"facts"}
+    for section in set(SECTIONS) - {"facts", "guardian"}:
+        assert raw["data"][section]["status"] == "ok", section
+    assert Report.validate_python(raw).status == "partial"
+
+
+@pytest.mark.django_db
 def test_schema_conformance_exports_actual_command_corpus(catalogue, monkeypatch, django_user_model, tmp_path):
     """One xdist case owns all fixed names; callers supply a fresh export directory."""
     from pydantic import ValidationError

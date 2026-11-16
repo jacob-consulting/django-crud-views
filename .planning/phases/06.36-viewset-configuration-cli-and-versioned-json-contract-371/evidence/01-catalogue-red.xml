@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="7" time="1.193" timestamp="2026-11-16T05:48:17.121931+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_manage_command" name="test_catalogue_included_urlconf_registers_on_import" time="0.004"><failure message="AssertionError: The catalogue command must be discoverable&#10;assert 'cv_manage_view' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}&#10; +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()">catalogue = (&lt;module 'manage_command_urls'&gt;, &lt;_pytest.monkeypatch.MonkeyPatch object at 0x776d7cbdf140&gt;)
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-3357/popen-gw3/test_catalogue_included_urlcon0')
+
+    def test_catalogue_included_urlconf_registers_on_import(catalogue, tmp_path):
+        module, patch = catalogue
+        child = "manage_command_child"
+        patch.syspath_prepend(str(tmp_path))
+        patch.delitem(sys.modules, child, raising=False)
+        # Record absence for monkeypatch teardown even though the import itself inserts it.
+        patch.setitem(sys.modules, child, None)
+        del sys.modules[child]
+        (tmp_path / (child + ".py")).write_text(
+            "from crud_views.lib.viewset import ViewSet\n"
+            "from tests.test1.app.models import Publisher\n"
+            "vs = ViewSet(model=Publisher, name='imported_child')\n"
+            "urlpatterns = vs.urlpatterns\n"
+        )
+        from django.urls.resolvers import RoutePattern, URLResolver
+    
+        module.urlpatterns = [URLResolver(RoutePattern("child/"), child)]
+        assert "imported_child" not in _REGISTRY
+&gt;       code, output = invoke("--list", "--as-json")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_manage_command.py:118: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('--list', '--as-json'), kwargs = {}
+
+    def invoke(*args, **kwargs):
+&gt;       assert "cv_manage_view" in get_commands(), "The catalogue command must be discoverable"
+E       AssertionError: The catalogue command must be discoverable
+E       assert 'cv_manage_view' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}
+E        +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()
+
+tests/test1/test_manage_command.py:53: AssertionError</failure></testcase><testcase classname="tests.test1.test_manage_command" name="test_catalogue_empty_completed_urlconf" time="0.004"><failure message="AssertionError: The catalogue command must be discoverable&#10;assert 'cv_manage_view' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}&#10; +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()">catalogue = (&lt;module 'manage_command_urls'&gt;, &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7903330134a0&gt;)
+
+    def test_catalogue_empty_completed_urlconf(catalogue):
+&gt;       code, output = invoke("--list", "--as-json")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_manage_command.py:95: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('--list', '--as-json'), kwargs = {}
+
+    def invoke(*args, **kwargs):
+&gt;       assert "cv_manage_view" in get_commands(), "The catalogue command must be discoverable"
+E       AssertionError: The catalogue command must be discoverable
+E       assert 'cv_manage_view' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}
+E        +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()
+
+tests/test1/test_manage_command.py:53: AssertionError</failure></testcase><testcase classname="tests.test1.test_manage_command" name="test_catalogue_command_is_discoverable" time="0.007"><failure message="AssertionError: The catalogue command must be discoverable&#10;assert 'cv_manage_view' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}&#10; +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()">def test_catalogue_command_is_discoverable():
+&gt;       assert "cv_manage_view" in get_commands(), "The catalogue command must be discoverable"
+E       AssertionError: The catalogue command must be discoverable
+E       assert 'cv_manage_view' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}
+E        +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()
+
+tests/test1/test_manage_command.py:67: AssertionError</failure></testcase><testcase classname="tests.test1.test_manage_command" name="test_catalogue_sorted_kinds_views_and_no_collectors" time="0.011"><failure message="AssertionError: The catalogue command must be discoverable&#10;assert 'cv_manage_view' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}&#10; +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()">catalogue = (&lt;module 'manage_command_urls'&gt;, &lt;_pytest.monkeypatch.MonkeyPatch object at 0x74ea2bfde420&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x74ea2bfde600&gt;
+
+    def test_catalogue_sorted_kinds_views_and_no_collectors(catalogue, monkeypatch):
+        def forbidden(*args, **kwargs):
+            pytest.fail("Catalogue must not run diagnostics")
+    
+        for name in ("get_manage_facts", "get_manage_permissions", "get_manage_checks"):
+            monkeypatch.setattr(ManageView, name, forbidden)
+        guardian = GuardianViewSet(model=Publisher, name="z_guardian")
+        core = ViewSet(model=Publisher, name="a_model")
+        resource = ViewSet(model=ManageItem, name="b_resource")
+        nested = ViewSet(model=ManageItem, name="c_nested", parent=ParentViewSet(name=guardian.name))
+&gt;       code, output = invoke("--list", "--as-json", "--force-color")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_manage_command.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('--list', '--as-json', '--force-color'), kwargs = {}
+
+    def invoke(*args, **kwargs):
+&gt;       assert "cv_manage_view" in get_commands(), "The catalogue command must be discoverable"
+E       AssertionError: The catalogue command must be discoverable
+E       assert 'cv_manage_view' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}
+E        +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()
+
+tests/test1/test_manage_command.py:53: AssertionError</failure></testcase><testcase classname="tests.test1.test_manage_command" name="test_catalogue_isolation_restores_same_worker[True]" time="0.035" /><testcase classname="tests.test1.test_manage_command" name="test_catalogue_failed_discovery_is_not_empty" time="0.001"><failure message="AssertionError: The catalogue command must be discoverable&#10;assert 'cv_manage_view' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}&#10; +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7eeb50686900&gt;
+
+    def test_catalogue_failed_discovery_is_not_empty(monkeypatch):
+        with isolated_catalogue(monkeypatch, "missing_manage_command_urls"):
+&gt;           code, output = invoke("--list", "--as-json")
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_manage_command.py:126: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('--list', '--as-json'), kwargs = {}
+
+    def invoke(*args, **kwargs):
+&gt;       assert "cv_manage_view" in get_commands(), "The catalogue command must be discoverable"
+E       AssertionError: The catalogue command must be discoverable
+E       assert 'cv_manage_view' in {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...}
+E        +  where {'check': 'django.core', 'compilemessages': 'django.core', 'createcachetable': 'django.core', 'dbshell': 'django.core', ...} = get_commands()
+
+tests/test1/test_manage_command.py:53: AssertionError</failure></testcase><testcase classname="tests.test1.test_manage_command" name="test_catalogue_isolation_restores_same_worker[False]" time="0.030" /></testsuite></testsuites>

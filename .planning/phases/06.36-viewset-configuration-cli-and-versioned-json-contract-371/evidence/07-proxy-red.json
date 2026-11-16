@@ -7,5 +7,7 @@
   "expected": "Hostile actual translation args remain unsupported even with harmless spoofed alternative storage keys; no configuration hook executes.",
   "actual": "AssertionError: configuration hook executed",
   "reportPath": "/tmp/cv-0636-07-proxy-red.xml",
+  "runStartedAt": "2026-11-16T07:43:37.413498+00:00",
+  "reportModifiedAt": "2026-11-16T07:43:37.595988+00:00",
   "semanticAssessment": "Exact pgettext proxy executed Hostile.__str__ after checking spoofed alternate fields; the deliberate no-hook assertion failed in the planned target."
 }

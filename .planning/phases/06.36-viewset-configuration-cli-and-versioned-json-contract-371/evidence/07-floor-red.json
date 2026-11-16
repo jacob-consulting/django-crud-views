@@ -7,5 +7,7 @@
   "expected": "Executable floor session resolves pinned project, probes installed runtime, executes real contract modules and forwards export directory.",
   "actual": "AssertionError: Missing executable Pydantic floor session",
   "reportPath": "/tmp/cv-0636-07-red.xml",
+  "runStartedAt": "2026-11-16T07:08:41.933217+00:00",
+  "reportModifiedAt": "2026-11-16T07:08:42.085471+00:00",
   "semanticAssessment": "Named test executed and failed its planned callable-session assertion; no collection/setup/import failure."
 }

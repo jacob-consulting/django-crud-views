@@ -7,5 +7,7 @@
   "expected": "Exact known Django gettext/pgettext proxies normalize positional/keyword string arguments in en/de without accessing missing proxy attributes.",
   "actual": "Known Django translation proxy layout must be supported: '__proxy__' object has no attribute '_args'",
   "reportPath": "/tmp/cv-0636-07-django42-red.xml",
+  "runStartedAt": "2026-11-16T07:29:45.154285+00:00",
+  "reportModifiedAt": "2026-11-16T07:29:45.319450+00:00",
   "semanticAssessment": "Test executed and explicitly failed its supported-translation assertion after the reproduced missing proxy-argument attribute; no fixture/import/collection failure."
 }

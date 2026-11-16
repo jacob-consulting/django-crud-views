@@ -90,6 +90,15 @@ def test_translation_storage_uses_django_layout_not_spoofed_alternative(factory,
         assert record.value == str(value)
 
 
+def test_known_translation_storage_does_not_call_mapping_hooks():
+    class Storage(dict):
+        get = Hostile.fail
+
+    value = gettext_lazy("hello")
+    value.__dict__ = Storage(vars(value))
+    assert normalize_value(value).value == str(value)
+
+
 @pytest.mark.parametrize(
     "model,data",
     [

@@ -102,7 +102,12 @@ def normalize_value(value, *, not_declared=False, _projection=None):
     if isinstance(value, type):
         return ValueRecord(kind="class_path", value=f"{value.__module__}.{value.__qualname__}", python_type=python_type)
     markers, active = [], set()
-    translation_types = (type(gettext_lazy("")), type(pgettext_lazy("", "")))
+    translation_prototypes = (gettext_lazy(""), pgettext_lazy("", ""))
+    translation_types = tuple(type(proxy) for proxy in translation_prototypes)
+    # Select Django's layout from a fresh trusted wrapper, never from input fields.
+    translation_args = (
+        ("_args", "_kw") if "_args" in vars(translation_prototypes[0]) else ("_proxy____args", "_proxy____kw")
+    )
 
     def project(item, path):
         if item is None or type(item) in (bool, int, str):
@@ -115,9 +120,7 @@ def normalize_value(value, *, not_declared=False, _projection=None):
             # project code even though it presents itself as a translation string.
             # Django 4.2 uses name-mangled storage; later releases use _args/_kw.
             # Read storage only after the exact-type check, before evaluating it.
-            stored = vars(item)
-            args = stored.get("_args", stored.get("_proxy____args"))
-            kwargs = stored.get("_kw", stored.get("_proxy____kw"))
+            args, kwargs = (getattr(item, name, None) for name in translation_args)
             if type(args) is not tuple or type(kwargs) is not dict:
                 raise ValueError("unsupported translation arguments")
             if any(type(arg) is not str for arg in args) or any(

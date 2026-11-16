@@ -13,8 +13,11 @@ from io import StringIO
 from typing import get_args
 
 import pytest
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import AnonymousUser, Group
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.urls import reverse
 from django.utils import translation
 from pydantic import ValidationError
 
@@ -28,12 +31,19 @@ from crud_views.lib.access_trace_export import (
     export_schema,
     validate_export,
 )
-from crud_views.lib.views import DetailViewPermissionRequired
-from crud_views.lib.viewset import ViewSet
+from crud_views.lib.resource import Resource, ResourceViewMixin
+from crud_views.lib.settings import crud_views_settings
+from crud_views.lib.views import ActionView, DetailViewPermissionRequired, ListViewPermissionRequired
+from crud_views.lib.views.manage import ManageView
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
 from crud_views.management.commands import cv_access
+from crud_views_guardian.lib.mixins import GuardianQuerysetMixin
 from tests.test1 import test_access_trace_command as command_tests
-from tests.test1.app.models import Publisher
+from tests.test1 import test_manage_access_trace as web
+from tests.test1.app.models import Book, BookNote, Publisher
 from tests.test1.test_access_trace import assert_export_contract, explode
+from tests.test1.test_access_trace_ancestors import chain, coordinates
+from tests.test1.test_access_trace_guardian import local_routes, nested_routes
 from tests.test1.test_ancestor_authorization import _url, _user, isolated_routes
 from tests.test1.test_manage_requirements import grant, register
 
@@ -41,6 +51,10 @@ invoke = command_tests.invoke
 process_env = command_tests.process_env
 run_process = command_tests.run_process
 ANSI = command_tests.ANSI
+developer = web.developer
+enabled = web.enabled
+host = web.host
+submit = web.submit
 
 ESCAPED_KEY = "bad\x1b[31m\nkey"
 EXIT_OUTCOMES = {"allowed", "denied", "not_found", "login_redirect", "no_such_route", "error"}
@@ -575,3 +589,183 @@ def test_real_non_str_requirement_hook_fails_closed():
             assert error.returncode == 2
             assert stdout == "" and stderr == ""
             assert "Output validation failed (ValidationError)" in str(error)
+
+
+@pytest.mark.django_db
+def test_real_nested_model_ancestry_validates():
+    with isolated_routes(chain) as (outer, inner, leaf, _view):
+        pub = Publisher.objects.create(name="private publisher")
+        book = Book.objects.create(title="private book", publisher=pub)
+        note = BookNote.objects.create(book=book, note="private note")
+        data = trace_access(
+            _url(leaf, "tested", **coordinates(outer, inner, pub, book, note)), _user("nested")
+        ).to_dict()
+    assert_export_contract(data)
+    gates = [row for row in data["plan"] if row["kind"] == "ancestor_gate"]
+    assert gates and all(row["provider"] == "model" for row in gates)
+    assert all(set(row) == {"kind", "viewset", "object", "key", "permission", "provider", "source"} for row in gates)
+
+
+@pytest.mark.django_db
+def test_real_unavailable_plan_metadata_validates():
+    base = type("LoginFirstAction", (LoginRequiredMixin, ActionView), {"__module__": __name__})
+    with isolated_routes(lambda sfx: chain(sfx, base=base)) as (outer, inner, leaf, _view):
+        pub = Publisher.objects.create(name="private publisher")
+        book = Book.objects.create(title="private book", publisher=pub)
+        note = BookNote.objects.create(book=book, note="private note")
+        path = _url(leaf, "tested", **coordinates(outer, inner, pub, book, note))
+        data = trace_access(path, AnonymousUser()).to_dict()
+    assert data["outcome"] == "login_redirect"
+    unavailable = [row for row in data["plan"] if row.get("result") == "unavailable"]
+    assert unavailable and all(set(row["exception"]) == {"class", "message"} for row in unavailable)
+    assert_export_contract(data)
+
+
+@pytest.mark.django_db
+def test_real_guardian_list_counts_validate():
+    base = type("LocalList", (GuardianQuerysetMixin, ListViewPermissionRequired), {})
+    Publisher.objects.create(name="visible")
+    with isolated_routes(lambda sfx: local_routes(sfx, base=base, get=explode)) as (vs, _view):
+        data = trace_access(_url(vs, "tested"), _user("guardian list", superuser=True)).to_dict()
+    assert data["outcome"] == "allowed"
+    counts = [step["counts"] for step in data["steps"] if step["kind"] == "list_filter"]
+    assert counts and all(type(count["total"]) is int for count in counts)
+    assert any(step["provider"] == "guardian" for step in data["steps"])
+    assert_export_contract(data)
+
+
+@pytest.mark.django_db
+def test_real_guardian_nested_create_object_grants_validate():
+    pub = Publisher.objects.create(name="outer")
+    book = Book.objects.create(title="inner", publisher=pub)
+    user = _user("guardian create", (Publisher, "view"), (Book, "change"))
+    with isolated_routes(nested_routes) as (outer, inner, leaf, _view, key):
+        outer.assign_perm("view", user, pub)
+        inner.assign_perm("change", user, book)
+        data = trace_access(
+            _url(leaf, key, **{outer.name + "_pk": pub.pk, inner.name + "_pk": book.pk}), user
+        ).to_dict()
+    gates = [step for step in data["steps"] if step["kind"] == "ancestor_gate"]
+    assert gates and all(step["provider"] == "guardian" for step in gates)
+    grants = [step for step in data["steps"] if step["kind"] == "object_grant"]
+    assert [(step["provider"], step["result"]) for step in grants] == [("guardian", "passed")] * 2
+    assert_export_contract(data)
+
+
+def resource_routes(base, reads):
+    """A copy of the test_access_trace_resources builder; only the base class is a parameter here."""
+
+    class ContractItem(Resource):
+        key: str
+        secret: str
+
+        class Meta:
+            pk_field = "key"
+
+        @classmethod
+        def cv_get_items(cls, request, **kwargs):
+            reads.append((request.user, kwargs))
+            return [cls(key="one", secret="never serialize this external content")]
+
+        def __str__(self):
+            return explode()
+
+        def __repr__(self):
+            return explode()
+
+    def build(sfx):
+        parent = ViewSet(model=Publisher, name="contractresourceparent" + sfx)
+        register(ListViewPermissionRequired, parent)
+        vs = ViewSet(
+            model=ContractItem,
+            name="contractexternal" + sfx,
+            parent=ParentViewSet(name=parent.name),
+            ancestor_policy=AncestorPolicy(actions={"tested": AncestorPermissions(nearest="view", higher="view")}),
+            resource_permissions={"view": "app.view_publisher", "change": "app.change_publisher"},
+        )
+        combined = type("ResourceEndpoint", (ResourceViewMixin, base), {"__module__": __name__})
+        register(
+            combined,
+            vs,
+            get=explode,
+            post=explode,
+            cv_action=explode,
+            cv_action_enabled=classmethod(lambda cls, user, obj: True),
+        )
+        return (parent, vs), [parent, vs]
+
+    return build
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("case", ["list", "detail"])
+def test_real_resource_traces_validate(case):
+    reads = []
+    base = ListViewPermissionRequired if case == "list" else DetailViewPermissionRequired
+    user = _user("resource actor", superuser=True)
+    parent_obj = Publisher.objects.create(name="parent")
+    with isolated_routes(resource_routes(base, reads)) as (parent, vs):
+        kwargs = {parent.name + "_pk": parent_obj.pk}
+        if case == "detail":
+            kwargs["pk"] = "one"
+        data = trace_access(_url(vs, "tested", **kwargs), user).to_dict()
+    assert data["outcome"] == "allowed" and reads
+    assert "never serialize this external content" not in json.dumps(data)
+    if case == "list":
+        assert [step["counts"] for step in data["steps"] if step["kind"] == "list_filter"] == [
+            {"visible": 1, "total": None}
+        ]
+    else:
+        lookups = [step for step in data["steps"] if step["kind"] == "object_lookup"]
+        assert [step["object"] for step in lookups] == [{"model": "resources.contractitem", "pk": "one"}]
+    assert_export_contract(data)
+
+
+@pytest.mark.django_db
+def test_real_manage_gate_allows_a_manage_group_member(monkeypatch):
+    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "yes")
+
+    def build(sfx):
+        vs = ViewSet(model=Publisher, name="contractmanage" + sfx)
+        register(ManageView, vs, get=explode)
+        return vs, [vs]
+
+    user = _user("contract manager")
+    user.groups.add(Group.objects.get_or_create(name=crud_views_settings.manage_group)[0])
+    with isolated_routes(build) as vs:
+        data = trace_access(_url(vs, "tested"), user).to_dict()
+    assert data["outcome"] == "allowed"
+    gates = [step for step in data["steps"] if step["kind"] == "manage_gate" and step["result"] != "not_reached"]
+    assert [(step["provider"], step["result"], step["how"]) for step in gates] == [("none", "passed", "group_member")]
+    assert_export_contract(data)
+
+
+# Manage-page parity: the Access check traces for core and Guardian hosts equal the CLI document.
+
+
+def assert_manage_traces_match_the_cli(response, actor):
+    data = response.context["manage_access_trace"]
+    rows = data["rows"] if data["mode"] == "viewset" else [{"path": data["path_input"], "trace": data["trace"]}]
+    executed = 0
+    for row in rows:
+        if row["trace"] is None:
+            continue
+        executed += 1
+        assert_export_contract(row["trace"])
+        code, stdout, stderr = invoke(row["path"], actor.username, "--as-json", "--no-color")
+        assert code == OUTCOME_CODES[row["trace"]["outcome"]]
+        assert stderr == ""
+        assert json.loads(stdout) == row["trace"]
+    assert executed >= 1, "every submit must execute at least one trace"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("mode", ["path", "viewset"])
+def test_manage_page_traces_validate_and_match_the_cli(client, host, developer, enabled, mode):
+    params = {"cv_access_mode": mode, "cv_access_user": developer.username}
+    if mode == "path":
+        params["cv_access_path"] = reverse(host.get_router_name("manage"))
+    response = submit(client, host, developer, **params)
+    assert response.status_code == 200
+    assert response.context["manage_access_trace"]["error"] is None
+    assert_manage_traces_match_the_cli(response, developer)

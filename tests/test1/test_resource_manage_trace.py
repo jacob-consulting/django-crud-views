@@ -21,7 +21,7 @@ from crud_views.lib.views.manage import ManageView
 from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1.app.models import Book, Publisher
-from tests.test1.test_access_trace import explode
+from tests.test1.test_access_trace import assert_export_contract, explode
 from tests.test1.test_access_trace_command import invoke
 from tests.test1.test_ancestor_authorization import _url, isolated_routes
 from tests.test1.test_manage_requirements import grant, register
@@ -314,6 +314,7 @@ def assert_parity(env, response, *, expected):
             continue
         executed += 1
         trace = row["trace"]
+        assert_export_contract(trace)
         assert trace["outcome"] == expected[row["key"]], trace
         before_reads = len(env.state.reads)
         code, stdout, stderr = invoke(row["path"], env.actor.username, "--as-json", "--no-color")

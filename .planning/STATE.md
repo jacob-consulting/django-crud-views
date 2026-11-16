@@ -1,21 +1,21 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.36"
-current_phase_name: "ViewSet configuration CLI and versioned JSON contract (#371)"
-current_plan: "08"
-status: ready_to_execute
-stopped_at: Phase 06.36 gap-closure plan 08 verified and ready to execute; floor compatibility remains uncorrected
-last_updated: "2026-11-16T09:42:09Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.36 complete, ready to plan Phase 7
+last_updated: "2026-11-16T10:38:37.292Z"
 last_activity: 2026-11-16
-last_activity_desc: Phase 06.36 gap-closure plan 08 passed independent checking; ready to execute
-state_head: 322b5a9f
+last_activity_desc: Phase 06.36 complete, transitioned to Phase 7
+state_head: 56bb8b4581a3713a53ffa86a7b446fbdec7cc84d
 progress:
   total_phases: 43
-  completed_phases: 41
+  completed_phases: 42
   total_plans: 240
-  completed_plans: 239
-  percent: 99.6
+  completed_plans: 240
+  percent: 100
 milestone_name: milestone
 ---
 
@@ -25,20 +25,28 @@ Total Phases: 43
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-15)
+See: .planning/PROJECT.md (updated 2026-11-16)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.36 — ViewSet configuration CLI and versioned JSON contract (#371)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — GAP CLOSURE READY
-Current Plan: 08 (01–07 executed; gap-closure plan pending)
-Total Plans in Phase: 8
-Status: Ready to execute — 7/8 plans executed; plan 08 independently checked; canonical verification remains gaps_found
-Last activity: 2026-11-16 — Gap-closure plan 08 created and independently checked with zero findings; 9/9 decisions covered
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: Not planned
+Status: Ready to plan
+Last activity: 2026-11-16 — Phase 06.36 complete, transitioned to Phase 7
 
-Next: $gsd-execute-phase 06.36 --gaps-only — run plan 08 to correct Resource floor compatibility, prove actual floor/schema output and refresh affected evidence
+Next: $gsd-discuss-phase 7 — settle the theme-surface stability review scope.
+
+### Phase 06.36 gap closure completed — 2026-11-16
+
+- Plan08 complete; all8 plans summarized. Canonical independent verification passed9/9 with current covered-input fingerprint. Product0876d769; review4 fixed/0 open; security21/21closed.
+- Actual installed Pydantic2.2.1 suite420 plus40 Resource/import/formset cases pass; independent schemas10valid/15invalid each. Public model_fields, safe validation-error projection, explicit recursive FormSet nodes and private descriptor class lookup resolve demonstrated floor incompatibilities.
+- Four final source/installed normal/recorder runs each15673passed+one existing skip; installed coverage98.19%. All822 primary+262 supplementary hashes and312 installed files per environment match. Build/docs/supplementary regression gates pass.
+- Seven runtime combinations remain unexecuted; Nyquist false remains explicit. Prior failed/interrupted receipts are historical. Codebase-map drift advisory remains for the required post-ship refresh; no publication or merge performed.
+- Completion CLI warnings reconciled: phase-relative05-schema-conformance.json exists; no formal requirement IDs were declared, so ROADMAP now separates Requirements: None from the preserved approved contract. Pre-existing dirty state.json was preserved byte-for-byte; STATE.md carries this handoff.
 
 ### Phase 06.36 gap-closure planning — 2026-11-16
 
@@ -1242,7 +1250,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 223
+- Total plans completed: 231
 
 - Total plans completed: 186
 - Average duration: -
@@ -1290,6 +1298,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.33 | 10 | - | - |
 | 06.34 | 12 | - | - |
 | 06.35 | 7 | - | - |
+| 06.36 | 8 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1858,6 +1867,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T09:42:09Z
-Stopped at: Phase 06.36 gap-closure plan 08 checked and ready; no implementation performed
-Resume file: .planning/phases/06.36-viewset-configuration-cli-and-versioned-json-contract-371/06.36-08-PLAN.md
+Last session: 2026-11-16T10:39:16.342397+00:00
+Stopped at: Phase 06.36 complete, ready to plan Phase 7
+Resume file: None

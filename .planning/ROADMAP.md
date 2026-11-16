@@ -62,7 +62,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.33: Structured manage page (#366) (INSERTED)** - approved D-01–D-30 issue handover; permission matrix, collapsible views and switchable defaults. (completed 2026-11-14)
 - [x] **Phase 06.34: Access trace: cv_access command and manage page form (#370) (INSERTED)** - approved D-01–D-23 design; real authorization trace, shell command and opt-in manage form. (completed 2026-11-15)
 - [x] **Phase 06.35: Resource manage pages with cv_access parity (#372) (INSERTED)** - approved D-01–D-07 handover; shared ManageView, Resource permission badges, and UI/CLI trace parity. (completed 2026-11-15)
-- [ ] **Phase 06.36: ViewSet configuration CLI and versioned JSON contract (#371) (INSERTED)** - approved diagnostic command, catalogue and validated text/JSON output.
+- [x] **Phase 06.36: ViewSet configuration CLI and versioned JSON contract (#371) (INSERTED)** - approved diagnostic command, catalogue and validated text/JSON output. (completed 2026-11-16)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2033,7 +2033,8 @@ Plans:
 
 **Goal:** Developers and future JSON consumers can discover registered ViewSets and inspect one ViewSet or view through `cv_manage_view`, using shared manage-page facts and an explicit, versioned Pydantic output contract.
 **Source:** [Issue #371 — approved design and GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/371#gsd-handover), approved 2026-11-15. Read the complete issue body; carry D-01–D-09, A-01–A-04 and acceptance items 1–10 into planning without reopening settled decisions absent a concrete conflict.
-**Requirements:** Provide `--list`, targeted ViewSet/optional view selection, `--user`, `--as-json` and generated `--schema`. Support core, Guardian and standalone/model-nested Resource ViewSets. Reuse the configured manage class's builders, preserving their dictionary/list contracts and normal page query costs; narrowly add no-actor permission collection, complete values before display truncation and stable provenance/severity metadata. Validate explicit Pydantic catalogue/inspection envelopes and typed sections before text/JSON rendering. Preserve defaults, holder/effective-actor distinctions, SHOW_USERS visibility, bounded serialization, scoped checks, partial results and exit codes 0/1/2. Command access is independent of browser manage modes and developer membership, while reached database-routing restrictions remain enforced. Catalogue/schema avoid live diagnostic collectors; built-in inspection must not invoke Resource loaders, traces, handlers or dynamic labels. Document compatibility, custom-builder participation, startup/parser boundaries and unsupported values; add German translations, regression/query-cost coverage and changelog guidance, with migration documentation for any Breaking entry.
+**Requirements:** None
+**Approved contract:** Provide `--list`, targeted ViewSet/optional view selection, `--user`, `--as-json` and generated `--schema`. Support core, Guardian and standalone/model-nested Resource ViewSets. Reuse the configured manage class's builders, preserving their dictionary/list contracts and normal page query costs; narrowly add no-actor permission collection, complete values before display truncation and stable provenance/severity metadata. Validate explicit Pydantic catalogue/inspection envelopes and typed sections before text/JSON rendering. Preserve defaults, holder/effective-actor distinctions, SHOW_USERS visibility, bounded serialization, scoped checks, partial results and exit codes 0/1/2. Command access is independent of browser manage modes and developer membership, while reached database-routing restrictions remain enforced. Catalogue/schema avoid live diagnostic collectors; built-in inspection must not invoke Resource loaders, traces, handlers or dynamic labels. Document compatibility, custom-builder participation, startup/parser boundaries and unsupported values; add German translations, regression/query-cost coverage and changelog guidance, with migration documentation for any Breaking entry.
 **Depends on:** Phase 06.35 (#372 Resource manage support) and Phase 06.33 (#366 shared manage builders); preserve Phase 06.34 (#370 `cv_access`) behavior. Plan against the completed #372 source rather than the issue's earlier implementation snapshot.
 **Ordering:** Assigned phase 06.36 after 06.35 and before Phase 7's stability freeze; include any affected shared-builder/public contracts in that review.
 **Scope exclusions:** Future JSON-consuming skill implementation, bulk full reports, configuration diff tooling, permission redesign, replacement of all manage builders with Pydantic, browser redesign, Resource-as-parent/object grants, S3 integration, new write capabilities, and unrelated CLI changes.
@@ -2045,9 +2046,9 @@ Plans:
 4. Complete, partial and failed version-1 results validate against explicit Pydantic models and their generated schema. Unsupported, null, undeclared and unavailable values remain distinct; section failures preserve good data and produce the defined 0/1/2 exit behavior.
 5. Text/JSON semantic parity, force-color-safe JSON/schema, English/German output, valid subclass overrides, page contracts and normal query costs have regression coverage. Documentation and translations cover the full approved acceptance list; broad pytest runs use multiple workers.
 
-**Plans:** 8 plans — 7 executed; 1 gap-closure plan pending
+**Plans:** 8/8 plans complete — 7 executed; 1 gap-closure plan pending
 
-**Acceptance:** Incomplete — final source/installed normal and recorder suites pass; the Pydantic 2.2.1 command corpus is blocked by the pre-existing Resource `__pydantic_fields__` incompatibility. Seven other runtime combinations are unexecuted. Independent review fixes are complete and canonical verification is `gaps_found` (8/9 truths); this phase is not marked complete. Final four full suites each pass 15,665 with one existing skip. See `06.36-VERIFICATION.md`, `06.36-ACCEPTANCE.md` and `06.36-REVIEW-DISPOSITION.md`. Gap-closure plan 08 passed independent checking; next: `$gsd-execute-phase 06.36 --gaps-only`.
+**Acceptance:** Complete — canonical verification passed (9/9), all eight plans executed. Actual installed Pydantic2.2.1 contract suite420 plus40 Resource/import/formset checks pass; both schemas accept10/reject15. Four final source/installed normal/recorder suites each15673 passed with one existing skip, installed coverage98.19%. Review4 fixed/0 open; security21/21 closed. Seven runtime combinations remain unexecuted and Nyquist remains conservatively non-compliant for that limitation. See current VERIFICATION, ACCEPTANCE, VALIDATION and REVIEW-DISPOSITION.
 
 Plans:
 **Wave 1**
@@ -2067,10 +2068,10 @@ Plans:
 - [x] 06.36-06-PLAN.md — Command/customization documentation, German catalogs and release notes
 
 **Wave 6** *(blocked on Wave 5 completion)*
-- [x] 06.36-07-PLAN.md — Dependency-floor, installed-distribution and final regression evidence (floor acceptance unresolved)
+- [x] 06.36-07-PLAN.md — Dependency-floor, installed-distribution and final regression evidence (floor acceptance closed by plan08)
 
 **Wave 7** *(gap closure after executed plan 07)*
-- [ ] 06.36-08-PLAN.md — Restore Resource initialization at the Pydantic floor and refresh actual command/schema acceptance
+- [x] 06.36-08-PLAN.md — Restore Resource initialization at the Pydantic floor and refresh actual command/schema acceptance
 
 ### Phase 7: Theme-surface stability policy
 

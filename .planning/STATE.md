@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.36"
 current_phase_name: "ViewSet configuration CLI and versioned JSON contract (#371)"
-current_plan: "06"
+current_plan: "07"
 status: executing
-stopped_at: Completed 06.36-05-PLAN.md; plan 06 is next
-last_updated: "2026-11-16T06:51:00Z"
+stopped_at: Completed 06.36-06-PLAN.md; plan 07 is next
+last_updated: "2026-11-16T07:05:00Z"
 last_activity: 2026-11-16
-last_activity_desc: Phase 06.36 plan 05 complete; independent schema and exact preservation verified; 5/7 plans
-state_head: 2fecbd68d2791cef3fa2c85be07b2be1679092c3
+last_activity_desc: Phase 06.36 plan 06 complete; documentation and German command delivery verified; 6/7 plans
+state_head: 6cf07a0c
 progress:
   total_phases: 43
   completed_phases: 41
   total_plans: 239
-  completed_plans: 237
+  completed_plans: 238
   percent: 99
 milestone_name: milestone
 ---
@@ -33,12 +33,20 @@ See: .planning/PROJECT.md (updated 2026-11-15)
 ## Current Position
 
 Phase: 06.36 (ViewSet configuration CLI and versioned JSON contract (#371)) — EXECUTING
-Current Plan: 06 (01–05 complete)
+Current Plan: 07 (01–06 complete)
 Total Plans in Phase: 7
-Status: In Progress — 5/7 plans complete
-Last activity: 2026-11-16 — Generated-schema conformance and exact preservation complete; 1270 runtime tests pass
+Status: In Progress — 6/7 plans complete
+Last activity: 2026-11-16 — Command docs/locales complete; 229 delivery tests and strict MkDocs build pass
 
 Next: $gsd-execute-phase 06.36
+
+### Phase 06.36 plan 06 completion — 2026-11-16
+
+- Published command modes, nine sections, complete values/provenance, versioned schema/status/error/exit contracts and live-read/visibility/transaction boundaries. Explicitly distinguishes serialization safety from built-in invalid-check diagnostic formatting. Executable configured-builder recipe preserves metadata and restores isolated registry/URL/module state on success/error.
+- Nineteen core German msgids compiled atomically with installed polib; existing Guardian translations already complete and verified unchanged. Real en/de core/Guardian/Resource output covers policy and synthetic mixin values, sources, actor/holder visibility, unsupported values, failures/checks and parseable forced-color JSON/schema.
+- Additive release entry and unconditional delivered-command #371 migration/theme corrections pass. Task selections 44/184/9 passed; final seven-module selection 229 passed (6.17s), four workers. Strict MkDocs build, Ruff/format and whitespace checks pass. Evidence in evidence/06-delivery.json and 06-docs-locales.xml.
+- Approximately 11 minutes, 3 tasks; commits a1a1a51b, cd36444a, 215e0984, 69f8c754, ac2d6531; summary 6cf07a0c. ROADMAP reports 6/7 In Progress, complete=false. No runtime changes, dependencies, skips, unrun checks or publication. Plan07 owns dependency-floor/installed/final full-suite acceptance; it has not started.
+- STATE.md updated directly to preserve dirty state.json. Unrelated config-default, .gitkeep and 06.35 review inputs remain untouched; no phase completion claim.
 
 ### Phase 06.36 plan 05 completion — 2026-11-16
 
@@ -1822,6 +1830,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T06:39:00Z
-Stopped at: Completed 06.36-04-PLAN.md; plans 05 and 06 are next
+Last session: 2026-11-16T07:05:00Z
+Stopped at: Completed 06.36-06-PLAN.md; plan 07 is next
 Resume file: None

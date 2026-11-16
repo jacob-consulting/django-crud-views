@@ -70,3 +70,61 @@ def test_translation_proxy_subclasses_and_arbitrary_promises_are_not_evaluated()
 def test_known_nested_fields_reject_coercion(model, data):
     with pytest.raises(ValidationError):
         model.model_validate(data)
+
+
+def identity_only_report():
+    from crud_views.lib.manage_report import InspectionData
+
+    sections = [name for name in InspectionData.model_fields if name not in {"identity", "guardian"}]
+    return {
+        "kind": "inspection", "status": "partial", "selection": {},
+        "data": {
+            "identity": {"name": "example", "kind": "model", "backing_class": "app.Model", "parent": None},
+            "guardian": {"status": "not_applicable", "data": None, "errors": []},
+            **{name: {"status": "error", "data": None, "errors": [index]} for index, name in enumerate(sections)},
+        },
+        "errors": [{"code": "collection_failed", "section": name, "message": "unavailable"} for name in sections],
+    }
+
+
+def test_valid_identity_is_useful_surviving_data():
+    from crud_views.lib.manage_report import Report
+
+    assert Report.validate_python(identity_only_report()).status == "partial"
+
+
+@pytest.mark.parametrize("mutation", ["negative", "out_of_bounds", "wrong_section", "duplicate", "orphan", "coercion"])
+def test_section_error_references_are_exact_and_typed(mutation):
+    from crud_views.lib.manage_report import Report
+
+    raw = identity_only_report()
+    # A successful empty section is useful, and still validates its error ownership.
+    raw["data"]["facts"] = {"status": "ok", "data": {"entries": []}, "errors": []}
+    raw["errors"][0]["section"] = None
+    if mutation == "orphan":
+        raw["errors"][0]["section"] = "facts"
+    else:
+        raw["data"]["presentation"]["errors"] = {
+            "negative": [-1], "out_of_bounds": [100], "wrong_section": [2], "duplicate": [1, 1], "coercion": ["1"]
+        }[mutation]
+    with pytest.raises(ValidationError):
+        Report.validate_python(raw)
+
+
+@pytest.mark.parametrize("status,data,errors", [
+    ("ok", None, []), ("error", None, []), ("not_applicable", None, [0]),
+    ("error", {"entries": []}, [0]), ("ok", {"entries": []}, [0]),
+])
+def test_section_status_data_and_errors_must_agree(status, data, errors):
+    from crud_views.lib.manage_report import FactsData, Section
+
+    with pytest.raises(ValidationError):
+        Section[FactsData](status=status, data=data, errors=errors)
+
+
+@pytest.mark.parametrize("location", [[True], [1.5], [{}]])
+def test_error_locations_are_only_strict_strings_and_integers(location):
+    from crud_views.lib.manage_report import ReportError
+
+    with pytest.raises(ValidationError):
+        ReportError(code="output_validation_failed", message="invalid", location=location)

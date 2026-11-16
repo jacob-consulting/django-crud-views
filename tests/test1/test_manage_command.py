@@ -19,6 +19,10 @@ from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1.app.models import Publisher
 from tests.test1.test_resource_manage import ManageItem
 
+SECTIONS = (
+    "facts", "presentation", "views", "routes", "hierarchy", "ancestor_policy", "permissions", "checks", "guardian"
+)
+
 
 @contextmanager
 def isolated_catalogue(monkeypatch, urlconf=None):
@@ -559,3 +563,219 @@ def test_guardian_command_preserves_direct_and_effective_grants(
         and selected["guardian"] == data["guardian"]
     )
     assert [row["key"] for row in selected["views"]["data"]["entries"]] == ["list"]
+
+
+def assert_section_failures(report, failed):
+    from crud_views.lib.manage_report import Report
+
+    assert Report.validate_python(report).status == "partial"
+    assert {name for name in SECTIONS if report["data"][name]["status"] == "error"} == set(failed)
+    references = []
+    for name in SECTIONS:
+        section = report["data"][name]
+        if name in failed:
+            assert section["data"] is None and section["errors"]
+            for index in section["errors"]:
+                assert report["errors"][index]["section"] == name
+                references.append(index)
+        else:
+            assert section["status"] in {"ok", "not_applicable"} and not section["errors"]
+    assert sorted(references) == list(range(len(report["errors"])))
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("section", SECTIONS)
+def test_malformed_top_level_payload_only_fails_its_adapter(catalogue, monkeypatch, section):
+    from crud_views.management.commands import cv_manage_view
+
+    vs = GuardianViewSet(model=Publisher, name="bad_payload", context_buttons=[])
+    original = cv_manage_view.adapt_section
+
+    def adapt(name, raw, **kwargs):
+        # Normal shared work completes before this single top-level payload is corrupted.
+        return original(name, None if name == section else raw, **kwargs)
+
+    monkeypatch.setattr(cv_manage_view, "adapt_section", adapt)
+    code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    assert code == 2
+    assert_section_failures(report, [section])
+    assert report["errors"][0]["code"] == "output_validation_failed"
+
+
+@pytest.mark.django_db
+def test_identity_survives_when_every_applicable_collector_fails(catalogue, monkeypatch):
+    vs = ViewSet(model=Publisher, name="identity_survives")
+
+    def fail(*args):
+        raise RuntimeError("collector unavailable")
+
+    for name in SECTIONS[:-1]:
+        monkeypatch.setattr(ManageView, "get_manage_" + name, fail)
+    code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    assert code == 2 and report["status"] == "partial"
+    assert report["data"]["identity"]["name"] == vs.name
+    assert_section_failures(report, SECTIONS[:-1])
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("owner,failed", [
+    ("get_manage_routes", {"presentation", "views", "routes", "hierarchy"}),
+    ("_guard_manage_auth", {"views", "permissions"}),
+])
+def test_shared_owner_failures_follow_reached_dependencies(catalogue, monkeypatch, owner, failed):
+    from crud_views.lib.view.buttons import ContextButton
+    from crud_views.lib.views import ListViewPermissionRequired
+    from tests.test1.app.models import Book
+
+    parent = ViewSet(model=Publisher, name="dependency_parent", context_buttons=[])
+    vs = ViewSet(model=Book, name="dependency_child", parent=ParentViewSet(name=parent.name, attribute="publisher"),
+                 context_buttons=[ContextButton(key="list", key_target="list")])
+    type("DependencyList", (ListViewPermissionRequired,), {"__module__": __name__, "cv_viewset": vs})
+    reached = []
+
+    def fail(self, viewset, user):
+        reached.append(viewset.name)
+        raise RuntimeError("shared owner unavailable")
+
+    monkeypatch.setattr(ManageView, owner, fail)
+    code, output = invoke(vs.name, "--as-json")
+    assert code == 2
+    assert_section_failures(json.loads(output), failed)
+    assert len(reached) == len(failed)
+    if owner == "get_manage_routes":
+        assert parent.name in reached
+
+
+@pytest.mark.django_db
+def test_caught_route_unavailability_is_successful_data(catalogue, monkeypatch):
+    from django.core.exceptions import ImproperlyConfigured
+
+    vs = ViewSet(model=Publisher, name="unavailable_routes", context_buttons=[])
+
+    def fail(self):
+        raise ImproperlyConfigured("route configuration")
+
+    monkeypatch.setattr(ViewSet, "urlpatterns", property(fail))
+    code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    assert code in (0, 1) and report["status"] == "complete"
+    assert report["data"]["routes"]["status"] == "ok"
+    assert all(row["route_error"] and row["route"] is None for row in report["data"]["routes"]["data"]["entries"])
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("level,silenced,broken,expected", [
+    (30, False, False, 0), (40, True, False, 0), (40, False, False, 1),
+    (50, False, False, 1), (41, False, False, 1), (50, False, True, 2),
+])
+def test_exit_precedence_uses_unsilenced_numeric_findings(catalogue, monkeypatch, level, silenced, broken, expected):
+    from types import SimpleNamespace
+    from django.core.checks import CheckMessage
+
+    vs = ViewSet(model=Publisher, name="numeric_findings", context_buttons=[])
+    message = CheckMessage(level, "finding", id="project.E001")
+    monkeypatch.setattr(ViewSet, "checks", lambda self: iter([
+        SimpleNamespace(messages=lambda: [message, message]), SimpleNamespace(messages=lambda: [])
+    ]))
+    if broken:
+        def fail(*args):
+            raise RuntimeError("facts unavailable")
+        monkeypatch.setattr(ManageView, "get_manage_facts", fail)
+    with override_settings(SILENCED_SYSTEM_CHECKS=[message.id] if silenced else []):
+        code, output = invoke(vs.name, "--as-json")
+    report = json.loads(output)
+    assert code == expected
+    checks = report["data"]["checks"]["data"]
+    assert checks["count"] == 2 and len(checks["messages"]) == (0 if silenced else 2)
+    assert report["status"] == ("partial" if broken else "complete")
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("caller_atomic", [False, True])
+def test_sql_failure_respects_caller_transaction_ownership(catalogue, monkeypatch, caller_atomic):
+    from contextlib import nullcontext
+    from django.db import connection, transaction
+    from django.db.transaction import TransactionManagementError
+
+    assert connection.vendor == "sqlite", "This fixture records SQLite evidence only"
+    assert connection.get_autocommit() and not connection.in_atomic_block
+    vs = ViewSet(model=Publisher, name="sql_failure", context_buttons=[])
+    reads = []
+    original_checks = ManageView.get_manage_checks
+
+    def permissions(*args):
+        assert connection.in_atomic_block is caller_atomic
+        # Model-save/custom-collector style error marking, without a command-owned transaction.
+        with transaction.mark_for_rollback_on_error(), connection.cursor() as cursor:
+            cursor.execute("SELECT missing_cv_manage_column FROM django_content_type")
+
+    def checks(self, viewset, user):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT COUNT(*) FROM django_content_type")
+            reads.append(cursor.fetchone()[0])
+        return original_checks(self, viewset, user)
+
+    monkeypatch.setattr(ManageView, "get_manage_permissions", permissions)
+    monkeypatch.setattr(ManageView, "get_manage_checks", checks)
+    with transaction.atomic() if caller_atomic else nullcontext():
+        code, output = invoke(vs.name, "--as-json")
+        report = json.loads(output)
+        assert code == 2
+        assert_section_failures(report, ["permissions", "checks"] if caller_atomic else ["permissions"])
+        assert report["errors"][0]["exception_class"] == "OperationalError"
+        if caller_atomic:
+            assert connection.needs_rollback
+            assert report["errors"][1]["exception_class"] == "TransactionManagementError"
+            with pytest.raises(TransactionManagementError), connection.cursor() as cursor:
+                cursor.execute("SELECT 1")
+        else:
+            assert reads and not connection.needs_rollback
+    assert connection.get_autocommit() and not connection.in_atomic_block
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT 1")
+        assert cursor.fetchone() == (1,)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("termination", [KeyboardInterrupt, SystemExit])
+def test_process_termination_propagates_without_report(catalogue, monkeypatch, termination):
+    vs = ViewSet(model=Publisher, name="termination", context_buttons=[])
+    def fail(*args):
+        raise termination(7)
+    monkeypatch.setattr(ManageView, "get_manage_facts", fail)
+    output = StringIO()
+    with pytest.raises(termination):
+        call_command("cv_manage_view", vs.name, "--as-json", stdout=output)
+    assert output.getvalue() == ""
+
+
+@pytest.mark.parametrize("args", [[], ["--list", "--schema"], ["--list", "x"], ["--schema", "x", "list"],
+    ["--list", "--user", "x"], ["--schema", "--user", "x"]])
+def test_recognized_argument_conflicts_have_one_failed_document(catalogue, args):
+    code, output = invoke(*args, "--as-json")
+    result = json.loads(output)
+    assert code == 2 and result["status"] == "failed" and result["data"] is None
+    assert result["errors"][0]["code"] == "invalid_arguments"
+
+
+@pytest.mark.parametrize("viewset,view,expected", [("absent", None, "unknown_viewset"), ("known", "absent", "unknown_view")])
+def test_unknown_selectors_fail_before_collection(catalogue, monkeypatch, viewset, view, expected):
+    ViewSet(model=Publisher, name="known")
+    monkeypatch.setattr(ManageView, "get_manage_facts", lambda *a: pytest.fail("Invalid selector collected"))
+    code, output = invoke(viewset, *([view] if view else []), "--as-json")
+    assert code == 2 and json.loads(output)["errors"][0]["code"] == expected
+
+
+@pytest.mark.django_db
+def test_assembly_failure_is_minimal_and_preserves_selection(catalogue, monkeypatch):
+    from crud_views.management.commands import cv_manage_view
+
+    vs = ViewSet(model=Publisher, name="assembly_failure", context_buttons=[])
+    monkeypatch.setattr(cv_manage_view, "InspectionData", lambda **kw: (_ for _ in ()).throw(RuntimeError("assembly")))
+    code, output = invoke(vs.name, "manage", "--as-json")
+    result = json.loads(output)
+    assert code == 2 and result["data"] is None and result["status"] == "failed"
+    assert result["selection"] == {"viewset": vs.name, "view": "manage", "user": None}
+    assert len(result["errors"]) == 1 and result["errors"][0]["code"] == "output_validation_failed"

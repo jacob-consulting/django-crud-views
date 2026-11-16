@@ -1,21 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.37"
+current_phase_name: cv_access Pydantic JSON contract validation and schema
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.36 complete, ready to plan Phase 7
-last_updated: "2026-11-16T11:04:16.114Z"
+stopped_at: Phase 06.37 context gathered
+last_updated: "2026-11-16T16:32:17.122Z"
 last_activity: 2026-11-16
 last_activity_desc: "Phase 06.36 shipped as PR #377"
-state_head: 98520f8f9c8abbc1347e73598b7b006e290828a4
+state_head: 7bfbc21e918faa340a3736006222b68f7b663a0b
 progress:
-  total_phases: 43
+  total_phases: 44
   completed_phases: 42
   total_plans: 240
   completed_plans: 240
-  percent: 100
 milestone_name: milestone
 ---
 
@@ -28,17 +27,17 @@ Total Phases: 43
 See: .planning/PROJECT.md (updated 2026-11-16)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.37 — cv_access Pydantic JSON contract validation and schema (#375)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.37 — cv_access Pydantic JSON contract validation and schema (#375)
 Current Plan: Not started
 Total Plans in Phase: Not planned
 Status: Ready to plan
 Last activity: 2026-11-16 -- Phase 06.36 shipped as PR #377
 
-Next: $gsd-discuss-phase 7 — settle the theme-surface stability review scope.
+Next: $gsd-discuss-phase 06.37 — then plan the #375 contract work before Phase 7.
 
 ### Phase 06.36 gap closure completed — 2026-11-16
 
@@ -1858,6 +1857,7 @@ None yet.
 - Phase 06.34 inserted after Phase 06.33: Access trace: cv_access command and manage page form (#370); approved design D-01–D-23 (URGENT)
 - Phase 06.35 inserted after Phase 06.34: Approved issue #372; corrected from initial 06.25.2 at maintainer request; D-01–D-07 context captured
 - Phase 06.36 inserted after Phase 06.35: ViewSet configuration CLI and versioned JSON contract (#371); approved D-01–D-09, A-01–A-04 and acceptance items 1–10; builds on completed #372 before Phase 7 (URGENT)
+- Phase 06.37 inserted after Phase 06.36: cv_access Pydantic JSON contract validation and schema (#375) (URGENT)
 
 ## Deferred Items
 
@@ -1867,6 +1867,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T10:39:16.342397+00:00
-Stopped at: Phase 06.36 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-16T16:32:12.101Z
+Stopped at: Phase 06.37 context gathered
+Resume file: .planning/phases/06.37-cv-access-pydantic-json-contract-validation-and-schema-375/06.37-CONTEXT.md

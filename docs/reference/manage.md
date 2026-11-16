@@ -398,12 +398,14 @@ python manage.py cv_access /customer/5/order/12/update/ 42 --as-json --no-color
 python manage.py cv_access 'https://example.com/customer/5/order/12/update/?page=2#item' sam
 python manage.py cv_access /author/list/ --anonymous
 python manage.py cv_access /author/list/ sam --as-json | jq
+python manage.py cv_access --schema
 ```
 
 Replace paths/users with your project's routes and accounts. Users are loaded fresh from the project's user
 model; username matches take precedence over primary keys, including numeric usernames. A username conversion
-failure still permits primary-key lookup. Unknown selectors produce normal command/form feedback. Supply a user
-or `--anonymous`, never both. Full URLs are reduced to their path: host, query and fragment do not affect tracing.
+failure still permits primary-key lookup. Unknown selectors produce normal command/form feedback.
+For tracing, supply a user or `--anonymous`, never both; `--schema` takes neither.
+Full URLs are reduced to their path: host, query and fragment do not affect tracing.
 The extracted URI path is decoded once, as for a Django request, including URLs returned by `reverse()`.
 Literal plus signs stay unchanged; encoded question marks, hashes and percent signs remain path content.
 Text output contains Path, Route, View and User headers, a declaration-only Plan, numbered Steps, Limitations
@@ -414,8 +416,9 @@ This user may open the page; handler-phase checks are not evaluated.
 ```
 
 Terminal output uses green for passed/allowed, red for denial, dim for skipped/not reached, and yellow for errors.
-JSON colors keys and result/outcome values. Ordinary pipes and `--no-color` are uncolored; `--force-color`
-explicitly enables ANSI colors even in a pipe, so do not force color when a JSON parser expects plain JSON.
+Trace JSON colors keys and result/outcome values. Ordinary pipes and `--no-color` are uncolored; `--force-color`
+explicitly enables ANSI colors in trace output even in a pipe, so do not force color when a JSON parser expects
+plain trace JSON. `--schema` output is always plain.
 The command uses fixed colors once Django enables coloring, not the configurable `DJANGO_COLORS` role palette.
 
 ### Outcomes and streams
@@ -429,9 +432,15 @@ The command uses fixed colors once Django enables coloring, not the configurable
 | `error` | `2` | Exception or unsupported response, with class/message evidence. |
 | `no_such_route` | `2` | Path does not resolve to a CrudView. |
 
+| Invocation or failure | Exit | Streams |
+|---|---|---|
+| `--schema` | `0` | plain generated JSON Schema on stdout; no trace |
+| Output validation failure | `2` | one `Output validation failed (ValidationError): ...` line on stderr; no trace document |
+| Unknown user or wrong invocation | `2` | stderr diagnostic; no trace document |
+
 Traces go to stdout in both formats, including denied/not-found/error traces; the nonzero status does not add
-another error line. An unknown user or wrong invocation produces a diagnostic on stderr and no trace document
-(exit 2), even with `--as-json`. Text no-route output is the one-line stderr message
+another error line. An unknown user, a wrong invocation or an output validation failure produces a diagnostic on
+stderr and no trace document (exit 2), even with `--as-json`. Text no-route output is the one-line stderr message
 `No such CRUD view route: /missing/`. JSON no-route output is a full stdout document, with empty stderr.
 For an unresolved `/missing/`, `python manage.py cv_access /missing/ --anonymous --as-json --no-color` emits:
 
@@ -466,7 +475,7 @@ tracing. Check `version` before consuming the result. Codes are stable English i
 | `path` | Normalized project path. |
 | `route` | Resolved route name, or null. |
 | `view` | Dotted resolved view class, or null. |
-| `user` | Mapping with string/null `pk`, string/null `username`, boolean `active` and `anonymous`. |
+| `user` | Mapping with string/null `pk`, string/null `username`, boolean `active` and `anonymous`, or `{}` before actor resolution. |
 | `outcome` | One of the six outcome codes above. |
 | `decided_by` | One-based deciding step number, or null. |
 | `plan` | Ordered declaration-only requirement mappings; may contain unavailable metadata. |
@@ -507,6 +516,35 @@ people. Sources retain requirements such as `ancestor_policy.read` or configured
 Observed `how` values include `anonymous`, `inactive`, `active`, `no_rule`, `disabled`, `group_member`,
 `not_member`, `observed_boundary`, and Guardian's `object grant`, `model fallback`, `active superuser`.
 The last three describe the real successful grant branch, including direct/group grants, not another permission probe.
+
+### Schema and compatibility
+
+```bash
+python manage.py cv_access --schema
+```
+
+`--schema` prints the JSON Schema of the version-1 trace document and exits `0`. It takes no path, user or
+`--anonymous`; combining them is a usage error with exit `2`. `--as-json` is accepted and redundant. The output
+stays plain JSON even with `--force-color`. Schema mode runs no trace, user lookup, database or permission read
+beyond normal Django startup. No static schema file is published; the command is the single source.
+
+The schema is generated from the same internal models that validate every trace. Keys that may be absent are not
+required: the `user` mapping is `{}` when a trace fails before actor resolution, and plan rows omit the keys they
+do not carry. The schema rejects keys the running version does not emit (`additionalProperties: false`), so a
+validator that keeps a saved copy should regenerate it after upgrading.
+
+Within version 1, new optional fields are additive and consumers must tolerate them. A new closed-enum value, a
+removed or renamed field, or a changed meaning requires a version bump or an explicit maintainer decision.
+The generated schema is authoritative.
+
+Both text and JSON output validate the collected trace before printing. On failure no trace document is written:
+one stderr line `Output validation failed (ValidationError): ...` names the exception class and the field
+locations, never their values, and the command exits `2`. This is not an outcome and adds no document shape.
+Project hooks that return non-string values, for example a `cv_get_requirement()` value, now produce this failure.
+The manage page's [Access check](#access-check) renders the same trace dictionary and does not run this validation.
+
+The Pydantic models behind the schema are internal and not a public Python API. `AccessTrace`/`AccessStep` and
+`to_dict()` remain the Python interface; the JSON document and the generated schema are the machine contract.
 
 ### Custom method boundaries
 

@@ -58,6 +58,23 @@ def test_translation_proxy_subclasses_and_arbitrary_promises_are_not_evaluated()
             assert normalize_value(translated).value == str(translated)
 
 
+def test_known_translation_wrappers_support_supported_django_versions():
+    values = [
+        gettext_lazy("hello"),
+        gettext_lazy(message="hello"),
+        pgettext_lazy("context", "hello"),
+        pgettext_lazy(context="context", message="hello"),
+    ]
+    for language in ("en", "de"):
+        with override(language):
+            for value in values:
+                try:
+                    record = normalize_value(value)
+                except AttributeError as exc:
+                    pytest.fail(f"Known Django translation proxy layout must be supported: {exc}")
+                assert record.kind == "native" and record.value == str(value)
+
+
 @pytest.mark.parametrize(
     "model,data",
     [

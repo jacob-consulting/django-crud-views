@@ -130,7 +130,12 @@ The new `cv_get_requirement()` classmethod describes configuration, not a user's
 `has_permission()` gates with the same method; arbitrary `dispatch()`/`get_object()` changes cannot be inferred.
 The existing manage admission, nested guards and optional-app boundaries remain unchanged. Resource support
 is described above; the opt-in another-user evaluator (#370) is documented in
-[Access check](reference/manage.md#access-check). A configuration-dump command (#371) is not included.
+[Access check](reference/manage.md#access-check). The delivered `cv_manage_view` command (#371) provides
+catalogue discovery, configuration inspection and generated schema output; see the
+[command reference](reference/manage.md#cv_manage_view). This additive command preserves page and access-trace
+contracts. Custom manage builders should preserve `super()` and complete export metadata as described in the
+[customization recipe](reference/theme.md#configuration-export-customization); legacy replacements lacking that
+metadata leave the affected export section unavailable rather than reconstructing truncated values.
 
 ## Developer-only manage diagnostics
 

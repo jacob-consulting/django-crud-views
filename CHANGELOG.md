@@ -633,6 +633,14 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **ViewSet configuration command** (#371): `cv_manage_view --list` discovers registered ViewSets;
+  targeted inspection accepts an optional view key and explicit `--user`, while `--schema` publishes the
+  complete version-1 JSON contract. Text and validated JSON preserve defaults, full supported values,
+  provenance, no-actor/selected-actor diagnostics, holder visibility and partial failures with exits 0/1/2.
+  Core, Guardian and static Resource inspection reuse configured manage builders; existing page dictionaries,
+  query costs and access-trace contracts are preserved. Includes German command text and executable customization
+  examples. See the [command reference](docs/reference/manage.md#cv_manage_view).
+
 - **Resource manage pages** (#372): Resource ViewSets use the shared developer-only manage page, including
   nested model/Guardian ancestry, metadata provenance, explicit permission mappings and real hierarchy routes.
   Built-in inspection never calls Resource item/list loaders. The new `manage:badge-resource` key defaults to

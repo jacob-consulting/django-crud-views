@@ -127,3 +127,27 @@ def test_documented_section_inventory_and_boundaries():
     theme = reference("theme")
     assert "delivered `cv_manage_view`" in theme and "(#371)" in theme
     assert "configuration-dump command remains a separate follow-up" not in theme
+
+
+def test_delivered_release_and_migration_guidance():
+    changelog = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased\n", 1)[1].split("\n## ", 1)[0]
+    migration = (ROOT / "docs/migrating-1.0.md").read_text()
+    # Restrict classification to this issue's entry, preserving unrelated historical breaking entries.
+    phase_entries = []
+    for section in re.split(r"^### ", changelog, flags=re.M)[1:]:
+        heading, body = section.split("\n", 1)
+        for entry in re.split(r"^- ", body, flags=re.M)[1:]:
+            if "(#371)" in entry:
+                phase_entries.append((heading, entry))
+                assert "docs/reference/manage.md#cv_manage_view" in entry
+                if heading == "Breaking":
+                    assert "## ViewSet configuration command" in migration
+                    assert "cv_manage_view" in migration.split("## ViewSet configuration command", 1)[1]
+    assert len(phase_entries) == 1 and phase_entries[0][0] == "Added"
+    for text in (reference("theme"), migration):
+        assert "delivered `cv_manage_view` command" in text
+        assert "(#371)" in text and "manage.md#cv_manage_view" in text
+        assert "configuration-dump command (#371) is not included" not in text
+    # The artifact is produced by plan05; only the final delivery check reads its existence.
+    assert (ROOT / "docs/reference/cv_manage_view.schema.json").is_file()
+    assert "[complete generated JSON Schema](cv_manage_view.schema.json)" in reference("manage")

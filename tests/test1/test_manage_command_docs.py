@@ -97,14 +97,13 @@ def test_documented_configured_recipe_and_teardown(monkeypatch, legacy):
             assert row["value"]["kind"] == "native"
             assert row["value"]["value"] == "Supported by the project team"
             assert row["source"]["code"] == "default"
-        with pytest.raises(RuntimeError, match="recipe teardown"):
-            with manage.manage_export():
-                manage.get_manage_facts(vs, None)
-                raise RuntimeError("recipe teardown")
+        with pytest.raises(RuntimeError, match="recipe teardown"), manage.manage_export():
+            manage.get_manage_facts(vs, None)
+            raise RuntimeError("recipe teardown")
         assert "_manage_export_enabled" not in manage.__dict__
         assert manage.get_manage_facts(vs, None) == before
-    assert dict(_REGISTRY) == registry and check._VOCAB_CACHE == vocabulary
-    assert settings.ROOT_URLCONF == original_urlconf and get_resolver().url_patterns is original_patterns
+    assert dict(_REGISTRY) == registry and vocabulary == check._VOCAB_CACHE
+    assert original_urlconf == settings.ROOT_URLCONF and get_resolver().url_patterns is original_patterns
     assert module.__name__ not in sys.modules
 
 

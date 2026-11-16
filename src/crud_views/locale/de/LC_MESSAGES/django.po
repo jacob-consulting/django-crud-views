@@ -1485,3 +1485,84 @@ msgid ""
 msgstr ""
 "Ressource: explizit zugeordnete Django-Berechtigung; keine Berechtigungen für "
 "einzelne Elemente. Die Zugriffszeile enthält die effektiven Berechtigungen."
+
+#: management/commands/cv_manage_view.py
+msgid "ViewSet configuration"
+msgstr "ViewSet-Konfiguration"
+
+#: management/commands/cv_manage_view.py
+msgid "Catalogue"
+msgstr "Katalog"
+
+#: management/commands/cv_manage_view.py
+msgid "Identity"
+msgstr "Identität"
+
+#: management/commands/cv_manage_view.py
+msgid "Facts"
+msgstr "Fakten"
+
+#: management/commands/cv_manage_view.py
+msgid "Routes"
+msgstr "Routen"
+
+#: management/commands/cv_manage_view.py
+msgid "System checks"
+msgstr "Systemprüfungen"
+
+#: management/commands/cv_manage_view.py
+msgid "Errors"
+msgstr "Fehler"
+
+#: management/commands/cv_manage_view.py
+#, python-format
+msgid "%(section)s (selected view: %(view)s)"
+msgstr "%(section)s (ausgewählte Ansicht: %(view)s)"
+
+#: management/commands/cv_manage_view.py
+#, python-format
+msgid "%(section)s (ViewSet-wide)"
+msgstr "%(section)s (gesamtes ViewSet)"
+
+#: management/commands/cv_manage_view.py
+msgid "Holder rows show direct grants; the selected actor row shows effective grants."
+msgstr "Inhaberzeilen zeigen direkte Berechtigungen; die Zeile des ausgewählten Benutzers zeigt effektive Berechtigungen."
+
+#: management/commands/cv_manage_view.py
+msgid "Resource grants are global; there are no per-item grants."
+msgstr "Ressourcen-Berechtigungen gelten global; es gibt keine Berechtigungen für einzelne Elemente."
+
+#: management/commands/cv_manage_view.py
+msgid "Model grants are global; Guardian object counts are reported separately where applicable."
+msgstr "Modellberechtigungen gelten global; Guardian-Objektanzahlen werden gegebenenfalls gesondert ausgewiesen."
+
+#: management/commands/cv_manage_view.py
+msgid "User-holder details and superuser names are hidden; counts remain visible."
+msgstr "Details zu berechtigten Benutzern und Namen von Superusern sind ausgeblendet; Anzahlen bleiben sichtbar."
+
+#: management/commands/cv_manage_view.py
+msgid "Active superuser totals describe global grants, not the strict object helper."
+msgstr "Anzahlen aktiver Superuser beschreiben globale Berechtigungen, nicht die strikte Objekthilfsmethode."
+
+#: management/commands/cv_manage_view.py
+msgid "Inspect registered ViewSet configuration and permission diagnostics."
+msgstr "Konfiguration und Berechtigungsdiagnosen registrierter ViewSets prüfen."
+
+#: management/commands/cv_manage_view.py
+msgid "Choose --list, --schema or a ViewSet name."
+msgstr "Wählen Sie --list, --schema oder einen ViewSet-Namen."
+
+#: management/commands/cv_manage_view.py
+#, python-format
+msgid "Unknown ViewSet: %(name)s"
+msgstr "Unbekanntes ViewSet: %(name)s"
+
+#: management/commands/cv_manage_view.py
+#, python-format
+msgid "Unknown view: %(name)s"
+msgstr "Unbekannte Ansicht: %(name)s"
+
+#: management/commands/cv_manage_view.py
+#, python-format
+msgid "Unknown user: %(name)s"
+msgstr "Unbekannter Benutzer: %(name)s"

@@ -132,7 +132,7 @@ def _exit_code(report):
 
 
 def _error(exc, section=None, *, code="collection_failed"):
-    validation = exc.errors(include_input=False, include_context=False) if isinstance(exc, ValidationError) else []
+    validation = exc.errors(include_context=False) if isinstance(exc, ValidationError) else []
     return ReportError(
         code=code,
         section=section,

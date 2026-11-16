@@ -465,6 +465,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Pydantic 2.2.1 compatibility:** Resource initialization uses public class field metadata, and
+  `cv_manage_view` retains partial reports for invalid section data without relying on a newer
+  validation-error API. Formset `parent` and `children` declarations use recursive `FormSet` types,
+  preventing startup warnings and rejecting invalid nested nodes at the dependency floor. Trees may
+  mix base and subclass declarations instead of requiring subclass-only related nodes on newer Pydantic.
+
 - Read class annotations through Python's public inspection API so Python 3.15 manage diagnostics include annotation-only attributes and Guardian policies do not trigger false W280 warnings.
 
 - Invalid nested formset fields now redisplay their errors instead of raising an `AttributeError`

@@ -6,6 +6,11 @@ children through their own separate CRUD views. A formset can itself declare chi
 row can carry its own nested formset (e.g. each *question* row carries its own *choices*
 formset).
 
+`FormSet.parent` and the values in `FormSet.children` are `FormSet` declarations, including
+instances of subclasses. A tree may mix base and subclass declarations; a subclass does not
+restrict related nodes to its own type. These fields validate nested declarations on every
+supported Pydantic version, including 2.2.1.
+
 !!! example "Try it live"
     The [Formsets example](https://django-crud-views-demo.onrender.com/formsets/questionnaire/) and the
     [Formsets + Conditional example](https://django-crud-views-demo.onrender.com/formsets-conditional/conference/)

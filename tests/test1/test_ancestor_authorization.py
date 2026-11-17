@@ -25,7 +25,6 @@ import types
 import uuid
 from collections import Counter
 from contextlib import contextmanager
-from importlib import import_module
 from types import SimpleNamespace
 
 import pytest
@@ -36,6 +35,7 @@ from django.test import Client, override_settings
 from django.test.utils import CaptureQueriesContext, isolate_apps
 from django.urls import clear_url_caches, include, path, reverse
 
+import tests.test1.project.urls  # noqa: F401 - registers the project ViewSets at collection, before any test runs
 from crud_views.lib import check as check_module
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet, ViewSet
 from tests.test1.app.models import Book, BookNote, Publisher
@@ -47,9 +47,6 @@ from tests.test1.app.models import Book, BookNote, Publisher
 def isolated_routes(build):
     """Run ``build(sfx)`` (which constructs ViewSets/views and returns ``(namespace, viewsets_to_route)``) behind
     a temporary ROOT_URLCONF; restore registry, vocabulary cache, URL caches and ContentType cache afterwards."""
-    # Import the project's views first: if they first registered inside the block, the restore below would drop
-    # their ViewSets for the rest of the process, because the already-imported modules never register again.
-    import_module("tests.test1.project.urls")
     sfx = uuid.uuid4().hex[:8]
     modname = f"tests.test1._ancestor_urls_{sfx}"
     with _REGISTRY_LOCK:

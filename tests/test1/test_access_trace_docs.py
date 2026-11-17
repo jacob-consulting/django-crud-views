@@ -387,7 +387,7 @@ def test_documented_invocation_streams_match_real_exits(monkeypatch):
         assert caught.value.returncode == rows["Output validation failure"][0] == 2
         assert not out.getvalue() and not err.getvalue()
         assert str(caught.value).startswith("Output validation failed (ValidationError): ")
-    assert "`Output validation failed (ValidationError): ...`" in rows["Output validation failure"][1]
+    assert "`CommandError: Output validation failed (ValidationError): ...`" in rows["Output validation failure"][1]
     assert "no trace document" in rows["Output validation failure"][1]
     assert rows["Unknown user or wrong invocation"][0] == 2
     # The six outcome rows remain the only backticked word/digit rows.

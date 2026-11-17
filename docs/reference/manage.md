@@ -435,7 +435,7 @@ The command uses fixed colors once Django enables coloring, not the configurable
 | Invocation or failure | Exit | Streams |
 |---|---|---|
 | `--schema` | `0` | plain generated JSON Schema on stdout; no trace |
-| Output validation failure | `2` | one `Output validation failed (ValidationError): ...` line on stderr; no trace document |
+| Output validation failure | `2` | one `CommandError: Output validation failed (ValidationError): ...` line on stderr; no trace document |
 | Unknown user or wrong invocation | `2` | stderr diagnostic; no trace document |
 
 Traces go to stdout in both formats, including denied/not-found/error traces; the nonzero status does not add
@@ -511,7 +511,9 @@ records their gate result without evaluating another requirement source or calli
 Kinds are `route`, `validation`, `actor_admission`, `ancestor_lookup`, `ancestor_gate`, `own_permission`,
 `object_lookup`, `object_grant`, `list_filter`, `action_state`, `manage_gate`, `custom_gate`, `login_middleware`
 and `limitation`. Step results are `passed`, `denied`, `not_found`, `login_redirect`, `error`, `skipped`,
-`not_reached`, `not_evaluated` and `unavailable` (planning metadata).
+`not_reached`, `not_evaluated` and `unavailable`. Version 1 never emits `skipped`, `login_redirect` or `unavailable`
+on a step; they are reserved. A login redirect is a `denied` step with the `login_redirect` outcome, and
+`unavailable` is planning metadata on plan rows.
 Outcomes, kinds, step results and providers are closed sets in version 1; adding a value follows the rule in
 [Schema and compatibility](#schema-and-compatibility). Plan rows use the same kinds and only the `unavailable` result.
 Use codes for scripts and message text for people. Sources retain requirements such as `ancestor_policy.read` or
@@ -533,16 +535,21 @@ beyond normal Django startup. No static schema file is published; the command is
 
 The schema is generated from the same internal models that validate every trace. Keys that may be absent are not
 required: the `user` mapping is `{}` when a trace fails before actor resolution, and plan rows omit the keys they
-do not carry. The schema rejects keys the running version does not emit (`additionalProperties: false`), so a
-validator that keeps a saved copy should regenerate it after upgrading.
+do not carry. The schema cannot express that `user` is either `{}` or complete with boolean `active` and
+`anonymous` flags; the command enforces this before printing. The schema rejects keys the running version does
+not emit (`additionalProperties: false`), so a validator that keeps a saved copy should regenerate it after
+upgrading django-crud-views or Pydantic. The schema text varies with the installed Pydantic version: validate
+documents against it instead of comparing schema bytes.
 
 Within version 1, new optional fields are additive and consumers must tolerate them. A new closed-enum value, a
 removed or renamed field, or a changed meaning requires a version bump or an explicit maintainer decision.
 The generated schema is authoritative.
 
 Both text and JSON output validate the collected trace before printing. On failure no trace document is written:
-one stderr line `Output validation failed (ValidationError): ...` names the exception class and the field
-locations, never their values, and the command exits `2`. This is not an outcome and adds no document shape.
+one stderr line `CommandError: Output validation failed (ValidationError): ...` names the exception class and the
+field locations, never their values, and the command exits `2`. The message is translated (German:
+`Ausgabevalidierung fehlgeschlagen`); scripts should detect the failure by exit `2` with empty stdout, not by
+the text. This is not an outcome and adds no document shape.
 Project hooks that return non-string values, for example a `cv_get_requirement()` value, now produce this failure.
 The manage page's [Access check](#access-check) renders the same trace dictionary and does not run this validation.
 

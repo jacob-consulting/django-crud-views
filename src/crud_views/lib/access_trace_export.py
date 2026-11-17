@@ -33,7 +33,8 @@ Provider = Literal["core", "guardian", "model", "none"]
 
 class _TraceModel(BaseModel):
     # Unknown keys are rejected here; the documentation still asks consumers to tolerate additive fields.
-    # allow_inf_nan is inert (no float fields) and kept only so the config matches manage_report.WireModel.
+    # allow_inf_nan is inert (no float fields) and kept only so the options shared with manage_report.WireModel
+    # stay identical.
     model_config = ConfigDict(strict=True, allow_inf_nan=False, revalidate_instances="always", extra="forbid")
 
 

@@ -548,8 +548,10 @@ The generated schema is authoritative.
 Both text and JSON output validate the collected trace before printing. On failure no trace document is written:
 one stderr line `CommandError: Output validation failed (ValidationError): ...` names the exception class and the
 field locations, never their values, and the command exits `2`. The message is translated (German:
-`Ausgabevalidierung fehlgeschlagen`); scripts should detect the failure by exit `2` with empty stdout, not by
-the text. This is not an outcome and adds no document shape.
+`Ausgabevalidierung fehlgeschlagen`), so scripts should not match its text. Exit `2` with empty stdout means
+only that no trace document was written: an unknown user, a wrong invocation and a text-mode `no_such_route`
+look the same. The class name `(ValidationError)` in the line is not translated.
+This is not an outcome and adds no document shape.
 Project hooks that return non-string values, for example a `cv_get_requirement()` value, now produce this failure.
 The manage page's [Access check](#access-check) renders the same trace dictionary and does not run this validation.
 

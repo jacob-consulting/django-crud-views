@@ -113,6 +113,10 @@ def test_every_documented_exit_code_matches_real_dispatch(outcome):
     assert code == int(codes[outcome])
     step_section = section("Step fields")
     assert all(f"`{step['kind']}`" in step_section and f"`{step['result']}`" in step_section for step in data["steps"])
+    assert "never emits `skipped`, `login_redirect` or `unavailable` on a step" in " ".join(step_section.split())
+    assert not {step["result"] for step in data["steps"]} & {"skipped", "login_redirect", "unavailable"}
+    if outcome == "login_redirect":
+        assert data["steps"][data["decided_by"] - 1]["result"] == "denied"
     if outcome == "error":
         assert data["steps"][data["decided_by"] - 1]["exception"] == {
             "class": "ValueError",
@@ -399,7 +403,9 @@ def test_documented_validation_failure_is_not_an_outcome():
     assert "### Schema and compatibility\n" in reference()
     text = " ".join(section("Schema and compatibility").split())
     for phrase in (
-        "Output validation failed",
+        "`CommandError: Output validation failed (ValidationError): ...`",
+        "Exit `2` with empty stdout means only that no trace document was written",
+        "The class name `(ValidationError)` in the line is not translated.",
         "not an outcome",
         "no trace document",
         "field locations",

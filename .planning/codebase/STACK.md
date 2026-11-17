@@ -1,87 +1,90 @@
 ---
-last_mapped_commit: a78b63db1f637b6b8b4cf6b4aaa24885a061ae26
-last_mapped_at: 2026-11-16
+last_mapped_commit: 54c18a1b65f038e5fcdb5dc0038782133f93ffb8
+last_mapped_at: 2026-11-17
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-16
+**Analysis Date:** 2026-11-17
 
 ## Languages
 
 **Primary:**
-- Python (>=3.12) - Django package implementation, test suite, example site, and developer scripts (`pyproject.toml`, `src/`, `tests/`, `examples/`, `scripts/`)
+- Python >=3.12 (tested 3.12, 3.13, 3.14, 3.15) - all package code in `src/`
+- Django templates (HTML, Bootstrap 5) - `src/crud_views/templates/`
 
 **Secondary:**
-- JavaScript (Node >=20 for the dev test harness) - browser assets under `src/crud_views/static/` and Vitest tests/configuration (`package.json`, `vitest.config.js`)
-- HTML/Django templates and CSS - package and example UI (`src/*/templates/`, `src/*/static/`, `examples/bootstrap5/`)
+- JavaScript (Node >=20) - dev-only unit-test harness (`package.json`, `vitest.config.js`, `vitest.integration.config.js`); package static JS under `src/*/static/`
+- YAML - CI (`.github/workflows/*.yml`), `taskfile.yaml`, `mkdocs.yml`, `render.yaml`
 
 ## Runtime
 
 **Environment:**
-- Python >=3.12 for the distributable package (`pyproject.toml`); the Nox matrix covers Python 3.12–3.15 and Django 4.2, 5.2, and 6.0, skipping Django 4.2 on Python 3.14+ (`noxfile.py`)
-- Node.js >=20 only for the separate JavaScript test harness (`package.json`)
+- CPython 3.12 baseline (`taskfile.yaml` var `PYTHON`, `.readthedocs.yaml`); demo deploy pins 3.13 (`render.yaml`)
+- Django 4.2 / 5.2 / 6.0 supported (Django 4.2 skipped on Python 3.14+ in `noxfile.py`)
 
 **Package Manager:**
-- Python: `uv` for local development and Nox environment creation; `pip` is used in CI and Render builds (`taskfile.yaml`, `noxfile.py`, `.github/workflows/`)
-- Lockfiles: `uv.lock`, `package-lock.json`; hashed requirements are maintained in `.github/requirements/ci.txt`, `docs/requirements.txt`, and `requirements/demo.txt`
+- uv (venv, `uv.lock`, nox `venv_backend="uv"`); pip with hashes in CI (`.github/requirements/ci.txt`)
+- npm for JS tests (`package-lock.json`)
+- Lockfile: present (`uv.lock`, `package-lock.json`, `docs/requirements.txt` hashed)
 
 ## Frameworks
 
 **Core:**
-- Django >=4.2 - reusable CRUD class-based view package and example project (`pyproject.toml`, `src/crud_views/`)
-- Pydantic >=2.2.1 - typed `CrudViewsSettings` configuration (`src/crud_views/lib/settings.py`)
-- django-tables2 and django-filter - list tables and filtering (`pyproject.toml`, `src/crud_views/lib/`)
-- django-crispy-forms with crispy-bootstrap5 - form rendering and Bootstrap 5 templates (`src/crud_views/lib/crispy/`)
-- Optional integration extras: `workflow` (django-fsm-2, django-fsm-2-admin), `polymorphic` (django-polymorphic), `ordered` (django-ordered-model), and `guardian` (django-guardian); `all` enables all four (`pyproject.toml`)
+- Django >=4.2 - web framework; class-based views
+- Pydantic >=2.2.1 - ViewSet and settings models (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/settings.py`)
+- django-tables2 >=2.5.3 - list tables
+- django-filter >=21.1 - list filtering
+- django-crispy-forms >=2.0 + crispy-bootstrap5 >=2023.10 - forms (`src/crud_views/lib/crispy/`)
 
 **Testing:**
-- pytest with pytest-django, pytest-cov, pytest-random-order, pytest-mock, and pytest-xdist (`pyproject.toml`, `tests/`)
-- Nox provides the Python/Django compatibility matrix and installs the project as a built distribution (`noxfile.py`)
-- Vitest + jsdom + jQuery for the standalone JS test suite (`package.json`, `vitest.config.js`)
+- pytest, pytest-django, pytest-xdist, pytest-cov, pytest-mock, pytest-random-order; lxml, cssselect, polib (`pyproject.toml` `test` extra)
+- nox - Python x Django matrix (`noxfile.py`)
+- vitest ^5.1 + jsdom ^31 + jquery ~3.7 - JS tests
 
 **Build/Dev:**
-- Hatchling is the Python build backend; wheel and source-distribution contents are explicitly configured (`pyproject.toml`)
-- Ruff formats and lints Python (120-character lines, double quotes); Task runs common developer commands (`pyproject.toml`, `taskfile.yaml`)
-- MkDocs with the awesome-pages plugin and pymdown-extensions builds documentation (`mkdocs.yml`, `docs/requirements.in`)
-- bump-my-version synchronizes package version references (`pyproject.toml`)
+- hatchling - build backend (`pyproject.toml`)
+- ruff >=0.17,<0.18 - lint/format (line length 120, rules E,F,I,UP,B,C4,SIM,RUF)
+- pre-commit (`.pre-commit-config.yaml`), bump-my-version, go-task (`taskfile.yaml`)
+- mkdocs + awesome-pages + pymdown-extensions, readthedocs theme (`mkdocs.yml`)
 
 ## Key Dependencies
 
 **Critical:**
-- `Django` - web framework and host-project runtime; package itself does not own a Django project or deployment (`pyproject.toml`)
-- `pydantic` - validates and stores package settings (`src/crud_views/lib/settings.py`)
-- `python-box` - configuration/context mapping support (`pyproject.toml`)
-- `django-tables2`, `django-filter`, `django-crispy-forms`, `crispy-bootstrap5` - optional UI ecosystem integration used by the core app (`pyproject.toml`)
+- python-box >=6.0.2, typing-extensions >=4.7.1 - core runtime deps
 
-**Infrastructure:**
-- `django-guardian`, `django-polymorphic`, `django-fsm-2`, and `django-ordered-model` are opt-in extension dependencies, not mandatory for core users (`pyproject.toml`)
-- `gunicorn` and `whitenoise` are used by the hosted example demo, not declared as core runtime dependencies (`render.yaml`, `requirements/demo.txt`, `examples/bootstrap5/project/settings_demo.py`)
-- `django-pipeline` appears in test extras for asset-bundling coverage (`pyproject.toml`)
+**Optional extras (one Django app each):**
+- `workflow`: django-fsm-2 >=4.0.0, django-fsm-2-admin >=2.0.1 (`src/crud_views_workflow`)
+- `polymorphic`: django-polymorphic >=3.1.0 (`src/crud_views_polymorphic`)
+- `ordered`: django-ordered-model >=3.4.3
+- `guardian`: django-guardian >=2.4 (`src/crud_views_guardian`)
+- `all` aggregates the above; `object_detail` app has no extra (`src/crud_views_object_detail`)
+- Test-only: django-pipeline (asset bundling tests)
+
+**Infrastructure (demo only, `requirements/demo.txt`):**
+- gunicorn >=23, whitenoise >=6.9, django-ratelimit >=4.1
 
 ## Configuration
 
 **Environment:**
-- Core configuration is read from Django settings with the `CRUD_VIEWS_` prefix and defaults in `src/crud_views/lib/settings.py`; the model validates values through Pydantic
-- The package has no required environment variables. Host applications provide Django settings, database configuration, auth backends, and deployment secrets
-- The public example uses `SECRET_KEY` and Render-provided `RENDER_EXTERNAL_HOSTNAME` in `examples/bootstrap5/project/settings_demo.py`; only variable names are documented here
-- `.env` files are not inspected; `taskfile.yaml` references an optional `dev/.env` for the local Cloudflare tunnel
+- Library settings: Pydantic `CrudViewsSettings` reading `CRUD_VIEWS_*` Django settings (`src/crud_views/lib/settings.py`), e.g. `CRUD_VIEWS_EXTENDS`, `CRUD_VIEWS_THEME`, `CRUD_VIEWS_MANAGE_VIEWS_ENABLED`, `CRUD_VIEWS_MANAGE_ACCESS_TRACE`
+- Test env flag `CV_ACCESS_RECORD_REQUESTS` (set in `noxfile.py`)
+- `.env`-style file for dev tunnel at `dev/.env` (not read; template `dev/.env.example`)
+- Demo: `DJANGO_SETTINGS_MODULE=project.settings_demo`, `SECRET_KEY` (`render.yaml`)
 
 **Build:**
-- Python metadata, dependency extras, Hatchling targets, pytest, coverage, Ruff, and bump-my-version are in `pyproject.toml`
-- Nox compatibility and targeted floor-test sessions are in `noxfile.py`
-- Node test commands and dev dependencies are in `package.json`; Python JS assets are not a separate published Node package
-- Task command definitions are in `taskfile.yaml`; documentation settings are in `mkdocs.yml` and `.readthedocs.yaml`
+- `pyproject.toml` (wheel packages: five `src/` apps; sdist allowlist checked by `scripts/check_dist.py`)
+- `noxfile.py`, `taskfile.yaml`, `codecov.yml`, `.sonarcloud.properties`
 
 ## Platform Requirements
 
 **Development:**
-- Python >=3.12, `uv`, and Task for the documented full workflow; Node >=20 and npm are needed for JS tests (`taskfile.yaml`, `package.json`)
-- The primary Django test project uses in-memory SQLite databases (`tests/test1/conftest.py`)
+- uv, go-task, Python 3.12+, Node >=20 (JS tests), optional Docker for `dev/docker-compose.yaml`
+- Example project: `examples/bootstrap5/` (SQLite `db.sqlite3`)
 
 **Production:**
-- The package runs inside a consumer's Django deployment and supports the database/backends configured by that project; it does not prescribe hosting or database services
-- The repository's public demo runs on Render with Python 3.13, Gunicorn, WhiteNoise, and SQLite on the free plan (`render.yaml`, `examples/bootstrap5/project/settings_demo.py`)
+- Library published to PyPI via `pypa/gh-action-pypi-publish` (`.github/workflows/publish.yml`)
+- Docs on Read the Docs (`.readthedocs.yaml`); public demo on Render free plan (`render.yaml`)
 
 ---
 
-*Stack analysis: 2026-11-16*
+*Stack analysis: 2026-11-17*

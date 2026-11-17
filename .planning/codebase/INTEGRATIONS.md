@@ -1,102 +1,84 @@
 ---
-last_mapped_commit: a78b63db1f637b6b8b4cf6b4aaa24885a061ae26
-last_mapped_at: 2026-11-16
+last_mapped_commit: 54c18a1b65f038e5fcdb5dc0038782133f93ffb8
+last_mapped_at: 2026-11-17
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-16
+**Analysis Date:** 2026-11-17
+
+The package is a library; it makes no outbound network calls itself. Integrations are Django ecosystem packages plus dev/CI/deploy services.
 
 ## APIs & External Services
 
-**Runtime library integrations:**
-- Django framework APIs - generic class-based views, ORM, auth, forms, templates, URL routing, messages, and system checks (`src/crud_views/`)
-  - SDK/Client: Django itself (`pyproject.toml`)
-  - Auth: supplied by the consuming Django project; core package has no independent credentials
-- django-tables2, django-filter, django-crispy-forms / crispy-bootstrap5 - in-process optional UI packages; there are no remote service calls (`pyproject.toml`, `src/crud_views/`)
-- Asset vendor helper - explicit management-command downloads through Python `urllib.request`; extension packages configure a versioned `VendorSpec` and destination (`src/crud_views/lib/vendor.py`). This is a build/maintenance operation, not an automatic request on normal page handling.
+**Django ecosystem (library integrations):**
+- django-tables2 / django-filter - list tables and filters (`ListViewTableMixin`, `ListViewTableFilterMixin` in `src/crud_views/lib/`)
+- django-crispy-forms + crispy-bootstrap5 - form rendering (`src/crud_views/lib/crispy/`)
+- django-fsm-2 - workflow transitions (`src/crud_views_workflow/lib/`)
+- django-polymorphic - polymorphic create flow (`src/crud_views_polymorphic/lib/`)
+- django-guardian - per-object permissions (`src/crud_views_guardian/lib/`)
+- django-ordered-model - ordered up/down actions (`src/crud_views/lib/views/action_ordered.py`)
+- django-pipeline - asset bundling via `cv_sources` (`src/crud_views/lib/assets.py`; tested only)
 
-**Third-party browser assets:**
-- Bootstrap 5.3.3, Font Awesome 6.7.2, and jQuery 3.7.1 are referenced from public CDNs by the example site's base template (`examples/bootstrap5/project/templates/project/base.html`)
-- Mermaid 11.4.1 is loaded from jsDelivr for documentation rendering (`mkdocs.yml`)
-- Core templates can emit configured external asset URLs through `src/crud_views/lib/assets.py`; the helper renders URLs and does not fetch them
+**Non-ORM data:**
+- `Resource` abstraction lets views show non-ORM data (S3, APIs) supplied by the host project (`src/crud_views/lib/resource.py`); no SDK bundled.
 
-**Build, hosting, and project services:**
-- Render API - GitHub Actions deploy and restart the public demo via `https://api.render.com/v1` (`.github/workflows/demo.yml`)
-  - Client: `curl` in the workflow
-  - Auth: GitHub Actions secrets `RENDER_API_KEY`, `RENDER_SERVICE_ID`; public URL uses the `DEMO_URL` repository variable. No secret values are stored in this document.
-- Codecov - receives coverage reports from GitHub Actions (`.github/workflows/tests.yml`, `.github/workflows/publish.yml`)
-  - Client: pinned `codecov/codecov-action`
-  - Auth: GitHub Actions secret `CODECOV_TOKEN`
-- PyPI - release publishing through the trusted-publishing GitHub Action (`.github/workflows/publish.yml`)
-  - Client: `pypa/gh-action-pypi-publish`
-  - Auth: GitHub Actions OIDC (`id-token: write`) and the `pypi` environment
-- Read the Docs - hosts built MkDocs documentation; Python/docs configuration is in `.readthedocs.yaml` and `mkdocs.yml`
-- GitHub Actions - CI, release, docs, linting, example checks, and demo automation (`.github/workflows/`)
+**Front-end:**
+- Bootstrap 5 theme and jQuery-based JS; templates in `src/crud_views/templates/`
 
 ## Data Storage
 
 **Databases:**
-- No database engine or connection is selected by the reusable package. CRUD views use the consumer's Django ORM configuration (`src/crud_views/`)
-- Tests use two in-memory SQLite aliases (`default` and `shard`) configured by `tests/test1/conftest.py`
-- Local example uses SQLite at `examples/bootstrap5/db.sqlite3`; the public Render demo recreates a SQLite database at startup because its filesystem is ephemeral (`examples/bootstrap5/project/settings.py`, `render.yaml`)
+- Any Django-supported DB; library defines no connection. Example project and tests use SQLite (`examples/bootstrap5/project/settings.py`, in-memory via `tests/test1/conftest.py`)
 
 **File Storage:**
-- The core package does not provide an external file-storage service
-- Render example uses local filesystem storage and WhiteNoise compressed manifest static files (`examples/bootstrap5/project/settings_demo.py`)
-- The vendor helper writes downloaded assets under an explicitly configured project static directory (`src/crud_views/lib/vendor.py`)
+- Local filesystem only (static via whitenoise in demo)
 
 **Caching:**
-- Core package does not require a cache service
-- Public demo uses Django's process-local `LocMemCache` for rate-limit counters, matching its single Gunicorn worker (`examples/bootstrap5/project/settings_demo.py`)
+- None
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Django `contrib.auth` is the core integration; projects configure authentication middleware and backends (`src/crud_views/lib/`, `examples/bootstrap5/project/settings.py`)
-- Optional per-object authorization uses django-guardian and `guardian.backends.ObjectPermissionBackend` (`src/crud_views_guardian/`, `examples/bootstrap5/project/settings.py`)
-- No external identity provider or OAuth/OIDC login integration is detected
+- Django `django.contrib.auth` permissions (`CrudViewPermissionRequiredMixin`); optional django-guardian object permissions
+- No third-party identity provider
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- No runtime error-tracking SDK is configured
-- Codecov reports test coverage from CI (`.github/workflows/tests.yml`)
+- None
 
 **Logs:**
-- Runtime logging uses Django/Python logging facilities; no centralized logging service is configured
-- The Render demo's scheduled reset/deploy and HTTP smoke checks are implemented in GitHub Actions (`.github/workflows/demo.yml`)
+- Standard Python logging; Django system checks in `src/crud_views/checks.py`
+- Coverage reporting to Codecov (`codecov.yml`); SonarCloud config (`.sonarcloud.properties`)
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Reusable library is published to PyPI (`.github/workflows/publish.yml`)
-- Documentation is built/hosted through Read the Docs (`.readthedocs.yaml`)
-- The example/demo site is hosted on Render (`render.yaml`)
+- PyPI (package), Read the Docs (docs), Render free web service (demo, `render.yaml`)
+- Cloudflare tunnel via `cloudflare/cloudflared` Docker image for remote dev (`dev/docker-compose.yaml`, `task cf`)
 
 **CI Pipeline:**
-- GitHub Actions runs Nox Python/Django matrices, examples, JS tests, Ruff, and docs builds; coverage uploads to Codecov (`.github/workflows/`)
-- Release tags trigger package build/publish and Render demo deployment (`.github/workflows/publish.yml`, `.github/workflows/demo.yml`)
+- GitHub Actions in `.github/workflows/`: `tests.yml` (nox matrix py3.12-3.15 x Django 4.2/5.2/6.0, examples sessions, Codecov upload), `lint.yml`, `js.yml`, `docs.yml`, `publish.yml`, `demo.yml` (Render API deploy), `readme-examples.yml`
+- Actions pinned: actions/checkout@v7, actions/setup-python@v7, codecov-action, pypa/gh-action-pypi-publish
 
 ## Environment Configuration
 
 **Required env vars:**
-- Core library: none; settings are supplied by the host Django project (`src/crud_views/lib/settings.py`)
-- Render demo: `SECRET_KEY` and Render-provided `RENDER_EXTERNAL_HOSTNAME` (`examples/bootstrap5/project/settings_demo.py`)
-- GitHub workflows: `CODECOV_TOKEN`, `RENDER_API_KEY`, `RENDER_SERVICE_ID`, and repository variable `DEMO_URL` as applicable (`.github/workflows/tests.yml`, `.github/workflows/demo.yml`)
+- CI secrets: `CODECOV_TOKEN`, `RENDER_API_KEY`, `RENDER_SERVICE_ID`
+- Dev: `TUNNEL_TOKEN` (`dev/.env`)
+- Demo: `DJANGO_SETTINGS_MODULE`, `SECRET_KEY`, `PYTHON_VERSION`
 
 **Secrets location:**
-- Deployment and CI credentials are referenced by name from GitHub Actions secrets; the Render demo key is generated by the Render Blueprint (`.github/workflows/`, `render.yaml`)
-- Local tunnel setup can use `dev/.env`; its contents are intentionally not inspected (`taskfile.yaml`)
+- GitHub Actions secrets; `dev/.env` (local, untracked); Render generated values
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- No external webhook endpoint is provided by the reusable package. The example site exposes ordinary Django URLs only (`examples/bootstrap5/project/urls.py`, `examples/bootstrap5/project/urls_demo.py`)
+- None (demo health check `/login/` only)
 
 **Outgoing:**
-- No runtime webhook delivery is implemented
-- CI workflow calls Render's deploy/restart API during release or scheduled demo maintenance (`.github/workflows/demo.yml`)
+- `demo.yml` calls the Render API to trigger deploys
 
 ---
 
-*Integration audit: 2026-11-16*
+*Integration audit: 2026-11-17*

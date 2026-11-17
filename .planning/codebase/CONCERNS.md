@@ -1,10 +1,11 @@
 ---
-last_mapped_commit: a78b63db1f637b6b8b4cf6b4aaa24885a061ae26
-last_mapped_at: 2026-11-16
+last_mapped_commit: 54c18a1b65f038e5fcdb5dc0038782133f93ffb8
+last_mapped_at: 2026-11-17
 ---
+<!-- refreshed: 2026-11-17 -->
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-16
+**Analysis Date:** 2026-11-17
 
 ## Tech Debt
 
@@ -21,7 +22,7 @@ last_mapped_at: 2026-11-16
 - Fix approach: implement a bounded ViewSet/URL report or remove the command from the public command surface.
 
 **Large central modules:**
-- Issue: shared behavior is concentrated in large modules: `base.py` (1,330 lines), manage views (1,125), Guardian views (666), template tags (667), checks (644), buttons (599), Guardian mixins (560), formsets (556), ancestors (686), ViewSet registration (540), manage reporting (516), and icon handling (495).
+- Issue: shared behavior is concentrated in large modules: `base.py` (1,330 lines), manage views (1,125), ancestors (686), template tags (667), Guardian views (666), checks (644), buttons (599), Guardian mixins (560), formsets (556), ViewSet registration (540), manage reporting (516), and icon handling (495).
 - Files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/views.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/checks.py`, `src/crud_views/lib/view/buttons.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/manage_report.py`, `src/crud_views/lib/icons.py`
 - Impact: shared changes have broad regression surfaces and require navigating several responsibilities in large files.
 - Fix approach: preserve public APIs and extract cohesive subsystems only when a concrete maintenance need justifies the added abstraction. Project decisions are constrained by developer maintainability; see `AGENTS.md` and `superpowers/notes/2026-11-04-opt-in-url-helper-decision.md`.
@@ -38,8 +39,32 @@ last_mapped_at: 2026-11-16
 - Impact: adding or changing a gate can leave diagnostics incomplete if its actual decision is not recorded. Traces intentionally do not run the real handler and do not model arbitrary project middleware effects, external side effects, additional database routing, or host/header/body/method-specific rules; these are documented bounds, not defects.
 - Fix approach: keep reports tied to already-computed authorization results, preserve default-off behavior, and update `tests/test1/test_access_trace*.py` plus `tests/test1/test_access_trace_grid.py` for each supported owner. Expand simulation only for a concrete application need.
 
+**Access-trace contract, CLI and report models (Phases 06.36 and 06.37):**
+- Issue: the structured outputs of `cv_manage_view` and `cv_access` are versioned Pydantic wire models with a published `--schema` and a validation gate. Contract, runner, export and command all carry behavior that tests pin byte-for-byte.
+- Files: `src/crud_views/lib/access_trace.py` (130 lines), `src/crud_views/lib/access_trace_export.py` (129), `src/crud_views/lib/access_trace_runner.py` (463), `src/crud_views/lib/manage_report.py` (516), `src/crud_views/management/commands/cv_access.py` (239), `src/crud_views/management/commands/cv_manage_view.py` (284)
+- Impact: field, literal (`StepResult`, kind, provider) or `extra` changes alter the published schema and the compatibility rule in `docs/reference/manage.md`; Pydantic-version-dependent schema text and gate strictness were fixed in 06.37 by regenerating on upgrade, not by byte comparison.
+- Fix approach: change the models together with `docs/reference/manage.md`, `CHANGELOG.md` and `tests/test1/test_access_trace_contract.py`, `tests/test1/test_access_trace_docs.py`, `tests/test1/test_manage_command_docs.py`; run the Pydantic floor session by hand because it is not in CI.
+
+**Pydantic floor session not in CI and Resource import at the floor:**
+- Issue: `pyproject.toml` declares `pydantic (>=2.2.1)`. `.planning/phases/06.36-viewset-configuration-cli-and-versioned-json-contract-371/deferred-items.md` (status open) records that, at Pydantic 2.2.1, five modules fail collection (20 xdist errors) through a `Resource` subclass import path in `src/crud_views/lib/resource.py` (`__pydantic_init_subclass__`, `cls.model_fields` at line 99), so the command corpus cannot be emitted at the floor. Phase 06.37 added only a manual floor gate (`06.37-VERIFICATION.md`).
+- Files: `src/crud_views/lib/resource.py`, `pyproject.toml`, `noxfile.py`
+- Impact: the declared floor is not demonstrably supported for Resource and the CLI corpus.
+- Fix approach: either raise the Pydantic floor to a version the suite passes on (with `CHANGELOG.md` and `docs/migrating-1.0.md`) or add the floor session to `noxfile.py`/CI; re-verify the recorded failure first since the line reference in the deferred item has moved.
+
+**Unbounded count integers in contract models (deferred IN-03):**
+- Issue: one-based indexes and counts in the access-trace/report models and the schema are unconstrained integers; the gate is shape-only by decision.
+- Files: `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/manage_report.py`, `.planning/phases/06.37-cv-access-pydantic-json-contract-validation-and-schema-375/06.37-REVIEW-DISPOSITION.md`
+- Impact: out-of-range values would validate; nothing emits them today.
+- Fix approach: add bounds only with a deliberate schema change (it alters the published bytes).
+
+**Unresolved actor text output (skipped WR-01):**
+- Issue: text mode reports an unresolved actor as "None (pk None, inactive)".
+- Files: `src/crud_views/management/commands/cv_access.py`, `src/crud_views/lib/access_trace_export.py`
+- Impact: misleading diagnostic wording; JSON output is unaffected.
+- Fix approach: render an explicit "unresolved" label if touched.
+
 **Assertions used for caller/configuration contracts:**
-- Issue: assertions enforce some public or configuration preconditions and disappear under optimized Python. Examples include permission-map lookup and workflow/Guardian configuration checks.
+- Issue: assertions enforce some public or configuration preconditions and disappear under optimized Python. Examples (18 `assert` statements under `src/`) include permission-map lookup and workflow/Guardian configuration checks.
 - Files: `src/crud_views/lib/view/base.py`, `src/crud_views_workflow/lib/mixins.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views_guardian/lib/views.py`, `src/crud_views_polymorphic/lib/utils.py`, `src/crud_views/lib/formsets/formsets.py`
 - Impact: invalid configuration may fail later or less clearly under `python -O`; current evidence does not establish an authorization bypass.
 - Fix approach: use explicit exceptions or Django system checks for caller/configuration contracts, retaining assertions for internal invariants.
@@ -170,6 +195,18 @@ No distinct security defect is confirmed by current evidence. Permission and anc
 - Impact: the oldest compatibility line increases maintenance and release-verification work.
 - Migration plan: decide whether 1.0 retains this floor and update `pyproject.toml`, `noxfile.py`, and migration guidance together if it changes.
 
+## Documentation Accuracy
+
+**Login redirect described as a `denied` step (open WR-06):**
+- Problem: `docs/reference/manage.md` (lines ~515-516) states a login redirect is a `denied` step with the `login_redirect` outcome. When project code overrides `has_permission()` and converts a recorded 404 into the redirect, the deciding step is `not_found` and the trace has no `denied` step (reproduced in `.planning/phases/06.37-cv-access-pydantic-json-contract-validation-and-schema-375/06.37-VERIFICATION.md`). The command and models are correct; the sentence overstates.
+- Fix: qualify the sentence to the stock-view case and bind it with a test beyond the single stock view in `tests/test1/test_access_trace_docs.py`.
+- Priority: Medium (warning)
+
+**Wrong-invocation exit code and `(ValidationError)` token (open IN-09, IN-10, IN-11):**
+- Problem: `docs/reference/manage.md` (about lines 439, 442-443, 552-553) says a wrong invocation exits 2, but Django's own option errors exit 1; the untranslated `(ValidationError)` token the docs tell scripts to search also appears in stderr lines that echo caller input; four changed statements remain without tests (`tests/test1/test_access_trace_docs.py`).
+- Fix: qualify the exit-code wording and the detection rule; or accept as is (the review marks these info-level).
+- Priority: Low
+
 ## Missing Critical Features
 
 None independently confirmed.
@@ -230,6 +267,9 @@ Phase 06.31's seeded example command had a critical rollback defect during revie
 
 Phase 06.34's access trace is verified at 36/36 in `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-VERIFICATION.md`; its current UAT record is complete with the human visual check passed. Phase 06.35 is verified at 5/5 in `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-VERIFICATION.md`; its deep review records zero findings and its security audit closes all 14 threats. Seven unavailable runtime pairs and four historical external Tabler checks remain explicit verification boundaries, with no product blocker inferred. The inherited UI review recommendations are nonblocking polish. Earlier phase-report failures and fixed review findings are historical, not current defects.
 
+Phase 06.36 and 06.37 findings now closed (see `.planning/phases/06.37-cv-access-pydantic-json-contract-validation-and-schema-375/06.37-REVIEW-DISPOSITION.md`): WR-02 (partial/null-flag `TraceUser` accepted) is fixed by strict models and schema; WR-03 and WR-04 (`isolated_routes` leaking an emptied ViewSet registry and order-dependent `test_published_command_examples` under xdist) are fixed in `tests/test1/test_ancestor_authorization.py` by importing `tests.test1.project.urls` at module level before the snapshot; WR-05, IN-01, IN-02, IN-04 through IN-08 are fixed (reserved step results documented, schema regeneration on Pydantic upgrade, real `CommandError` detection line). The 06.37 review disposition records 17 findings: 11 fixed, 1 skipped (WR-01), 1 deferred (IN-03), 4 open (WR-06, IN-09, IN-10, IN-11, listed above).
+
+
 ---
 
-*Concerns audit: 2026-11-16*
+*Concerns audit: 2026-11-17*

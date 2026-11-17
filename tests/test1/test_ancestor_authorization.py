@@ -25,6 +25,7 @@ import types
 import uuid
 from collections import Counter
 from contextlib import contextmanager
+from importlib import import_module
 from types import SimpleNamespace
 
 import pytest
@@ -46,6 +47,9 @@ from tests.test1.app.models import Book, BookNote, Publisher
 def isolated_routes(build):
     """Run ``build(sfx)`` (which constructs ViewSets/views and returns ``(namespace, viewsets_to_route)``) behind
     a temporary ROOT_URLCONF; restore registry, vocabulary cache, URL caches and ContentType cache afterwards."""
+    # Import the project's views first: if they first registered inside the block, the restore below would drop
+    # their ViewSets for the rest of the process, because the already-imported modules never register again.
+    import_module("tests.test1.project.urls")
     sfx = uuid.uuid4().hex[:8]
     modname = f"tests.test1._ancestor_urls_{sfx}"
     with _REGISTRY_LOCK:

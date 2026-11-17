@@ -239,6 +239,14 @@ def _plan_trace(*rows):
             ).to_dict(),
             id="object-pk-none",
         ),
+        pytest.param(
+            AccessTrace(
+                path="/a/",
+                outcome="login_redirect",
+                user={"pk": None, "username": None, "active": False, "anonymous": True},
+            ).to_dict(),
+            id="anonymous-user",
+        ),
     ],
 )
 def test_valid_exports_round_trip_without_drift(data):
@@ -298,6 +306,15 @@ EXCEPTION = ("steps", 0, "exception")
         pytest.param(_set(("version",), True), {("value_error", ("version",))}, id="version-true"),
         pytest.param(_set(("version",), 1.0), {("value_error", ("version",))}, id="version-float"),
         pytest.param(_set(("path",), Text()), {("string_type", ("path",))}, id="path-object"),
+        pytest.param(_set(("user",), {"pk": "1"}), {("value_error", ("user",))}, id="user-partial"),
+        pytest.param(_delete(("user", "username")), {("value_error", ("user",))}, id="user-key-removed"),
+        pytest.param(_set(("user", "active"), None), {("value_error", ("user",))}, id="user-active-null"),
+        pytest.param(_set(("user", "anonymous"), None), {("value_error", ("user",))}, id="user-anonymous-null"),
+        pytest.param(
+            _set(("user",), {"pk": "1", "username": "sam", "active": None, "anonymous": None}),
+            {("value_error", ("user",))},
+            id="user-null-flags",
+        ),
     ],
 )
 def test_malformed_exports_are_rejected(mutate, expected):

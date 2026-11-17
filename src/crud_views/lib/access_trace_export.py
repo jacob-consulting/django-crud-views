@@ -6,7 +6,7 @@ while the JSON document and the schema generated here are the machine contract.
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 Outcome = Literal["allowed", "denied", "not_found", "login_redirect", "no_such_route", "error"]
 Kind = Literal[
@@ -36,11 +36,20 @@ class _TraceModel(BaseModel):
     model_config = ConfigDict(strict=True, allow_inf_nan=False, revalidate_instances="always", extra="forbid")
 
 
-class TraceUser(_TraceModel):  # every key is absent when the trace failed before actor resolution
+class TraceUser(_TraceModel):  # empty before actor resolution, otherwise all four keys with boolean flags
     pk: str | None = None
     username: str | None = None
     active: bool | None = None
     anonymous: bool | None = None
+
+    @model_validator(mode="after")
+    def _empty_or_complete(self):
+        # The fields stay optional so that `{}` validates; this rejects partial actors and null flags.
+        if self.model_fields_set and (
+            self.model_fields_set != set(type(self).model_fields) or self.active is None or self.anonymous is None
+        ):
+            raise ValueError("user must be empty or carry pk, username, active and anonymous")
+        return self
 
 
 class ObjectIdentity(_TraceModel):

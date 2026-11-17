@@ -5,17 +5,17 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.36 complete, ready to plan Phase 7
-last_updated: "2026-11-16T11:04:16.114Z"
-last_activity: 2026-11-16
-last_activity_desc: "Phase 06.36 shipped as PR #377"
-state_head: 98520f8f9c8abbc1347e73598b7b006e290828a4
+stopped_at: Phase 06.37 complete, ready to plan Phase 7
+last_updated: "2026-11-17T09:50:13.950Z"
+last_activity: 2026-11-17
+last_activity_desc: "Phase 06.37 shipped as PR #379"
+state_head: 8ec15bc8c96226b4ea8c1653e96bd31624fdc6ae
 progress:
-  total_phases: 43
+  total_phases: 44
   completed_phases: 42
-  total_plans: 240
-  completed_plans: 240
-  percent: 100
+  total_plans: 244
+  completed_plans: 244
+  percent: 95
 milestone_name: milestone
 ---
 
@@ -34,11 +34,18 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 
 Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: Not planned
+Total Plans in Phase: 4
 Status: Ready to plan
-Last activity: 2026-11-16 -- Phase 06.36 shipped as PR #377
+Last activity: 2026-11-17 -- Phase 06.37 shipped as PR #379
 
-Next: $gsd-discuss-phase 7 — settle the theme-surface stability review scope.
+Next: $gsd-discuss-phase 7 (Phase 7 needs a spec or maintainer decision before planning).
+
+### Phase 06.37 completion — 2026-11-16
+
+- 4/4 plans summarized (01 export models + gate + `--schema` + German; 02 real-trace corpus + Pydantic 2.2.1 floor 487 passed; 03 reference docs + #375 CHANGELOG; 04 regression gate). Ran sequentially on the main tree (HEAD ≠ origin/HEAD auto-degrade).
+- Full suite: Django 4.2 15739 passed/14 skipped, 5.2 15752/1, 6.0 15753/0. Independent jsonschema: 7 valid/6 rejected; recheck at 2.14.3 and 2.2.1.
+- Verification passed 34/34 (b26cf387); Nyquist validated (7add0aa3); security threats_open 0 (ae9b1669); deep code review 0 critical/3 warning/5 info, all 8 open in 06.37-REVIEW-DISPOSITION.md.
+- Pre-existing dirty state.json preserved; no publication or merge performed.
 
 ### Phase 06.36 gap closure completed — 2026-11-16
 
@@ -1250,7 +1257,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 231
+- Total plans completed: 235
 
 - Total plans completed: 186
 - Average duration: -
@@ -1299,6 +1306,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.34 | 12 | - | - |
 | 06.35 | 7 | - | - |
 | 06.36 | 8 | - | - |
+| 06.37 | 4 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1471,6 +1479,10 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.30 P11 | 21min | 3 tasks | 12 files |
 | Phase 06.30 P12 | 8min | 2 tasks | 9 files |
 | Phase 06.30 P13 | 15min | 3 tasks | 11 files |
+| Phase 06.37 P01 | 11 min | 3 tasks | 6 files |
+| Phase 06.37 P02 | 8 min | 3 tasks | 5 files |
+| Phase 06.37 P03 | 8min | 2 tasks | 3 files |
+| Phase 06.37 P04 | 15min | 2 tasks | 1 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1779,12 +1791,24 @@ Recent decisions affecting current work:
 - [Phase 06.32]: Keep the exact eight transition variants independent of the extensible state badge vocabulary.
 - [Phase 06.32]: Resolve presentation on copied actions and defer the icon helper import to preserve pre-setup WorkflowForm imports.
 - [Phase 06.32]: Preserve the exact submit-label fallback regardless of icons and retain deliberate empty/null class suppression.
+- [Phase 06.37]: 06.37-01: cv_access validates trace.to_dict() through strict internal models (crud_views.lib.access_trace_export, own extra=forbid base, not WireModel) before both formatters; failures are one escaped returncode-2 CommandError naming only locations
+- [Phase 06.37]: 06.37-01: AccessTraceExport version before-validator rejects non-int values (True, 1.0) at Pydantic 2.2.1 and 2.14.3; export_schema() uses mode=validation
+- [Phase 06.37]: 06.37-01: cv_access --schema is exclusive (path/user/--anonymous rejected with returncode 2), plain under --force-color, and branches before actor resolution and tracing; a missing path is now a returncode-2 CommandError
+- [Phase 06.37]: 06.37-02: The real runner carries a non-str cv_get_requirement value through unchanged, so the gate rejects it with no runner change
+- [Phase 06.37]: 06.37-02: No real trace missed a closed value; the plan 01 models stayed untouched and the corpus (outcomes, user == {}, nested, unavailable, Guardian, Resource, manage gate) validates with zero drift
+- [Phase 06.37]: 06.37-02: The trace contract file runs in manage_report_floor and passes at Pydantic 2.2.1 (487 passed)
+- [Phase 06.37]: 06.37-03: The #375 CHANGELOG entry is Added, not Breaking, so docs/migrating-1.0.md stays unchanged
+- [Phase 06.37]: 06.37-03: Non-outcome cv_access invocations get a separate Invocation or failure | Exit | Streams table so the six-outcome parser is untouched
+- [Phase 06.37]: 06.37-03: Pre-existing xdist-order failure of test_published_command_examples logged to deferred-items.md, reproduced at base c56ef82d
+- [Phase 06.37]: 06.37-04: independent jsonschema 4.10.3 evidence accepts 7 real core-fixture cv_access documents and rejects 6 mutations; re-check passes at detected Pydantic 2.14.3 and the 2.2.1 floor
 
 ### Pending Todos
 
 None yet.
 
 ### Blockers/Concerns
+
+- Phase 06.37 review (open, maintainer triage): WR-01 text output for `user == {}` prints `None (pk None, inactive)` (fix changes text bytes); WR-02 `TraceUser` accepts partial/null actors, looser than manage.md:478; WR-03 `isolated_routes` (tests/test1/test_ancestor_authorization.py) restores an emptied ViewSet registry — root cause of the xdist flake `test_published_command_examples` (pre-existing at 7daae93f; one-import fix proposed). `manage_report_floor` is not run in CI (IN-05).
 
 - Phase06.36: Pydantic2.2.1 command-corpus acceptance is blocked by pre-existing `Resource.__pydantic_init_subclass__` access to `__pydantic_fields__` at `src/crud_views/lib/resource.py:89`. Plan07's final floor has57 model passes/20 collection errors. Seven matrix combinations are unexecuted; independent code/security review and phase verification remain pending. See06.36-ACCEPTANCE.md and deferred-items.md; do not infer phase acceptance from7/7 executed plans.
 
@@ -1858,6 +1882,7 @@ None yet.
 - Phase 06.34 inserted after Phase 06.33: Access trace: cv_access command and manage page form (#370); approved design D-01–D-23 (URGENT)
 - Phase 06.35 inserted after Phase 06.34: Approved issue #372; corrected from initial 06.25.2 at maintainer request; D-01–D-07 context captured
 - Phase 06.36 inserted after Phase 06.35: ViewSet configuration CLI and versioned JSON contract (#371); approved D-01–D-09, A-01–A-04 and acceptance items 1–10; builds on completed #372 before Phase 7 (URGENT)
+- Phase 06.37 inserted after Phase 06.36: cv_access Pydantic JSON contract validation and schema (#375) (URGENT)
 
 ## Deferred Items
 
@@ -1867,6 +1892,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T10:39:16.342397+00:00
-Stopped at: Phase 06.36 complete, ready to plan Phase 7
+Last session: 2026-11-16T21:05:00Z
+Stopped at: Phase 06.37 complete, ready to plan Phase 7
 Resume file: None

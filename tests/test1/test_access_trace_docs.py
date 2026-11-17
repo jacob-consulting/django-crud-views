@@ -5,16 +5,21 @@ import re
 from dataclasses import fields
 from io import StringIO
 from pathlib import Path
+from typing import get_args
 
 import pytest
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.urls import reverse
+from django.utils import translation
 from lxml import html
 
 from crud_views.lib.access_trace import AccessStep, AccessTrace, trace_access
+from crud_views.lib.access_trace_export import Kind, Outcome, PlanRow, Provider, StepResult, export_schema
 from crud_views.lib.settings import CrudViewsSettings, crud_views_settings
 from crud_views.lib.views import DetailViewPermissionRequired
 from crud_views.lib.viewset import ParentViewSet, ViewSet
+from crud_views.management.commands import cv_access
 from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1 import test_manage_docs
@@ -108,6 +113,10 @@ def test_every_documented_exit_code_matches_real_dispatch(outcome):
     assert code == int(codes[outcome])
     step_section = section("Step fields")
     assert all(f"`{step['kind']}`" in step_section and f"`{step['result']}`" in step_section for step in data["steps"])
+    assert "never emits `skipped`, `login_redirect` or `unavailable` on a step" in " ".join(step_section.split())
+    assert not {step["result"] for step in data["steps"]} & {"skipped", "login_redirect", "unavailable"}
+    if outcome == "login_redirect":
+        assert data["steps"][data["decided_by"] - 1]["result"] == "denied"
     if outcome == "error":
         assert data["steps"][data["decided_by"] - 1]["exception"] == {
             "class": "ValueError",
@@ -306,3 +315,163 @@ def test_operational_boundaries_and_reference_links():
     release = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased", 1)[1].split("\n## ", 1)[0]
     added = release.split("### Added", 1)[1].split("\n### ", 1)[0]
     assert "cv_access" in added and "CRUD_VIEWS_MANAGE_ACCESS_TRACE" in added
+
+
+# Schema access, streams and validation failures (#375), bound to real command behavior.
+
+
+def cv_access_reference():
+    return reference().split("## cv_access\n", 1)[1].split("\n## ", 1)[0]
+
+
+def invocation_rows():
+    """The second Outcomes and streams table: first cell -> (exit, streams)."""
+    header = "| Invocation or failure | Exit | Streams |"
+    text = section("Outcomes and streams")
+    assert header in text, "Outcomes and streams must document non-outcome invocations"
+    table = text.split(header, 1)[1].split("\n\n", 1)[0]
+    return {
+        cell: (int(code), streams)
+        for cell, code, streams in re.findall(r"^\| (.+?) \| `(\d)` \| (.+) \|$", table, re.M)
+    }
+
+
+def malformed_trace():
+    return AccessTrace(path="/x/", outcome="allowed", steps=[AccessStep(1, "route", result="maybe")])
+
+
+def test_documented_schema_access_matches_the_command():
+    assert "### Schema and compatibility\n" in reference()
+    text = " ".join(section("Schema and compatibility").split())
+    for phrase in (
+        "python manage.py cv_access --schema",
+        "exit `2`",
+        "`--as-json`",
+        "`--force-color`",
+        "No static schema file",
+        "consumers must tolerate them",
+        "version bump or an explicit maintainer decision",
+        "generated schema is authoritative",
+        "not a public Python API",
+        "`to_dict()`",
+    ):
+        assert phrase in text, phrase
+    assert "```json" not in section("Schema and compatibility")
+    examples = cv_access_reference().split("```bash\n", 1)[1].split("```", 1)[0]
+    assert "python manage.py cv_access --schema" in examples.splitlines()
+    for flags in ([], ["--force-color"]):
+        out = StringIO()
+        call_command("cv_access", "--schema", *flags, stdout=out)
+        assert "\x1b" not in out.getvalue()
+        assert json.loads(out.getvalue()) == export_schema()
+
+
+def test_documented_actor_and_color_rules_are_scoped_to_tracing():
+    intro = " ".join(cv_access_reference().split("\n### ", 1)[0].split())
+    assert "For tracing, supply a user or `--anonymous`, never both; `--schema` takes neither." in intro
+    assert "Trace JSON colors keys and result/outcome values." in intro
+    assert "`--schema` output is always plain." in intro
+    assert "DJANGO_COLORS" in intro
+
+
+def test_documented_invocation_streams_match_real_exits(monkeypatch):
+    from tests.test1.test_access_trace_command import invoke
+
+    rows = invocation_rows()
+    assert set(rows) == {"`--schema`", "Output validation failure", "Unknown user or wrong invocation"}
+    code, stdout, stderr = invoke("--schema")
+    assert (code, rows["`--schema`"][0]) == (0, 0)
+    assert json.loads(stdout) == export_schema() and not stderr
+    assert "no trace" in rows["`--schema`"][1]
+    monkeypatch.setattr(cv_access, "trace_access", lambda path, actor: malformed_trace())
+    for mode in ([], ["--as-json"]):
+        out, err = StringIO(), StringIO()
+        with translation.override("en"), pytest.raises(CommandError) as caught:
+            call_command("cv_access", "/x/", "--anonymous", *mode, stdout=out, stderr=err)
+        assert caught.value.returncode == rows["Output validation failure"][0] == 2
+        assert not out.getvalue() and not err.getvalue()
+        assert str(caught.value).startswith("Output validation failed (ValidationError): ")
+    assert "`CommandError: Output validation failed (ValidationError): ...`" in rows["Output validation failure"][1]
+    assert "no trace document" in rows["Output validation failure"][1]
+    assert rows["Unknown user or wrong invocation"][0] == 2
+    # The six outcome rows remain the only backticked word/digit rows.
+    codes = dict(re.findall(r"^\| `(\w+)` \| `(\d)` \|", section("Outcomes and streams"), re.M))
+    assert set(codes) == {"allowed", "denied", "not_found", "login_redirect", "error", "no_such_route"}
+
+
+def test_documented_validation_failure_is_not_an_outcome():
+    assert "### Schema and compatibility\n" in reference()
+    text = " ".join(section("Schema and compatibility").split())
+    for phrase in (
+        "`CommandError: Output validation failed (ValidationError): ...`",
+        "Exit `2` with empty stdout means only that no trace document was written",
+        "The class name `(ValidationError)` in the line is not translated.",
+        "not an outcome",
+        "no trace document",
+        "field locations",
+        "never their values",
+        "cv_get_requirement()",
+        "does not run this validation",
+    ):
+        assert phrase in text, phrase
+    after_tables = section("Outcomes and streams").split("| Invocation or failure | Exit | Streams |", 1)[1]
+    paragraph = " ".join(after_tables.split("\n\n", 1)[1].split("```", 1)[0].split())
+    assert "validation failure" in paragraph and "no trace document" in paragraph and "`--as-json`" in paragraph
+
+
+@pytest.mark.django_db
+def test_documented_empty_user_before_actor_resolution():
+    rows = dict(re.findall(r"^\| `(\w+)` \| (.+) \|$", section("Version 1 document"), re.M))
+    assert rows["user"].endswith("or `{}` before actor resolution.")
+    assert trace_access("http://[bad/x/", None).to_dict()["user"] == {}
+
+
+# Closed version-1 vocabularies and the #375 release entry.
+
+
+def backticked(text):
+    return set(re.findall(r"`([^`]+)`", text))
+
+
+def sentence(text, start):
+    """The sentence starting with ``start``, up to its terminating period."""
+    return re.search(rf"{start} (.+?)\.(?:\s|$)", text).group(1)
+
+
+def test_documented_vocabularies_equal_the_model_literals():
+    text = section("Step fields")
+    provider = re.search(r"^\| `provider` \| (.+) \|$", text, re.M).group(1)
+    assert backticked(provider) == set(get_args(Provider))
+    prose = " ".join(text.split())
+    assert backticked(sentence(prose, "Kinds are")) == set(get_args(Kind))
+    assert backticked(sentence(prose, "Step results are")) == set(get_args(StepResult))
+    assert "Step results include" not in prose
+
+
+def test_documented_vocabularies_are_closed_sets():
+    prose = " ".join(section("Step fields").split())
+    assert "Outcomes, kinds, step results and providers are closed sets in version 1" in prose
+    assert "[Schema and compatibility](#schema-and-compatibility)" in prose
+    assert "Plan rows use the same kinds and only the `unavailable` result" in prose
+    assert PlanRow.model_fields["kind"].annotation == Kind
+    plan_result, none = get_args(PlanRow.model_fields["result"].annotation)
+    assert get_args(plan_result) == ("unavailable",) and none is type(None)
+    assert set(get_args(Outcome)) == set(
+        dict(re.findall(r"^\| `(\w+)` \| `(\d)` \|", section("Outcomes and streams"), re.M))
+    )
+
+
+def test_access_trace_contract_release_entry():
+    changelog = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased\n", 1)[1].split("\n## ", 1)[0]
+    entries = []
+    for part in re.split(r"^### ", changelog, flags=re.M)[1:]:
+        heading, body = part.split("\n", 1)
+        entries += [(heading, entry) for entry in re.split(r"^- ", body, flags=re.M)[1:] if "(#375)" in entry]
+    assert len(entries) == 1 and entries[0][0] == "Added"
+    entry = " ".join(entries[0][1].split())
+    assert entry.startswith("**Access trace contract** (#375):")
+    assert "docs/reference/manage.md#schema-and-compatibility" in entry
+    targets = {h.lower().replace(" ", "-") for h in re.findall(r"^#{2,3} ([\w -]+)$", reference(), re.M)}
+    assert "schema-and-compatibility" in targets
+    for phrase in ("cv_access --schema", "exits 2", "not an outcome", "German"):
+        assert phrase in entry, phrase

@@ -61,7 +61,8 @@ def tests(session, django):
 # installed in the same resolver transaction as the project and its extras, so nothing can upgrade them.
 CRISPY_FLOOR = {"django-crispy-forms": "2.0", "crispy-bootstrap5": "2023.10"}
 
-# Real command/model, builder preservation, documentation and bilingual delivery tests.
+# Real command/model, builder preservation, documentation and bilingual delivery tests. The list also proves the
+# cv_access trace contract (#375) at the Pydantic floor. manage_report_floor is a manual gate: CI does not run it.
 MANAGE_REPORT_TESTS = [
     "tests/test1/test_manage_report.py",
     "tests/test1/test_manage_command.py",
@@ -69,6 +70,7 @@ MANAGE_REPORT_TESTS = [
     "tests/test1/test_manage_preservation.py",
     "tests/test1/test_manage_command_docs.py",
     "tests/test1/test_manage_command_locales.py",
+    "tests/test1/test_access_trace_contract.py",
 ]
 
 _MANAGE_FLOOR_VERSIONS = """

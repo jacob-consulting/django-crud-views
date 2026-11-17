@@ -9,8 +9,10 @@ from django.core.management.color import supports_color
 from django.utils.termcolors import make_style
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
+from pydantic import ValidationError
 
 from crud_views.lib.access_trace import resolve_trace_user, trace_access
+from crud_views.lib.access_trace_export import export_schema, validate_export
 
 
 def _style(value, role, enabled):
@@ -187,20 +189,44 @@ class Command(BaseCommand):
         return _("Trace whether a user may open a project URL, without running its view handler.")
 
     def add_arguments(self, parser):
-        parser.add_argument("path", help=_("Project path or full URL (only its path is used)."))
+        parser.add_argument("path", nargs="?", help=_("Project path or full URL (only its path is used)."))
         parser.add_argument("user", nargs="?", help=_("Username or primary key; username matches take precedence."))
         parser.add_argument(
             "--anonymous", action="store_true", help=_("Trace the anonymous user instead of a named user.")
         )
         parser.add_argument("--as-json", action="store_true", help=_("Print one versioned JSON trace document."))
+        parser.add_argument(
+            "--schema", action="store_true", help=_("Print the JSON Schema of the version 1 trace document.")
+        )
 
-    def handle(self, *args, path, user=None, anonymous=False, as_json=False, **options):
+    def handle(self, *args, path=None, user=None, anonymous=False, as_json=False, schema=False, **options):
+        if schema:
+            # Exclusive and plain: no actor, no trace and no database read; --as-json is redundant.
+            if path is not None or user is not None or anonymous:
+                raise CommandError(_("--schema does not accept a path, user or --anonymous."), returncode=2)
+            self.stdout.write(
+                json.dumps(export_schema(), ensure_ascii=True, allow_nan=False, indent=2),
+                style_func=lambda value: value,
+            )
+            return
+        if path is None:
+            raise CommandError(_("Supply a project path, or use --schema."), returncode=2)
         if anonymous == (user is not None):
             raise CommandError(_("Supply either a user or --anonymous, but not both."), returncode=2)
         actor = None if anonymous else resolve_trace_user(user)
         if not anonymous and actor is None:
             raise CommandError(_("Unknown user: %(user)s") % {"user": _text(user)}, returncode=2)
         trace = trace_access(path, actor)
+        try:
+            validate_export(trace.to_dict())  # A gate only: valid traces keep their exact output bytes.
+        except ValidationError as exc:
+            # Only the class name and escaped locations; input values and messages may carry project data.
+            locations = dict.fromkeys(".".join(_text(part) for part in error["loc"]) for error in exc.errors())
+            raise CommandError(
+                _("Output validation failed (%(error)s): %(locations)s")
+                % {"error": type(exc).__name__, "locations": "; ".join(locations)},
+                returncode=2,
+            ) from None
         color = not options["no_color"] and (options["force_color"] or (self.stdout.isatty() and supports_color()))
         if trace.outcome == "no_such_route" and not as_json:
             self.stderr.write(_("No such CRUD view route: %(path)s") % {"path": _text(trace.path)})

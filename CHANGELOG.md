@@ -640,6 +640,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Access trace contract** (#375): `cv_access --schema` prints the generated JSON Schema of the version-1 trace
+  document. Text and JSON output now validate the collected trace before printing; a validation failure writes one
+  stderr diagnostic and exits 2, with no trace document, and is not an outcome. Valid output bytes, colors,
+  outcomes and exit codes are unchanged. Includes German command text. See
+  [schema and compatibility](docs/reference/manage.md#schema-and-compatibility).
+
 - **ViewSet configuration command** (#371): `cv_manage_view --list` discovers registered ViewSets;
   targeted inspection accepts an optional view key and explicit `--user`, while `--schema` publishes the
   complete version-1 JSON contract. Text and validated JSON preserve defaults, full supported values,

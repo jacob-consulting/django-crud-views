@@ -63,6 +63,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.34: Access trace: cv_access command and manage page form (#370) (INSERTED)** - approved D-01–D-23 design; real authorization trace, shell command and opt-in manage form. (completed 2026-11-15)
 - [x] **Phase 06.35: Resource manage pages with cv_access parity (#372) (INSERTED)** - approved D-01–D-07 handover; shared ManageView, Resource permission badges, and UI/CLI trace parity. (completed 2026-11-15)
 - [x] **Phase 06.36: ViewSet configuration CLI and versioned JSON contract (#371) (INSERTED)** - approved diagnostic command, catalogue and validated text/JSON output. (completed 2026-11-16)
+- [x] **Phase 06.37: cv_access Pydantic JSON contract validation and schema (#375) (INSERTED)** - validate the existing version-1 trace with Pydantic output models and add `cv_access --schema`. (completed 2026-11-16)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2072,6 +2073,27 @@ Plans:
 
 **Wave 7** *(gap closure after executed plan 07)*
 - [x] 06.36-08-PLAN.md — Restore Resource initialization at the Pydantic floor and refresh actual command/schema acceptance
+
+### Phase 06.37: cv_access Pydantic JSON contract validation and schema (#375) (INSERTED)
+
+**Goal:** `cv_access` validates every version-1 trace against explicit internal Pydantic models before printing, in
+both text and JSON, and reports a validation failure as one stderr diagnostic with exit 2, never as an outcome.
+`cv_access --schema` prints the plain JSON Schema generated from those models, without a target, actor or trace.
+Valid output bytes, colors, outcomes, exit codes and the public `AccessTrace`/`AccessStep.to_dict()` API stay unchanged.
+**Requirements**: None (scope pinned by issue #375 and CONTEXT D-01–D-14)
+**Depends on:** Phase 06.36
+**Plans:** 4/4 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.37-01-PLAN.md — Strict export models, validation gate before both formatters, exclusive plain `--schema`, German text
+
+**Wave 2** *(parallel)*
+- [x] 06.37-02-PLAN.md — Real-trace corpus (all outcomes, nested/Guardian/Resource/manage), manage-page parity, Pydantic 2.2.1 floor run
+- [x] 06.37-03-PLAN.md — `## cv_access` schema/compatibility/validation-failure docs, closed vocabularies, CHANGELOG entry
+
+**Wave 3**
+- [x] 06.37-04-PLAN.md — Independent schema conformance of real exports and full multicore suite on Django 4.2/5.2/6.0
 
 ### Phase 7: Theme-surface stability policy
 

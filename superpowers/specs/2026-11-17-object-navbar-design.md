@@ -299,6 +299,10 @@ rejected because individual-record sharing is unnecessary and would add grant-ma
 This example uses the navbar access contract in D-06/D-09; it does not add higher-ancestor permission checks
 to navbar rendering. The current page and destination request enforce their configured ancestor policies.
 
+Documentation and the example must cross-reference each other through clickable URLs: the example links
+to the navbar reference, and the reference links to the live example's landing page. This is documentation
+navigation, not cross-linking the scenario to another example app. *(Approved 2026-11-18.)*
+
 *(Approved 2026-11-18. The tenant-level Guardian approach and the Notes detail page were proposed by the
 assistant and approved.)*
 
@@ -380,6 +384,10 @@ configuration errors through the existing check infrastructure.
   and covered by example tests. Verify the Alice/Bob tenant boundary, Charlie's hidden Addresses section and
   denied direct requests/writes, both Customer detail entries, Customer navigation from Item pages, and the
   visible empty Orders collection. Creating a new app is decided; extending `nested` is no longer an option.
+- Register the example's documentation URLs through `Feature.docs` / `DocRef`, including the navbar reference.
+  Each referenced documentation page must provide a reciprocal live-example URL in its `Try it live` box.
+  Follow the existing documentation/demo URL conventions and verify pages, heading anchors and reciprocal
+  links with `examples/bootstrap5/test_doc_links.py`.
 - Tests in `tests/test1/`: resolution on owner, child and grandchild views, active section, hidden items per
   permission (model permissions and Guardian), empty bar, modal request, checks, query counts, template
   override and `NavBar(template=...)`.
@@ -423,7 +431,8 @@ No cross-request caching.
    template, each demonstrated by a test or the example. Rendering the identity and items partials in
    separate places on one page invokes the navbar builder exactly once.
 8. Items wrap on a narrow viewport without horizontal page scroll (checked in the example app).
-9. Reference documentation and a working example exist as in A-06; the full test matrix passes.
+9. Reference documentation and a working example exist as in A-06, with clickable URL links in both directions.
+   Documentation-link checks cover the new example and its referenced pages; the full test matrix passes.
 
 ## Implementation references
 

@@ -1,0 +1,48 @@
+{
+  "integration": {
+    "command": [
+      "npm",
+      "run",
+      "test:integration",
+      "--",
+      "--reporter=dot"
+    ],
+    "exit": 0,
+    "seconds": 18.52
+  },
+  "node": {
+    "command": [
+      "node",
+      "--test",
+      "tests/browser/access-trace.test.cjs",
+      "tests/browser/action-tooltips.test.cjs",
+      "tests/browser/cancel-navigation.test.cjs",
+      "tests/browser/compact-checkboxes-output.test.cjs",
+      "tests/browser/conditional-formsets-evidence.test.cjs",
+      "tests/browser/formset-row-cards.test.cjs",
+      "tests/browser/manage-presentation.test.cjs",
+      "tests/browser/presentation-cleanup.test.cjs",
+      "tests/browser/presentation-config.test.cjs",
+      "tests/browser/protected-delete.test.cjs",
+      "tests/browser/workflow-presentation.test.cjs",
+      "tests/browser/workflow-validation.test.cjs"
+    ],
+    "exit": 0,
+    "seconds": 2.57
+  },
+  "examples": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "examples/bootstrap5",
+      "-c",
+      "examples/bootstrap5/pytest.ini",
+      "-n",
+      "4",
+      "-q"
+    ],
+    "exit": 0,
+    "seconds": 56.67
+  }
+}

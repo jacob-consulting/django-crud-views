@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.40"
 current_phase_name: "Object navbar: opt-in section navigation (#381)"
-current_plan: Not started
+current_plan: 2
 status: executing
-stopped_at: Phase 06.40 plan review converged in 4 cycles
-last_updated: "2026-11-18T16:24:40.273Z"
+stopped_at: Completed 06.40-01-PLAN.md
+last_updated: "2026-11-18T16:47:35.382Z"
 last_activity: 2026-11-18
-last_activity_desc: "Phase 06.40 planning converged in four review cycles"
-state_head: 85cc3652227799a0ee6bac9bf4b520900f815b08
+last_activity_desc: Completed plan 06.40-01; seven plans remain
+state_head: 6b212b5cea4b40448725ccbfd43bb34d34421dbf
 progress:
   total_phases: 46
   completed_phases: 44
   total_plans: 254
-  completed_plans: 246
+  completed_plans: 247
 milestone_name: milestone
 ---
 
@@ -31,13 +31,21 @@ See: .planning/PROJECT.md (updated 2026-11-18)
 
 ## Current Position
 
-Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — IN PROGRESS
+Current Plan: 2
 Total Plans in Phase: 8
 Status: Ready to execute
-Last activity: 2026-11-18 -- Phase 06.40 planning converged in four review cycles
+Last activity: 2026-11-18 -- Completed plan 06.40-01; seven plans remain
 
 Next: $gsd-execute-phase 06.40
+
+### Phase 06.40 plan 01 execution — 2026-11-18
+
+- Three tasks complete; six TDD task commits plus summary 6b212b5c. Public declarations, lazy owner navigation, exact nested links and metadata-only startup diagnostics are implemented in the bounded opt-in module.
+- Focused navbar tests: 50 routing/rendering plus 43 checks on Django 5.2; all 93 on Django 4.2 and 6.0. Affected ancestor/context/system-check regression: 3094 passed. Python 3.12.3, four workers, scoped Ruff and whitespace checks passed.
+- First completed cold-URLconf checks report every late view; failed and reentrant imports preserve local errors without import retries inside registry iteration. No database/access/state work occurs in navbar checks.
+- ROADMAP records 1/8 plans executed, complete=false. SDK position parsing required replacing the pre-existing “Not started” value with the completed numeric plan before advancing; the progress handler reported its existing unscoped-phase limitation. Disk summaries show 247/254 plans complete; the phase remains in progress.
+- Remaining plans own templates/partials, permission-cost proof, the dedicated example, documentation/companion delivery, browser checks and full matrix. No phase completion, merge or publication is claimed; unrelated untracked files remain intact.
 
 ### Phase 06.40 planning convergence — 2026-11-18
 
@@ -1523,6 +1531,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.37 P02 | 8 min | 3 tasks | 5 files |
 | Phase 06.37 P03 | 8min | 2 tasks | 3 files |
 | Phase 06.37 P04 | 15min | 2 tasks | 1 files |
+| Phase 06.40 P01 | 12min | 3 tasks | 9 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1843,6 +1852,9 @@ Recent decisions affecting current work:
 - [Phase 06.37]: 06.37-03: Non-outcome cv_access invocations get a separate Invocation or failure | Exit | Streams table so the six-outcome parser is untouched
 - [Phase 06.37]: 06.37-03: Pre-existing xdist-order failure of test_published_command_examples logged to deferred-items.md, reproduced at base c56ef82d
 - [Phase 06.37]: 06.37-04: independent jsonschema 4.10.3 evidence accepts 7 real core-fixture cv_access documents and rejects 6 mutations; re-check passes at detected Pydantic 2.14.3 and the 2.2.1 floor
+- [Phase 06.40]: Keep declaration references as strings and all request resolution private to navbar.py.
+- [Phase 06.40]: Normalize rendered default labels once; raw labels and captions retain literal entities and lose HTML trust.
+- [Phase 06.40]: Complete URLconf before registry iteration and use cached-only readiness probes inside navbar checks.
 
 ### Pending Todos
 
@@ -1936,6 +1948,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T16:24:34.343Z
-Stopped at: Phase 06.40 plan review converged in 4 cycles
-Resume file: .planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-REVIEWS.md
+Last session: 2026-11-18T16:46:46.104Z
+Stopped at: Completed 06.40-01-PLAN.md
+Resume file: None

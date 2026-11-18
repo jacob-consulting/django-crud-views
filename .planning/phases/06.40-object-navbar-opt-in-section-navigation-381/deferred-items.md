@@ -1,7 +1,8 @@
 ## Deferred Items
 
 - Product split-placement recipe uses a generic content block instead of the package's CRUD content block.
-  status: open
+  status: resolved
+  **Closure (06.40-08):** Added real inherited child-template regression; it failed with `<main></main>` before the correction and passes with `<main>Page body</main>` after changing to `cv_content`. Focused docs/template checks and strict MkDocs pass before the final acceptance fingerprint.
   **Owner:** 06.40-08 final acceptance; discovered by plan07 companion reference review.
   **Location:** `docs/reference/navbar.md:196`, `<main>{% block content %}{% endblock %}</main>`.
   **Required fix:** Change to `block cv_content` and extend `tests/test1/test_navbar_docs.py` with a child template that overrides cv_content through the documented split base. Verify its body renders; existing isolated snippet tests do not exercise inheritance.

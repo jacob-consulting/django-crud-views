@@ -193,7 +193,7 @@ Omit the wrapper tag and include the leaves at separate locations in your base u
 <!-- navbar-recipe: split -->
 ```django
 {% include "crud_views/tags/navbar_identity.html" %}
-<main>{% block content %}{% endblock %}</main>
+<main>{% block cv_content %}{% endblock %}</main>
 {% include "crud_views/tags/navbar_items.html" %}
 ```
 

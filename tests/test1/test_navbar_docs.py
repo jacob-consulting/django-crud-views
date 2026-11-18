@@ -66,6 +66,12 @@ def test_published_override_recipes_render_real_context(mode):
             )
 
 
+def test_split_recipe_preserves_inherited_crud_content():
+    with navbar_templates({"project/split.html": recipes()["split"]}):
+        child = Template('{% extends "project/split.html" %}{% block cv_content %}Page body{% endblock %}')
+        assert child.render(Context({"cv_navbar": None})).strip() == "<main>Page body</main>"
+
+
 def test_documented_context_inventory_resolves_real_render_data():
     text = (ROOT / "docs/reference/templates.md").read_text()
     assert "## Object navbar context" in text, "The navbar needs a separate documented context contract"

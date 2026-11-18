@@ -449,6 +449,16 @@ def cv_breadcrumb(context):
     return {"items": breadcrumb.resolve_items() if breadcrumb else []}
 
 
+@register.simple_tag(takes_context=True)
+def cv_navbar(context):
+    """Render the shared request-local navbar, preserving the caller's context."""
+    navbar = context.get("cv_navbar")
+    if not navbar:
+        return ""
+    wrapper = navbar["template"] or f"{crud_views_settings.theme_path}/tags/navbar.html"
+    return get_template(wrapper).render(context.flatten(), request=context.get("request"))
+
+
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/messages.html", takes_context=True)
 def cv_messages(context):
     return {"cv_message_alerts": message_alerts(context.get("messages"))}

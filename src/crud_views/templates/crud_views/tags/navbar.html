@@ -1,0 +1,6 @@
+{% if cv_navbar %}{% load crud_views i18n %}<nav class="cv-navbar mb-3" aria-label="{% blocktranslate with object=cv_navbar.label %}Sections for {{ object }}{% endblocktranslate %}">
+    <div class="cv-navbar-identity">{% cv_icon cv_navbar.icon %} {{ cv_navbar.label }}</div>
+    <ul class="nav nav-pills flex-wrap">
+        {% for item in cv_navbar.items %}<li class="nav-item"><a class="nav-link{% if item.active %} active{% endif %}" href="{{ item.url }}"{% if item.active %} aria-current="true"{% endif %}>{% cv_icon item.icon %} {{ item.label }}</a></li>{% endfor %}
+    </ul>
+</nav>{% endif %}

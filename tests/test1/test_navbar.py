@@ -7,7 +7,6 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from lxml import html
 from django.conf import settings
 from django.template import Context, Template
 from django.test import Client, override_settings
@@ -15,6 +14,7 @@ from django.urls import reverse
 from django.utils.functional import SimpleLazyObject
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy
+from lxml import html
 
 from crud_views.lib.viewset import _REGISTRY, ViewSet
 from tests.test1.app.models import Publisher
@@ -60,8 +60,14 @@ def owner_routes(sfx, *, label=None, template_code=None, configured=True, partic
     bar = NavBar(viewset=f"navbar{sfx}", items=[NavItem(key="detail", label=label)] if items else [])
     owner = ViewSet(model=Publisher, name=bar.viewset)
     bases = (CrudViewNavBarMixin, DetailView) if participating else (DetailView,)
-    attrs = dict(cv_viewset=owner, cv_navbar=bar if configured else None, cv_extends_template="navbar/base.html",
-                 cv_context_actions=[], cv_header_template=None, cv_header_template_code="Unchanged page header")
+    attrs = {
+        "cv_viewset": owner,
+        "cv_navbar": bar if configured else None,
+        "cv_extends_template": "navbar/base.html",
+        "cv_context_actions": [],
+        "cv_header_template": None,
+        "cv_header_template_code": "Unchanged page header",
+    }
     if template_code is not None:
         attrs.update(cv_action_short_label_template=None, cv_action_short_label_template_code=template_code)
     view = type("NavbarDetail", bases, attrs)
@@ -76,7 +82,7 @@ def get_owner(ns, obj):
 def test_real_owner_navbar():
     assert importlib.util.find_spec("crud_views.lib.navbar") is not None, "public navbar declaration module is missing"
     obj = Publisher.objects.create(name="Owner identity")
-    with navbar_routes(owner_routes) as ns:
+    with navbar_routes(lambda sfx: owner_routes(sfx, template_code="Details")) as ns:
         before = ns.bar.model_dump()
         response = get_owner(ns, obj)
         assert response.status_code == 200
@@ -84,18 +90,19 @@ def test_real_owner_navbar():
         nav = soup.xpath('//nav[contains(@class,"cv-navbar")]')[0]
         assert nav is not None
         assert nav.xpath('.//*[@class="cv-navbar-identity"]')[0].text_content().strip() == obj.name
-        link = nav.xpath('.//a')[0]
+        link = nav.xpath(".//a")[0]
         assert link.text_content().strip() == "Details"
         assert link.get("href") == reverse(ns.owner.get_router_name("detail"), kwargs={"pk": obj.pk})
         assert link.get("aria-current") == "true"
-        assert soup.xpath('//*[@data-test-page-title]')[0].text_content().strip() == "Unchanged page header"
+        assert soup.xpath("//*[@data-test-page-title]")[0].text_content().strip() == "Unchanged page header"
         assert isinstance(response.context["cv_navbar"], SimpleLazyObject)
         assert ns.bar.model_dump() == before
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("options", [{"configured": False}, {"participating": False}, {"items": False}])
-def test_absent_navbar_preserves_page(options):
+def test_absent_navbar_preserves_page(options, monkeypatch):
+    monkeypatch.setattr("django.middleware.csrf._get_new_csrf_string", lambda: "a" * 32)
     obj = Publisher.objects.create(name="Owner")
     with navbar_routes(lambda sfx: owner_routes(sfx, **options)) as ns:
         present = get_owner(ns, obj).content
@@ -110,11 +117,13 @@ def test_tag_empty_output(value):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("text", ["A & B's", "literal &amp; &#39;", mark_safe('<b>unsafe & text</b>'), gettext_lazy("Lazy & text")])
+@pytest.mark.parametrize(
+    "text", ["A & B's", "literal &amp; &#39;", mark_safe("<b>unsafe & text</b>"), gettext_lazy("Lazy & text")]
+)
 @pytest.mark.parametrize("default", [False, True])
 def test_plain_owner_and_item_text(text, default, monkeypatch):
     obj = Publisher.objects.create(name="Owner")
-    monkeypatch.setattr(Publisher, "__str__", lambda self: text)
+    monkeypatch.setattr(Publisher, "__str__", lambda self: str(text))
     options = {"template_code": "{{ object }}"} if default else {"label": text}
     with navbar_routes(lambda sfx: owner_routes(sfx, **options)) as ns:
         response = get_owner(ns, obj)
@@ -122,8 +131,8 @@ def test_plain_owner_and_item_text(text, default, monkeypatch):
         assert nav.xpath('.//*[@class="cv-navbar-identity"]')[0].text_content().strip() == str(text)
         # A rendered safe input is decoded once by the default-label normalization contract.
         expected = str(text)
-        assert nav.xpath('.//a')[0].text_content().strip() == expected
-        assert not nav.xpath('.//b | .//script')
+        assert nav.xpath(".//a")[0].text_content().strip() == expected
+        assert not nav.xpath(".//b | .//script")
         assert "&amp;" in html.tostring(nav).decode()
 
 
@@ -132,12 +141,13 @@ def test_default_label_literal_entities():
     obj = Publisher.objects.create(name="Owner")
     with navbar_routes(lambda sfx: owner_routes(sfx, template_code="Details &amp; owner&#39;s")) as ns:
         nav = html.fromstring(get_owner(ns, obj).content).xpath('//nav[contains(@class,"cv-navbar")]')[0]
-        assert nav.xpath('.//a')[0].text_content().strip() == "Details & owner's"
+        assert nav.xpath(".//a")[0].text_content().strip() == "Details & owner's"
         assert "&amp;" in html.tostring(nav).decode()
 
 
 def test_declarations_reject_non_string_references():
     from pydantic import ValidationError
+
     from crud_views.lib.navbar import NavBar, NavItem
 
     for value in [object(), lambda: "owner", 17]:

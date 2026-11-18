@@ -93,6 +93,17 @@ class HomePageTest(TestCase):
             self.assertContains(resp, "bob/bob")
 
 
+class ObjectNavbarLandingTest(TestCase):
+    def test_unseeded_authenticated_introduction_renders(self):
+        admin = get_user_model().objects.create_superuser(username="navbar-admin", password="pw")
+        self.client.force_login(admin)
+        response = self.client.get(reverse("navbar-demo-home"))
+        self.assertEqual(response.status_code, 200)
+        for credential in ("alice/alice", "bob/bob", "charlie/charlie"):
+            self.assertContains(response, credential)
+        self.assertContains(response, f'href="{reverse("login")}"')
+
+
 class SeedCommandTest(TestCase):
     def test_seed_twice_is_idempotent(self):
         call_command("seed")

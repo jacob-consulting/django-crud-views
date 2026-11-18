@@ -43,6 +43,9 @@ A theme app is an ordinary Django app:
 
 ## JavaScript
 
+Object section navigation needs no JavaScript; its ordinary full-page links use the
+[navbar template contract](#object-navbar-templates).
+
 The scripts call Bootstrap through replaceable adapters (`cv.adapters`), so a theme for a Bootstrap-compatible or
 non-Bootstrap UI library swaps them from its own registered asset. See [JavaScript](javascript.md).
 
@@ -810,6 +813,28 @@ confirmation form only inside `{% if not has_protected_objects %}` (and retain t
 also removes the form-contained cancel control. A copied alert leaf must render `alert.text` or
 `alert.body_template` as well as heading/items to show the generic sentence. See
 [Protected objects](delete_view.md#protected-objects).
+
+## Object navbar templates
+
+The opt-in [object navbar](navbar.md) adds three independently overridable templates, all receiving the same
+lazy `cv_navbar` value. Override them using the normal loader order above; no button-class keys are added.
+
+| Template | Purpose |
+|---|---|
+| `crud_views/tags/navbar.html` | Default layout B wrapper: identity above links. |
+| `crud_views/tags/navbar_identity.html` | Plain, unlinked owner caption and header icon. |
+| `crud_views/tags/navbar_items.html` | Translated named navigation landmark, wrapping list and ordinary anchors. |
+
+The stable [context fields](templates.md#object-navbar-context) are already resolved and access/state filtered.
+Preserve each template's independent empty guard (including no whitespace), escaping and visible labels.
+Keep active links clickable with `aria-current="true"`, decorative icons and visible keyboard focus.
+Wrap long captions/labels without horizontal page scrolling, truncation or a collapsed menu. The identity must
+not become another page heading or replace the existing view header/actions. Split placement remains valid
+because the items leaf supplies its own translated accessible name, independent of the identity element.
+
+`NavBar(template=...)` selects a wrapper for that declaration's tag; direct partial includes keep their selected
+paths. The stock wrapper uses relative includes so individual leaf overrides still apply. Layout A is an
+application [wrapper example](navbar.md#global-wrapper), not an additional package layout setting.
 
 ## Structured manage contracts
 

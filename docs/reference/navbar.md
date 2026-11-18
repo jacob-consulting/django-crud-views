@@ -155,7 +155,7 @@ The default wrapper and leaves are:
 
 All three independently guard `cv_navbar` and emit exactly nothing when it is empty. The items leaf owns its
 landmark label (`Sections for %(object)s`), so it does not rely on a neighbouring identity element or ID.
-Use the documented [navbar context](templates.md); templates consume resolved items,
+Use the documented [navbar context](templates.md#object-navbar-context); templates consume resolved items,
 without permission calls. Keep normal link focus, active markers, translated landmark naming and text wrapping.
 
 ### Global wrapper

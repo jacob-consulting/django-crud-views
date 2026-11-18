@@ -1,0 +1,12 @@
+{
+  "command": ".venv/bin/nox -s examples-3.12(django=5.2) -- -n 4 -q navbar_demo/tests.py -k test_installed_app_owns_customer_schema --junitxml=/tmp/cv-0640-04-task1-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"1.022\" timestamp=\"2026-11-18T17:10:22.404424+00:00\" hostname=\"weaver-dev\"><testcase classname=\"navbar_demo.tests\" name=\"test_installed_app_owns_customer_schema\" time=\"0.003\"><failure message=\"AssertionError: The independent navbar example must be installed&#10;assert False&#10; +  where False = is_installed('navbar_demo')&#10; +    where is_installed = &lt;django.apps.registry.Apps object at 0x7171bfcf80b0&gt;.is_installed\">def test_installed_app_owns_customer_schema():\n&gt;       assert apps.is_installed(\"navbar_demo\"), \"The independent navbar example must be installed\"\nE       AssertionError: The independent navbar example must be installed\nE       assert False\nE        +  where False = is_installed('navbar_demo')\nE        +    where is_installed = &lt;django.apps.registry.Apps object at 0x7171bfcf80b0&gt;.is_installed\n\nnavbar_demo/tests.py:15: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_installed_app_owns_customer_schema",
+  "targetFile": "examples/bootstrap5/navbar_demo/tests.py",
+  "expected": "Independent navbar_demo app installed with owned Customer schema",
+  "actual": "apps.is_installed returned False",
+  "reportPath": "/tmp/cv-0640-04-task1-red.xml",
+  "reportModifiedAt": 1795021823.4261103,
+  "semanticAssessment": "Target executed and failed its app installation assertion; no collection, fixture or import failures."
+}

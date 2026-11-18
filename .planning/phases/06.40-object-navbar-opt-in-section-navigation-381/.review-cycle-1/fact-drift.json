@@ -1,0 +1,41 @@
+{
+  "checked_at": "2026-11-18T15:03:22.799449+00:00",
+  "authority": "intel",
+  "phase_status": {
+    "verdict": "uncheckable",
+    "reason": "phase_not_in_roadmap",
+    "phase": "06.40",
+    "stateStatus": "Ready to execute",
+    "roadmapStatus": null,
+    "stateRank": 1,
+    "roadmapRank": null,
+    "authority": "STATE.md"
+  },
+  "pairs": [
+    {
+      "kind": "success criteria / goal",
+      "authority": ".planning/ROADMAP.md:2120-2122",
+      "comparison": "Plans01/02 implement one declaration, owner identity, active links and app-owned lazy templates; plan03 covers destination permission/state and preservation; plans04/05 dedicated example; plan06 stable docs; plan07 companion; plan08 acceptance. No contrary assertions. ROADMAP has no separate success-criteria list.",
+      "verdict": "consistent"
+    },
+    {
+      "kind": "requirement IDs",
+      "authority": ".planning/ROADMAP.md:2126",
+      "comparison": "Requirements TBD; every plan declares requirements: [] and explains absence of formal IDs. AC1\u2013AC9 are acceptance labels, not invented requirement IDs.",
+      "verdict": "consistent"
+    },
+    {
+      "kind": "defined terms",
+      "authority": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-CONTEXT.md:29-85",
+      "comparison": "Owner means same resolved owner at every depth; child means direct child section; visibility uses immediate-parent boundary; explicit list does not fall back; stable at1.0 without provisional exception. Compared plan01 routing, plan02 template fields, plan03 policy, plan06/07 stability. No contradictory definition.",
+      "verdict": "consistent"
+    }
+  ],
+  "coverage_limitations": [
+    "phase-status seam returned uncheckable: phase_not_in_roadmap; do not replace it with manual consistent status.",
+    "Source intel index is empty/JS-only: Python symbols and signatures are UNCHECKABLE.",
+    "verify-command-paths is not_applicable for the env-prefixed Python and other commands; no successful path-resolution claim.",
+    "Failure-directions probe reports ok for all19 task commands.",
+    "Research numeric observations are historical; no execution baseline or new navbar tests have been run during review."
+  ]
+}

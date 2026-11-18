@@ -1,0 +1,60 @@
+{
+  "Fable-07-HIGH": {
+    "status": "refuted-in-current-execution-context",
+    "evidence": "Reviewer reported its own sandbox. Active runner permissions explicitly danger-full-access/unrestricted; test -r/-w and ls -ld /home/alex/projects/alex succeeded. PLAN07:79 acquires/validates sibling checkout and leaves failures unmet. No repository constraint requires reviewer sandbox for execution."
+  },
+  "Fable-01-template-and-03-byte-parity": {
+    "status": "actionable",
+    "required_property": "Real-request navbar tests and byte-preservation comparisons name the template harness that actually places the tag.",
+    "evidence": "tests/test1/app/templates/app/crud_views.html:1-40 has no navbar tag; PLAN01:83 promises real GET header placement but owns no shared base-template change; PLAN03:91 requires paired page output."
+  },
+  "Fable-01-readiness": {
+    "status": "actionable",
+    "required_property": "Registry-dependent navbar diagnostics run only against a completed registry.",
+    "evidence": "src/crud_views/checks.py:38-47 has no readiness barrier; :172-212 explicitly guards completion-dependent ancestor checks. PLAN01:107 does not account for partially imported URLconfs."
+  },
+  "Fable-01-fixture-and-Gemini-03-cold-cache": {
+    "status": "actionable",
+    "required_property": "Navbar fixtures preserve completed project registrations and deterministically reset each cache classified as cold.",
+    "evidence": "tests/test1/test_ancestor_authorization.py:38,46-76 preimports URLs before snapshots; PLAN01 fixtures and PLAN03 costs do not name that ordering or ViewSet._default_permissions reset."
+  },
+  "Fable-05-Charlie-help": {
+    "status": "actionable",
+    "required_property": "The planned credential-discovery path is backed by the templates actually rendered.",
+    "evidence": "PLAN05:115 says DEMO_USERS drives shared login/home help, but home.html:42-45 and base.html:52-53 hard-code account text. Clarify own landing discovery or own needed shared template changes."
+  },
+  "Gemini-01-template-validation": {
+    "status": "actionable",
+    "required_property": "Configured missing navbar template behavior is explicit and tested.",
+    "evidence": "src/crud_views/lib/check.py:232-253 supplies optional-template startup diagnostics; PLAN01 lists target diagnostics but omits configured wrapper existence or an explicit render-time rationale."
+  },
+  "Gemini-01-shapes": {
+    "status": "actionable",
+    "required_property": "Invalid NavItem shapes and empty item configuration have an explicit construction/startup error contract.",
+    "evidence": "PLAN01 declares key=None and child=None defaults but does not decide neither-selected item or empty-items semantics and validation stage."
+  },
+  "Gemini-08-cleanup": {
+    "status": "actionable",
+    "required_property": "Browser verification releases its server and temporary database/settings after success or failure.",
+    "evidence": "PLAN08:89 starts runserver and creates settings/database without a cleanup owner/finally action."
+  },
+  "covered_or_nonactionable": [
+    "All-hidden one build / per-item admission: PLAN02:85 guards shared lazy data and PLAN03:79 once-only admission cover it; omitted/modal zero does not mean all-hidden zero.",
+    "Host icons and wrapping: PLAN02:97 explicitly requires existing renderer host/element support, list-item/label mw-100/text-break, and live fallback tests; no class-registry addition requested.",
+    "Lazy-copy cache: PLAN02:85 already tests copied contexts and adds a sentinel only if real evidence requires it; unconditional cache suggestion is contrary to bounded-maintainability policy.",
+    "Cost receipt availability: PLAN06:107 explicitly quotes totals with fixture conditions into consumer docs; no consumer link to planning directory is mandated.",
+    "Example environment provisioning: PLAN04:107 explicitly provisions supported Nox environment before migration generation.",
+    "Account printed-output tests: current project/tests.py:96-110 contains no asserted printed account string, so alleged necessary seed-output assertion update is unsupported.",
+    "Template tag reference: docs/reference/templates.md:16-23 is the existing tag-placement table already owned by PLAN06:120.",
+    "Companion runtime/clone availability: PLAN07 inspects current source/local instructions, executes native validator, and requires actual local commit/receipt; external availability is not assumed as a pass.",
+    "Browser/Python availability: PLAN08 explicitly probes uv-managed interpreters and treats missing browser/matrix evidence as unmet; no new action omitted.",
+    "Byte-parity relaxation suggestion rejected by locked preservation constraint, not adopted as remediation.",
+    "ALLOWED_HOSTS concern refuted by cited source itself: settings.py:19 permits localhost/127.0.0.1 with a tunnel, and DEBUG=True covers empty default.",
+    "Interim DocRefs: PLAN05 explicitly schedules navbar docs link for PLAN06 after its target exists; final acceptance waits until PLAN08. No final-scope omission.",
+    "Relative companion path: PLAN07 records actual checkout/path and adjusts commands if isolated reuse changes it. No fixed absolute path requirement.",
+    "Optional short PK names, merging slice URL setup, default Pydantic repr, and speculative clone SSH fallback are preferences/observations, not demonstrated plan defects.",
+    "Existing format_html floor audit is run by PLAN08; no invalid format_html call is planned.",
+    "Check-ID audit already says search current IDs without restricting search to one syntax.",
+    "Estimate concern is unmeasured; low confidence already explicit, so no precise multiplicative claim adopted."
+  ]
+}

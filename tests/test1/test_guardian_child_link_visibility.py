@@ -964,6 +964,64 @@ def report_measurement(record_property, **values):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("renderer", ["context", "card"])
+@pytest.mark.parametrize("actor_cache", ["fresh", "warm"])
+@pytest.mark.parametrize("vocabulary", ["cold", "warm"])
+def test_query_plain_child_link_cost(
+    core_links, world, django_user_model, monkeypatch, record_property, renderer, actor_cache, vocabulary
+):
+    from django.contrib.auth.models import Permission
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    actors, parents = world
+    actor, parent = actors[0], parents[0]
+    is_guardian = isinstance(core_links.parent, GuardianViewSet)
+    # Mixed core/Guardian inherits CHANGE_READ and world's real object change grant.
+    # Plain/core instead uses default Read=view and a model-level Publisher view grant.
+    actor.user_permissions.add(Permission.objects.get(codename="view_book"))
+    if not is_guardian:
+        actor.user_permissions.add(Permission.objects.get(codename="view_publisher"))
+    target = core_links.list
+    spy = parent_spy(monkeypatch, target)
+    results = {}
+    for layer in ("own_access", "rendered"):
+        current = django_user_model.objects.get(pk=actor.pk)
+        if actor_cache == "warm":
+            assert current.has_perm("app.view_book") is True
+        reset_discovery(core_links)
+        if vocabulary == "warm":
+            _ = core_links.parent.permissions, core_links.child.permissions
+        spy.reset_mock()
+        with CaptureQueriesContext(connection) as capture:
+            if layer == "own_access":
+                assert target.cv_has_access(current, parent) is True
+            else:
+                assert rendered_data(core_links, renderer, current, parent)["cv_access"] is True
+        assert spy.call_count == int(layer == "rendered")
+        if layer == "rendered":
+            spy.assert_called_once_with(current, parent)
+        categories = sql_categories(capture.captured_queries)
+        assert categories.get("parent_rows", 0) == categories.get("child_or_relation_rows", 0) == 0
+        assert categories.get("actor", 0) == categories.get("other", 0) == 0
+        results[layer] = {"total": len(capture), "categories": categories, "helper_calls": spy.call_count}
+    if is_guardian:
+        assert results["rendered"]["categories"].get("permissions", 0) > 0
+        assert results["rendered"]["total"] > results["own_access"]["total"]
+    elif vocabulary == "warm":
+        assert results["rendered"]["total"] == results["own_access"]["total"]
+    report_measurement(
+        record_property,
+        layer="plain_destination",
+        parent_provider="guardian" if is_guardian else "model",
+        renderer=renderer,
+        actor_cache=actor_cache,
+        vocabulary=vocabulary,
+        results=results,
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("renderer", ["context", "card"])
 def test_query_cold_and_warm_discovery(links, world, django_user_model, monkeypatch, record_property, renderer):
     from django.db import connection
     from django.test.utils import CaptureQueriesContext
@@ -1110,7 +1168,7 @@ def test_query_denied_actors_and_custom_do_no_permission_work(links, world, monk
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("renderer", ["context", "card"])
-def test_query_create_uses_only_its_existing_parent_check(links, world, monkeypatch, renderer):
+def test_query_create_uses_only_its_existing_parent_check(links, world, monkeypatch, record_property, renderer):
     from django.db import connection
     from django.test.utils import CaptureQueriesContext
 
@@ -1126,6 +1184,15 @@ def test_query_create_uses_only_its_existing_parent_check(links, world, monkeypa
     spy.assert_called_once_with(actor, parent)
     assert sql_categories(rendered.captured_queries) == sql_categories(baseline.captured_queries)
     assert len(rendered) == len(baseline)
+    report_measurement(
+        record_property,
+        layer="create_baseline",
+        renderer=renderer,
+        baseline=len(baseline),
+        rendered=len(rendered),
+        categories=sql_categories(rendered.captured_queries),
+        helper_calls=spy.call_count,
+    )
 
 
 @pytest.mark.django_db
@@ -1173,3 +1240,11 @@ def test_query_unaffected_core_and_ordinary_actions(links, world, monkeypatch, r
     assert len(rendered) == len(baseline)
     assert sql_categories(rendered.captured_queries) == sql_categories(baseline.captured_queries)
     parent_check.assert_not_called()
+    report_measurement(
+        record_property,
+        layer="ordinary_baseline",
+        baseline=len(baseline),
+        rendered=len(rendered),
+        categories=sql_categories(rendered.captured_queries),
+        helper_calls=parent_check.call_count,
+    )

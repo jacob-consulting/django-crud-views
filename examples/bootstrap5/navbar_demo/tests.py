@@ -398,3 +398,126 @@ def test_shared_demo_accounts_include_usable_charlie(client):
     response = client.post(reverse("login"), {"username": "charlie", "password": "charlie"})
     assert response.status_code == 302
     assert int(client.session["_auth_user_id"]) == users["charlie"].pk
+
+
+@pytest.fixture
+def seeded(db):
+    from navbar_demo.models import Address, Customer, Item, Order, Tenant
+    from navbar_demo.seed import seed
+
+    seed()
+    return tuple(
+        (
+            Tenant.objects.get(pk=t),
+            Customer.objects.get(pk=c),
+            Order.objects.get(pk=o),
+            Item.objects.get(pk=i),
+            Address.objects.get(pk=a),
+        )
+        for t, c, o, i, a in ((101, 303, 505, 707, 909), (202, 404, 606, 808, 1010))
+    )
+
+
+@pytest.mark.django_db
+def test_seed_is_idempotent_and_preserves_unrelated_grants(seeded, django_user_model):
+    from guardian.models import UserObjectPermission
+    from project.seeding import DEMO_USERS
+
+    from navbar_demo.seed import seed
+
+    alice = django_user_model.objects.get(username="alice")
+    unrelated = Permission.objects.filter(content_type__app_label="library").first()
+    alice.user_permissions.add(unrelated)
+    before = business_snapshot()
+    grants = list(UserObjectPermission.objects.order_by("pk").values())
+    permissions = list(alice.user_permissions.order_by("pk").values_list("pk", flat=True))
+    seed()
+    assert business_snapshot() == before
+    assert apps.get_model("navbar_demo", "Tenant").objects.count() == 2
+    assert list(UserObjectPermission.objects.order_by("pk").values()) == grants
+    assert list(alice.user_permissions.order_by("pk").values_list("pk", flat=True)) == permissions
+    assert DEMO_USERS[-1][0] == "developer"
+    assert (
+        not django_user_model.objects.get(username="developer")
+        .user_permissions.filter(content_type__app_label="navbar_demo")
+        .exists()
+    )
+    assert (
+        not UserObjectPermission.objects.filter(content_type__app_label="navbar_demo")
+        .exclude(content_type__model="tenant")
+        .exists()
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("username", ["alice", "bob", "charlie"])
+def test_seeded_login_grants_and_real_endpoints(client, seeded, django_user_model, username):
+    from guardian.shortcuts import get_perms
+
+    user = django_user_model.objects.get(username=username)
+    assert not user.is_superuser
+    assert client.post(reverse("login"), {"username": username, "password": username}).status_code == 302
+    assert int(client.session["_auth_user_id"]) == user.pk
+    own, foreign = seeded if username != "bob" else tuple(reversed(seeded))
+    assert set(get_perms(user, own[0])) == (
+        {"view_tenant"} if username == "charlie" else {"view_tenant", "change_tenant"}
+    )
+    assert get_perms(user, foreign[0]) == []
+    expected = {
+        f"{action}_{model}"
+        for model in ("customer", "order", "item", "address")
+        for action in ("view", "add", "change", "delete")
+    }
+    if username == "charlie":
+        expected = {"view_customer", "view_order", "view_item"}
+    assert (
+        set(user.user_permissions.filter(content_type__app_label="navbar_demo").values_list("codename", flat=True))
+        == expected
+    )
+    before = business_snapshot()
+    for model in ("customer", "order", "item", "address"):
+        for key in ("list", "detail", "create", "update", "delete"):
+            expected_status = (
+                403 if username == "charlie" and (model == "address" or key in ("create", "update", "delete")) else 200
+            )
+            assert client.get(business_url(model, key, own)).status_code == expected_status
+            assert client.get(business_url(model, key, foreign)).status_code == 403
+            if key in ("create", "update", "delete"):
+                assert (
+                    client.post(business_url(model, key, foreign), {"name": "Denied", "confirm": True}).status_code
+                    == 403
+                )
+                if username == "charlie":
+                    assert (
+                        client.post(business_url(model, key, own), {"name": "Denied", "confirm": True}).status_code
+                        == 403
+                    )
+    assert business_snapshot() == before
+    if username != "charlie":
+        # Named managers perform every business write with ordinary model grants.
+        for model in ("customer", "order", "item", "address"):
+            model_class = apps.get_model("navbar_demo", model)
+            assert client.post(business_url(model, "create", own), {"name": "Created"}).status_code == 302
+            created = model_class.objects.get(name="Created")
+            assert client.post(business_url(model, "update", own, created), {"name": "Updated"}).status_code == 302
+            created.refresh_from_db()
+            assert created.name == "Updated"
+            assert client.post(business_url(model, "delete", own, created), {"confirm": True}).status_code == 302
+            assert not model_class.objects.filter(pk=created.pk).exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("username", ["alice", "charlie"])
+def test_seeded_empty_orders_remain_visible_and_accessible(client, seeded, django_user_model, username):
+    customer = apps.get_model("navbar_demo", "Customer").objects.get(pk=405)
+    client.force_login(django_user_model.objects.get(username=username))
+    response = client.get(customer_url("detail", customer.tenant, customer))
+    bar = response.context["cv_navbar"]
+    labels = [item["label"] for item in bar["items"]]
+    assert labels == (
+        ["Details", "Notes", "Orders"] if username == "charlie" else ["Details", "Notes", "Orders", "Addresses"]
+    )
+    orders = next(item for item in bar["items"] if item["label"] == "Orders")
+    response = client.get(orders["url"])
+    assert response.status_code == 200
+    assert list(response.context["object_list"]) == []

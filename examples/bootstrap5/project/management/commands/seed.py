@@ -14,7 +14,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         users = ensure_demo_users()
         ensure_developer_read_access(users["developer"])
-        self.stdout.write("users: alice/alice, bob/bob, developer/developer")
+        self.stdout.write("users: alice/alice, bob/bob, charlie/charlie, developer/developer")
         for feature in FEATURES:
             import_module(f"{feature.app}.seed").seed()
             self.stdout.write(f"seeded {feature.app}")

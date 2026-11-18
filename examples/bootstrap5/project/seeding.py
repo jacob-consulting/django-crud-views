@@ -2,10 +2,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
-#: username, password, is_superuser — shown on the home and login pages
+#: Seeded username, password, is_superuser; shared login/home notices are static.
 DEMO_USERS = [
     ("alice", "alice", False),
     ("bob", "bob", False),
+    ("charlie", "charlie", False),
     ("developer", "developer", False),
 ]
 

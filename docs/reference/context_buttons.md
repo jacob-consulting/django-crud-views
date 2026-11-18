@@ -206,6 +206,8 @@ URL does not prove access. See [visible links and buttons](nested.md#visible-lin
 
 ### Permission cost and configuration failures
 
+For existing pages, follow the [child-link migration guide](../migrating-1.0.md#child-link-parent-permissions).
+
 An eligible plain child link adds one immediate-parent policy invocation after own access. This is not a fixed
 SQL count. In measured Django 5.2/Guardian 3.5 runs, both context and card renderers had the following totals for
 a real core list destination; actor setup and permission grants were outside the measurement:

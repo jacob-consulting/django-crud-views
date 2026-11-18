@@ -6,6 +6,13 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Child-link parent permissions** (#380): plain nested destinations now check their immediate-parent policy
+  when rendering `ChildContextButton` and child `CardAction` controls. Existing controls can hide or disable,
+  and malformed parent policy can raise `ImproperlyConfigured` on the hosting page. Review intended grants and
+  operation/provider declarations using the [migration recipe](docs/migrating-1.0.md#child-link-parent-permissions).
+  Each eligible link adds one parent-policy invocation with cache-dependent SQL; full destination requests
+  remain authoritative for farther ancestors. Shipped Guardian collection/create paths keep one parent check.
+
 - **Resource manage registration** (#372): automatic registration now owns `cv_key="manage"` on Resource
   ViewSets. A later manual registration with that key raises the existing duplicate-key error. Select an
   importable `ManageView` subclass through `manage_view_class` before construction and remove the duplicate;

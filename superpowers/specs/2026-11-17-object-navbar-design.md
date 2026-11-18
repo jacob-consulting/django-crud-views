@@ -204,13 +204,12 @@ bar is never an authorization boundary: every destination keeps its own check, w
 bar's answer for an item must agree with the destination's answer for that user and object; #363 found a real
 case where the sibling-button check did not. *(Carried over from #363 D-12/D-13, approved.)*
 
-For child items this means the bar applies the parent gate itself. The check `ChildContextButton` uses asks,
-for a plain `ViewSet`, only for the child's own model permission; the request additionally runs the ancestor
-guard on the parent, and only Guardian compositions add that gate to links today. The bar therefore combines
-the existing child-link check with the existing bounded parent gate for rendering
-(`ancestors._immediate_parent_access`). Context buttons are not changed by this issue, so on one page the bar
-may hide an item that a `ChildContextButton` still shows; giving the core child-link check the same gate is a
-separate, unscheduled issue (#380). *(Maintainer's choice after the design review, 2026-11-17.)*
+For child items the bar calls `target._cv_child_link_has_access(user, owner)` **once**, as `ChildContextButton`
+and child `CardAction` do. The locally implemented and tested #380 fix supplies own access plus the destination's
+immediate-parent policy and preserves shipped Guardian behavior without a duplicate parent check. Do not add
+a separate `_immediate_parent_access` call. Rendering uses only the supplied owner; farther ancestors can still
+deny a full destination request. Owner-item access, owner/active-section selection and the open action-state
+decision remain in this navbar issue. *(Approved #380 handoff applied 2026-11-18; no merge or release claim.)*
 
 ### D-10 — Links, modals, narrow screens
 
@@ -252,7 +251,8 @@ Record counts or badges on items; dropdowns, groups or nested items; the global 
 `superpowers/notes/2026-11-02-navigation-concept-exploration.md` (a separate, unscheduled subject whose
 decisions this issue neither adopts nor changes); adopting the feature in tabler-test (a downstream follow-up
 once this ships); any change to context buttons, ancestor authorization or URL building. Aligning the core
-child-link check of context buttons with the request gate is recorded as an unscheduled finding in #380.
+child-link check of context buttons with the immediate-parent gate is supplied by the separate #380 fix;
+this navbar consumes that hook as described in D-09/A-03.
 
 ## Proposed defaults and bounded implementation contract
 
@@ -289,14 +289,14 @@ alter a D-decision goes back to the maintainer.
 ### A-03 — Access calls
 
 - Owner item: `target_view_class.cv_has_access(user, object)`.
-- Child item (D-09): `child_view_class._cv_child_link_has_access(user, object)`, the call `ChildContextButton`
-  makes, **and** `_immediate_parent_access(child_view_class, user, object, rendering_view=view)` from
-  `crud_views/lib/ancestors.py`. For Guardian compositions the first call already includes the second
-  (`crud_views_guardian/lib/mixins.py`); the planner decides whether to skip the repeat or accept it, and
-  counts the queries either way.
-- `_immediate_parent_access` raises `ImproperlyConfigured` for the misconfigurations its docstring lists. On a
-  page with a bar that surfaces while rendering; document it, as the Guardian child-link documentation does.
-- No new permission rules: both calls exist and are used for rendering today. Pin the #363 case with a test on
+- Child item (D-09): `target._cv_child_link_has_access(user, owner)` once. Here `target` is the destination
+  class and `owner` the resolved owner object. #380 owns the own-access/immediate-parent combination and the
+  Guardian collection/create once-only behavior. Do not call the parent helper separately or accept a repeat;
+  measure the resulting permission calls and cache-dependent SQL for the navbar's own render path.
+- The hook propagates `ImproperlyConfigured` for reached parent-policy misconfigurations: missing required
+  permission keys, missing operation requirements or authorization records routed away from `default`.
+  Document failures during bar rendering, as the child-link references do.
+- No new permission rules: consume the existing destination hook. Pin the #363 case with a test on
   a plain `ViewSet` child: a user with `change` on the owner and `view` on the child model but without `view`
   on the owner sees no item for the child list, which answers 403. For every item shown in the test matrix
   with a top-level owner, the destination answers 200.
@@ -402,10 +402,10 @@ No cross-request caching.
 2. **`cv_action_enabled`.** Context buttons distinguish "no permission" from "not applicable to this object
    now". A-03 ignores the second for nav items, because collection destinations are always applicable and an
    owner detail view rarely is not. Confirm, or decide that a not-applicable owner item is hidden.
-3. **Access calls.** The plain-ViewSet case was reproduced once on the phase 06.38 branch (`70071301`) with a
-   throwaway test in `tests/test1`: a user with `view` on Book and `change` but not `view` on Publisher got
-   `_cv_child_link_has_access` True, `_immediate_parent_access` False, and 403 from the Book list. The Guardian
-   path after #312 was read, not run; the planner verifies it before building on it.
+3. **Access integration.** #380 now has permanent Book/Publisher regression, Guardian preservation and
+   permission/SQL cost tests in `test_guardian_child_link_visibility.py`. Its original plain-link mismatch
+   is fixed locally. The navbar planner must exercise its own once-only consumer path and owner lookup;
+   the hook's tests do not constitute a navbar implementation or verification.
 4. **Owner lookup.** Verify how the #336 guard exposes the resolved owner on a grandchild request before
    choosing the implementation for D-05.
 
@@ -421,11 +421,10 @@ collection keys, descendant pages and the active section.
    Limit the promise of a successful GET to the supported cases covered by those tests.
    [Existing state-gate tests](../../tests/test1/test_action_enabled.py)
 
-2. **The parent permission can be checked twice.** Some Guardian collection views already check the
-   immediate parent inside `_cv_child_link_has_access`. A-03 adds the same check again, while a plain
-   child still needs it. Trace both paths with the same example: someone who may change Customer and view
-   Order but lacks the required Customer view permission must see no Orders link. Measure the cost on an
-   allowed link too. If a shared fix belongs in #380, review it there before adding a second permission path.
+2. **Preserve the once-only handoff.** #380 supplies the bounded parent gate through the child-link hook for
+   plain targets and preserves one gate for shipped Guardian paths. A-03 consumes that hook once. Keep a
+   navbar regression proving someone who may change Customer and view Order but lacks required Customer
+   view permission sees no Orders link, and measure an allowed link's calls and SQL without a second gate.
    [Guardian child-link tests](../../tests/test1/test_guardian_child_link_visibility.py)
 
 3. **An object key can name a POST-only action.** A-04 accepts an owner target with `cv_object=True`,

@@ -5,6 +5,42 @@ the route from **0.29.x** to 1.0.0. The [CHANGELOG](https://github.com/jacob-con
 stays the complete record, ordered by release and issue; this page orders the same changes by what you have to
 touch.
 
+## Child-link parent permissions
+
+Issue #380 changes existing plain nested pages: `ChildContextButton` and child `CardAction` now honor the
+destination's own access result and then its immediate-parent permission policy. Controls previously visible
+can disappear or become disabled, following the target's existing hide/disable preference. Disabled controls
+have no usable URL. Shipped Guardian collection/create paths still perform their parent check once; the
+[standalone queryset-only exception](reference/guardian.md#parent-to-child-collection-links) remains explicit.
+
+For example, a user with Book `view` and Publisher `change`, but no Publisher `view`, can open Publisher update
+while the default Books list returns 403. Its Books control now hides or disables. If that user should browse
+Books, granting Publisher `view` makes the same parent's link and empty Books collection accessible.
+
+Review affected pages as follows:
+
+1. Check the destination operation's nearest permission key and the intended parent grants. Read defaults to
+   `view`; Write defaults to nearest `change`. Exact action declarations can select another key.
+2. Check the **parent's** provider policy. Core parents use model grants; Guardian parents use object/group
+   grants, with model fallback only under the parent's `AncestorPolicy(accept_global_perms=True)`.
+   A target's `cv_guardian_accept_global_perms` does not relax its parent. Preserve the intended policy and
+   grant only the access the user should have; no compatibility switch is introduced.
+3. Correct malformed policy if the host now raises `ImproperlyConfigured` while rendering: a required parent
+   permission key may be missing from its map, a nested operation may lack requirements, or reached
+   authorization records may route away from `default`. These failures propagate instead of hiding a control.
+   Own-access denial stops parent work; an intentionally configured `provider="none"` retains its early
+   helper bypass, but does not waive full request validation or other gates.
+4. Retain the target's hide/disable preference and test both the rendered control and direct destination GET
+   for denied and allowed users, including an empty collection. Independent custom access and action state
+   still apply.
+
+Rendering checks only the supplied immediate parent; a farther ancestor can still deny the GET, including
+with immediate `provider="none"`. Sibling links and ordinary row actions retain their existing behavior.
+Each eligible plain link adds one parent-policy call and reuses the parent without another row fetch.
+SQL depends on actor/vocabulary caches and provider; repeated Guardian links can still issue permission queries.
+See [measured costs and configuration failures](reference/context_buttons.md#permission-cost-and-configuration-failures)
+and [the request boundary](reference/nested.md#visible-links-and-buttons).
+
 ## Ordinary formset row cards
 
 Ordinary formset rows now have a card-style fieldset and a singular model-name legend by

@@ -67,7 +67,7 @@ def test_owned_details_notes_share_identity_and_distinct_active_sections(client,
             customer_url("detail", tenant, customer),
             customer_url("notes", tenant, customer),
         ]
-        html = Template("{% load crud_views %}{% cv_navbar %}").render(Context(response.context.flatten()))
+        html = Template("{% load crud_views %}{% cv_navbar %}").render(Context(response.context_data))
         assert str(customer) in html
         assert html.count('aria-current="true"') == 1
         if key == "notes":

@@ -408,3 +408,47 @@ No cross-request caching.
    path after #312 was read, not run; the planner verifies it before building on it.
 4. **Owner lookup.** Verify how the #336 guard exposes the resolved owner on a grandchild request before
    choosing the implementation for D-05.
+
+## Weaknesses
+
+These proposals are open for maintainer review. D-04 through D-06 and D-12 record the approved rules for
+collection keys, descendant pages and the active section.
+
+1. **A visible link can still lead to a 403.** A-03 checks permission but omits `cv_action_enabled`.
+   A permission-required destination can deny a GET when that hook returns false. Custom views can also
+   restrict their querysets. Describe which built-in checks the navbar honors and hide a destination when
+   its state check denies access. Test a state-disabled detail page and an accessible empty collection.
+   Limit the promise of a successful GET to the supported cases covered by those tests.
+   [Existing state-gate tests](../../tests/test1/test_action_enabled.py)
+
+2. **The parent permission can be checked twice.** Some Guardian collection views already check the
+   immediate parent inside `_cv_child_link_has_access`. A-03 adds the same check again, while a plain
+   child still needs it. Trace both paths with the same example: someone who may change Customer and view
+   Order but lacks the required Customer view permission must see no Orders link. Measure the cost on an
+   allowed link too. If a shared fix belongs in #380, review it there before adding a second permission path.
+   [Guardian child-link tests](../../tests/test1/test_guardian_child_link_visibility.py)
+
+3. **An object key can name a POST-only action.** A-04 accepts an owner target with `cv_object=True`,
+   which also describes `ActionView`. Following its link sends a GET. Narrow owner destinations to detail
+   pages, including custom detail keys such as Financials, and report an invalid target at startup. Child
+   destinations already have a clear boundary in D-04: a list or card view selected by its collection key.
+   [ActionView](../../src/crud_views/lib/views/action.py)
+
+4. **A deep page and a nested owner pose different problems.** On Customer → Order → Item, looking up only
+   the immediate parent gives the caption for Order. Use the request’s resolved Customer and test with
+   distinct PKs for all three objects. A Customer bar under Tenant adds a separate concern: a link can pass
+   the immediate-parent check and still be denied at Tenant. The earlier proposal to start with top-level
+   owners would simplify this case and still allow Item pages. Adopting it would require revisiting D-06.
+
+5. **The breadcrumb precedent builds data eagerly.** Its `get_context_data()` calls the builder even when
+   the template omits the tag. Give the navbar one lazy accessor shared by the tag and both partials.
+   Verify that omitting the bar skips its permission work and that rendering both partials builds it once.
+   [Breadcrumb mixin](../../src/crud_views/lib/breadcrumb.py)
+
+6. **A missing mixin introduces a package-wide check.** A-04 scans every registered view to find a
+   `cv_navbar` declaration without the mixin. Keep target and relationship checks on participating views.
+   Document the attachment example and defer the global scan until a downstream project encounters this mistake.
+
+7. **The caption's destination depends on item order and visibility.** Under D-11, “Acme Coffee” could
+   open Orders when Details is hidden. Make the caption plain text by default and let the section links
+   handle navigation. This would revise D-11 and still allow an app to link the caption in its identity partial.

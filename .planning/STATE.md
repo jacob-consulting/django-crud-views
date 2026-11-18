@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.39"
 current_phase_name: "Immediate-parent permission checks for child links (#380)"
-current_plan: Not started
+current_plan: "02"
 status: executing
-stopped_at: Phase 06.39 plan-review convergence complete; execution not started
-last_updated: "2026-11-18T11:34:30.623Z"
+stopped_at: Completed 06.39-01-PLAN.md; plan 02 pending
+last_updated: "2026-11-18T11:49:27Z"
 last_activity: 2026-11-18
-last_activity_desc: "Phase 06.39 plans converged after three cross-AI review cycles"
-state_head: 37233500e6114749cec3950f09f74743e55131b2
+last_activity_desc: "Phase 06.39 plan 01 executed; bounded child-link gate and measured cost verified"
+state_head: 9a9aa3e5
 progress:
   total_phases: 45
   completed_phases: 42
   total_plans: 246
-  completed_plans: 244
+  completed_plans: 245
 milestone_name: milestone
 ---
 
@@ -31,13 +31,22 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 
 ## Current Position
 
-Phase: 06.39 (Immediate-parent permission checks for child links (#380)) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.39 (Immediate-parent permission checks for child links (#380)) — EXECUTING
+Current Plan: 02 (01 complete)
 Total Plans in Phase: 2
-Status: Ready to execute
-Last activity: 2026-11-18 -- Phase 06.39 plans converged after three cross-AI review cycles
+Status: Executing — 1/2 plans complete
+Last activity: 2026-11-18 -- Phase 06.39 plan 01 complete; plan 02 documentation and acceptance pending
 
-Next: $gsd-execute-phase 06.39
+Next: Execute 06.39-02-PLAN.md
+
+### Phase 06.39 plan 01 execution — 2026-11-18
+
+- Original Book view + Publisher change mismatch is permanently reproduced (4 RED visibility failures, 2 own-denial passes; machine/semantic evidence valid). Core now checks own access then the immediate parent; shipped Guardian collection/create perform one gate and standalone queryset-only behavior remains explicit.
+- Both renderers cover hide/disable, actual host 200/child 403 and same-parent empty child 200 after grant. Real operation/provider/actor/error matrices and three-level rendering versus denied request tests preserve existing authorization boundaries.
+- Final bounded selection 665 passed, child-link module 223 passed, cost selection 40 passed; Python 3.12.3/Django 5.2.19, four workers. Scoped Ruff/format/whitespace pass.
+- COST records sixteen renderer/provider/cache combinations: plain-parent total SQL 6/4/2/0 and Guardian-parent 8/6/4/2, with exactly one helper and no parent/child row fetches. Mixed CoreList uses CHANGE_READ plus its real object change grant; warm Guardian links still perform permission SQL without a rendering-view checker.
+- Three tasks/five task files/about nine minutes. Commits cdeb43b0, ab70bf07, c6a69681, ee41ecc0; summary 9a9aa3e5 committed before progress. ROADMAP reports 1/2 In Progress, complete=false.
+- STATE.md updated directly to preserve original dirty state.json byte-for-byte. Plan 02 and phase verification remain pending; no publication or phase completion claimed.
 
 ### Phase 06.39 planning convergence — 2026-11-18
 
@@ -1274,6 +1283,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
+| 06.39 | 1/2 | 9min (3 tasks, 5 files) | 9min |
 | 01 | 5 | - | - |
 | 02 | 1 | - | - |
 | 03 | 2 | - | - |
@@ -1501,6 +1511,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 ## Accumulated Context
 
 ### Decisions
+
+- [Phase 06.39 plan 01] Keep the existing renderer calls and ancestor engine; the destination hook owns one own-first immediate-parent gate. Guardian create retains its existing access contract and standalone queryset-only keeps its explicit exception. Report helper invocations separately from cache-sensitive SQL.
 
 - [Phase 06.36 plan 03] Preserve already-correct actor/holder paths; Guardian computes one policy code at its owner for both machine representations. Keep authorization guards unchanged and verify supplied-ViewSet table refusals before SQL.
 
@@ -1900,6 +1912,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T10:34:49.638Z
-Stopped at: Phase 06.39 context gathered
-Resume file: .planning/phases/06.39-immediate-parent-permission-checks-for-child-links-380/06.39-CONTEXT.md
+Last session: 2026-11-18T11:49:27Z
+Stopped at: Completed 06.39-01-PLAN.md; plan 02 pending
+Resume file: .planning/phases/06.39-immediate-parent-permission-checks-for-child-links-380/06.39-02-PLAN.md

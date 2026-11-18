@@ -2103,11 +2103,11 @@ and child card actions. Respect the configured hide-or-disable behavior and pres
 **Source:** [Issue #380 and its GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/380#gsd-handover).
 Complete this fix before the object navbar (#381).
 **Depends on:** Phase 6
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 06.39-01-PLAN.md — Permanent child-link regression, bounded core/Guardian gate, policy preservation and measured costs.
+- [x] 06.39-01-PLAN.md — Permanent child-link regression, bounded core/Guardian gate, policy preservation and measured costs.
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.39-02-PLAN.md — Consumer guidance, Breaking/migration/navbar handoff and supported-series acceptance evidence.

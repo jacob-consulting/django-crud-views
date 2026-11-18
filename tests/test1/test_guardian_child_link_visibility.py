@@ -140,6 +140,86 @@ def child_url(links, key, obj):
     return reverse(links.child.get_router_name(key), kwargs={links.child.parent.get_pk_name(): obj.pk})
 
 
+@pytest.fixture
+def plain_links(cv_book, cv_publisher, monkeypatch):
+    """Use the shipped plain views, with all presentation overrides restored after each case."""
+    target = cv_book.get_view_class("list")
+    detail = cv_publisher.get_view_class("update")
+    card = cv_publisher.get_view_class("card")
+    monkeypatch.setattr(target, "cv_context_action_label_mode", "label")
+    monkeypatch.setattr(detail, "cv_context_actions", ["children"])
+    monkeypatch.setattr(detail, "cv_context_buttons", [])
+    monkeypatch.setattr(card, "cv_card_actions", [])
+    monkeypatch.setattr(card, "cv_card_actions_label_mode", "label")
+    return SimpleNamespace(parent=cv_publisher, child=cv_book, detail=detail, card=card, list=target)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("renderer", ["context", "card"])
+@pytest.mark.parametrize("mode", ["hide", "disable"])
+def test_plain_child_link_parent_permission(plain_links, client, django_user_model, monkeypatch, renderer, mode):
+    from django.contrib.auth.models import Permission
+    from django.template import Context, Template
+
+    parent = Publisher.objects.create(name="Editable publisher")
+    actor = django_user_model.objects.create_user(username="plain_editor")
+    actor.user_permissions.add(*Permission.objects.filter(codename__in=["view_book", "change_publisher"]))
+    monkeypatch.setattr(plain_links.list, "cv_inaccessible_actions", mode)
+    configure(plain_links)
+    client.force_login(actor)
+    host_url = reverse(plain_links.parent.get_router_name("update"), kwargs={"pk": parent.pk})
+    destination = child_url(plain_links, "list", parent)
+    host = client.get(host_url)
+    assert host.status_code == 200
+    assert client.get(destination).status_code == 403
+    data = rendered_data(plain_links, renderer, actor, parent)
+    if mode == "hide":
+        assert data is None
+    else:
+        assert data["cv_disabled"] is True
+        assert data["cv_disabled_reason"] == "permission"
+        assert data["cv_url"] is None
+
+    if renderer == "context":
+        document = html.fromstring(host.content)
+        nodes = document.cssselect('[cv-key="list"]')
+    else:
+        output = Template("{% load crud_views %}{% cv_render_card_action data %}").render(Context({"data": data}))
+        document = html.fragment_fromstring(output, create_parent="div")
+        nodes = document.cssselect('[cv-key="book"]')
+    assert document.xpath("//*[@href=$url]", url=destination) == []
+    if mode == "hide":
+        assert nodes == []
+    else:
+        (node,) = nodes
+        assert node.tag == "button"
+        assert node.get("disabled") is not None
+        assert node.get("data-cv-disabled") == "permission"
+        for attribute in ("href", "data-cv-modal", "onclick", "formaction"):
+            assert node.get(attribute) is None
+
+    actor.user_permissions.add(Permission.objects.get(codename="view_publisher"))
+    actor = django_user_model.objects.get(pk=actor.pk)
+    assert rendered_data(plain_links, renderer, actor, parent)["cv_url"] == destination
+    assert resolve(destination).kwargs[plain_links.child.parent.get_pk_name()] == str(parent.pk)
+    response = client.get(destination)
+    assert response.status_code == 200
+    assert list(response.context["object_list"]) == []
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("renderer", ["context", "card"])
+def test_plain_child_link_own_denial(plain_links, django_user_model, monkeypatch, renderer):
+    actor = django_user_model.objects.create_user(username="denied_child")
+    parent = Publisher.objects.create(name="Original parent")
+    own = Mock(return_value=False)
+    monkeypatch.setattr(plain_links.list, "cv_has_access", own)
+    spy = parent_spy(monkeypatch, plain_links.list)
+    assert rendered_data(plain_links, renderer, actor, parent) is None
+    own.assert_called_once_with(actor, parent)
+    spy.assert_not_called()
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize("renderer", ["context", "card"])
 @pytest.mark.parametrize("target_key", ["list", "card"])
@@ -193,11 +273,12 @@ def test_parity_child_collection(links, client, django_user_model, monkeypatch, 
 
 def parent_spy(monkeypatch, target):
     """Record ``(user, parent)`` for every bounded immediate-parent gate evaluated on behalf of ``target`` (the
-    Guardian link and create helpers call ``_immediate_parent_access`` through these two modules)."""
+    Core lazy imports and Guardian aliases are separate lookup sites; each wraps the original helper once)."""
+    from crud_views.lib import ancestors
     from crud_views_guardian.lib import mixins, views
 
     spy = Mock()
-    for module in (mixins, views):
+    for module in (ancestors, mixins, views):
 
         def gate(view_class, user, parent_obj, *, rendering_view=None, _original=module._immediate_parent_access):
             if view_class is target:

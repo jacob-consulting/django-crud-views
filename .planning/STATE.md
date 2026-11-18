@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.40"
 current_phase_name: "Object navbar: opt-in section navigation (#381)"
-current_plan: 7
+current_plan: 8
 status: executing
-stopped_at: Completed 06.40-06-PLAN.md
-last_updated: "2026-11-18T17:41:37.072Z"
+stopped_at: Completed 06.40-07-PLAN.md
+last_updated: "2026-11-18T17:51:18.599Z"
 last_activity: 2026-11-18
-last_activity_desc: Completed plan 06.40-06; two plans remain
-state_head: c2e03cd7f59ae1eec4295ecf3be5bb18ccf3a554
+last_activity_desc: Completed plan 06.40-07; one plan remains
+state_head: 7d6906104b33db18e8a2b06db2026c87885dbffe
 progress:
   total_phases: 46
   completed_phases: 44
   total_plans: 254
-  completed_plans: 252
+  completed_plans: 253
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-18)
 ## Current Position
 
 Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — IN PROGRESS
-Current Plan: 7
+Current Plan: 8
 Total Plans in Phase: 8
 Status: Ready to execute
-Last activity: 2026-11-18 -- Completed plan 06.40-06; two plans remain
+Last activity: 2026-11-18 -- Completed plan 06.40-07; one plan remains
 
 Next: $gsd-execute-phase 06.40
+
+### Phase 06.40 plan 07 execution — 2026-11-18
+
+- Both tasks complete; product evidence aa41d1b0/e9b9ad0c and summary 7d690610 committed before progress. Verified companion checkout /home/alex/projects/alex/skills-navbar-06-40, exact origin jacob-consulting/skills, base4ce13d8e, local branch docs/navbar-06.40 and scoped four-file commit cab8a85ae032641ab442f03af5e0acb441d86f8c; companion checkout clean.
+- Native validator and skill-format checks pass. Four extracted template recipes, translated declaration/mixin, inherited cv_content and exact context inventory pass against real Django5.2 navbar data. Independent reference retrieval supports all five scenarios after edits. No install, version change, push, tag or publication.
+- Companion split recipe uses cv_content. Product docs/reference/navbar.md:196 still uses block content; plan08 must correct it and add inherited-page-content coverage in test_navbar_docs.py before final acceptance. WINDOWS append retains its pre-existing table/JSON mismatch; handoff is recorded in receipt, summary and deferred-items.
+- ROADMAP records7/8 plans executed, complete=false; Current Plan advanced to8 and global completion253/254. Existing unscoped progress limitation retained; stale state.json restored byte-identically. Browser/matrix/floor and phase acceptance remain plan08; no phase completion or ship claimed.
 
 ### Phase 06.40 plan 06 execution — 2026-11-18
 
@@ -1573,6 +1580,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.40 P05 | 10min | 3 tasks | 16 files |
 | Phase 06.40 P06 | 6min | 3 tasks | 13 files |
 | Phase 06.40 P06 | 6min | 3 tasks | 13 files |
+| Phase 06.40 P07 | 7min | 2 tasks | 5 files |
+| Phase 06.40 P07 | 7min | 2 tasks | 5 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1909,6 +1918,8 @@ Recent decisions affecting current work:
 - [Phase 06.40]: Plan06 inventories navbar view context separately from the exact eight-row snippet schema; both execute against real render data.
 - [Phase 06.40]: Plan06 attaches only real navbar DocRefs and closes plan05 documentation dependency with the complete unexcluded 602-test example suite.
 - [Phase 06.40]: Plan06 attaches only real navbar DocRefs and closes plan05 documentation dependency with the complete unexcluded 602-test example suite.
+- [Phase 06.40]: Companion navbar guidance is explicitly upstream Unreleased; existing package/plugin versions remain unchanged.
+- [Phase 06.40]: Companion navbar guidance is explicitly upstream Unreleased; existing package/plugin versions remain unchanged.
 
 ### Pending Todos
 
@@ -2002,6 +2013,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T17:41:18.146Z
-Stopped at: Completed 06.40-06-PLAN.md
+Last session: 2026-11-18T17:51:12.150Z
+Stopped at: Completed 06.40-07-PLAN.md
 Resume file: None

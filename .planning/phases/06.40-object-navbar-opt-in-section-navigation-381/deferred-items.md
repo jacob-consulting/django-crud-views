@@ -1,5 +1,13 @@
 ## Deferred Items
 
+- Product split-placement recipe uses a generic content block instead of the package's CRUD content block.
+  status: open
+  **Owner:** 06.40-08 final acceptance; discovered by plan07 companion reference review.
+  **Location:** `docs/reference/navbar.md:196`, `<main>{% block content %}{% endblock %}</main>`.
+  **Required fix:** Change to `block cv_content` and extend `tests/test1/test_navbar_docs.py` with a child template that overrides cv_content through the documented split base. Verify its body renders; existing isolated snippet tests do not exercise inheritance.
+  **Evidence:** The companion recipe was corrected within its four-file scope. Its inherited child template produces `\n<main>Page body</main>\n`; all four real-context recipes and exact field inventory pass. Product docs/tests were left unchanged by plan07.
+  **Ledger:** WINDOWS append rejected the pre-existing table/JSON mismatch; receipt and summary also retain this handoff.
+
 - Plan 05's new `navbar_demo` feature awaits its documentation reference and reciprocal links in plan 06.
   status: resolved
   **Owner:** 06.40-06, explicitly scheduled by 06.40-05 Task 03.

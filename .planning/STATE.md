@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.40"
 current_phase_name: "Object navbar: opt-in section navigation (#381)"
-current_plan: 3
+current_plan: 4
 status: executing
-stopped_at: Completed 06.40-02-PLAN.md
-last_updated: "2026-11-18T16:57:23.974Z"
+stopped_at: Completed 06.40-03-PLAN.md
+last_updated: "2026-11-18T17:07:46.240Z"
 last_activity: 2026-11-18
-last_activity_desc: Completed plan 06.40-02; six plans remain
-state_head: f56dc55c20b041f6b746da21cc93b477465e62e8
+last_activity_desc: Completed plan 06.40-03; five plans remain
+state_head: 7ee8ee8201723b3eb6fa957c6169c51f75b45697
 progress:
   total_phases: 46
   completed_phases: 44
   total_plans: 254
-  completed_plans: 248
+  completed_plans: 249
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-18)
 ## Current Position
 
 Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — IN PROGRESS
-Current Plan: 3
+Current Plan: 4
 Total Plans in Phase: 8
 Status: Ready to execute
-Last activity: 2026-11-18 -- Completed plan 06.40-02; six plans remain
+Last activity: 2026-11-18 -- Completed plan 06.40-03; five plans remain
 
 Next: $gsd-execute-phase 06.40
+
+### Phase 06.40 plan 03 execution — 2026-11-18
+
+- Both tasks complete; commits 771e4f3d/6fe60363 and summary 7ee8ee82. Fifty permission cases and 78 cost/preservation cases prove existing behavior without production changes. Regression-only adjustment is explicit; no fabricated product RED/GREEN claim.
+- Permission task 309 passed; cost task 337 passed; affected navbar/permission/breadcrumb/context/golden regressions 776 passed. All 128 new cases also pass on Django 4.2.30 and 6.0.10, with Python 3.12.3/four workers. Scoped Ruff/format/whitespace passed.
+- COST and 72-cell receipt record plain 6/4/2/0, Guardian 8/8/4/4 and mixed 10/8/6/4 SQL across cold/warm vocabulary/actor caches; zero owner/collection reads and one build/hook per item. Entire nonparticipant response/SQL and raw context-header bytes remain unchanged.
+- ROADMAP records 3/8 plans executed, complete=false; Current Plan advanced to 4 and global completion to 249/254. Existing unscoped progress limitation retained; stale state.json restored byte-identically. WINDOWS append still fails on pre-existing table/JSON disagreement; no unrelated repair made. Later example/docs/browser/matrix gates remain; no phase completion or ship claimed.
 
 ### Phase 06.40 plan 02 execution — 2026-11-18
 
@@ -1540,6 +1547,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.37 P04 | 15min | 2 tasks | 1 files |
 | Phase 06.40 P01 | 12min | 3 tasks | 9 files |
 | Phase 06.40 P02 | 7min | 2 tasks | 9 files |
+| Phase 06.40 P03 | 8min | 2 tasks | 4 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1865,6 +1873,8 @@ Recent decisions affecting current work:
 - [Phase 06.40]: Complete URLconf before registry iteration and use cached-only readiness probes inside navbar checks.
 - [Phase 06.40]: Retain the proven lazy builder unchanged; copied template contexts preserve one request-local result.
 - [Phase 06.40]: Items own the translated nav landmark; wrapper composes guarded identity and items leaves using relative includes.
+- [Phase 06.40]: Preserve the already-correct navbar builder and permission/ancestor/button code; plan03 adds regression proof only.
+- [Phase 06.40]: Measure navbar costs after request loading; warm actor means Django model permissions, without a persistent Guardian checker.
 
 ### Pending Todos
 
@@ -1958,6 +1968,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T16:57:17.749Z
-Stopped at: Completed 06.40-02-PLAN.md
+Last session: 2026-11-18T17:07:40.320Z
+Stopped at: Completed 06.40-03-PLAN.md
 Resume file: None

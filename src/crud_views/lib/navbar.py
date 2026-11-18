@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils.functional import Promise, SimpleLazyObject
 from pydantic import BaseModel
 
+from crud_views.lib.ancestors import _resolved_ancestor, _walk_ancestors
 from crud_views.lib.view.base import cv_is_modal_request
 from crud_views.lib.view.context import ViewContext
 from crud_views.lib.viewset import ViewSet
@@ -30,35 +31,76 @@ def _plain(value) -> str:
     return str.__str__(str(value))
 
 
+def _section(viewset, owner_name):
+    """The direct child on this attachment's ancestry path, or None on the owner."""
+    if viewset.name == owner_name:
+        return None
+    child = viewset
+    for _, ancestor in _walk_ancestors(viewset):
+        if ancestor.name == owner_name:
+            return child.name
+        child = ancestor
+    raise ImproperlyConfigured(f"ViewSet {viewset.name!r} is outside navbar owner {owner_name!r}")
+
+
+def _destination(owner_viewset, item):
+    target_viewset = ViewSet.get_viewset(item.child) if item.child is not None else owner_viewset
+    if item.child is not None:
+        if target_viewset.parent is None or target_viewset.parent.name != owner_viewset.name:
+            raise ImproperlyConfigured(f"child {item.child!r} is not a direct child of {owner_viewset.name!r}")
+        key = item.key
+        if key is None:
+            key = next((key for key in ("list", "card") if target_viewset.is_view_registered(key)), None)
+    else:
+        key = item.key
+    if not key or not target_viewset.is_view_registered(key):
+        raise ImproperlyConfigured(f"unregistered destination key {key!r} on {target_viewset.name!r}")
+    target = target_viewset.get_view_class(key)
+    if "get" not in target.http_method_names or not callable(getattr(target, "get", None)):
+        raise ImproperlyConfigured(f"destination {key!r} cannot handle GET")
+    if bool(target.cv_object) != (item.child is None):
+        raise ImproperlyConfigured(
+            f"destination {key!r} must {'require' if item.child is None else 'not require'} an object"
+        )
+    return target_viewset, key, target
+
+
 def _build(view):
     bar = view.cv_navbar
     owner_viewset = ViewSet.get_viewset(bar.viewset)
-    owner = getattr(view, "object", None)
-    if owner is None or view.cv_viewset is not owner_viewset:
+    section = _section(view.cv_viewset, bar.viewset)
+    owner = getattr(view, "object", None) if section is None else _resolved_ancestor(view, bar.viewset)
+    if owner is None:
         raise ImproperlyConfigured(f"{type(view).__name__}: navbar owner {bar.viewset!r} is not resolved")
     context = ViewContext(view=view, object=owner)
     items = []
     for item in bar.items:
-        if not item.key or not owner_viewset.is_view_registered(item.key):
-            raise ImproperlyConfigured(f"Navbar {bar.viewset!r}: unregistered owner key {item.key!r}")
-        target = owner_viewset.get_view_class(item.key)
-        if not target.cv_has_access(view.request.user, owner):
+        target_viewset, key, target = _destination(owner_viewset, item)
+        access = target.cv_has_access if item.child is None else target._cv_child_link_has_access
+        if not access(view.request.user, owner):
             continue
         if not target._cv_action_enabled_for_rendering(view.request.user, owner, view):
             continue
         kwargs = dict(target.cv_get_url_extra_kwargs())
-        kwargs[owner_viewset.pk_name] = owner.pk
-        label = (
-            _plain(item.label)
-            if item.label is not None
-            else _plain(unescape(target.cv_get_action_short_label(context)))
+        kwargs.update(
+            {edge.get_pk_name(): view.kwargs[edge.get_pk_name()] for edge, _ in _walk_ancestors(owner_viewset)}
         )
+        kwargs[owner_viewset.pk_name if item.child is None else target_viewset.parent.get_pk_name()] = owner.pk
+        if item.label is not None:
+            label = _plain(item.label)
+        elif item.child is not None:
+            label = _plain(target_viewset.get_meta(context)["verbose_name_plural_translate"])
+        else:
+            label = _plain(unescape(target.cv_get_action_short_label(context)))
         items.append(
             {
                 "label": label,
-                "icon": item.icon if item.icon is not None else target.cv_icon_action,
-                "url": reverse(owner_viewset.get_router_name(item.key), kwargs=kwargs),
-                "active": view.cv_key == item.key,
+                "icon": item.icon
+                if item.icon is not None
+                else (target.cv_icon_action if item.child is None else target_viewset.icon_header),
+                "url": reverse(target_viewset.get_router_name(key), kwargs=kwargs),
+                "active": (section is None and item.child is None and view.cv_key == key)
+                or (section is not None and section == item.child),
             }
         )
     if not items:

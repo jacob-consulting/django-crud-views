@@ -286,7 +286,6 @@ def section_url(ns, vs, key, owner, child, grand):
 )
 def test_same_owner_and_destinations_across_sections(nested, page):
     if nested and page == "grand.update":
-        # The four-level case is covered separately with a temporary leaf model.
         page = "child.update"
     with navbar_routes(lambda sfx: section_routes(sfx, nested=nested)) as ns:
         owner, child, grand = section_objects(ns)
@@ -345,3 +344,142 @@ def test_route_identity_overrides_extra_kwargs():
         items = response.context["cv_navbar"]["items"]
         assert items[0]["url"] == section_url(ns, ns.owner, "detail", owner, child, grand)
         assert items[-1]["url"] == section_url(ns, ns.child, "list", owner, child, grand)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("explicit", [True, False])
+def test_selected_list_never_falls_back_to_card(explicit):
+    from django.core.exceptions import ImproperlyConfigured
+
+    from crud_views.lib.views.card import CardListView
+
+    def build(sfx):
+        ns, routed = section_routes(sfx, child_key="list" if explicit else None, card_only=explicit)
+        if not explicit:
+            type("ExtraCard", (CardListView,), {"cv_viewset": ns.child})
+            ns.child.get_view_class("list").cv_has_access = classmethod(lambda cls, user, obj=None: False)
+        return ns, routed
+
+    with navbar_routes(build) as ns:
+        owner, child, grand = section_objects(ns)
+        url = section_url(ns, ns.owner, "detail", owner, child, grand)
+        if explicit:
+            with pytest.raises(ImproperlyConfigured, match="unregistered destination key 'list'"):
+                Client().get(url)
+        else:
+            items = Client().get(url).context["cv_navbar"]["items"]
+            assert all(item["label"] != "Orders" for item in items)
+
+
+@pytest.mark.django_db
+def test_invalid_registered_list_does_not_fall_back():
+    from django.core.exceptions import ImproperlyConfigured
+
+    from crud_views.lib.views.card import CardListView
+
+    def build(sfx):
+        ns, routed = section_routes(sfx)
+        type("ExtraCard", (CardListView,), {"cv_viewset": ns.child})
+        ns.child.get_view_class("list").http_method_names = ["post"]
+        return ns, routed
+
+    with navbar_routes(build) as ns:
+        owner, child, grand = section_objects(ns)
+        with pytest.raises(ImproperlyConfigured, match="cannot handle GET"):
+            Client().get(section_url(ns, ns.owner, "detail", owner, child, grand))
+
+
+@pytest.mark.django_db
+def test_overrides_and_child_plural_are_plain_text():
+    with navbar_routes(section_routes) as ns:
+        owner, child, grand = section_objects(ns)
+        ns.child.verbose_name_plural = mark_safe("<b>Orders &amp; more</b>")
+        ns.child.icon_header = "list"
+        ns.bar.items[0].icon = ""
+        response = Client().get(section_url(ns, ns.owner, "detail", owner, child, grand))
+        items = response.context["cv_navbar"]["items"]
+        assert items[0]["icon"] == ""
+        assert items[-1]["icon"] == "list"
+        assert items[-1]["label"] == "<b>Orders &amp; more</b>"
+        nav = html.fromstring(response.content).xpath('//nav[contains(@class,"cv-navbar")]')[0]
+        assert not nav.xpath(".//b")
+        assert nav.xpath(".//a")[-1].text_content().strip() == "<b>Orders &amp; more</b>"
+
+
+@pytest.mark.django_db(transaction=True)
+def test_nested_owner_on_fourth_level_without_intermediate_mixin():
+    from crud_views.lib.navbar import CrudViewNavBarMixin
+    from crud_views.lib.views import UpdateView
+    from crud_views.lib.viewset import ParentViewSet
+    from tests.test1.test_ancestor_authorization import _deep_leaf_model
+
+    with _deep_leaf_model() as Leaf:
+
+        def build(sfx):
+            ns, routed = section_routes(sfx, nested=True, intermediate=False)
+            ns.grand = ViewSet(
+                model=Leaf,
+                name=f"leaf{sfx}",
+                parent=ParentViewSet(name=ns.child.name, attribute="note", pk_name="note_pk"),
+            )
+            type(
+                "NavbarLeafEdit",
+                (CrudViewNavBarMixin, UpdateView),
+                {
+                    "cv_viewset": ns.grand,
+                    "cv_navbar": ns.bar,
+                    "fields": ["text"],
+                    "cv_context_actions": [],
+                    "cv_extends_template": "navbar/base.html",
+                },
+            )
+            return ns, [*routed, ns.grand]
+
+        with navbar_routes(build) as ns:
+            owner, child, _ = section_objects(ns)
+            leaf = Leaf.objects.create(pk=404, note=child, text="Distinct item")
+            url = reverse(
+                ns.grand.get_router_name("update"),
+                kwargs={"tenant_pk": 101, "customer_pk": 202, "note_pk": 303, "pk": leaf.pk},
+            )
+            response = Client().get(url)
+            data = response.context["cv_navbar"]
+            assert data["object"] == owner
+            assert data["items"][0]["label"] == "Customer details"
+            assert data["items"][-1]["active"]
+            assert ns.labels[-1].object is data["object"]
+            assert data["items"][0]["url"] == section_url(ns, ns.owner, "detail", owner, child, leaf)
+
+
+@pytest.mark.django_db
+def test_custom_capture_uses_destination_extra_kwargs():
+    def build(sfx):
+        ns, routed = section_routes(sfx)
+        target = ns.views[(ns.owner.name, "notes")]
+        target.cv_path_contribute = classmethod(lambda cls: r"(?P<language>[a-z]+)/")
+        target.cv_get_url_extra_kwargs = classmethod(lambda cls: {"language": "en"})
+        return ns, routed
+
+    with navbar_routes(build) as ns:
+        owner, child, grand = section_objects(ns)
+        response = Client().get(section_url(ns, ns.child, "detail", owner, child, grand))
+        target_url = response.context["cv_navbar"]["items"][2]["url"]
+        assert target_url.endswith("/notes/en/")
+        assert Client().get(target_url).status_code == 200
+
+
+@pytest.mark.django_db
+def test_missing_resolved_owner_is_lifecycle_error():
+    from django.contrib.auth.models import AnonymousUser
+    from django.core.exceptions import ImproperlyConfigured
+    from django.test import RequestFactory
+
+    from crud_views.lib.navbar import _build
+
+    with navbar_routes(section_routes) as ns:
+        view = ns.views[(ns.child.name, "detail")]()
+        view.request = RequestFactory().get("/")
+        view.request.user = AnonymousUser()
+        view.kwargs = {}
+        with pytest.raises(ImproperlyConfigured, match=r"navbar owner .* is not resolved"):
+            _build(view)

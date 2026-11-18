@@ -16,6 +16,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
+from django.contrib.auth.backends import AllowAllUsersModelBackend
 from django.test import RequestFactory, override_settings
 from django.urls import clear_url_caches, include, path, resolve, reverse
 from lxml import html
@@ -42,6 +43,13 @@ VIEW = AncestorPermissions(nearest="view", higher="view")
 CHANGE = AncestorPermissions(nearest="change", higher="view")
 # the removed child-side cv_guardian_parent_permission="change": every Read endpoint needs parent change
 CHANGE_READ = AncestorPolicy(read=CHANGE)
+
+
+class InactiveBookReaderBackend(AllowAllUsersModelBackend):
+    """Retain inactive sessions and grant Book read, independently of model grants."""
+
+    def has_perm(self, user_obj, perm, obj=None):
+        return user_obj.is_authenticated and not user_obj.is_active and perm == "app.view_book"
 
 
 @pytest.fixture
@@ -333,6 +341,101 @@ def test_plain_child_link_actor_policy(core_links, django_user_model, monkeypatc
     assert rendered_data(core_links, renderer, actor, parent) is None
     own.assert_called_once_with(actor, parent)
     spy.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("renderer", ["context", "card"])
+@pytest.mark.parametrize("mode", ["hide", "disable"])
+@pytest.mark.parametrize("actor_kind", ["anonymous", "inactive", "inactive-superuser"])
+@pytest.mark.parametrize("provider_none", [False, True], ids=["protected", "none"])
+def test_plain_child_link_backend_grant_cannot_waive_actor_rule(
+    client, django_user_model, monkeypatch, renderer, mode, actor_kind, provider_none
+):
+    from django.contrib.auth.models import AnonymousUser
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    from crud_views.lib.views import CardListView, DetailView, ListView
+    from crud_views.lib.viewset import ViewSet
+    from tests.test1.app.models import BookNote
+    from tests.test1.test_ancestor_actors import ANONYMOUS_READER
+    from tests.test1.test_ancestor_authorization import isolated_routes
+
+    def build(suffix):
+        parent = ViewSet(model=Book, name=f"actorbook{suffix}", icon_header="fa-solid fa-book")
+        child = ViewSet(
+            model=BookNote,
+            name=f"actornote{suffix}",
+            parent=ParentViewSet(name=parent.name, attribute="book"),
+        )
+
+        class Host(DetailView):
+            cv_viewset = parent
+            cv_context_actions = []
+
+        class Cards(CardListView):
+            cv_viewset = parent
+            cv_context_actions = []
+            cv_card_actions_label_mode = "label"
+
+        class Target(ListView):
+            cv_viewset = child
+            cv_context_actions = []
+            cv_context_action_label_mode = "label"
+            cv_inaccessible_actions = mode
+
+        return SimpleNamespace(parent=parent, child=child, detail=Host, card=Cards, list=Target), [parent, child]
+
+    actor = (
+        AnonymousUser()
+        if actor_kind == "anonymous"
+        else django_user_model.objects.create_user(
+            username="backend_reader", is_active=False, is_superuser=actor_kind == "inactive-superuser"
+        )
+    )
+    parent_obj = Book.objects.create(title="Actor parent", publisher=Publisher.objects.create(name="Publisher"))
+    inactive_backend = f"{__name__}.InactiveBookReaderBackend"
+    with (
+        isolated_routes(build) as family,
+        override_settings(AUTHENTICATION_BACKENDS=[ANONYMOUS_READER, inactive_backend]),
+    ):
+        if provider_none:
+            monkeypatch.setattr(family.parent, "ancestor_policy", AncestorPolicy(provider="none"))
+        if actor_kind != "anonymous":
+            client.force_login(actor, backend=inactive_backend)
+        assert actor.has_perm("app.view_book") is True
+        assert family.list.cv_has_access(actor, parent_obj) is True
+        destination = child_url(family, "list", parent_obj)
+        response = client.get(destination)
+        assert response.status_code == (200 if provider_none else 302 if actor_kind == "anonymous" else 403)
+        if response.status_code == 302:
+            assert response["Location"] == f"/accounts/login/?next={destination}"
+        spy = parent_spy(monkeypatch, family.list)
+        with CaptureQueriesContext(connection) as capture:
+            data = rendered_data(family, renderer, actor, parent_obj)
+        spy.assert_called_once_with(actor, parent_obj)
+        assert all('FROM "app_' not in query["sql"] for query in capture.captured_queries)
+        if provider_none:
+            assert data["cv_access"] is True
+            assert data["cv_disabled"] is False
+            assert data["cv_url"] == destination
+        elif mode == "hide":
+            assert data is None
+        else:
+            assert data["cv_access"] is False
+            assert data["cv_disabled"] is True
+            assert data["cv_disabled_reason"] == "permission"
+            assert data["cv_url"] is None
+
+        own = Mock(return_value=False)
+        monkeypatch.setattr(family.list, "cv_has_access", own)
+        spy.reset_mock()
+        with CaptureQueriesContext(connection) as capture:
+            denied = rendered_data(family, renderer, actor, parent_obj)
+        assert denied is None if mode == "hide" else denied["cv_url"] is None and denied["cv_disabled"]
+        own.assert_called_once_with(actor, parent_obj)
+        spy.assert_not_called()
+        assert len(capture) == 0
 
 
 @pytest.mark.django_db

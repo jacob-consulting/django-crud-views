@@ -621,6 +621,7 @@ def test_preservation_explicit_m2m_same_model_and_core(links, alternate_child, w
     actor = actors[0]
     if kind == "core":
         actor.user_permissions.add(Permission.objects.get(codename="view_book"))
+        user_guardian_object_perm(actor, links.parent, "view", parents[0])
         spy = Mock(wraps=target.cv_has_access)
         monkeypatch.setattr(target, "cv_has_access", spy)
     else:
@@ -628,7 +629,7 @@ def test_preservation_explicit_m2m_same_model_and_core(links, alternate_child, w
     for parent in parents:
         result = rendered_data(links, renderer, actor, parent, child=child)
         assert spy.call_args.args[1] is parent
-        allowed = kind == "core" or parent is parents[0]
+        allowed = parent is parents[0]
         assert (result is not None) is allowed
         if allowed:
             assert resolve(result["cv_url"]).kwargs[child.parent.get_pk_name()] == str(parent.pk)
@@ -890,35 +891,47 @@ def test_query_create_uses_only_its_existing_parent_check(links, world, monkeypa
 
 
 @pytest.mark.django_db
-def test_query_unaffected_core_and_ordinary_actions(links, world, monkeypatch):
+def test_query_unaffected_core_and_ordinary_actions(links, world, monkeypatch, record_property):
     from django.db import connection
     from django.test.utils import CaptureQueriesContext
 
     actors, parents = world
     actor, parent = actors[0], parents[0]
-    target = links.list
 
-    # A core target delegates the original custom policy without any parent machinery.
+    # The core target retains own policy and checks the real Guardian parent with CHANGE_READ.
     class CoreList(ListViewPermissionRequired):
         pass
 
     CoreList.cv_viewset = links.child
     monkeypatch.setitem(links.child._views, "list", CoreList)
     monkeypatch.setattr(CoreList, "cv_has_access", Mock(return_value=True))
-    parent_check = parent_spy(monkeypatch, target)
+    parent_check = parent_spy(monkeypatch, CoreList)
     for renderer in ("context", "card"):
+        parent_check.reset_mock()
         with CaptureQueriesContext(connection) as capture:
             assert rendered_data(links, renderer, actor, parent)["cv_access"] is True
-        assert len(capture) == 0
-    parent_check.assert_not_called()
+        parent_check.assert_called_once_with(actor, parent)
+        categories = sql_categories(capture.captured_queries)
+        assert categories.get("permissions", 0) > 0
+        assert categories.get("parent_rows", 0) == categories.get("child_or_relation_rows", 0) == 0
+        report_measurement(
+            record_property,
+            layer="mixed_core_guardian",
+            renderer=renderer,
+            total=len(capture),
+            categories=categories,
+            helper_calls=parent_check.call_count,
+        )
 
     # Ordinary Guardian row action cost is unchanged relative to the original access call.
     user_guardian_object_perm(actor, links.parent, "view", parent)
     _ = links.parent.permissions
     view = bound(links.card, actor)
+    parent_check.reset_mock()
     with CaptureQueriesContext(connection) as baseline:
         assert links.detail.cv_has_access(actor, parent) is True
     with CaptureQueriesContext(connection) as rendered:
         assert view.cv_get_card_action_data(CardAction(key="detail"), parent, actor)["cv_access"] is True
     assert len(rendered) == len(baseline)
     assert sql_categories(rendered.captured_queries) == sql_categories(baseline.captured_queries)
+    parent_check.assert_not_called()

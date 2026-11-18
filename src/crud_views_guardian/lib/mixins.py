@@ -299,13 +299,10 @@ class GuardianQuerysetMixin:
             return super()._cv_child_link_has_access(user, parent_obj)
         if not user.is_authenticated or _guardian_inactive_actor(user):
             return False
-        access = super()._cv_child_link_has_access(user, parent_obj)
-        if not access:
-            return access
         # Standalone queryset compositions never checked the parent for their links (bounded migration).
         if not issubclass(cls, GuardianParentPermissionMixin):
-            return access
-        return _immediate_parent_access(cls, user, parent_obj)
+            return cls.cv_has_access(user, parent_obj)
+        return super()._cv_child_link_has_access(user, parent_obj)
 
     def cv_get_context(self, key=None, obj=None, user=None, request=None, *, location=None):
         """

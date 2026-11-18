@@ -527,7 +527,12 @@ class CrudView(metaclass=CrudViewMetaClass):
     @classmethod
     def _cv_child_link_has_access(cls, user, parent_obj) -> bool:
         """Access for a child link whose URL uses the supplied immediate parent."""
-        return cls.cv_has_access(user, parent_obj)
+        access = cls.cv_has_access(user, parent_obj)
+        if not access or not cls.cv_viewset.has_parent:
+            return access
+        from crud_views.lib.ancestors import _immediate_parent_access
+
+        return _immediate_parent_access(cls, user, parent_obj)
 
     @classmethod
     def cv_action_enabled(cls, user: User, obj: Model | None = None) -> bool:

@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.39"
 current_phase_name: "Immediate-parent permission checks for child links (#380)"
 current_plan: "02"
-status: executing
-stopped_at: Completed 06.39-01-PLAN.md; plan 02 pending
-last_updated: "2026-11-18T11:49:27Z"
+status: verifying
+stopped_at: Completed 06.39-02-PLAN.md; phase security/review/verifier gates pending
+last_updated: "2026-11-18T12:18:56Z"
 last_activity: 2026-11-18
-last_activity_desc: "Phase 06.39 plan 01 executed; bounded child-link gate and measured cost verified"
-state_head: 9a9aa3e5
+last_activity_desc: "Phase 06.39 both plans executed; consumer guidance and three-series source acceptance recorded"
+state_head: 66dc16f8
 progress:
   total_phases: 45
   completed_phases: 42
   total_plans: 246
-  completed_plans: 245
+  completed_plans: 246
 milestone_name: milestone
 ---
 
@@ -31,13 +31,21 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 
 ## Current Position
 
-Phase: 06.39 (Immediate-parent permission checks for child links (#380)) — EXECUTING
-Current Plan: 02 (01 complete)
+Phase: 06.39 (Immediate-parent permission checks for child links (#380)) — AWAITING VERIFICATION
+Current Plan: 02 (01 and 02 complete)
 Total Plans in Phase: 2
-Status: Executing — 1/2 plans complete
-Last activity: 2026-11-18 -- Phase 06.39 plan 01 complete; plan 02 documentation and acceptance pending
+Status: Awaiting phase gates — 2/2 plans complete
+Last activity: 2026-11-18 -- Phase 06.39 plan 02 complete; supported-series source checks passed
 
-Next: Execute 06.39-02-PLAN.md
+Next: Orchestrator security/review/verifier gates for phase 06.39
+
+### Phase 06.39 plan 02 execution — 2026-11-18
+
+- All three references document plain/Guardian child-link policy, immediate-parent limits, parent-owned fallback, render-time errors and measured costs. Breaking #380 links to the new migration section from both root CHANGELOG and the docs reference; strict builds and the exact anchor assertion pass.
+- Navbar D-09/A-03 consume the destination permission hook once. The committed handoff preserves owner and open-state choices. Later external working-tree edits changed the navbar state decision; those edits are preserved uncommitted, separately fingerprinted, and still retain the once-only permission hook.
+- Full source suites on Python 3.12.3/Guardian 3.5.2: Django 4.2.30 **15841 passed/14 existing skips**, 5.2.19 **15854/1**, 6.0.10 **15855/0**. Four workers each, sequential series. Focused normal/recorder each **223 passed**; scoped Ruff/format and strict MkDocs pass. 825 runtime/test/published-doc input hashes remained unchanged.
+- Three tasks/seven task files/about 29 minutes; measured task diff 9557 chars/4 tokens. Commits 133852f9, b9d827ec, 97f895f5; summary 66dc16f8 committed before progress. ROADMAP reports 2/2 plans executed, complete=false.
+- STATE.md updated directly; original dirty state.json remains byte-identical. Other Python versions, installed-wheel acceptance and full recorder suites were not run by this plan. No merge, publication, navbar implementation or phase completion claimed; independent gates remain pending.
 
 ### Phase 06.39 plan 01 execution — 2026-11-18
 

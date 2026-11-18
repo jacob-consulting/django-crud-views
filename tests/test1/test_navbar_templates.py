@@ -7,13 +7,22 @@ import pytest
 from django.contrib.auth.models import AnonymousUser
 from django.template import Context, Template, TemplateDoesNotExist
 from django.template.loader import get_template
-from django.test import RequestFactory
+from django.test import RequestFactory, override_settings
 from django.utils.functional import SimpleLazyObject
+from django.utils.safestring import mark_safe
+from django.utils.translation import override
 from lxml import html
 
 from crud_views.lib import navbar
 from tests.test1.app.models import Publisher
-from tests.test1.test_navbar import get_owner, navbar_routes, navbar_templates, owner_routes
+from tests.test1.test_navbar import (
+    get_owner,
+    navbar_routes,
+    navbar_templates,
+    owner_routes,
+    section_objects,
+    section_routes,
+)
 
 TEMPLATES = ["navbar", "navbar_identity", "navbar_items"]
 TAG = "{% load crud_views %}{% cv_navbar %}"
@@ -180,3 +189,148 @@ def test_split_real_request_keeps_header_placement():
             nodes = list(tree.iter())
             assert nodes.index(identity) < nodes.index(nav) < nodes.index(header)
             assert header.text_content().strip() == "Unchanged page header"
+
+
+def test_german_landmark_uses_shipped_translation():
+    with navbar_routes(owner_routes) as ns:
+        _, data = view_context(ns)
+        with override("de"):
+            tree = html.fromstring(render('{% include "crud_views/tags/navbar_items.html" %}', data))
+        assert tree.get("aria-label") == "Abschnitte für Owner"
+
+
+@pytest.mark.parametrize("language,prefix", [("en", "Sections for "), ("de", "Abschnitte für ")])
+@pytest.mark.parametrize("default_label", [False, True])
+@pytest.mark.parametrize(
+    "text",
+    [
+        'A & B\'s "branch"',
+        "literal &amp; &#39; 50% %(object)s",
+        '<b>ordinary & "markup"</b>',
+        mark_safe('<script>alert("x")</script><b title="bad">Safe &amp; text</b>'),
+        mark_safe('" onmouseover="alert(1)" & <img src=x onerror=alert(1)>'),
+    ],
+)
+def test_plain_labels_and_accessible_names_are_escaped_once(language, prefix, default_label, text, monkeypatch):
+    monkeypatch.setattr(Publisher, "__str__", lambda self: text)
+    options = {"template_code": "{{ object }}"} if default_label else {"label": text}
+    with navbar_routes(lambda sfx: owner_routes(sfx, **options)) as ns:
+        _, data = view_context(ns)
+        with override(language):
+            output = render(TAG, data)
+        tree = html.fromstring(output)
+        identity = tree.xpath('.//*[contains(@class,"cv-navbar-identity")]')[0]
+        link = tree.xpath(".//a")[0]
+        nav = tree.xpath(".//nav")[0]
+        # A safe snippet is already rendered HTML; its entity text is decoded once
+        # by the owner default-label contract. Raw overrides retain literal entities.
+        from html import unescape
+
+        expected = unescape(str(text)) if default_label and hasattr(text, "__html__") else str(text)
+        assert identity.text_content().strip() == str(text)
+        assert link.text_content().strip() == expected
+        assert nav.get("aria-label") == prefix + str(text)
+        assert not tree.xpath(".//script | .//b | .//img | .//*[@onmouseover] | .//*[@onerror]")
+        assert type(data["cv_navbar"]["label"]) is str
+        assert type(data["cv_navbar"]["items"][0]["label"]) is str
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("hidden", [[], [0], [1], [0, 1, 2], [0, 1, 2, 3]])
+@pytest.mark.parametrize("reason", ["access", "state"])
+def test_zero_one_many_and_partial_links_have_static_navigation_semantics(hidden, reason, monkeypatch):
+    with navbar_routes(section_routes) as ns:
+        owner, _, _ = section_objects(ns)
+        for index in hidden:
+            item = ns.bar.items[index]
+            target = (ns.child if item.child else ns.owner).get_view_class(item.key or "list")
+            method = (
+                ("_cv_child_link_has_access" if item.child else "cv_has_access")
+                if reason == "access"
+                else ("_cv_action_enabled_for_rendering")
+            )
+            monkeypatch.setattr(target, method, lambda *args: False)
+        # A nonparticipating destination avoids confusing request permission with
+        # link admission; the same owner/detail key is still the current section.
+        view = ns.views[(ns.owner.name, "detail")]()
+        request = RequestFactory().get("/")
+        request.user = AnonymousUser()
+        view.setup(request, owner_pk=owner.pk)
+        view.object = owner
+        data = view.get_context_data()
+        output = render(TAG, data)
+        if len(hidden) == 4:
+            assert output == ""
+            return
+        tree = html.fromstring(output)
+        nav = tree.xpath(".//nav")[0]
+        links = nav.xpath("./ul/li/a")
+        expected = [label for i, label in enumerate(["Customer details", "Edit", "Notes", "Orders"]) if i not in hidden]
+        assert [a.text_content().strip() for a in links] == expected
+        assert len(nav.xpath("./ul/li")) == len(expected)
+        assert nav.get("aria-label") == "Sections for Customer"
+        assert len(nav.xpath('.//a[@aria-current="true"]')) == (0 if 0 in hidden else 1)
+        assert all(a.get("href") and a.get("tabindex") is None for a in links)
+        assert not tree.xpath('.//*[@role="tab" or @role="tablist" or @aria-selected or @data-bs-toggle]')
+        assert not tree.xpath(".//script | .//button | .//form | .//*[@aria-busy] | .//*[@tabindex]")
+        assert not tree.xpath('.//*[contains(@class,"spinner") or contains(@class,"placeholder")]')
+        identity = tree.xpath('.//*[contains(@class,"cv-navbar-identity")]')[0]
+        assert identity.text_content().strip() == "Customer"
+        assert not identity.xpath(".//a | .//button | .//h1 | .//h2")
+        assert "flex-wrap" in nav.xpath("./ul")[0].get("class").split()
+        assert "nav-fill" not in nav.xpath("./ul")[0].get("class").split()
+        for li in nav.xpath("./ul/li"):
+            assert "mw-100" in li.get("class").split()
+        assert "text-break" in identity.get("class").split()
+
+
+@pytest.mark.parametrize("icon", [None, "", "fas:building", "host:building"])
+def test_icons_are_decorative_or_absent_without_losing_labels(icon):
+    libraries = {
+        "host": {
+            "renderer": "font",
+            "class": "host-{name}",
+            "placement": "host",
+            "standalone": "host-icon {name_class}",
+        }
+    }
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=libraries), navbar_routes(owner_routes) as ns:
+        ns.owner.icon_header = icon
+        ns.bar.items[0].icon = icon
+        ns.view.cv_icon_action = icon
+        _, data = view_context(ns)
+        tree = html.fromstring(render(TAG, data))
+        identity = tree.xpath('.//*[contains(@class,"cv-navbar-identity")]')[0]
+        assert identity.text_content().strip() == "Owner"
+        assert tree.xpath(".//a")[0].text_content().strip()
+        icons = tree.xpath(".//i")
+        assert len(icons) == (2 if icon else 0)
+        assert all(i.get("aria-hidden") == "true" and i.get("tabindex") is None for i in icons)
+        if icon == "host:building":
+            assert all(i.get("class") == "host-icon host-building" for i in icons)
+
+
+def test_long_text_is_complete_and_uses_wrapping_utilities():
+    caption = "Customer " * 20 + "X" * 100
+    label = "Section " * 15 + "Y" * 100
+    with navbar_routes(lambda sfx: owner_routes(sfx, label=label)) as ns:
+        _, data = view_context(ns, name=caption)
+        tree = html.fromstring(render(TAG, data))
+        identity = tree.xpath('.//*[contains(@class,"cv-navbar-identity")]')[0]
+        link = tree.xpath(".//a")[0]
+        assert identity.text_content().strip() == caption
+        assert link.text_content().strip() == label
+        assert tree.xpath(".//nav")[0].get("aria-label") == "Sections for " + caption
+        assert "text-break" in link.get("class").split()
+        assert not tree.xpath('.//*[contains(@class,"text-truncate") or contains(@class,"overflow-hidden")]')
+
+
+@pytest.mark.parametrize("name", TEMPLATES)
+def test_configuration_errors_propagate_without_retry_or_placeholder(name):
+    from django.core.exceptions import ImproperlyConfigured
+
+    with navbar_routes(owner_routes) as ns:
+        ns.bar.items[0].key = "unregistered"
+        _, data = view_context(ns)
+        with pytest.raises(ImproperlyConfigured, match="unregistered destination"):
+            render('{% include "crud_views/tags/' + name + '.html" %}', data)

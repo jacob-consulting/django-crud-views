@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.40"
 current_phase_name: "Object navbar: opt-in section navigation (#381)"
-current_plan: 6
+current_plan: 7
 status: executing
-stopped_at: Completed 06.40-05-PLAN.md
-last_updated: "2026-11-18T17:30:26.410Z"
+stopped_at: Completed 06.40-06-PLAN.md
+last_updated: "2026-11-18T17:41:37.072Z"
 last_activity: 2026-11-18
-last_activity_desc: Completed plan 06.40-05; three plans remain
-state_head: e7c784982b20e142e71ec32f861bb645101250fe
+last_activity_desc: Completed plan 06.40-06; two plans remain
+state_head: c2e03cd7f59ae1eec4295ecf3be5bb18ccf3a554
 progress:
   total_phases: 46
   completed_phases: 44
   total_plans: 254
-  completed_plans: 251
+  completed_plans: 252
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-18)
 ## Current Position
 
 Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — IN PROGRESS
-Current Plan: 6
+Current Plan: 7
 Total Plans in Phase: 8
 Status: Ready to execute
-Last activity: 2026-11-18 -- Completed plan 06.40-05; three plans remain
+Last activity: 2026-11-18 -- Completed plan 06.40-06; two plans remain
 
 Next: $gsd-execute-phase 06.40
+
+### Phase 06.40 plan 06 execution — 2026-11-18
+
+- All three tasks complete, four task commits through fb8738f7; summary c2e03cd7 committed before progress. Complete navbar reference, measured costs, executable override recipes, stable declaration/tag/template/context inventory and additive release notice delivered.
+- Core documentation and unchanged snippet-schema tests: 13 passed. Full prescribed Nox navbar/shared/i18n/doc-links suite: 233 passed and 75 subtests. Complete examples suite: 602 passed and 272 subtests, without exclusions, Python 3.12.3/Django 5.2.19/four workers. Strict docs, built-site anchor/live backlink and scoped Ruff/format/whitespace checks pass.
+- Real navbar DocRefs and the exact reciprocal landing URL close plan05's documentation dependency in deferred-items.md. All three scenario credentials are documented without changing shared translated notices or other examples' policies.
+- ROADMAP records 6/8 plans executed, complete=false; Current Plan advanced to7 and global completion to252/254. Existing unscoped progress limitation retained; stale state.json restored byte-identically. Companion and browser/matrix/floor acceptance remain plans07/08; no phase completion or ship claimed.
 
 ### Phase 06.40 plan 05 execution — 2026-11-18
 
@@ -1564,6 +1571,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.40 P03 | 8min | 2 tasks | 4 files |
 | Phase 06.40 P04 | 7min | 2 tasks | 11 files |
 | Phase 06.40 P05 | 10min | 3 tasks | 16 files |
+| Phase 06.40 P06 | 6min | 3 tasks | 13 files |
+| Phase 06.40 P06 | 6min | 3 tasks | 13 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1896,6 +1905,10 @@ Recent decisions affecting current work:
 - [Phase 06.40]: Plan05 introduction choices use GuardianViewSet.get_objects_for_user and Customer view permission without username gates.
 - [Phase 06.40]: Plan05 preserves shared translated notices and developer grants; its introduction exposes all three usable credentials.
 - [Phase 06.40]: Plan06 owns real documentation references; plan05 records the broad documentation failure as an open dependency.
+- [Phase 06.40]: Plan06 inventories navbar view context separately from the exact eight-row snippet schema; both execute against real render data.
+- [Phase 06.40]: Plan06 inventories navbar view context separately from the exact eight-row snippet schema; both execute against real render data.
+- [Phase 06.40]: Plan06 attaches only real navbar DocRefs and closes plan05 documentation dependency with the complete unexcluded 602-test example suite.
+- [Phase 06.40]: Plan06 attaches only real navbar DocRefs and closes plan05 documentation dependency with the complete unexcluded 602-test example suite.
 
 ### Pending Todos
 
@@ -1989,6 +2002,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T17:29:45.346Z
-Stopped at: Completed 06.40-05-PLAN.md
+Last session: 2026-11-18T17:41:18.146Z
+Stopped at: Completed 06.40-06-PLAN.md
 Resume file: None

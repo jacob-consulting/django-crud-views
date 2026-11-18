@@ -20,7 +20,7 @@ from crud_views.lib.viewset import AncestorPolicy, ParentViewSet, ViewSet
 from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired, GuardianListViewPermissionRequired
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from crud_views_object_detail.lib import ObjectDetailMixin, ObjectDetailViewPermissionRequired
-from navbar_demo.models import Customer, Tenant
+from navbar_demo.models import Address, Customer, Item, Order, Tenant
 
 cv_tenant = GuardianViewSet(
     model=Tenant,
@@ -55,12 +55,18 @@ cv_customer = ViewSet(
     model=Customer,
     name="navbar_customer",
     parent=ParentViewSet(name="navbar_tenant", attribute="tenant"),
+    ancestor_policy=AncestorPolicy(cascade=True),
     icon_header="fa-solid fa-address-card",
 )
 
 customer_navbar = NavBar(
     viewset="navbar_customer",
-    items=[NavItem(key="detail", label=_("Details")), NavItem(key="notes", label=_("Notes"))],
+    items=[
+        NavItem(key="detail", label=_("Details")),
+        NavItem(key="notes", label=_("Notes")),
+        NavItem(child="navbar_order", label=_("Orders")),
+        NavItem(child="navbar_address", label=_("Addresses")),
+    ],
 )
 
 
@@ -112,4 +118,156 @@ class CustomerUpdateView(NavbarMixin, BreadcrumbMixin, CrispyViewMixin, UpdateVi
 
 class CustomerDeleteView(NavbarMixin, BreadcrumbMixin, CrispyViewMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_customer
+    form_class = CrispyDeleteForm
+
+
+cv_order = ViewSet(
+    model=Order,
+    name="navbar_order",
+    parent=ParentViewSet(name="navbar_customer", attribute="customer"),
+    ancestor_policy=AncestorPolicy(cascade=True),
+    icon_header="fa-solid fa-cart-shopping",
+)
+
+
+class OrderForm(CrispyModelForm):
+    class Meta:
+        model = Order
+        fields = ["name"]
+
+    def get_layout_fields(self):
+        return Row(Column6("name"))
+
+
+class OrderTable(Table):
+    id = LinkDetailColumn()
+    name = tables.Column()
+    items = LinkChildColumn(name="navbar_item", verbose_name=_("Items"))
+
+
+class OrderListView(NavbarMixin, BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_order
+    table_class = OrderTable
+
+
+class OrderDetailView(NavbarMixin, BreadcrumbMixin, ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_order
+    cv_property_display = [{"title": _("Order"), "properties": ["id", "name", "customer"]}]
+
+
+class OrderCreateView(
+    NavbarMixin, BreadcrumbMixin, CrispyViewMixin, CreateViewParentMixin, CreateViewPermissionRequired
+):
+    cv_viewset = cv_order
+    form_class = OrderForm
+
+
+class OrderUpdateView(NavbarMixin, BreadcrumbMixin, CrispyViewMixin, UpdateViewPermissionRequired):
+    cv_viewset = cv_order
+    form_class = OrderForm
+
+
+class OrderDeleteView(BreadcrumbMixin, CrispyViewMixin, DeleteViewPermissionRequired):
+    # An intermediate view can omit the bar without affecting Item navigation.
+    cv_viewset = cv_order
+    form_class = CrispyDeleteForm
+
+
+cv_item = ViewSet(
+    model=Item,
+    name="navbar_item",
+    parent=ParentViewSet(name="navbar_order", attribute="order"),
+    ancestor_policy=AncestorPolicy(cascade=True),
+    icon_header="fa-solid fa-box",
+)
+
+
+class ItemForm(CrispyModelForm):
+    class Meta:
+        model = Item
+        fields = ["name"]
+
+    def get_layout_fields(self):
+        return Row(Column6("name"))
+
+
+class ItemTable(Table):
+    id = LinkDetailColumn()
+    name = tables.Column()
+
+
+class ItemListView(NavbarMixin, BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_item
+    table_class = ItemTable
+
+
+class ItemDetailView(NavbarMixin, BreadcrumbMixin, ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_item
+    cv_property_display = [{"title": _("Item"), "properties": ["id", "name", "order"]}]
+
+
+class ItemCreateView(
+    NavbarMixin, BreadcrumbMixin, CrispyViewMixin, CreateViewParentMixin, CreateViewPermissionRequired
+):
+    cv_viewset = cv_item
+    form_class = ItemForm
+
+
+class ItemUpdateView(NavbarMixin, BreadcrumbMixin, CrispyViewMixin, UpdateViewPermissionRequired):
+    cv_viewset = cv_item
+    form_class = ItemForm
+
+
+class ItemDeleteView(NavbarMixin, BreadcrumbMixin, CrispyViewMixin, DeleteViewPermissionRequired):
+    cv_viewset = cv_item
+    form_class = CrispyDeleteForm
+
+
+cv_address = ViewSet(
+    model=Address,
+    name="navbar_address",
+    parent=ParentViewSet(name="navbar_customer", attribute="customer"),
+    ancestor_policy=AncestorPolicy(cascade=True),
+    icon_header="fa-solid fa-location-dot",
+)
+
+
+class AddressForm(CrispyModelForm):
+    class Meta:
+        model = Address
+        fields = ["name"]
+
+    def get_layout_fields(self):
+        return Row(Column6("name"))
+
+
+class AddressTable(Table):
+    id = LinkDetailColumn()
+    name = tables.Column()
+
+
+class AddressListView(NavbarMixin, BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_address
+    table_class = AddressTable
+
+
+class AddressDetailView(NavbarMixin, BreadcrumbMixin, ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_address
+    cv_property_display = [{"title": _("Address"), "properties": ["id", "name", "customer"]}]
+
+
+class AddressCreateView(
+    NavbarMixin, BreadcrumbMixin, CrispyViewMixin, CreateViewParentMixin, CreateViewPermissionRequired
+):
+    cv_viewset = cv_address
+    form_class = AddressForm
+
+
+class AddressUpdateView(NavbarMixin, BreadcrumbMixin, CrispyViewMixin, UpdateViewPermissionRequired):
+    cv_viewset = cv_address
+    form_class = AddressForm
+
+
+class AddressDeleteView(NavbarMixin, BreadcrumbMixin, CrispyViewMixin, DeleteViewPermissionRequired):
+    cv_viewset = cv_address
     form_class = CrispyDeleteForm

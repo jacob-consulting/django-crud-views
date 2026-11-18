@@ -76,7 +76,7 @@ def test_owned_details_notes_share_identity_and_distinct_active_sections(client,
         assert bar["object"] == customer
         assert bar["label"] == str(customer)
         assert [item["label"] for item in bar["items"] if item["active"]] == [label]
-        assert [item["url"] for item in bar["items"]] == [
+        assert [item["url"] for item in bar["items"][:2]] == [
             customer_url("detail", tenant, customer),
             customer_url("notes", tenant, customer),
         ]
@@ -143,7 +143,7 @@ def test_public_routes_preserve_owner_links_and_authenticated_entry(client, scen
         for item in bar["items"]:
             destination = client.get(item["url"])
             assert destination.status_code == 200
-            assert destination.context["object"] == customer
+            assert destination.context["cv_navbar"]["object"] == customer
     client.logout()
     assert client.get(reverse("navbar-demo-home")).status_code == 302
     assert client.get(customer_url("detail", tenant, customer)).status_code == 302
@@ -235,3 +235,155 @@ def test_initial_migration_is_app_local_and_matches_models():
     assert migration.initial
     assert migration.dependencies == []
     assert {operation.name for operation in migration.operations} == {"Tenant", "Customer"}
+
+
+@pytest.fixture
+def hierarchy(scenario):
+    from navbar_demo.models import Address, Item, Order
+
+    tenant, other, customer, foreign, user = scenario
+    order = Order.objects.create(pk=505, customer=customer, name="Coffee order")
+    foreign_order = Order.objects.create(pk=606, customer=foreign, name="Other order")
+    item = Item.objects.create(pk=707, order=order, name="Coffee beans")
+    foreign_item = Item.objects.create(pk=808, order=foreign_order, name="Other beans")
+    address = Address.objects.create(pk=909, customer=customer, name="Alice delivery")
+    foreign_address = Address.objects.create(pk=1010, customer=foreign, name="Bob delivery")
+    return (
+        (tenant, customer, order, item, address),
+        (other, foreign, foreign_order, foreign_item, foreign_address),
+        user,
+    )
+
+
+def business_url(model, key, branch, obj=None):
+    tenant, customer, order, item, address = branch
+    kwargs = {"navbar_tenant_pk": tenant.pk}
+    if model != "customer":
+        kwargs["navbar_customer_pk"] = customer.pk
+    if model == "item":
+        kwargs["navbar_order_pk"] = order.pk
+    if key not in ("list", "create"):
+        kwargs["pk"] = (obj or {"customer": customer, "order": order, "item": item, "address": address}[model]).pk
+    return reverse(f"navbar_{model}-{key}", kwargs=kwargs)
+
+
+def business_snapshot():
+    return {
+        name: list(apps.get_model("navbar_demo", name).objects.order_by("pk").values())
+        for name in ("Customer", "Order", "Item", "Address")
+    }
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("model", ["customer", "order", "item", "address"])
+def test_full_business_crud_binds_each_parent(client, hierarchy, model):
+    from guardian.models import UserObjectPermission
+
+    own, foreign, _ = hierarchy
+    model_class = apps.get_model("navbar_demo", model)
+    parent_field = {"customer": "tenant", "order": "customer", "item": "order", "address": "customer"}[model]
+    parent_index = {"customer": 0, "order": 1, "item": 2, "address": 1}[model]
+    for key in ("list", "detail", "create", "update", "delete"):
+        assert client.get(business_url(model, key, own)).status_code == 200
+    data = {"name": "Created", "notes": "Text", parent_field: foreign[parent_index].pk}
+    assert client.post(business_url(model, "create", own), data).status_code == 302
+    created = model_class.objects.get(name="Created")
+    assert getattr(created, parent_field) == own[parent_index]
+    data["name"] = "Updated"
+    assert client.post(business_url(model, "update", own, created), data).status_code == 302
+    created.refresh_from_db()
+    assert created.name == "Updated"
+    assert getattr(created, parent_field) == own[parent_index]
+    assert client.post(business_url(model, "delete", own, created), {"confirm": True}).status_code == 302
+    assert not model_class.objects.filter(pk=created.pk).exists()
+    assert (
+        not UserObjectPermission.objects.filter(content_type__app_label="navbar_demo")
+        .exclude(content_type__model="tenant")
+        .exists()
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("model", ["customer", "order", "item", "address"])
+@pytest.mark.parametrize("reverse_direction", [False, True])
+def test_copied_descendant_urls_cannot_cross_tenants(client, hierarchy, django_user_model, model, reverse_direction):
+    own, foreign, user = hierarchy
+    if reverse_direction:
+        user = django_user_model.objects.create_user(username="bob")
+        user.user_permissions.add(*Permission.objects.filter(content_type__app_label="navbar_demo"))
+        assign_perm("view_tenant", user, foreign[0])
+        assign_perm("change_tenant", user, foreign[0])
+        client.force_login(user)
+        own, foreign = foreign, own
+    before = business_snapshot()
+    for key in ("list", "detail", "create", "update", "delete"):
+        url = business_url(model, key, foreign)
+        assert client.get(url).status_code == 403
+        if key in ("create", "update", "delete"):
+            assert client.post(url, {"name": "Forbidden", "confirm": True}).status_code == 403
+    # Correctly scoped parent path plus a valid foreign record must also fail.
+    index = {"customer": 1, "order": 2, "item": 3, "address": 4}[model]
+    assert client.get(business_url(model, "detail", own, foreign[index])).status_code == 404
+    assert business_snapshot() == before
+
+
+@pytest.mark.django_db
+def test_read_only_actor_has_no_addresses_or_write_mutations(client, hierarchy, django_user_model):
+    own, foreign, _ = hierarchy
+    reader = django_user_model.objects.create_user(username="reader")
+    reader.user_permissions.add(
+        *Permission.objects.filter(
+            content_type__app_label="navbar_demo", codename__in=["view_customer", "view_order", "view_item"]
+        )
+    )
+    assign_perm("view_tenant", reader, own[0])
+    client.force_login(reader)
+    before = business_snapshot()
+    for model in ("customer", "order", "item", "address"):
+        for key in ("list", "detail", "create", "update", "delete"):
+            response = client.get(business_url(model, key, own))
+            expected = 200 if model != "address" and key in ("list", "detail") else 403
+            assert response.status_code == expected
+            if key in ("create", "update", "delete"):
+                assert (
+                    client.post(business_url(model, key, own), {"name": "Forbidden", "confirm": True}).status_code
+                    == 403
+                )
+        assert client.get(business_url(model, "detail", foreign)).status_code == 403
+    assert business_snapshot() == before
+
+
+@pytest.mark.django_db
+def test_deep_item_navigation_retains_customer_and_active_clickable_orders(client, hierarchy):
+    own, _, _ = hierarchy
+    reference = client.get(business_url("customer", "detail", own)).context["cv_navbar"]
+    for model, keys in (("order", ("list", "detail", "create", "update")), ("item", ("detail", "update"))):
+        for key in keys:
+            response = client.get(business_url(model, key, own))
+            assert response.status_code == 200
+            bar = response.context["cv_navbar"]
+            assert bar["object"] == own[1]
+            assert bar["label"] == reference["label"]
+            assert [item["url"] for item in bar["items"]] == [item["url"] for item in reference["items"]]
+            active = [item for item in bar["items"] if item["active"]]
+            assert [item["label"] for item in active] == ["Orders"]
+            assert client.get(active[0]["url"]).status_code == 200
+    assert "cv_navbar" not in client.get(business_url("order", "delete", own)).context
+
+
+@pytest.mark.django_db
+def test_descendant_schema_and_explicit_edges_pass_checks_without_migration_drift():
+    from django.core.management import call_command
+
+    from navbar_demo.views import cv_address, cv_customer, cv_item, cv_order
+
+    for viewset, parent, attribute in (
+        (cv_customer, "navbar_tenant", "tenant"),
+        (cv_order, "navbar_customer", "customer"),
+        (cv_item, "navbar_order", "order"),
+        (cv_address, "navbar_customer", "customer"),
+    ):
+        assert (viewset.parent.name, viewset.parent.attribute) == (parent, attribute)
+        assert viewset.ancestor_policy.cascade is True
+    assert not [message for message in run_checks() if message.level >= 40]
+    call_command("makemigrations", "navbar_demo", check=True, dry_run=True)

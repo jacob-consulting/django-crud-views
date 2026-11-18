@@ -49,6 +49,7 @@ class CustomerNav(CrudViewNavBarMixin):   # one small project mixin per bar
 class CustomerDetailView(CustomerNav, ...): ...
 class OrderListView(CustomerNav, ...): ...
 class OrderUpdateView(CustomerNav, ...): ...
+class OrderItemUpdateView(CustomerNav, ...): ...
 ```
 
 On each of those pages the bar shows which object the user is in and marks the current section:
@@ -87,7 +88,7 @@ Carry the approved decisions below into planning without reopening them absent a
 proposals in the following section distinct from decisions made by the maintainer. The prose and acceptance
 criteria are part of the handover, not just this decision index. Decisions marked *(proposed by the assistant,
 approved)* were put to the maintainer as proposals and approved on 2026-11-17; the others are the maintainer's
-own statements.
+own statements. The maintainer updated D-04 through D-06 and D-12 on 2026-11-18.
 
 ### D-01 — Purpose, and what this supersedes
 
@@ -114,13 +115,15 @@ An item is one of:
 
 - a view of the owner ViewSet, by key (`NavItem(key="detail")`). More than one is allowed, for example a second
   detail view `detail2`;
-- a child ViewSet of the owner, by name (`NavItem(child="order")`), opening that child's collection.
+- one collection per direct child ViewSet. `child` selects the ViewSet and `key` selects its list or card view.
+  The default key is `list`, with the usual fallback to `card` on a card-only ViewSet.
+  A custom key must match the registered collection view exactly.
 
 ```python
 items=[
     NavItem(key="detail"),      # Details
     NavItem(key="detail2"),     # e.g. Financials: a second detail view of the customer
-    NavItem(child="order"),
+    NavItem(child="order", key="open_orders"),  # Orders opens this collection
     NavItem(child="contact"),
     NavItem(child="address"),
 ]
@@ -133,47 +136,20 @@ same pk.
 
 ### D-05 — How the bar knows its object
 
-The `NavBar` holds no object. It names the owner ViewSet. The view carrying the bar resolves the object at
-render time: on a view of the owner ViewSet it is the view's own object; on a view of a child ViewSet it is
-the parent object from the URL. An item's `key` is a link target, never the source of the object.
+The declaration names the owner ViewSet. On an owner page the caption comes from `str(self.object)`.
+On a descendant page, follow the declared parent ViewSets to the owner and use that ancestor object from
+the current request. On an Item edit page the chain is Item → Order → Customer. The Customer supplies
+the caption and the owner PK for the links. An item's key selects its destination.
 
-| The view belongs to…                    | Context object                                      |
-|-----------------------------------------|-----------------------------------------------------|
-| the owner ViewSet (`customer`)          | the view's own `self.object`                        |
-| a child ViewSet (`order`, `address`, …) | `cv_get_parent_object()`, the customer from the URL |
+### D-06 — Where the bar can appear
 
-*(Proposed by the assistant, approved.)*
+Attach the shared mixin to each owner object view or descendant view that should display the bar. An
+intermediate view can omit the mixin. Each participating view displays one bar. Its items target
+the owner's own views and direct child collections.
 
-### D-06 — Depth: one level below the owner
-
-In scope: views of the owner ViewSet and views of its direct child ViewSets. "Right now, one level below the
-owner is enough." Deeper levels (an order-line page under customer → order) are unsupported and documented as
-such; a startup check rejects `cv_navbar` on a view more than one level below the bar's owner.
-
-Recorded forward path, not in scope: the declaration would not change. The object lookup would walk up the
-ancestors to the owner, and the active item would be the one whose child ViewSet lies on the path to the owner.
-One bar per view stays the rule; stacked bars (a customer bar and an order bar on one page) are not planned.
-
-Illustration of that forward path, for an order-line page at `customer/4/order/9/line/` (not to be built now):
-
-```python
-class OrderLineListView(CustomerNav, ...): ...   # same declaration, two levels below customer
-```
-
-| Rule                    | One level (this issue)                 | Deeper (forward path)                                             |
-|-------------------------|----------------------------------------|-------------------------------------------------------------------|
-| Find the context object | the view's direct parent               | walk up the ancestors until the owner ViewSet is reached          |
-| Pick the active item    | the item naming the view's ViewSet     | the item whose child ViewSet lies on the path (`line → order`)    |
-
-Once Order has children it may get a bar of its own. A line view then carries either the customer bar or the
-order bar, chosen per view by the developer:
-
-```python
-order_navbar = NavBar(
-    viewset="order",
-    items=[NavItem(key="detail"), NavItem(child="line"), NavItem(child="shipment")],
-)
-```
+For example, attach `CustomerNav` to an Item edit view under Acme Coffee. With the declaration in D-04,
+the caption reads “Acme Coffee”, Orders is active, and its link opens Acme’s `open_orders` collection.
+The Details and Addresses links also point to Acme. Omitting the mixin on the Item view omits the bar.
 
 The owner itself may be nested (tenant → customer → orders, with the bar on customer). The parent gate of D-09
 consults only the immediate parent, so an item can still lead to a request denied at a higher ancestor. This
@@ -254,8 +230,11 @@ horizontally scrolling strip. *(Carried over from #363 D-07/D-09/D-11, approved.
 
 ### D-12 — Active item
 
-On a view of a child ViewSet, the item naming that ViewSet is active, whatever the view (list, detail, create,
-update, workflow). On a view of the owner ViewSet, the item with that view's key is active. An owner view that
+On a descendant page, highlight the item for the owner's direct child on the path to the page.
+Orders stays active and clickable on Order and Item pages, including when its link opens a custom list.
+If that section has no visible item, the bar has no active item.
+
+On a view of the owner ViewSet, the item with that view's key is active. An owner view that
 carries the bar but is not an item (for example `update`) shows the bar with no item active. An owner view
 without an object (list, create) cannot carry the bar; a startup check reports it.
 *(Proposed by the assistant, approved.)*
@@ -284,9 +263,8 @@ alter a D-decision goes back to the maintainer.
 
 - New module `crud_views/lib/navbar.py` holding `NavBar`, `NavItem`, `CrudViewNavBarMixin` and the checks.
 - `NavBar(viewset: str, items: list[NavItem], template: str | None = None)`.
-- `NavItem(key: str | None = None, child: str | None = None, child_key: str | None = None, label=None,
-  icon=None)`; exactly one of `key` / `child`. `child_key` defaults to the child's container view, `list`
-  falling back to `card`, as `CrudViewBreadcrumbMixin.cv_breadcrumb_container_key` resolves it.
+- `NavItem(key: str | None = None, child: str | None = None, label=None, icon=None)`. An owner item
+  requires a key. A child item uses the collection key and default described in D-04.
 - Pydantic models, as `ContextButton` and `BreadcrumbItem` are. Names are strings so a bar can be declared
   before the child ViewSets exist.
 - `CrudViewNavBarMixin.cv_navbar: NavBar | None = None`. A mixin with `None` is a no-op, so a project base
@@ -297,16 +275,16 @@ alter a D-decision goes back to the maintainer.
 - The mixin adds `cv_navbar` to the template context from `get_context_data`, as the breadcrumb mixin adds
   `cv_breadcrumb`. Resolve lazily and at most once per request, so a page that never renders the tag, and a
   modal partial (`cv_is_modal_request`), pay nothing.
-- Context object: `self.object` on owner views; `self.cv_get_parent_object()` on child views. The latter
-  reuses the parent the ancestor guard already resolved on the request (`base.py`, `cv_get_parent_object`), so
-  child pages should need no additional query for the object. Verify with a query-count test.
+- Resolve the owner as in D-05. On a direct child, `cv_get_parent_object()` reuses the parent the guard
+  resolved. On deeper pages use the named owner's entry in the request's resolved ancestry where available.
+  Measure the query cost on both Order and Item pages.
 - Resolved shape handed to the templates: the object, its label, icon and URL, and a list of items each with
   label, icon, URL and an `active` flag. Templates receive data, not view classes.
 - URLs: the existing helpers are bound to the rendering view's own ViewSet (`cv_get_router_and_args`) or only
   work from a parent page (`cv_get_child_url` raises `ParentViewSetError` from a child page). The bar is
-  rendered from both sides, so it reverses the router names itself from the owner object's pk, as
+  rendered at multiple depths, so it reverses the router names itself from the owner object's pk, as
   `ParentContextButton` and `SiblingContextButton` do (`buttons.py`). The same item must produce the same URL
-  from an owner page and from a child page; pin that with a test.
+  from owner, child and grandchild pages. Test with distinct Customer, Order and Item PKs.
 
 ### A-03 — Access calls
 
@@ -331,12 +309,11 @@ alter a D-decision goes back to the maintainer.
 
 Report, with the existing check infrastructure and ids allocated by the planner:
 
-- `NavBar.viewset` is not a registered ViewSet; an item's `child` is not a registered ViewSet or not a direct
-  child of the owner; an item's `key` or `child_key` is not registered;
-- an owner item whose view is not an object view (`cv_object` false);
-- duplicate items;
-- a view carrying a bar that is neither an object view of the owner ViewSet nor a view of one of its direct
-  child ViewSets (covers D-06 and D-12).
+- an unknown owner, unknown child or child outside the owner's direct children;
+- a key that fails to resolve on its target ViewSet, an owner target without an object, or a child target
+  that is not a collection view;
+- repeated owner keys or repeated child ViewSets, including different collection keys for the same child;
+- attachment to an owner page without an object or a ViewSet outside the owner's descendant tree.
 
 `cv_navbar` set on a view without the mixin needs its own report. The unknown-attribute warning
 (`viewset.W280`) does not cover it: W280 accepts a name once any registered view's MRO declares it
@@ -366,7 +343,7 @@ untouched. *(Assistant's call after the design review.)*
 - A working demonstration in `examples/bootstrap5` (extend `nested` or add a small app; planner's choice)
   with an owner, at least two child ViewSets and a second owner detail view, reachable from the example index
   and covered by the example tests.
-- Tests in `tests/test1/`: resolution on owner and child views, active item per view key, hidden items per
+- Tests in `tests/test1/`: resolution on owner, child and grandchild views, active section, hidden items per
   permission (model permissions and Guardian), empty bar, modal request, checks, query counts, template
   override and `NavBar(template=...)`.
 - `CHANGELOG.md` feature entry; not a breaking change. Update the packaged skill/reference documentation and
@@ -380,11 +357,13 @@ No cross-request caching.
 
 ## Acceptance criteria
 
-1. A project declares one `NavBar`, attaches it through a mixin to the owner's detail view and to the views of
-   its child ViewSets, places `{% cv_navbar %}` in its base template, and gets the identity row and items on
+1. A project declares one `NavBar`, attaches it through a mixin to the owner's detail view and to
+   selected descendant views, places `{% cv_navbar %}` in its base template, and gets the identity row and items on
    every participating page with no further project code.
 2. The active item follows D-12 on list, detail, create, update and custom views of a child ViewSet, on each
-   owner item view, and on an owner view that is not an item.
+   owner item view, and on an owner view that is not an item. On an Item edit page under an Order, verify
+   the Customer caption and the same section links as on Customer detail for a user with access to them.
+   Orders is active and opens the configured Order collection even when the intermediate view omits the mixin.
 3. Every link keeps the same owner object. Items the user cannot open are absent; for every item shown under a
    top-level owner, the destination answers 200 for that user, for plain and Guardian child ViewSets. The #363
    case is pinned on a plain child ViewSet. A bar with no accessible item renders nothing. The
@@ -427,5 +406,5 @@ No cross-request caching.
    throwaway test in `tests/test1`: a user with `view` on Book and `change` but not `view` on Publisher got
    `_cv_child_link_has_access` True, `_immediate_parent_access` False, and 403 from the Book list. The Guardian
    path after #312 was read, not run; the planner verifies it before building on it.
-4. **Deeper levels.** D-06 records the forward path. How much of the ancestor walk the #336 guard already
-   provides was not checked.
+4. **Owner lookup.** Verify how the #336 guard exposes the resolved owner on a grandchild request before
+   choosing the implementation for D-05.

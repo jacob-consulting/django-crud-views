@@ -107,7 +107,19 @@ def test_floor_probe_checks_resolved_version_and_origin(monkeypatch, tmp_path, c
     origin = (site if location == "installed" else ROOT / "src") / "crud_views/__init__.py"
     monkeypatch.setitem(sys.modules, "crud_views", SimpleNamespace(__file__=str(origin)))
     monkeypatch.setitem(sys.modules, "pydantic", SimpleNamespace(__version__=version))
-    monkeypatch.setattr(sysconfig, "get_paths", lambda: {"purelib": str(site), "platlib": str(site)})
+    scheme = sysconfig.get_default_scheme()
+    scheme_paths = sysconfig.get_paths(scheme)
+    real_get_paths = sysconfig.get_paths
+
+    def probe_paths(*args, **kwargs):
+        if args or kwargs:
+            return real_get_paths(*args, **kwargs)
+        return {"purelib": str(site), "platlib": str(site)}
+
+    monkeypatch.setattr(sysconfig, "get_paths", probe_paths)
+    # Coverage inspects explicit schemes while this probe mocks only the default call.
+    assert sysconfig.get_paths(scheme) == scheme_paths
+    assert sysconfig.get_paths(scheme=scheme) == scheme_paths
     versions = {"pydantic": version, "django": "5.2.19", "typing-extensions": "4.15.0"}
     monkeypatch.setattr(importlib.metadata, "version", versions.__getitem__)
     probe = calls[1][1][2]

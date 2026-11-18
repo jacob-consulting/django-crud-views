@@ -2106,7 +2106,10 @@ Complete this fix before the object navbar (#381).
 **Plans:** 2 plans
 
 Plans:
+**Wave 1**
 - [ ] 06.39-01-PLAN.md — Permanent child-link regression, bounded core/Guardian gate, policy preservation and measured costs.
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.39-02-PLAN.md — Consumer guidance, Breaking/migration/navbar handoff and supported-series acceptance evidence.
 
 ### Phase 7: Theme-surface stability policy

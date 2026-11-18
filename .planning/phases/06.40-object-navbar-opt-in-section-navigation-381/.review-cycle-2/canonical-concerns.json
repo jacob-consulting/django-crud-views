@@ -1,0 +1,47 @@
+[
+  {
+    "id": "R17",
+    "severity": "MEDIUM",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Default owner short-action labels render with the resolved navbar owner as their object context at every participating depth.",
+    "description": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md:83 normalizes cv_get_action_short_label but never assigns its required ViewContext object. src/crud_views/lib/view/base.py:638-643 calls ViewSet.get_meta(context); viewset/__init__.py:539 merges context.to_dict(), and lib/view/context.py:44-45 exposes context.object. Using the rendering view context can therefore interpolate Item on a Customer navbar.",
+    "fix_hint": "Bind owner-label ViewContext.object to the resolved owner and test an object-dependent short-label template across owner and descendant requests.",
+    "reviewers": [
+      "fable-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R18",
+    "severity": "LOW",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Owner URL construction reads route PK metadata from the owner ViewSet and the PK value from the owner model instance.",
+    "description": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md:95 says \"for owner links use owner.pk_name\", while the same action calls owner.pk the resolved object PK. pk_name is ViewSet metadata at src/crud_views/lib/viewset/__init__.py:79; it is not a model-instance attribute.",
+    "fix_hint": "Use unambiguous owner_viewset.pk_name versus owner.pk terminology in the routing action.",
+    "reviewers": [
+      "fable-review"
+    ],
+    "claim_class": "existence",
+    "status": "unresolved"
+  },
+  {
+    "id": "R19",
+    "severity": "LOW",
+    "plans": [
+      "03"
+    ],
+    "required_property": "Cold Guardian vocabulary measurements reset Guardian content-type discovery as well as Django ContentType and ViewSet caches.",
+    "description": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-03-PLAN.md:91 names Django ContentType, ViewSet vocabulary and Guardian checker caches but omits the separate Guardian content-type cache. The referenced source reset_discovery at tests/test1/test_guardian_child_link_visibility.py:1052-1059 calls guardian.shortcuts.clear_ct_cache() independently of ContentType.objects.clear_cache().",
+    "fix_hint": "Include the existing clear_ct_cache reset in the explicit cold-vocabulary fixture definition and recorded conditions.",
+    "reviewers": [
+      "fable-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  }
+]

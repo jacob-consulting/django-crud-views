@@ -1,0 +1,58 @@
+{
+  "Fable-owner-label-context": {
+    "status": "actionable",
+    "canonical_id": "R17"
+  },
+  "Fable-owner-pk-name": {
+    "status": "actionable",
+    "canonical_id": "R18"
+  },
+  "Fable-Guardian-content-type-cache": {
+    "status": "actionable",
+    "canonical_id": "R19"
+  },
+  "Fable-all-hidden-count": {
+    "status": "already-incorporated",
+    "evidence": "PLAN02 Task01 requires exact empty output and single shared build; PLAN03 Task01 requires every child item admission once, denied items zero state calls, and mixed/denied rendered outcomes. PLAN02 Review Feedback Deferred already expressly disposes all-hidden claims. This is a repeated verification-detail request, not an invisible execution obligation. A state-disabled all-hidden case legitimately has state calls, so the blanket zero-state prescription is not adopted."
+  },
+  "Fable-active-child-index": {
+    "status": "already-incorporated",
+    "evidence": "PLAN01 Task02 explicitly finds the owner direct child with bounded ancestry metadata, including omitted intermediate mixins; unequal-PK deep request tests and active-section acceptance own the invariant. Exact array indexing is implementation discretion."
+  },
+  "Fable-CheckTemplate-reuse": {
+    "status": "preference",
+    "evidence": "PLAN01 Task03 already requires get_template, TemplateDoesNotExist and named attachment/bar diagnostics following CheckTemplate semantics. Requiring that specific class instead of equivalent bounded logic is not a missing property."
+  },
+  "Fable-Notes-action-labels": {
+    "status": "not-required-by-current-scope",
+    "evidence": "PLAN05 Task01 explicitly makes navbar labels Details/Notes/Orders/Addresses. Retitling all existing context-button/manage consumers is not necessary for the locked navbar outcome; the view remains a second detail destination."
+  },
+  "Fable-navbar-css-prefix": {
+    "status": "already-incorporated",
+    "evidence": "PLAN02 Task02 specifies nav/nav-pills/flex-wrap. It does not prescribe navbar-prefixed classes. Future restyling speculation does not require an additional prohibition."
+  },
+  "Fable-all-four-doc-copy": {
+    "status": "covered-by-existing-documentation-update",
+    "evidence": "PLAN06 Task02 already owns docs/reference/templates.md and requires the final public tag/template/context contract in its existing tables. Updating adjacent count prose when adding a row is within that executable documentation edit, not a new unowned deliverable."
+  },
+  "Fable-cv-nav-bar-name-meanings": {
+    "status": "already-incorporated",
+    "evidence": "PLAN06 Task01 requires exact declarations, per-view attachment and working override examples using the finalized context fields; Task02 inventories both the attachment and context. A preferred explanatory sentence adds no uncovered behavior."
+  },
+  "Fable-environment-probes": {
+    "status": "open-execution-prerequisites-already-covered",
+    "evidence": "Reviewer sandbox refused polib/nox/uv/sibling checks; PLAN04/07/08 explicitly require real provisioning/validation and unmet gates on failure. Reviewer-local access does not establish orchestrator failure."
+  },
+  "Fable-other-low-observations": {
+    "status": "already-incorporated",
+    "evidence": "Cost conditions quoted into docs, example provisioning before migrations, SystemChecksTest in shared suite, Charlie docs handoff, content comparison separate from git show --check, and browser/runtime gates are explicit in current tasks."
+  },
+  "Gemini-lazy-translation-reminder": {
+    "status": "implementation-advisory-no-plan-change",
+    "evidence": "Reviewer explicitly marks no plan change needed. PLAN01 accepts lazy translated labels and normalizes request rendering; PLAN02/06 require translated rendering/docs cases. Shared declarations remain configuration-only."
+  },
+  "Grok-suggestions": {
+    "status": "already-incorporated-or-execution-detail",
+    "evidence": "Exact fixture labels/overrides, preimported isolation, translated named interpolation, renderer host support, valid copied-chain denial and unchanged-row writes already have tasks. The stock short label is Detail; explicit example Details label is owned by PLAN05. No source snippet alteration is required."
+  }
+}

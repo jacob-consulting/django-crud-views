@@ -15,7 +15,6 @@ from crud_views.lib import navbar
 from tests.test1.app.models import Publisher
 from tests.test1.test_navbar import get_owner, navbar_routes, navbar_templates, owner_routes
 
-
 TEMPLATES = ["navbar", "navbar_identity", "navbar_items"]
 TAG = "{% load crud_views %}{% cv_navbar %}"
 SPLIT = (

@@ -87,7 +87,7 @@ def test_real_owner_navbar():
         response = get_owner(ns, obj)
         assert response.status_code == 200
         soup = html.fromstring(response.content)
-        nav = soup.xpath('//nav[contains(@class,"cv-navbar")]')[0]
+        nav = soup.xpath('//div[contains(@class,"cv-navbar ")]')[0]
         assert nav is not None
         assert nav.xpath('.//*[@class="cv-navbar-identity"]')[0].text_content().strip() == obj.name
         link = nav.xpath(".//a")[0]
@@ -127,7 +127,7 @@ def test_plain_owner_and_item_text(text, default, monkeypatch):
     options = {"template_code": "{{ object }}"} if default else {"label": text}
     with navbar_routes(lambda sfx: owner_routes(sfx, **options)) as ns:
         response = get_owner(ns, obj)
-        nav = html.fromstring(response.content).xpath('//nav[contains(@class,"cv-navbar")]')[0]
+        nav = html.fromstring(response.content).xpath('//div[contains(@class,"cv-navbar ")]')[0]
         assert nav.xpath('.//*[@class="cv-navbar-identity"]')[0].text_content().strip() == str(text)
         # A rendered safe input is decoded once by the default-label normalization contract.
         expected = str(text)
@@ -140,7 +140,7 @@ def test_plain_owner_and_item_text(text, default, monkeypatch):
 def test_default_label_literal_entities():
     obj = Publisher.objects.create(name="Owner")
     with navbar_routes(lambda sfx: owner_routes(sfx, template_code="Details &amp; owner&#39;s")) as ns:
-        nav = html.fromstring(get_owner(ns, obj).content).xpath('//nav[contains(@class,"cv-navbar")]')[0]
+        nav = html.fromstring(get_owner(ns, obj).content).xpath('//div[contains(@class,"cv-navbar ")]')[0]
         assert nav.xpath(".//a")[0].text_content().strip() == "Details & owner's"
         assert "&amp;" in html.tostring(nav).decode()
 
@@ -401,7 +401,7 @@ def test_overrides_and_child_plural_are_plain_text():
         assert items[0]["icon"] == ""
         assert items[-1]["icon"] == "list"
         assert items[-1]["label"] == "<b>Orders &amp; more</b>"
-        nav = html.fromstring(response.content).xpath('//nav[contains(@class,"cv-navbar")]')[0]
+        nav = html.fromstring(response.content).xpath('//div[contains(@class,"cv-navbar ")]')[0]
         assert not nav.xpath(".//b")
         assert nav.xpath(".//a")[-1].text_content().strip() == "<b>Orders &amp; more</b>"
 

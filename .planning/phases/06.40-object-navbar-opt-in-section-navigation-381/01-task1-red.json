@@ -1,0 +1,10 @@
+{
+  "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar.py::test_real_owner_navbar -q --junitxml=/tmp/navbar-task1-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.457\" timestamp=\"2026-11-18T16:34:29.948696+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_navbar\" name=\"test_real_owner_navbar\" time=\"0.260\"><failure message=\"AssertionError: public navbar declaration module is missing&#10;assert None is not None&#10; +  where None = &lt;function find_spec at 0x75651f9b31a0&gt;('crud_views.lib.navbar')&#10; +    where &lt;function find_spec at 0x75651f9b31a0&gt; = &lt;module 'importlib.util' (frozen)&gt;.find_spec&#10; +      where &lt;module 'importlib.util' (frozen)&gt; = importlib.util\">@pytest.mark.django_db\n    def test_real_owner_navbar():\n&gt;       assert importlib.util.find_spec(\"crud_views.lib.navbar\") is not None, \"public navbar declaration module is missing\"\nE       AssertionError: public navbar declaration module is missing\nE       assert None is not None\nE        +  where None = &lt;function find_spec at 0x75651f9b31a0&gt;('crud_views.lib.navbar')\nE        +    where &lt;function find_spec at 0x75651f9b31a0&gt; = &lt;module 'importlib.util' (frozen)&gt;.find_spec\nE        +      where &lt;module 'importlib.util' (frozen)&gt; = importlib.util\n\ntests/test1/test_navbar.py:77: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_real_owner_navbar",
+  "targetFile": "tests/test1/test_navbar.py",
+  "expected": "The public navbar module exists and a real owner GET renders its navigation.",
+  "actual": "The module is absent.",
+  "semanticAssessment": "Target executed and failed its explicit public-module availability assertion; no import or fixture errors."
+}

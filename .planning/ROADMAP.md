@@ -2121,16 +2121,17 @@ Both plans executed; independent phase security/review/verifier gates remain pen
 and renders the object's identity and active section links with destination permission and state checks.
 Keep the feature opt-in and self-contained, preserve context-button behavior, and let the app control templates and placement.
 **Source:** [Issue #381 and its GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/381#gsd-handover).
-Carry the approved D-01–D-15 decisions and acceptance criteria into planning; implementation proposals remain proposals.
+Carry the approved D-01–D-16 decisions and acceptance criteria into execution; implementation proposals remain proposals.
 **Ordering:** Follows the child-link permission fix in 06.39; settle the navbar's stability tier and theme surface before Phase 7 freezes them.
-**Requirements**: TBD
+**Requirements**: None assigned; approved D-01–D-16 and AC1–AC9 are mapped in 06.40-COVERAGE.md.
 **Depends on:** Phase 06.39
 **Plans:** 0/8 plans executed
+
+Planning converged in four external review cycles; no unresolved HIGH/actionable findings or decision conflicts.
 
 Plans:
 **Wave 1**
 - [ ] 06.40-01-PLAN.md
-- [ ] TBD (run $gsd-plan-phase 06.40 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.40-02-PLAN.md

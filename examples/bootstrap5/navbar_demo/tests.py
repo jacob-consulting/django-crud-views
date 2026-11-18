@@ -7,7 +7,7 @@ from django.apps import apps
 from django.contrib.auth.models import Permission
 from django.core.checks import run_checks
 from django.template import Context, Template
-from django.urls import include, path, reverse
+from django.urls import get_resolver, include, path, reverse
 from guardian.shortcuts import assign_perm
 
 
@@ -107,3 +107,116 @@ def test_prefixed_parent_field_passes_checks_and_binds_creation(client, scenario
     response = client.post(customer_url("create", tenant), {"name": "New customer", "notes": "New", "tenant": other.pk})
     assert response.status_code == 302
     assert Customer.objects.get(name="New customer").tenant == tenant
+
+
+def test_project_publishes_navbar_landing_route():
+    assert "navbar-demo-home" in get_resolver().reverse_dict, "Project URLconf must publish the navbar landing page"
+    assert reverse("navbar-demo-home") == "/object-navbar/"
+
+
+@pytest.mark.django_db
+def test_public_routes_preserve_owner_links_and_authenticated_entry(client, scenario):
+    tenant, _, customer, _, _ = scenario
+    response = client.get(reverse("navbar-demo-home"), follow=True)
+    assert response.status_code == 200
+    assert response.redirect_chain == [(reverse("navbar_tenant-list"), 302)]
+    for key in ("detail", "notes", "update", "delete"):
+        url = customer_url(key, tenant, customer)
+        assert url.startswith("/object-navbar/")
+        response = client.get(url)
+        assert response.status_code == 200
+        bar = response.context["cv_navbar"]
+        assert bar["object"] == customer
+        for item in bar["items"]:
+            destination = client.get(item["url"])
+            assert destination.status_code == 200
+            assert destination.context["object"] == customer
+    client.logout()
+    assert client.get(reverse("navbar-demo-home")).status_code == 302
+    assert client.get(customer_url("detail", tenant, customer)).status_code == 302
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("key", ["list", "detail", "notes", "create", "update", "delete"])
+def test_public_routes_deny_other_tenant(client, scenario, key):
+    _, other, _, foreign, _ = scenario
+    obj = None if key in ("list", "create") else foreign
+    url = customer_url(key, other, obj)
+    assert client.get(url).status_code == 403
+    if key in ("create", "update", "delete"):
+        assert client.post(url, {"name": "Forged", "notes": "Forged"}).status_code == 403
+    foreign.refresh_from_db()
+    assert foreign.name == "Other customer"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("key,permission", [("create", "add"), ("update", "change"), ("delete", "delete")])
+@pytest.mark.parametrize("missing_gate", ["customer_model", "tenant_object"])
+def test_writes_require_customer_operation_and_tenant_change(client, scenario, key, permission, missing_gate):
+    from guardian.shortcuts import remove_perm
+    from navbar_demo.models import Customer
+
+    tenant, _, customer, _, user = scenario
+    if missing_gate == "customer_model":
+        user.user_permissions.remove(
+            Permission.objects.get(content_type__app_label="navbar_demo", codename=f"{permission}_customer")
+        )
+    else:
+        remove_perm("change_tenant", user, tenant)
+    url = customer_url(key, tenant, None if key == "create" else customer)
+    assert client.get(url).status_code == 403
+    assert client.post(url, {"name": "Forbidden", "notes": "Forbidden"}).status_code == 403
+    assert Customer.objects.count() == 2
+    customer.refresh_from_db()
+    assert customer.name == "Acme Coffee"
+
+
+@pytest.mark.django_db
+def test_public_customer_crud_binds_parent_and_needs_no_record_grants(client, scenario):
+    from guardian.models import UserObjectPermission
+    from navbar_demo.models import Customer
+
+    tenant, other, _, _, _ = scenario
+    assert (
+        client.post(
+            customer_url("create", tenant), {"name": "Created", "notes": "First", "tenant": other.pk}
+        ).status_code
+        == 302
+    )
+    customer = Customer.objects.get(name="Created")
+    assert customer.tenant == tenant
+    assert not UserObjectPermission.objects.filter(
+        content_type__app_label="navbar_demo", content_type__model="customer"
+    ).exists()
+    assert client.get(customer_url("notes", tenant, customer)).status_code == 200
+    assert (
+        client.post(
+            customer_url("update", tenant, customer), {"name": "Updated", "notes": "Second", "tenant": other.pk}
+        ).status_code
+        == 302
+    )
+    customer.refresh_from_db()
+    assert (customer.name, customer.notes, customer.tenant) == ("Updated", "Second", tenant)
+    assert client.post(customer_url("delete", tenant, customer), {"confirm": True}).status_code == 302
+    assert not Customer.objects.filter(pk=customer.pk).exists()
+
+
+@pytest.mark.django_db
+def test_customer_reads_require_model_permission_even_with_tenant_grant(client, scenario):
+    tenant, _, customer, _, user = scenario
+    user.user_permissions.remove(
+        Permission.objects.get(content_type__app_label="navbar_demo", codename="view_customer")
+    )
+    for key in ("list", "detail", "notes"):
+        assert client.get(customer_url(key, tenant, None if key == "list" else customer)).status_code == 403
+
+
+@pytest.mark.django_db
+def test_initial_migration_is_app_local_and_matches_models():
+    from django.db import connection
+    from django.db.migrations.loader import MigrationLoader
+
+    migration = MigrationLoader(connection).disk_migrations[("navbar_demo", "0001_initial")]
+    assert migration.initial
+    assert migration.dependencies == []
+    assert {operation.name for operation in migration.operations} == {"Tenant", "Customer"}

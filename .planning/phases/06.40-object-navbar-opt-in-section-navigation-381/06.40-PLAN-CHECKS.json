@@ -1,0 +1,461 @@
+{
+  "verify-command-paths": {
+    "status": "not_applicable",
+    "commands": [
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar.py -n 4 -q",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-01-PLAN.md",
+        "task": "06.40-01-01: Render one declared owner link through a real request"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar.py -n 4 -q",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-01-PLAN.md",
+        "task": "06.40-01-02: Carry the same owner through every supported section"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_checks.py -n 4 -q",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-01-PLAN.md",
+        "task": "06.40-01-03: Reject invalid navbar configurations at startup"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_templates.py -n 4 -q",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-02-PLAN.md",
+        "task": "06.40-02-01: Expose global, split and per-bar rendering with one lazy result"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_templates.py -n 4 -q",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-02-PLAN.md",
+        "task": "06.40-02-02: Render accessible wrapping links and plain owner identity"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_permissions.py tests/test1/test_guardian_child_link_visibility.py tests/test1/test_action_enabled.py -n 4 -q",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-03-PLAN.md",
+        "task": "06.40-03-01: Prove admission order against real core and Guardian endpoints"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_costs.py tests/test1/test_guardian_child_link_visibility.py tests/test1/test_action_enabled.py -n 4 -q",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-03-PLAN.md",
+        "task": "06.40-03-02: Measure cost and preserve existing page output"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-04-PLAN.md",
+        "task": "06.40-04-01: Open a protected Tenant-to-Customer example path"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-04-PLAN.md",
+        "task": "06.40-04-02: Publish reversible example routes and the initial migration"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-05-PLAN.md",
+        "task": "06.40-05-01: Navigate Customer sections through Order and Item requests"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-05-PLAN.md",
+        "task": "06.40-05-02: Seed Alice, Bob and Charlie with discoverable bounded grants"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-05-PLAN.md",
+        "task": "06.40-05-03: Expose the example from the index and place the bar above unchanged headers"
+      },
+      {
+        "command": ".venv/bin/mkdocs build --strict",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-06-PLAN.md",
+        "task": "06.40-06-01: Document the complete declaration, behavior and override contract"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_docs.py -n 4 -q",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-06-PLAN.md",
+        "task": "06.40-06-02: Inventory the stable surface and announce the additive feature"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py test_doc_links.py",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-06-PLAN.md",
+        "task": "06.40-06-03: Connect example and documentation in both directions"
+      },
+      {
+        "command": ".venv/bin/python ../skills-navbar-06-40/scripts/validate.py",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-07-PLAN.md",
+        "task": "06.40-07-01: Deliver navbar guidance into the actual companion source checkout"
+      },
+      {
+        "command": ".venv/bin/python ../skills-navbar-06-40/scripts/validate.py\n git -C ../skills-navbar-06-40 show --check --oneline HEAD",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-07-PLAN.md",
+        "task": "06.40-07-02: Validate and commit the companion changes separately"
+      },
+      {
+        "command": "Playwright browser_run_code executes the async page routine in .planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-BROWSER-CHECK.js; all its live assertions must pass and return the measured result saved in .planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-BROWSER.json.",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-08-PLAN.md",
+        "task": "06.40-08-01: Measure live wrapping, long text and keyboard navigation"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests -n 4 -q\nPYTHONPATH=src:. .nox/tests-3-12-django-4-2/bin/python -m pytest tests -n 4 -q\nPYTHONPATH=src:. .nox/tests-3-12-django-6-0/bin/python -m pytest tests -n 4 -q\n.venv/bin/nox -s tests examples crispy_floor -- -n 4 -q\nCV_MANAGE_SCHEMA_EXPORT_DIR=\"$(mktemp -d)\" .venv/bin/nox -s manage_report_floor -- tests/test1/test_navbar.py tests/test1/test_navbar_checks.py tests/test1/test_navbar_templates.py tests/test1/test_navbar_permissions.py tests/test1/test_navbar_costs.py tests/test1/test_navbar_docs.py\n.venv/bin/mkdocs build --strict\n.venv/bin/ruff check src tests examples\n.venv/bin/ruff format --check src tests examples\nnpm test\n.venv/bin/nox -s package",
+        "status": "not_applicable",
+        "severity": "none",
+        "reason": null,
+        "form": null,
+        "rawTarget": null,
+        "target": null,
+        "manifest": null,
+        "script": null,
+        "sentinel": false,
+        "base": "/home/alex/projects/alex/django-crud-views",
+        "plan": "06.40-08-PLAN.md",
+        "task": "06.40-08-02: Run supported source and installed acceptance gates"
+      }
+    ],
+    "counts": {
+      "blocker": 0,
+      "warning": 0,
+      "total": 19
+    },
+    "readError": null
+  },
+  "verify-failure-directions": {
+    "status": "ok",
+    "commands": [
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar.py -n 4 -q",
+        "statement": "Owner GET fails, link resolves to the wrong owner, plain text becomes markup, absent context emits HTML, or any new test is uncollected.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-01-PLAN.md",
+        "task": "06.40-01-01: Render one declared owner link through a real request"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar.py -n 4 -q",
+        "statement": "Any owner identity/href differs by rendering depth, explicit list silently becomes card, an invalid/denied list selects another page, extra kwargs replace structural identity, or active selection falls back to an unrelated item.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-01-PLAN.md",
+        "task": "06.40-01-02: Carry the same owner through every supported section"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_checks.py -n 4 -q",
+        "statement": "Any listed invalid configuration passes, diagnostics omit attachment/bar/item identity, POST-only target is accepted, valid descendants fail, or checks query/authorize.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-01-PLAN.md",
+        "task": "06.40-01-03: Reject invalid navbar configurations at startup"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_templates.py -n 4 -q",
+        "statement": "Split rendering or repeated context builds more than once, context construction calls a hook, modal direct includes render output, empty leaves emit whitespace, or one request leaks data to another.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-02-PLAN.md",
+        "task": "06.40-02-01: Expose global, split and per-bar rendering with one lazy result"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_templates.py -n 4 -q",
+        "statement": "Markup-bearing values create elements/attributes, hidden items leave gaps/wrappers, empty icon removes text, active anchor loses href, current marker count exceeds one, or dynamic tabs/loading/retry UI appears.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-02-PLAN.md",
+        "task": "06.40-02-02: Render accessible wrapping links and plain owner identity"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_permissions.py tests/test1/test_guardian_child_link_visibility.py tests/test1/test_action_enabled.py -n 4 -q",
+        "statement": "Denied items invoke state, child hooks run twice, owner argument changes, empty permitted collection disappears, reached configuration error is swallowed, destination authorization is bypassed, or established helper regressions fail.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-03-PLAN.md",
+        "task": "06.40-03-01: Prove admission order against real core and Guardian endpoints"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_costs.py tests/test1/test_guardian_child_link_visibility.py tests/test1/test_action_enabled.py -n 4 -q",
+        "statement": "Nonparticipant golden bytes or SQL change, omitted/modal hooks execute, deep owner fetch appears, measurements conflate hook calls and SQL, or coexistence reorders/changes context buttons.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-03-PLAN.md",
+        "task": "06.40-03-02: Measure cost and preserve existing page output"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py",
+        "statement": "Copied Customer URL bypasses Tenant object grants, tests depend on a superuser, another example model is imported, or Notes is not a second detail view of the same Customer.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-04-PLAN.md",
+        "task": "06.40-04-01: Open a protected Tenant-to-Customer example path"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py",
+        "statement": "Project URL include is absent, reverse uses ambiguous names, migration drift exists, parent assignment escapes the selected Tenant, or direct unauthorized CRUD requests succeed.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-04-PLAN.md",
+        "task": "06.40-04-02: Publish reversible example routes and the initial migration"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py",
+        "statement": "Any deep href changes Customer/Tenant, copied Item URL crosses tenants, a denied POST mutates rows, full-CRUD users cannot perform an operation, or business-record object grants are necessary.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-05-PLAN.md",
+        "task": "06.40-05-01: Navigate Customer sections through Order and Item requests"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py",
+        "statement": "Seed duplicates data, grants Charlie write/Address or either manager the other Tenant, changes unrelated grants/developer policy, hides empty Orders, or listed credentials cannot log in.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-05-PLAN.md",
+        "task": "06.40-05-02: Seed Alice, Bob and Charlie with discoverable bounded grants"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py",
+        "statement": "Landing leaks unauthorized tenants, index cannot open it, documentation-link data is fabricated, header/actions move, no-bar pages gain whitespace/markup, or scenario requires another app's data.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-05-PLAN.md",
+        "task": "06.40-05-03: Expose the example from the index and place the bar above unchanged headers"
+      },
+      {
+        "command": ".venv/bin/mkdocs build --strict",
+        "statement": "Docs fail strict build, describe unimplemented fields, promise universal authorization/query costs, omit an override mode or use a fabricated demo URL.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-06-PLAN.md",
+        "task": "06.40-06-01: Document the complete declaration, behavior and override contract"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_navbar_docs.py -n 4 -q",
+        "statement": "Documented imports/templates/examples fail, listed context cannot render, an actual public field is omitted, or provisional wording contradicts D-16.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-06-PLAN.md",
+        "task": "06.40-06-02: Inventory the stable surface and announce the additive feature"
+      },
+      {
+        "command": ".venv/bin/nox -s \"examples-3.12(django='5.2')\" -- -n 4 -q navbar_demo/tests.py test_doc_links.py",
+        "statement": "Either direction lacks a real URL, a DocRef/anchor fails resolution, or new example documentation checks are not collected.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-06-PLAN.md",
+        "task": "06.40-06-03: Connect example and documentation in both directions"
+      },
+      {
+        "command": ".venv/bin/python ../skills-navbar-06-40/scripts/validate.py",
+        "statement": "Checkout is wrong or installed mirror, local instructions are unread, tracked targets are missing, validator fails, guidance differs from shipped API, or no actual source edits exist.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-07-PLAN.md",
+        "task": "06.40-07-01: Deliver navbar guidance into the actual companion source checkout"
+      },
+      {
+        "command": ".venv/bin/python ../skills-navbar-06-40/scripts/validate.py\n git -C ../skills-navbar-06-40 show --check --oneline HEAD",
+        "statement": "Native checks fail, commit lacks intended files, includes unrelated edits, receipt lacks reproducible SHA/results, or work is reported complete without actual local delivery.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-07-PLAN.md",
+        "task": "06.40-07-02: Validate and commit the companion changes separately"
+      },
+      {
+        "command": "Playwright browser_run_code executes the async page routine in .planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-BROWSER-CHECK.js; all its live assertions must pass and return the measured result saved in .planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-BROWSER.json.",
+        "statement": "Document/link bounds overflow, long text clips, links are hidden to fit, keyboard cannot activate current/other links, actual zoom/reflow is untested, assets fail to load, or screenshots/measurements are missing.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-08-PLAN.md",
+        "task": "06.40-08-01: Measure live wrapping, long text and keyboard navigation"
+      },
+      {
+        "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests -n 4 -q\nPYTHONPATH=src:. .nox/tests-3-12-django-4-2/bin/python -m pytest tests -n 4 -q\nPYTHONPATH=src:. .nox/tests-3-12-django-6-0/bin/python -m pytest tests -n 4 -q\n.venv/bin/nox -s tests examples crispy_floor -- -n 4 -q\nCV_MANAGE_SCHEMA_EXPORT_DIR=\"$(mktemp -d)\" .venv/bin/nox -s manage_report_floor -- tests/test1/test_navbar.py tests/test1/test_navbar_checks.py tests/test1/test_navbar_templates.py tests/test1/test_navbar_permissions.py tests/test1/test_navbar_costs.py tests/test1/test_navbar_docs.py\n.venv/bin/mkdocs build --strict\n.venv/bin/ruff check src tests examples\n.venv/bin/ruff format --check src tests examples\nnpm test\n.venv/bin/nox -s package",
+        "statement": "Any required assertion/test/build fails, installed checks import checkout source, requested tests are uncollected, source changes after receipt, unsupported/unavailable cells are reported as passes, or browser/companion obligations lack evidence.",
+        "status": "ok",
+        "severity": "none",
+        "plan": "06.40-08-PLAN.md",
+        "task": "06.40-08-02: Run supported source and installed acceptance gates"
+      }
+    ],
+    "counts": {
+      "blocker": 0,
+      "warning": 0,
+      "total": 19
+    },
+    "readError": null
+  }
+}

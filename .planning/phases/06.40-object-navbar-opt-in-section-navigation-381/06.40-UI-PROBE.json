@@ -1,0 +1,162 @@
+{
+  "elements": [
+    {
+      "id": "navbar",
+      "text": "Navigation list of visible section links for the current object",
+      "elements": [
+        "nav",
+        "list-collection",
+        "interactive-control"
+      ]
+    },
+    {
+      "id": "identity",
+      "text": "Static owner caption and decorative icon",
+      "elements": [
+        "static-content",
+        "media"
+      ]
+    }
+  ],
+  "report": {
+    "items": [
+      {
+        "requirement_id": "navbar",
+        "category": "empty",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Zero admitted items produces no identity, nav, wrapper or spacing; copy is defined above",
+        "reason": null,
+        "probe": "What is shown when there is no data \u2014 zero items, an unfilled form, or absent media?"
+      },
+      {
+        "requirement_id": "navbar",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Server-rendered document navigation uses browser-native loading; no async navbar fetch, skeleton or spinner exists",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "navbar",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Permission/state denial omits an item; configuration errors propagate; request failures use existing responses; no inline retry state",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "navbar",
+        "category": "populated",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Identity above ordered visible links, then unchanged header; example's full-access bar has four named links",
+        "reason": null,
+        "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+      },
+      {
+        "requirement_id": "navbar",
+        "category": "partial",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Omit denied/state-disabled items and close gaps; retain permitted ones and plain identity; missing icons retain text; no inferred active fallback",
+        "reason": null,
+        "probe": "What is shown for partial or incomplete data \u2014 some fields or rows present, others missing?"
+      },
+      {
+        "requirement_id": "navbar",
+        "category": "overflow",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "More links wrap onto additional rows within the parent width, with no horizontal document scroll or overflow menu",
+        "reason": null,
+        "probe": "What happens when content exceeds its container \u2014 scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "navbar",
+        "category": "zero-one-many",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Zero emits nothing; one retains identity and one naturally sized link; many retain declaration order and wrap",
+        "reason": null,
+        "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+      },
+      {
+        "requirement_id": "navbar",
+        "category": "long-text",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Long words and multiword text wrap in full, no ellipsis or clipping; icons remain decorative; naming derives from the same caption",
+        "reason": null,
+        "probe": "What happens with unusually long text \u2014 truncation, wrapping, ellipsis, or reflow?"
+      },
+      {
+        "requirement_id": "identity",
+        "category": "empty",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Owner caption remains plain text; decorative icon uses existing renderer and may be absent without hiding caption. All-hidden bars omit identity. No independent async media load or new error UI; configuration errors propagate.",
+        "reason": null,
+        "probe": "What is shown when there is no data \u2014 zero items, an unfilled form, or absent media?"
+      },
+      {
+        "requirement_id": "identity",
+        "category": "loading",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Owner caption remains plain text; decorative icon uses existing renderer and may be absent without hiding caption. All-hidden bars omit identity. No independent async media load or new error UI; configuration errors propagate.",
+        "reason": null,
+        "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+      },
+      {
+        "requirement_id": "identity",
+        "category": "error",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Owner caption remains plain text; decorative icon uses existing renderer and may be absent without hiding caption. All-hidden bars omit identity. No independent async media load or new error UI; configuration errors propagate.",
+        "reason": null,
+        "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+      },
+      {
+        "requirement_id": "identity",
+        "category": "populated",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Owner caption remains plain text; decorative icon uses existing renderer and may be absent without hiding caption. All-hidden bars omit identity. No independent async media load or new error UI; configuration errors propagate.",
+        "reason": null,
+        "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+      },
+      {
+        "requirement_id": "identity",
+        "category": "overflow",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "More links wrap onto additional rows within the parent width, with no horizontal document scroll or overflow menu",
+        "reason": null,
+        "probe": "What happens when content exceeds its container \u2014 scroll, clip, wrap, or truncate?"
+      },
+      {
+        "requirement_id": "identity",
+        "category": "long-text",
+        "status": "resolved",
+        "verification": "explicit",
+        "resolution": "Long words and multiword text wrap in full, no ellipsis or clipping; icons remain decorative; naming derives from the same caption",
+        "reason": null,
+        "probe": "What happens with unusually long text \u2014 truncation, wrapping, ellipsis, or reflow?"
+      }
+    ],
+    "coverage": {
+      "applicable": 14,
+      "resolved": 14,
+      "unresolved": 0,
+      "unclassified": 0,
+      "byVerification": {
+        "explicit": 14,
+        "backstop": 0
+      }
+    }
+  },
+  "resolution_source": "Approved CONTEXT D07-D11 and source-grounded UI-SPEC; no new user product choices."
+}

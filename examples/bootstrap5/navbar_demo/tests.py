@@ -154,6 +154,7 @@ def test_public_routes_deny_other_tenant(client, scenario, key):
 @pytest.mark.parametrize("missing_gate", ["customer_model", "tenant_object"])
 def test_writes_require_customer_operation_and_tenant_change(client, scenario, key, permission, missing_gate):
     from guardian.shortcuts import remove_perm
+
     from navbar_demo.models import Customer
 
     tenant, _, customer, _, user = scenario
@@ -174,6 +175,7 @@ def test_writes_require_customer_operation_and_tenant_change(client, scenario, k
 @pytest.mark.django_db
 def test_public_customer_crud_binds_parent_and_needs_no_record_grants(client, scenario):
     from guardian.models import UserObjectPermission
+
     from navbar_demo.models import Customer
 
     tenant, other, _, _, _ = scenario

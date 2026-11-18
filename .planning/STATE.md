@@ -1,25 +1,24 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.40"
+current_phase_name: "Object navbar: opt-in section navigation"
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.39 complete, ready to plan Phase 7
-last_updated: "2026-11-18T13:40:13.584Z"
+stopped_at: Phase 06.40 context gathered
+last_updated: "2026-11-18T14:22:41.793Z"
 last_activity: 2026-11-18
-last_activity_desc: "Phase 06.39 shipped as PR #382"
-state_head: 360412373cccae58be90b6933b8a15382d55cc27
+last_activity_desc: "Phase 06.40 inserted for issue #381"
+state_head: f154e12354f469372dc5489bc876add9bea4bdc5
 progress:
-  total_phases: 45
+  total_phases: 46
   completed_phases: 44
   total_plans: 246
   completed_plans: 246
-  percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 45
+Total Phases: 46
 
 # Project State
 
@@ -28,17 +27,17 @@ Total Phases: 45
 See: .planning/PROJECT.md (updated 2026-11-18)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.40 — Object navbar: opt-in section navigation (#381)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.40 — Object navbar: opt-in section navigation (#381)
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-18 -- Phase 06.39 shipped as PR #382
+Last activity: 2026-11-18 -- Phase 06.40 inserted for issue #381
 
-Next: $gsd-ship 06.39; refresh codebase maps after shipping before subsequent work.
+Next: $gsd-plan-phase 06.40
 
 ### Phase 06.39 completion — 2026-11-18
 
@@ -1920,6 +1919,7 @@ None yet.
 - Phase 06.36 inserted after Phase 06.35: ViewSet configuration CLI and versioned JSON contract (#371); approved D-01–D-09, A-01–A-04 and acceptance items 1–10; builds on completed #372 before Phase 7 (URGENT)
 - Phase 06.37 inserted after Phase 06.36: cv_access Pydantic JSON contract validation and schema (#375) (URGENT)
 - Phase 06.39 inserted after Phase 06.37: Immediate-parent permission checks for child links (#380), ahead of the object navbar (#381) (URGENT)
+- Phase 06.40 inserted after Phase 06.39: Object navbar: opt-in section navigation (#381) (URGENT)
 
 ## Deferred Items
 
@@ -1929,6 +1929,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T11:49:27Z
-Stopped at: Phase 06.39 complete, ready to plan Phase 7
-Resume file: .planning/phases/06.39-immediate-parent-permission-checks-for-child-links-380/06.39-02-PLAN.md
+Last session: 2026-11-18T14:22:36.336Z
+Stopped at: Phase 06.40 context gathered
+Resume file: .planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-CONTEXT.md

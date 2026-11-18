@@ -387,3 +387,14 @@ def test_descendant_schema_and_explicit_edges_pass_checks_without_migration_drif
         assert viewset.ancestor_policy.cascade is True
     assert not [message for message in run_checks() if message.level >= 40]
     call_command("makemigrations", "navbar_demo", check=True, dry_run=True)
+
+
+@pytest.mark.django_db
+def test_shared_demo_accounts_include_usable_charlie(client):
+    from project.seeding import ensure_demo_users
+
+    users = ensure_demo_users()
+    assert "charlie" in users, "The read-only scenario must have a real seeded Charlie account"
+    response = client.post(reverse("login"), {"username": "charlie", "password": "charlie"})
+    assert response.status_code == 302
+    assert int(client.session["_auth_user_id"]) == users["charlie"].pk

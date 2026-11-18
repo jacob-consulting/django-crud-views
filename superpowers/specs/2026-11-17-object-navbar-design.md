@@ -284,8 +284,8 @@ Alice and Bob are key account managers. Each of these three users is restricted 
 including when following a copied direct URL to a descendant such as an Item. Charlie provides a restricted
 comparison against Alice on the same data; no permission-management UI is needed.
 
-Customer owns the navbar, with Details, a second Customer detail page, Orders and Addresses. The second
-detail page is another view of the same Customer. On an Item page the Customer identity and links remain
+Customer owns the navbar, with Details, Notes, Orders and Addresses. Notes is a second detail view of the
+same Customer, displaying a simple text field on Customer. On an Item page the Customer identity and links remain
 stable and Orders is active. Charlie's navbar hides Addresses, and direct Address and write requests are
 also denied. Seed an accessible empty Orders collection to show that an empty section remains visible.
 
@@ -299,7 +299,8 @@ rejected because individual-record sharing is unnecessary and would add grant-ma
 This example uses the navbar access contract in D-06/D-09; it does not add higher-ancestor permission checks
 to navbar rendering. The current page and destination request enforce their configured ancestor policies.
 
-*(Approved 2026-11-18. The tenant-level Guardian approach was proposed by the assistant and approved.)*
+*(Approved 2026-11-18. The tenant-level Guardian approach and the Notes detail page were proposed by the
+assistant and approved.)*
 
 ## Proposed defaults and bounded implementation contract
 

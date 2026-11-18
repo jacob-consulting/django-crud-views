@@ -1,0 +1,30 @@
+{
+  "review_cycle": 4,
+  "reviewed_head": "eecc81117feb60bb1b7fde83d998749a11e09b3a",
+  "prompt_sha256": "9ed8be48345ed5e674752ed5fb6388ff5dc6d94ad112db03d3dffbf8d4a1d617",
+  "prompt_bytes": 339852,
+  "rough_tokens_bytes_div3": 113284,
+  "selection": "Configured default reviewers; no flags or model substitutions",
+  "input_hashes": {
+    ".planning/PROJECT.md": "4867c6d218bf717cad580b0a053d3b96a77819dc656ae3a517b42f4ef345f4cd",
+    "AGENTS.md": "59d2319a8e8aa20e878d6e6e6300976cc2dbb2a3cb24054b36483671810a4a70",
+    ".planning/ROADMAP.md": "5e309f2266617298344a222016d0ce3e1f6e738773152874b861c98deab83e3e",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-CONTEXT.md": "070523410b10ea8ebcba24d03f36abbb0104235fc68c56047edcedd4fe8fd6fa",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-RESEARCH.md": "aba9999c449d6caf4274ba300cb6b2b7fd066dda511f934c0827ce3e6dc66528",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-UI-SPEC.md": "b76e6bb6c6bff6095352b68fc26541b2db27754d37f1ceb94db803259a50eabd",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-VALIDATION.md": "5f5f24ce5481867b6264d105b8b4e4a5c83f5e25852bee1b6765dd56280b2719",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-PATTERNS.md": "1a48c7328da799c1d6f135643d64eea45ce684564412b5f0ed5e475836c22392",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-COMPANION-GUIDANCE.md": "90ddb1b7f871d143a687decd6f404866d7862011fb1e92f63937b5ba08db8d8f",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-ISSUE-381.md": "8721da96635b75534b73b0ff98de2492d2661c463e6e565b5c32f2d5323e3357",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md": "95e2667e0aa2e41a60309b8bddc960ce779a6bcdb0aa9deb5ae319f03c8f8f67",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-02-PLAN.md": "7b80908638636ef280ccce8fa07ef9a1f263fea617291ff19bf434d55305b1da",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-03-PLAN.md": "24331950159f1624fa7be151e1441e063956d5cc58b050d2316af587672d40d6",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-04-PLAN.md": "60ba822f59753747eeb85a1234049eed9d078e847580fe2ecf65f342b8261cf1",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-05-PLAN.md": "20278c323b0ede991e8fddc8fedb07d5e3666689da7d55b400730dfa28ab3dbe",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-06-PLAN.md": "1212867dd3495d7b9d07311a3e6609215504ad193db2f07bd3b10cf8a946b500",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-07-PLAN.md": "b6222b948cb815c05c1496ef833551b990443c573285cc02ca73a3ae4f05585e",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-08-PLAN.md": "b052fb1b7b5f46fd40b94edf030048dd589b216b3b3fbbfa9e1aaff80bc6432e"
+  },
+  "conflict_sha256": "fe691e5e46229c6b5db6e0588e3f191d7e9402c1a37c30a71d69be90c75a74a6",
+  "runtime_note": "review-lane plan rejected its documented --json flag; read-only descriptor retried without flag. All invoke calls succeeded through the configured adapters at high effort."
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "slug": "claude",
+    "ok": true,
+    "section": "Claude",
+    "transport": "spawn",
+    "promptBudget": 130000,
+    "promptCapSource": "context-window",
+    "contextWindowTokens": 200000,
+    "promptPath": "/tmp/gsd-review-lsax4n91/gsd-review-prompt.md"
+  },
+  {
+    "slug": "opencode",
+    "ok": true,
+    "section": "OpenCode",
+    "transport": "spawn",
+    "promptBudget": null,
+    "promptCapSource": "none",
+    "contextWindowTokens": null,
+    "promptPath": "/tmp/gsd-review-lsax4n91/gsd-review-prompt.md"
+  }
+]

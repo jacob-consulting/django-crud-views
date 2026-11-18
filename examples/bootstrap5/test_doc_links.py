@@ -163,3 +163,30 @@ def test_queryset_demo_docs_cover_contract_and_resolve_all_three_routes():
             path = reverse(name)
             assert resolve(path).url_name == name
             assert DEMO_BASE + path in links
+
+
+@pytest.mark.django_db
+def test_navbar_landing_renders_reciprocal_reference_and_standard_chrome(client, django_user_model):
+    from django.urls import reverse
+    from lxml import html
+
+    feature = next(feature for feature in FEATURES if feature.app == "navbar_demo")
+    assert feature.url_name == "navbar-demo-home"
+    assert feature.group == "ui"
+    assert {(ref.page, ref.anchor) for ref in feature.docs} == {
+        ("reference/navbar.md", ""),
+        ("reference/navbar.md", "placement-and-overrides"),
+    }
+    client.force_login(django_user_model.objects.create_superuser(username="navbar-docs", password="pw"))
+    response = client.get(reverse(feature.url_name))
+    assert response.status_code == 200
+    tree = html.fromstring(response.content)
+    panels = tree.xpath('//*[@id="snippet-panels"]')[0]
+    assert "References to documentation" in panels.text_content()
+    for ref in feature.docs:
+        links = panels.xpath(".//a[@href=$url]", url=ref.url)
+        assert len(links) == 1
+        assert links[0].get("rel") == "noopener"
+    assert tree.xpath('//*[@id="example-about"]')
+    assert tree.xpath('//nav[@aria-label="breadcrumb"]//a[@href=$url]', url=reverse("home"))
+    assert DEMO_BASE + reverse(feature.url_name) in demo_links((DOCS_DIR / "reference/navbar.md").read_text())

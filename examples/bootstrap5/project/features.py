@@ -751,6 +751,12 @@ FEATURES: list[Feature] = [
         ),
         url_name="navbar-demo-home",
         icon="fa-solid fa-address-card",
+        docs=(
+            DocRef(page="reference/navbar.md", label="Object navbar reference"),
+            DocRef(
+                page="reference/navbar.md", label="Object navbar — template overrides", anchor="placement-and-overrides"
+            ),
+        ),
     ),
 ]
 

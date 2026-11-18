@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.40"
 current_phase_name: "Object navbar: opt-in section navigation (#381)"
-current_plan: 4
+current_plan: 5
 status: executing
-stopped_at: Completed 06.40-03-PLAN.md
-last_updated: "2026-11-18T17:07:46.240Z"
+stopped_at: Completed 06.40-04-PLAN.md
+last_updated: "2026-11-18T17:16:07.768Z"
 last_activity: 2026-11-18
-last_activity_desc: Completed plan 06.40-03; five plans remain
-state_head: 7ee8ee8201723b3eb6fa957c6169c51f75b45697
+last_activity_desc: Completed plan 06.40-04; four plans remain
+state_head: 2907824aa3731bc74ef3e5b204ecd37868feec81
 progress:
   total_phases: 46
   completed_phases: 44
   total_plans: 254
-  completed_plans: 249
+  completed_plans: 250
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-18)
 ## Current Position
 
 Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — IN PROGRESS
-Current Plan: 4
+Current Plan: 5
 Total Plans in Phase: 8
 Status: Ready to execute
-Last activity: 2026-11-18 -- Completed plan 06.40-03; five plans remain
+Last activity: 2026-11-18 -- Completed plan 06.40-04; four plans remain
 
 Next: $gsd-execute-phase 06.40
+
+### Phase 06.40 plan 04 execution — 2026-11-18
+
+- Both tasks complete; RED/GREEN pairs 2f0ced99/0205f12c and 94ea62ba/f468a97b, summary 2907824a committed before progress updates. Independent navbar_demo owns Tenant/Customer, strict Guardian Tenant ancestry, model-permission Customer CRUD and Details/Notes navigation.
+- Focused supported Nox example suite: 21 passed. Full example suite: 569 passed and 264 subtests passed, Python 3.12.3/Django 5.2.19, four workers. Separate migration drift gate exited 0; isolated apply/reverse/reapply and scoped Ruff/format/whitespace checks passed.
+- Actual project routes prove copied cross-Tenant URL denial, independent operation/ancestor write gates, server-bound parent creation/update, and stable owner identity without Customer object grants. No task acceptance gate remains.
+- ROADMAP records 4/8 plans executed, complete=false; Current Plan advanced to 5 and global completion to 250/254. Existing unscoped progress limitation retained; stale state.json restored byte-identically. Expanded hierarchy/seed/template placement and later browser/matrix gates remain assigned to later plans; no phase completion or ship claimed.
 
 ### Phase 06.40 plan 03 execution — 2026-11-18
 
@@ -1548,6 +1555,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.40 P01 | 12min | 3 tasks | 9 files |
 | Phase 06.40 P02 | 7min | 2 tasks | 9 files |
 | Phase 06.40 P03 | 8min | 2 tasks | 4 files |
+| Phase 06.40 P04 | 7min | 2 tasks | 11 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1875,6 +1883,7 @@ Recent decisions affecting current work:
 - [Phase 06.40]: Items own the translated nav landmark; wrapper composes guarded identity and items leaves using relative includes.
 - [Phase 06.40]: Preserve the already-correct navbar builder and permission/ancestor/button code; plan03 adds regression proof only.
 - [Phase 06.40]: Measure navbar costs after request loading; warm actor means Django model permissions, without a persistent Guardian checker.
+- [Phase 06.40]: Independent navbar example keeps forms/tables in views.py and explicitly maps navbar_tenant to tenant; strict Tenant object grants cascade to model-permission Customer CRUD.
 
 ### Pending Todos
 
@@ -1968,6 +1977,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T17:07:40.320Z
-Stopped at: Completed 06.40-03-PLAN.md
+Last session: 2026-11-18T17:16:01.514Z
+Stopped at: Completed 06.40-04-PLAN.md
 Resume file: None

@@ -1,20 +1,21 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.40"
-current_phase_name: "Object navbar: opt-in section navigation (#381)"
-current_plan: 8
-status: verifying
-stopped_at: Completed 06.40-08-PLAN.md; independent phase verification pending
-last_updated: "2026-11-18T20:11:02.040Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.40 complete, ready to plan Phase 7
+last_updated: "2026-11-18T20:42:37.828439Z"
 last_activity: 2026-11-18
-last_activity_desc: Completed plan 06.40-08; independent phase verification pending
-state_head: 500bbd74e7e3e604eb1a5152cb8bc5d9cad25a28
+last_activity_desc: Phase 06.40 complete, transitioned to Phase 7
+state_head: ba7b158eb299ef35538dc580c99edd3866d3e064
 progress:
   total_phases: 46
-  completed_phases: 44
+  completed_phases: 45
   total_plans: 254
   completed_plans: 254
+  percent: 98
 milestone_name: milestone
 ---
 
@@ -27,17 +28,25 @@ Total Phases: 46
 See: .planning/PROJECT.md (updated 2026-11-18)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.40 — Object navbar: opt-in section navigation (#381)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — IN PROGRESS
-Current Plan: 8
-Total Plans in Phase: 8
-Status: Plans executed — independent phase verification pending
-Last activity: 2026-11-18 -- Completed plan 06.40-08; independent phase verification pending
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: 0
+Status: Ready to plan
+Last activity: 2026-11-18 — Phase 06.40 complete, transitioned to Phase 7
 
-Next: Independent phase verification and required code/security/UI reviews
+Next: $gsd-discuss-phase 7
+
+### Phase 06.40 completion — 2026-11-18
+
+- All8plans/19tasks complete. Independent goal verification33/33 passed with current1175-file covered fingerprint; no human items. Nyquist19/19, security20/20closed, deep review45files/0findings. UI23/24 retains one minor open landing-copy16px-versus14px advisory; no blocker.
+- All20installed core passes,10example cells (602tests+272subtests each), two crispyfloors4223each, Pydanticfloor792 and source4.2/5.2/6.0 pass. Four unsupported Nox sessions are declared skips; zero unavailable. Native browser345assertions/13states on9000 and success/failurecleanup pass. Receipt preserves failed attempts, corrected environment setup and historical scope qualifications.
+- Independent fresh validation/review/verifier runs pass299core,215example+75subtests and134named cases; all1106input and24log hashes checked. Regression457JS+2integration+177Node pass. Historical externalTabler runtime remains outside this phase's delivered contract. Companion localcommitcab8a85a clean/validated; no publication.
+- phase.complete advanced to7; dotted progress-table/count omissions reconciled from45/46actual completed checkboxes. CLI 'missing file' warnings refer to command strings in summaries, not missing delivered artifacts; independent verification checked actual targets/receipts. Requirements line now explicitly None with approved decisions separately retained. No LEARNINGS files exist for graduation; global learnings disabled by default; no resolves_phase todos.
+- Original state.json preserved byte-identically. Unrelated untracked work preserved. No ship/push/merge; required codebase-map refresh follows a future gsd-ship. Next:$gsd-discuss-phase7.
 
 ### Phase 06.40 plan 08 execution — 2026-11-18
 
@@ -1353,7 +1362,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 237
+- Total plans completed: 245
 
 - Total plans completed: 186
 - Average duration: -
@@ -1404,6 +1413,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.35 | 7 | - | - |
 | 06.36 | 8 | - | - |
 | 06.37 | 4 | - | - |
+| 06.40 | 8 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2025,6 +2035,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T20:10:55.613Z
-Stopped at: Completed 06.40-08-PLAN.md; independent phase verification pending
+Last session: 2026-11-18T20:42:37.828439Z
+Stopped at: Phase 06.40 complete, ready to plan Phase 7
 Resume file: None

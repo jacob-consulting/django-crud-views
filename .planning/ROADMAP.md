@@ -65,7 +65,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.36: ViewSet configuration CLI and versioned JSON contract (#371) (INSERTED)** - approved diagnostic command, catalogue and validated text/JSON output. (completed 2026-11-16)
 - [x] **Phase 06.37: cv_access Pydantic JSON contract validation and schema (#375) (INSERTED)** - validate the existing version-1 trace with Pydantic output models and add `cv_access --schema`. (completed 2026-11-16)
 - [x] **Phase 06.39: Immediate-parent permission checks for child links (#380) (INSERTED)** (completed 2026-11-18)
-- [ ] **Phase 06.40: Object navbar: opt-in section navigation (#381) (INSERTED)** - approved issue handover; object identity, section links and app-controlled presentation.
+- [x] **Phase 06.40: Object navbar: opt-in section navigation (#381) (INSERTED)** - approved issue handover; object identity, section links and app-controlled presentation. (completed 2026-11-18)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2123,9 +2123,10 @@ Keep the feature opt-in and self-contained, preserve context-button behavior, an
 **Source:** [Issue #381 and its GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/381#gsd-handover).
 Carry the approved D-01–D-16 decisions and acceptance criteria into execution; implementation proposals remain proposals.
 **Ordering:** Follows the child-link permission fix in 06.39; settle the navbar's stability tier and theme surface before Phase 7 freezes them.
-**Requirements**: None assigned; approved D-01–D-16 and AC1–AC9 are mapped in 06.40-COVERAGE.md.
+**Requirements**: None
+**Approved contract:** D-01–D-16 and AC1–AC9 are mapped in 06.40-COVERAGE.md.
 **Depends on:** Phase 06.39
-**Plans:** 8/8 plans executed
+**Plans:** 8/8 plans complete
 
 Planning converged in four external review cycles; no unresolved HIGH/actionable findings or decision conflicts.
 
@@ -2278,5 +2279,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 06.33. Structured manage page (#366) | 10/10 | Awaiting verification | - |
 | 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
-| 06.40. Object navbar: opt-in section navigation (#381) | 8/8 | In Progress | - |
+| 06.40. Object navbar: opt-in section navigation (#381) | 8/8 | Complete | 2026-11-18 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.40"
 current_phase_name: "Object navbar: opt-in section navigation (#381)"
 current_plan: 8
-status: executing
-stopped_at: Completed 06.40-07-PLAN.md
-last_updated: "2026-11-18T17:51:18.599Z"
+status: verifying
+stopped_at: Completed 06.40-08-PLAN.md; independent phase verification pending
+last_updated: "2026-11-18T20:11:02.040Z"
 last_activity: 2026-11-18
-last_activity_desc: Completed plan 06.40-07; one plan remains
-state_head: 7d6906104b33db18e8a2b06db2026c87885dbffe
+last_activity_desc: Completed plan 06.40-08; independent phase verification pending
+state_head: 500bbd74e7e3e604eb1a5152cb8bc5d9cad25a28
 progress:
   total_phases: 46
   completed_phases: 44
   total_plans: 254
-  completed_plans: 253
+  completed_plans: 254
 milestone_name: milestone
 ---
 
@@ -34,10 +34,17 @@ See: .planning/PROJECT.md (updated 2026-11-18)
 Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — IN PROGRESS
 Current Plan: 8
 Total Plans in Phase: 8
-Status: Ready to execute
-Last activity: 2026-11-18 -- Completed plan 06.40-07; one plan remains
+Status: Plans executed — independent phase verification pending
+Last activity: 2026-11-18 -- Completed plan 06.40-08; independent phase verification pending
 
-Next: $gsd-execute-phase 06.40
+Next: Independent phase verification and required code/security/UI reviews
+
+### Phase 06.40 plan 08 execution — 2026-11-18
+
+- Both tasks complete; five task commits through 92f060a4 and SUMMARY 500bbd74 committed before progress. Corrected inherited cv_content recipe, example-local narrow reflow, and an existing coverage-incompatible test mock. Product revision 7ccee139; final test-helper revision 9a8da2e8; final 1,106-file input hash cb2f842f86330139297e4a9b702db3f8c66113c7ca72caf84ae1d36e7a74dab9 is unchanged.
+- Native browser: 345 assertions, 13 states, Customer and Item at 320/640/1280 CSS pixels, keyboard/accessibility and both success/deliberate-failure owned cleanup pass on port 9000. All 20 installed core passes, 10 example cells (602 tests/272 subtests each), two crispy floors (4,223 each), Pydantic floor (792), source suites, docs, Ruff, 457 JavaScript tests and package allowlists pass. Four unsupported Nox sessions remain declared skips; no unavailable cell. Python 3.15 runtime is 3.15.0rc2.
+- ACCEPTANCE/MATRIX/SCHEDULING retain invalidated environment collisions, the covered-mock failure and export-directory mistakes with exact successful corrections and source-scope qualifications. No active tests or fixture paths were interrupted/mutated. Companion cab8a85a remains clean and its native validator passes. No new package, push, merge, release or publication.
+- ROADMAP SDK records 8/8 executed, complete=false; STATE is verifying, Current Plan 8, global completed plans 254/254. Its known unscoped progress-update limitation remains; the dotted ROADMAP table row is reconciled to the successful detail update. Stale state.json is preserved byte-identically. Independent phase verification and required reviews remain; the phase is not marked complete.
 
 ### Phase 06.40 plan 07 execution — 2026-11-18
 
@@ -1582,6 +1589,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.40 P06 | 6min | 3 tasks | 13 files |
 | Phase 06.40 P07 | 7min | 2 tasks | 5 files |
 | Phase 06.40 P07 | 7min | 2 tasks | 5 files |
+| Phase 06.40 P08 | 136min | 2 tasks | 22 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1920,6 +1928,10 @@ Recent decisions affecting current work:
 - [Phase 06.40]: Plan06 attaches only real navbar DocRefs and closes plan05 documentation dependency with the complete unexcluded 602-test example suite.
 - [Phase 06.40]: Companion navbar guidance is explicitly upstream Unreleased; existing package/plugin versions remain unchanged.
 - [Phase 06.40]: Companion navbar guidance is explicitly upstream Unreleased; existing package/plugin versions remain unchanged.
+- [Phase 06.40]: Keep narrow-width corrections inside the new navbar example; preserve shared templates, action contents and nonparticipant pages.
+- [Phase 06.40]: Use user-directed port 9000 with owned isolated database/settings and deliberate-failure cleanup evidence.
+- [Phase 06.40]: Preserve failed attempts and qualify earlier full-suite evidence by changed scope; exact affected reruns close the test-only revision.
+- [Phase 06.40]: Split remaining verification into two disjoint four-worker groups; use ordinary per-test temporary directories for core schema exports.
 
 ### Pending Todos
 
@@ -2013,6 +2025,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T17:51:12.150Z
-Stopped at: Completed 06.40-07-PLAN.md
+Last session: 2026-11-18T20:10:55.613Z
+Stopped at: Completed 06.40-08-PLAN.md; independent phase verification pending
 Resume file: None

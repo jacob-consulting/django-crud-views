@@ -39,6 +39,9 @@ TAG = "crud_views"
 def check_viewsets(app_configs=None, **kwargs):
     """Run all ViewSet, CrudView and settings checks."""
 
+    # URL imports can register both new ViewSets and views on existing ones. Finish
+    # them before checks_all snapshots the registry or iterates a ViewSet's views.
+    _url_configuration_loaded()
     errors = crud_views_settings.check_messages
 
     for check in ViewSet.checks_all():
@@ -169,13 +172,14 @@ def _ancestor_pair_messages(viewsets) -> list:
     return messages
 
 
-def _url_configuration_loaded() -> bool:
+def _url_configuration_loaded(*, load: bool = True) -> bool:
     """The readiness barrier of the completion-dependent ancestor checks.
 
     Import the configured ROOT_URLCONF and every included URLconf through Django's own resolver (visiting each
     resolver once), so view modules that only the URLconf imports have registered their views. True when that
     completed; False without ROOT_URLCONF, or when the import failed or is still in progress (a check run
     during URLconf import) — Django's own URL checks report such failures. Nothing is remembered between calls.
+    With load=False, inspect only cached url_patterns; this cannot import during a live registry iteration.
     """
     from django.conf import settings
     from django.urls import URLResolver, get_resolver
@@ -189,7 +193,13 @@ def _url_configuration_loaded() -> bool:
             if id(resolver) in seen:
                 continue
             seen.add(id(resolver))
-            pending.extend(pattern for pattern in resolver.url_patterns if isinstance(pattern, URLResolver))
+            if load:
+                patterns = resolver.url_patterns
+            elif "url_patterns" in resolver.__dict__:
+                patterns = resolver.__dict__["url_patterns"]
+            else:
+                return False
+            pending.extend(pattern for pattern in patterns if isinstance(pattern, URLResolver))
     except Exception:  # any import failure means "not completed", never a misleading missing-action error
         return False
     return True

@@ -183,6 +183,8 @@ def cold_urlconf(tmp_path, monkeypatch, *, fail=False):
         control.owner = ns.owner
         control.attempts = 0
         control.fail = fail
+        control.check_during_import = False
+        control.early = None
         source = f"""from {control_name} import owner
 import {control_name} as control
 from crud_views.lib.navbar import CrudViewNavBarMixin, NavBar, NavItem
@@ -191,6 +193,9 @@ from crud_views.lib.viewset import ViewSet
 control.attempts += 1
 if control.fail:
     raise RuntimeError("URLconf in progress")
+if control.check_during_import:
+    from crud_views.checks import check_viewsets
+    control.early = check_viewsets()
 class LateOne(CrudViewNavBarMixin, DetailView):
     cv_viewset = owner
     cv_key = "late_one"
@@ -223,7 +228,7 @@ urlpatterns = owner.urlpatterns + new_owner.urlpatterns
 
 @pytest.mark.parametrize("pipeline", ["direct", "django"])
 def test_cold_first_completed_pass_includes_all_late_views(tmp_path, monkeypatch, pipeline, django_assert_num_queries):
-    with cold_urlconf(tmp_path, monkeypatch) as (ns, control):
+    with cold_urlconf(tmp_path, monkeypatch) as (_ns, control):
         assert "url_patterns" not in get_resolver().__dict__
         with django_assert_num_queries(0):
             messages = system_checks.check_viewsets() if pipeline == "direct" else run_checks(tags=[system_checks.TAG])
@@ -268,3 +273,48 @@ def test_early_checks_defer_forward_references():
         assert not navbar_messages(direct_checks(ns.view))
         assert "url_patterns" not in get_resolver().__dict__
         assert navbar_messages(system_checks.check_viewsets())
+
+
+def test_reentrant_in_progress_import_keeps_local_checks(tmp_path, monkeypatch, django_assert_num_queries):
+    with cold_urlconf(tmp_path, monkeypatch) as (ns, control):
+        control.check_during_import = True
+        ns.view.cv_navbar = NavBar(viewset="forward_owner", items=[NavItem()])
+        with django_assert_num_queries(0):
+            completed = navbar_messages(system_checks.check_viewsets())
+        assert control.attempts == 1
+        early = navbar_messages(control.early)
+        assert any("select an owner key" in m.msg for m in early)
+        assert not any("unknown" in m.msg for m in early)
+        for name in ("LateOne", "LateTwo", "LateNew"):
+            assert any(name in m.msg for m in completed)
+
+
+def test_cached_property_is_written_only_after_success():
+    module = types.ModuleType("navbar_in_progress")
+    resolver = URLResolver(RoutePattern(""), module)
+    from django.core.exceptions import ImproperlyConfigured
+
+    with pytest.raises(ImproperlyConfigured):
+        _ = resolver.url_patterns
+    assert "url_patterns" not in resolver.__dict__
+    module.urlpatterns = []
+    assert resolver.url_patterns == []
+    assert "url_patterns" in resolver.__dict__
+
+
+@pytest.mark.parametrize("value", [False, [], "not a declaration", 42])
+def test_malformed_attached_values_are_safe(value):
+    with navbar_routes(owner_routes) as ns:
+        ns.view.cv_navbar = value
+        errors = navbar_messages(system_checks.check_viewsets())
+        assert len(errors) == 1
+        assert errors[0].id == "viewset.E280"
+        assert "NavbarDetail" in errors[0].msg and "bar" in errors[0].msg
+
+
+@pytest.mark.parametrize("kwargs", [{"items": "bad"}, {"items": ["bad"]}, {"template": 123}])
+def test_declaration_field_types_rejected_at_construction(kwargs):
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        NavBar(**{"viewset": "owner", "items": [], **kwargs})

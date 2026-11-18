@@ -2,12 +2,17 @@
 
 from html import unescape
 
+from django.core.checks import Error
 from django.core.exceptions import ImproperlyConfigured
+from django.template import TemplateDoesNotExist
+from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.functional import Promise, SimpleLazyObject
 from pydantic import BaseModel
 
 from crud_views.lib.ancestors import _resolved_ancestor, _walk_ancestors
+from crud_views.lib.check import Check
+from crud_views.lib.exceptions import ViewSetNotFoundError
 from crud_views.lib.view.base import cv_is_modal_request
 from crud_views.lib.view.context import ViewContext
 from crud_views.lib.viewset import ViewSet
@@ -114,10 +119,83 @@ def _build(view):
     }
 
 
+class _CheckNavBar(Check):
+    """Cooperative, metadata-only checks. E280-E284 are navbar-owned diagnostics."""
+
+    id: str = "E280"
+
+    def messages(self):
+        from crud_views.checks import _url_configuration_loaded
+
+        cls = self.context
+        bar = cls.cv_navbar
+
+        def error(code, scope, message):
+            owner = repr(bar.viewset) if isinstance(bar, NavBar) else "<invalid>"
+            return Error(f"{cls.__name__}: navbar {owner} {scope}: {message}", obj=cls, id=f"viewset.{code}")
+
+        if not isinstance(bar, NavBar):
+            yield error("E280", "bar", "cv_navbar must be a NavBar declaration or None")
+            return
+        if not bar.viewset or not bar.viewset.strip():
+            yield error("E280", "bar", "owner name must be nonempty")
+            return
+        if bar.template:
+            try:
+                get_template(bar.template)
+            except TemplateDoesNotExist:
+                yield error("E284", "bar", f"template {bar.template!r} does not exist")
+        if cls.cv_viewset.name == bar.viewset and not cls.cv_object:
+            yield error("E281", "bar", "owner attachment must require an object")
+
+        owner_keys, children = set(), set()
+        valid_items = []
+        for index, item in enumerate(bar.items):
+            scope = f"item {index} (key={item.key!r}, child={item.child!r})"
+            if (item.key is not None and not item.key.strip()) or (item.child is not None and not item.child.strip()):
+                yield error("E280", scope, "supplied destination names and keys must be nonempty")
+                continue
+            if item.key is None and item.child is None:
+                yield error("E280", scope, "select an owner key or direct child name")
+                continue
+            seen, value = (owner_keys, item.key) if item.child is None else (children, item.child)
+            if value in seen:
+                yield error("E283", scope, "repeated owner key or child ViewSet")
+            seen.add(value)
+            valid_items.append((scope, item))
+
+        # Local declaration checks remain useful during a failed/in-progress import.
+        # Never retry that import while the caller is iterating live view registries.
+        if not _url_configuration_loaded(load=False):
+            return
+        try:
+            owner = ViewSet.get_viewset(bar.viewset)
+        except ViewSetNotFoundError:
+            yield error("E282", "bar", "unknown owner ViewSet")
+            return
+        try:
+            _section(cls.cv_viewset, bar.viewset)
+        except ImproperlyConfigured as exc:
+            yield error("E281", "bar", str(exc))
+        for scope, item in valid_items:
+            try:
+                _destination(owner, item)
+            except ViewSetNotFoundError:
+                yield error("E282", scope, "unknown child ViewSet")
+            except ImproperlyConfigured as exc:
+                yield error("E282", scope, str(exc))
+
+
 class CrudViewNavBarMixin:
     """Attach a declaration per view; build it only when a template consumes it."""
 
     cv_navbar: NavBar | None = None
+
+    @classmethod
+    def checks(cls):
+        yield from super().checks()
+        if cls.cv_navbar is not None:
+            yield _CheckNavBar(context=cls)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.40"
 current_phase_name: "Object navbar: opt-in section navigation (#381)"
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 06.40-01-PLAN.md
-last_updated: "2026-11-18T16:47:35.382Z"
+stopped_at: Completed 06.40-02-PLAN.md
+last_updated: "2026-11-18T16:57:23.974Z"
 last_activity: 2026-11-18
-last_activity_desc: Completed plan 06.40-01; seven plans remain
-state_head: 6b212b5cea4b40448725ccbfd43bb34d34421dbf
+last_activity_desc: Completed plan 06.40-02; six plans remain
+state_head: f56dc55c20b041f6b746da21cc93b477465e62e8
 progress:
   total_phases: 46
   completed_phases: 44
   total_plans: 254
-  completed_plans: 247
+  completed_plans: 248
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-18)
 ## Current Position
 
 Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — IN PROGRESS
-Current Plan: 2
+Current Plan: 3
 Total Plans in Phase: 8
 Status: Ready to execute
-Last activity: 2026-11-18 -- Completed plan 06.40-01; seven plans remain
+Last activity: 2026-11-18 -- Completed plan 06.40-02; six plans remain
 
 Next: $gsd-execute-phase 06.40
+
+### Phase 06.40 plan 02 execution — 2026-11-18
+
+- Both tasks complete; five task commits through 207f7e8f and summary f56dc55c. Guarded wrapper/identity/items templates support global, per-bar and split placement with one lazy request result. No extra cache or navbar builder change was needed.
+- Template suite: 70 passed. Template plus i18n: 89 passed on each installed Django 4.2.30/5.2.19/6.0.10. Affected navbar/template/icon/modal regressions: 651 passed; four workers, Python 3.12.3, scoped Ruff and whitespace checks passed.
+- German landmark source/compiled catalogs, parsed plain-text escaping, decorative icons, zero/one/many/partial states, copied context paths and actual custom modal responses have passing evidence. Browser wrapping/focus/zoom remains plan 08.
+- ROADMAP records 2/8 plans executed, complete=false; Current Plan advanced to 3 and global completed-plan count is 248/254. SDK's existing unscoped progress limitation was retained explicitly; stale state.json restored unchanged. No phase completion or ship is claimed.
 
 ### Phase 06.40 plan 01 execution — 2026-11-18
 
@@ -1532,6 +1539,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.37 P03 | 8min | 2 tasks | 3 files |
 | Phase 06.37 P04 | 15min | 2 tasks | 1 files |
 | Phase 06.40 P01 | 12min | 3 tasks | 9 files |
+| Phase 06.40 P02 | 7min | 2 tasks | 9 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1855,6 +1863,8 @@ Recent decisions affecting current work:
 - [Phase 06.40]: Keep declaration references as strings and all request resolution private to navbar.py.
 - [Phase 06.40]: Normalize rendered default labels once; raw labels and captions retain literal entities and lose HTML trust.
 - [Phase 06.40]: Complete URLconf before registry iteration and use cached-only readiness probes inside navbar checks.
+- [Phase 06.40]: Retain the proven lazy builder unchanged; copied template contexts preserve one request-local result.
+- [Phase 06.40]: Items own the translated nav landmark; wrapper composes guarded identity and items leaves using relative includes.
 
 ### Pending Todos
 
@@ -1948,6 +1958,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T16:46:46.104Z
-Stopped at: Completed 06.40-01-PLAN.md
+Last session: 2026-11-18T16:57:17.749Z
+Stopped at: Completed 06.40-02-PLAN.md
 Resume file: None

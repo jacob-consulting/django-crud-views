@@ -86,6 +86,7 @@ customer_navbar = NavBar(
 
 class NavbarMixin(CrudViewNavBarMixin):
     cv_navbar = customer_navbar
+    cv_extends_template = "navbar_demo/crud_base.html"
 
 
 class CustomerForm(CrispyModelForm):

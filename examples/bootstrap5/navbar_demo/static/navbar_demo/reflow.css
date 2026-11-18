@@ -1,0 +1,9 @@
+/* Only this demonstration opts into wrapping its existing header and source labels. */
+.cv-navbar + .card > .card-header > .d-flex {
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+#snippet-panels .accordion-button[data-bs-target^="#snippet-navbar_demo-"] {
+    overflow-wrap: anywhere;
+}

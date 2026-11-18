@@ -1,8 +1,9 @@
 {% extends "project/base.html" %}
 
-{% load crud_views example_tags i18n %}
+{% load crud_views example_tags i18n static %}
 
 {% block content %}
+    <link rel="stylesheet" href="{% static 'navbar_demo/reflow.css' %}">
 
     {% example_about %}
 

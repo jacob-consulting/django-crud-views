@@ -88,7 +88,7 @@ Carry the approved decisions below into planning without reopening them absent a
 proposals in the following section distinct from decisions made by the maintainer. The prose and acceptance
 criteria are part of the handover, not just this decision index. Decisions marked *(proposed by the assistant,
 approved)* were put to the maintainer as proposals and approved on 2026-11-17; the others are the maintainer's
-own statements. The maintainer updated D-04 through D-06 and D-12 on 2026-11-18.
+own statements. The maintainer updated D-04 through D-06, D-09 and D-12 on 2026-11-18.
 
 ### D-01 — Purpose, and what this supersedes
 
@@ -107,17 +107,21 @@ the same page as a navbar. Whether a page drops its child buttons once it has a 
 
 A bar is a declared `NavBar` instance. A view gets it through a class attribute, `cv_navbar = customer_navbar`,
 which "follows the attachment of views to viewsets" (`cv_viewset = ...`). Attachment is per view: each
-participating view names its bar explicitly.
+participating view chooses its bar. In the example above, `CustomerNav` pairs the declaration with
+`CrudViewNavBarMixin`. Each view that should display the Customer bar inherits `CustomerNav`.
 
 ### D-04 — What an item is
 
-An item is one of:
+Every item selects a registered view that accepts GET. The destination determines how the URL uses the owner's PK.
 
-- a view of the owner ViewSet, by key (`NavItem(key="detail")`). More than one is allowed, for example a second
-  detail view `detail2`;
-- one collection per direct child ViewSet. `child` selects the ViewSet and `key` selects its list or card view.
-  The default key is `list`, with the usual fallback to `card` on a card-only ViewSet.
-  A custom key must match the registered collection view exactly.
+- An owner item selects an object view (`cv_object=True`) by its key on the owner ViewSet.
+  The owner's PK identifies the object to open. A bar may include several such items, for example
+  `NavItem(key="detail")`, a second detail view with key `detail2`, and `NavItem(key="update")`.
+- A bar may include one item per direct child ViewSet. Its destination needs no child object
+  (`cv_object=False`). The link uses the owner's PK as the parent PK.
+  For example, `NavItem(child="order", key="create")` opens the new order form for this Customer.
+  A custom no-object page such as an order summary works by the same rule. An explicit key selects that
+  exact view. Omitting the key selects `list`, falling back to `card` if `list` is unregistered.
 
 ```python
 items=[
@@ -145,16 +149,18 @@ the caption and the owner PK for the links. An item's key selects its destinatio
 
 Attach the shared mixin to each owner object view or descendant view that should display the bar. An
 intermediate view can omit the mixin. Each participating view displays one bar. Its items target
-the owner's own views and direct child collections.
+the owner's own views and pages on its direct child ViewSets as described in D-04.
 
 For example, attach `CustomerNav` to an Item edit view under Acme Coffee. With the declaration in D-04,
 the caption reads “Acme Coffee”, Orders is active, and its link opens Acme’s `open_orders` collection.
 The Details and Addresses links also point to Acme. Omitting the mixin on the Item view omits the bar.
 
-The owner itself may be nested (tenant → customer → orders, with the bar on customer). The parent gate of D-09
-consults only the immediate parent, so an item can still lead to a request denied at a higher ancestor. This
-is the limitation every child link in the library already has (`_immediate_parent_access` documents it); the
-reference documentation states it for the bar. *(Proposed by the assistant, approved after the design review.)*
+The owner itself may be nested. On a Customer page under Tenant XYZ, the current view has already enforced
+its configured ancestor permissions. The navbar carries XYZ's PK into its links. For an Orders item, the
+child-link hook checks access to the destination and its immediate parent, Customer. Rendering the item
+adds no permission check on Tenant. Following the link starts a new request with the destination's own
+ancestor policy. If that policy requires a stronger Tenant permission, the destination can return 403.
+*(Approved 2026-11-18.)*
 
 ### D-07 — Layout B: identity row above the items
 
@@ -172,6 +178,8 @@ location."
 - **Template:** layout B ships as three templates — a wrapper that includes an identity partial and an items
   partial. A project may override any of them, include the two partials at different places in its base
   template, or give one bar its own template (`NavBar(template=...)`).
+- The tag and both partials share one result per request. The first template that uses the navbar builds it.
+  *(Approved 2026-11-18.)*
 - **Only B ships.** No second built-in layout and no setting to choose between layouts. Layout A (label and
   items in one row) is the worked example in the documentation for overriding the template.
 
@@ -199,17 +207,16 @@ tags/navbar_items.html      the items, active one marked
 
 ### D-09 — Access
 
-An item the user cannot open is hidden, not disabled. An accessible section with no records still shows. The
-bar is never an authorization boundary: every destination keeps its own check, which stays authoritative. The
-bar's answer for an item must agree with the destination's answer for that user and object; #363 found a real
-case where the sibling-button check did not. *(Carried over from #363 D-12/D-13, approved.)*
+Hide an item when its permission checks fail. If they pass, ask the target view whether it is enabled for
+the navbar's owner object. Hide the item if the answer is false. On a Customer navbar, both Financials
+(an owner view) and Orders (a child collection) receive the same Customer. An accessible Orders collection
+still shows when it has zero rows. The destination enforces access on each request, including any
+project-specific queryset restrictions. *(State check approved 2026-11-18.)*
 
-For child items the bar calls `target._cv_child_link_has_access(user, owner)` **once**, as `ChildContextButton`
-and child `CardAction` do. The locally implemented and tested #380 fix supplies own access plus the destination's
-immediate-parent policy and preserves shipped Guardian behavior without a duplicate parent check. Do not add
-a separate `_immediate_parent_access` call. Rendering uses only the supplied owner; farther ancestors can still
-deny a full destination request. Owner-item access, owner/active-section selection and the open action-state
-decision remain in this navbar issue. *(Approved #380 handoff applied 2026-11-18; no merge or release claim.)*
+For each child item, the bar calls `target._cv_child_link_has_access(user, owner)` once, as
+`ChildContextButton` and child `CardAction` do. With #380, the hook checks the child's access and applies
+the destination's immediate-parent policy for both plain and shipped Guardian collections. Farther ancestors
+can still deny the destination request. *(Approved 2026-11-18.)*
 
 ### D-10 — Links, modals, narrow screens
 
@@ -221,8 +228,8 @@ horizontally scrolling strip. *(Carried over from #363 D-07/D-09/D-11, approved.
 
 - A child item takes the child ViewSet's plural name and header icon. An owner item takes that view's short
   action label. Both can be set per item (`label=`, `icon=`).
-- The identity row shows `str(object)` and the owner ViewSet's header icon and links to the first item.
-  Anything richer (the draft's avatar) is a project override of the identity partial.
+- The default identity row shows the owner ViewSet's header icon beside `str(object)` as plain text.
+  A project can override `tags/navbar_identity.html` to link the caption or add an avatar.
 - If no item is accessible, nothing renders, identity included.
 
 *(Proposed by the assistant, approved.)*
@@ -230,12 +237,12 @@ horizontally scrolling strip. *(Carried over from #363 D-07/D-09/D-11, approved.
 ### D-12 — Active item
 
 On a descendant page, highlight the item for the owner's direct child on the path to the page.
-Orders stays active and clickable on Order and Item pages, including when its link opens a custom list.
+Orders stays active and clickable on Order and Item pages, whichever destination the item opens.
 If that section has no visible item, the bar has no active item.
 
-On a view of the owner ViewSet, the item with that view's key is active. An owner view that
-carries the bar but is not an item (for example `update`) shows the bar with no item active. An owner view
-without an object (list, create) cannot carry the bar; a startup check reports it.
+On a view of the owner ViewSet, the visible item with that view's key is active. For example, on the
+Customer update page, Update is active if the bar includes that item. If the key is absent, no item is active.
+An owner view without an object (list, create) cannot carry the bar; a startup check reports it.
 *(Proposed by the assistant, approved.)*
 
 ### D-13 — Built as an opt-in mixin
@@ -244,6 +251,9 @@ Alternative 1 above. The feature must be traceable in one module, must not chang
 views without the mixin, and must add no queries to pages without a bar. The project-wide maintainability rule
 in `CLAUDE.md` applies: if planning finds the design growing beyond what the maintainer can explain and own,
 narrow the scope and say so rather than adding machinery.
+
+Navbar-specific startup checks run on views that inherit the mixin and have a configured bar.
+Defer a dedicated check for a forgotten mixin until downstream use demonstrates a need. *(Approved 2026-11-18.)*
 
 ### D-14 — Not in this issue
 
@@ -264,7 +274,7 @@ alter a D-decision goes back to the maintainer.
 - New module `crud_views/lib/navbar.py` holding `NavBar`, `NavItem`, `CrudViewNavBarMixin` and the checks.
 - `NavBar(viewset: str, items: list[NavItem], template: str | None = None)`.
 - `NavItem(key: str | None = None, child: str | None = None, label=None, icon=None)`. An owner item
-  requires a key. A child item uses the collection key and default described in D-04.
+  requires a key. A child item uses the destination key and default described in D-04.
 - Pydantic models, as `ContextButton` and `BreadcrumbItem` are. Names are strings so a bar can be declared
   before the child ViewSets exist.
 - `CrudViewNavBarMixin.cv_navbar: NavBar | None = None`. A mixin with `None` is a no-op, so a project base
@@ -272,14 +282,15 @@ alter a D-decision goes back to the maintainer.
 
 ### A-02 — Resolution and template context
 
-- The mixin adds `cv_navbar` to the template context from `get_context_data`, as the breadcrumb mixin adds
-  `cv_breadcrumb`. Resolve lazily and at most once per request, so a page that never renders the tag, and a
-  modal partial (`cv_is_modal_request`), pay nothing.
-- Resolve the owner as in D-05. On a direct child, `cv_get_parent_object()` reuses the parent the guard
-  resolved. On deeper pages use the named owner's entry in the request's resolved ancestry where available.
-  Measure the query cost on both Order and Item pages.
-- Resolved shape handed to the templates: the object, its label, icon and URL, and a list of items each with
-  label, icon, URL and an `active` flag. Templates receive data, not view classes.
+- For a participating full-page view, the mixin keeps one Django `SimpleLazyObject` on the view instance
+  and exposes it as `cv_navbar` in the template context. Pass the navbar builder as the callable.
+  The first access builds the data, and later accesses reuse it. For a modal request (`cv_is_modal_request`),
+  expose `None` so even a template that includes a navbar partial skips the builder.
+- On an owner page use `self.object`. On a descendant page use `_resolved_ancestor(view, owner_name)`
+  from `crud_views/lib/ancestors.py`. It returns the owner object already loaded for this request.
+  Verify that retrieving the Customer on Order and Item pages adds no database query.
+- Templates receive the owner object, its label and its icon. Each visible item has a label, icon, URL and
+  an `active` flag.
 - URLs: the existing helpers are bound to the rendering view's own ViewSet (`cv_get_router_and_args`) or only
   work from a parent page (`cv_get_child_url` raises `ParentViewSetError` from a child page). The bar is
   rendered at multiple depths, so it reverses the router names itself from the owner object's pk, as
@@ -289,40 +300,27 @@ alter a D-decision goes back to the maintainer.
 ### A-03 — Access calls
 
 - Owner item: `target_view_class.cv_has_access(user, object)`.
-- Child item (D-09): `target._cv_child_link_has_access(user, owner)` once. Here `target` is the destination
-  class and `owner` the resolved owner object. #380 owns the own-access/immediate-parent combination and the
-  Guardian collection/create once-only behavior. Do not call the parent helper separately or accept a repeat;
-  measure the resulting permission calls and cache-dependent SQL for the navbar's own render path.
+- For a child item, call `target_view_class._cv_child_link_has_access(user, owner)` once (D-09).
 - The hook propagates `ImproperlyConfigured` for reached parent-policy misconfigurations: missing required
   permission keys, missing operation requirements or authorization records routed away from `default`.
   Document failures during bar rendering, as the child-link references do.
-- No new permission rules: consume the existing destination hook. Pin the #363 case with a test on
-  a plain `ViewSet` child: a user with `change` on the owner and `view` on the child model but without `view`
-  on the owner sees no item for the child list, which answers 403. For every item shown in the test matrix
-  with a top-level owner, the destination answers 200.
 - With a nested owner, URL arguments above the owner come from the rendering view's URL kwargs, as
   `SiblingContextButton` takes them.
-- `cv_action_enabled` (the state gate context buttons also consult) is not consulted for nav items in this
-  proposal; see the open review points.
+- For both item types, once permissions pass, call `target._cv_action_enabled_for_rendering(user, owner, view)`
+  once with the resolved navbar owner and the rendering view. This is the helper context buttons already use (D-09).
 
 ### A-04 — Startup checks
 
-Report, with the existing check infrastructure and ids allocated by the planner:
+Use the mixin's `checks()` method to validate each participating view's configured bar. Report the following
+configuration errors through the existing check infrastructure.
 
 - an unknown owner, unknown child or child outside the owner's direct children;
-- a key that fails to resolve on its target ViewSet, an owner target without an object, or a child target
-  that is not a collection view;
-- repeated owner keys or repeated child ViewSets, including different collection keys for the same child;
+- a key that fails to resolve on its target ViewSet;
+- a destination that cannot handle GET (the resolved class must allow `"get"` in `http_method_names`
+  and have a callable `get` handler);
+- an owner target with `cv_object=False` or a child target with `cv_object=True`;
+- repeated owner keys or repeated child ViewSets, including different destination keys for the same child;
 - attachment to an owner page without an object or a ViewSet outside the owner's descendant tree.
-
-`cv_navbar` set on a view without the mixin needs its own report. The unknown-attribute warning
-(`viewset.W280`) does not cover it: W280 accepts a name once any registered view's MRO declares it
-(`lib/check.py`, `_registry_vocabulary`), so as soon as one view uses the mixin, a second view that sets
-`cv_navbar` without it gets no warning and silently shows no bar. Because that view does not have the mixin,
-the check cannot come from the mixin's `checks()`. Add one registry-wide Django system check, owned by the
-navbar module and registered alongside the existing ones in `crud_views/checks.py`, that reports any
-registered view with a non-`None` `cv_navbar` that is not a `CrudViewNavBarMixin` subclass. `base.py` stays
-untouched. *(Assistant's call after the design review.)*
 
 ### A-05 — Templates and theme surface
 
@@ -351,30 +349,40 @@ untouched. *(Assistant's call after the design review.)*
 
 ### A-07 — Cost
 
-Pages without the mixin: nothing. Pages with a bar: one access check per item per render, using checks the
-links already use; Guardian checks may query. State the measured query counts in the reference documentation.
+Rendering the bar runs the permission checks for each item and one state check for each item that passes.
+The default state hook needs no query. Guardian checks and custom hooks may query. State the measured query
+counts in the reference documentation.
 No cross-request caching.
 
 ## Acceptance criteria
 
 1. A project declares one `NavBar`, attaches it through a mixin to the owner's detail view and to
    selected descendant views, places `{% cv_navbar %}` in its base template, and gets the identity row and items on
-   every participating page with no further project code.
+   every participating page with no further project code. The default identity row renders the caption
+   as plain text even when the first declared item is hidden.
 2. The active item follows D-12 on list, detail, create, update and custom views of a child ViewSet, on each
    owner item view, and on an owner view that is not an item. On an Item edit page under an Order, verify
    the Customer caption and the same section links as on Customer detail for a user with access to them.
-   Orders is active and opens the configured Order collection even when the intermediate view omits the mixin.
-3. Every link keeps the same owner object. Items the user cannot open are absent; for every item shown under a
-   top-level owner, the destination answers 200 for that user, for plain and Guardian child ViewSets. The #363
-   case is pinned on a plain child ViewSet. A bar with no accessible item renders nothing. The
-   immediate-parent limitation for nested owners is documented.
-4. The bar does not appear in modal responses.
+   Orders is active and opens the configured Order page even when the intermediate view omits the mixin.
+   Verify that a configured owner Update item opens the Customer's edit form and is active there.
+   Verify that explicit child keys for Create and a custom no-object page open with the Customer's PK.
+   With Customer nested under Tenant, verify that both owner and child links retain the Tenant PK from the URL.
+3. Every link keeps the same owner object. In one navbar integration test, render a child item with its state
+   enabled. For each permission outcome, verify the destination's child-link hook receives the user and resolved
+   owner once. Denial hides the item and skips the state check. When permission passes, the enabled item appears.
+   A permission-required owner detail view whose state hook denies access is hidden and its
+   GET returns 403. A child collection whose hook denies access for that owner is also hidden. An accessible
+   empty collection is visible and its GET returns 200, for both plain and Guardian child ViewSets. A bar with
+   no visible items renders nothing. Document the immediate-parent limitation for nested owners.
+4. On a participating view, a template that omits the navbar makes zero navbar builder and permission calls.
+   A modal response also makes zero such calls and renders no navbar.
 5. Views without the mixin render byte-for-byte as before and run no additional queries; `base.py` behaviour is
    unchanged. Context buttons behave as before, alone and alongside a bar.
 6. Misconfigurations listed in A-04 are reported at startup with messages that name the bar, the item and the
-   view.
+   view. Include a registered POST-only owner action.
 7. A project can override the look globally, place identity and items separately, and give one bar its own
-   template, each demonstrated by a test or the example.
+   template, each demonstrated by a test or the example. Rendering the identity and items partials in
+   separate places on one page invokes the navbar builder exactly once.
 8. Items wrap on a narrow viewport without horizontal page scroll (checked in the example app).
 9. Reference documentation and a working example exist as in A-06; the full test matrix passes.
 
@@ -399,55 +407,35 @@ No cross-request caching.
 1. **Timing.** This issue schedules nothing. The 2026-11-02 navigation decisions placed a navigation feature
    after 1.0 as a provisional surface; they concern the global application menu, not this bar. Whether the
    object navbar ships before 1.0, and in which stability tier, is the maintainer's call at scheduling time.
-2. **`cv_action_enabled`.** Context buttons distinguish "no permission" from "not applicable to this object
-   now". A-03 ignores the second for nav items, because collection destinations are always applicable and an
-   owner detail view rarely is not. Confirm, or decide that a not-applicable owner item is hidden.
-3. **Access integration.** #380 now has permanent Book/Publisher regression, Guardian preservation and
-   permission/SQL cost tests in `test_guardian_child_link_visibility.py`. Its original plain-link mismatch
-   is fixed locally. The navbar planner must exercise its own once-only consumer path and owner lookup;
-   the hook's tests do not constitute a navbar implementation or verification.
-4. **Owner lookup.** Verify how the #336 guard exposes the resolved owner on a grandchild request before
-   choosing the implementation for D-05.
 
 ## Weaknesses
 
-These proposals are open for maintainer review. D-04 through D-06 and D-12 record the approved rules for
-collection keys, descendant pages and the active section.
+D-04 through D-06 and D-12 record the approved rules for destinations, descendant pages and the active section.
 
-1. **A visible link can still lead to a 403.** A-03 checks permission but omits `cv_action_enabled`.
-   A permission-required destination can deny a GET when that hook returns false. Custom views can also
-   restrict their querysets. Describe which built-in checks the navbar honors and hide a destination when
-   its state check denies access. Test a state-disabled detail page and an accessible empty collection.
-   Limit the promise of a successful GET to the supported cases covered by those tests.
+1. **State-disabled destinations (resolved 2026-11-18).** D-09 and A-03 reuse the destination's existing state
+   check after permission passes. Acceptance criterion 3 covers a disabled detail page and an accessible empty collection.
    [Existing state-gate tests](../../tests/test1/test_action_enabled.py)
 
-2. **Preserve the once-only handoff.** #380 supplies the bounded parent gate through the child-link hook for
-   plain targets and preserves one gate for shipped Guardian paths. A-03 consumes that hook once. Keep a
-   navbar regression proving someone who may change Customer and view Order but lacks required Customer
-   view permission sees no Orders link, and measure an allowed link's calls and SQL without a second gate.
+2. **Duplicate parent permission check (resolved by #380, 2026-11-18).** The navbar uses the child-link hook
+   in D-09. The #380 tests cover the Publisher/Book denial, Guardian behavior and permission query costs.
+   Acceptance criterion 3 covers the navbar's use of the hook.
    [Guardian child-link tests](../../tests/test1/test_guardian_child_link_visibility.py)
 
-3. **An object key can name a POST-only action.** A-04 accepts an owner target with `cv_object=True`,
-   which also describes `ActionView`. Following its link sends a GET. Narrow owner destinations to detail
-   pages, including custom detail keys such as Financials, and report an invalid target at startup. Child
-   destinations already have a clear boundary in D-04: a list or card view selected by its collection key.
+3. **POST-only destinations (resolved 2026-11-18).** D-04 requires every destination to accept GET.
+   An owner Update view qualifies because GET opens its form for the owner. A POST-only action fails
+   the startup check in A-04.
    [ActionView](../../src/crud_views/lib/views/action.py)
 
-4. **A deep page and a nested owner pose different problems.** On Customer → Order → Item, looking up only
-   the immediate parent gives the caption for Order. Use the request’s resolved Customer and test with
-   distinct PKs for all three objects. A Customer bar under Tenant adds a separate concern: a link can pass
-   the immediate-parent check and still be denied at Tenant. The earlier proposal to start with top-level
-   owners would simplify this case and still allow Item pages. Adopting it would require revisiting D-06.
+4. **Deep pages and nested owners (resolved 2026-11-18).** On an Item page, the Customer bar reuses the
+   Customer resolved by the current request. When Customer belongs to a Tenant, links retain that Tenant's
+   PK. Each destination enforces its own ancestor policy as described in D-06.
 
-5. **The breadcrumb precedent builds data eagerly.** Its `get_context_data()` calls the builder even when
-   the template omits the tag. Give the navbar one lazy accessor shared by the tag and both partials.
-   Verify that omitting the bar skips its permission work and that rendering both partials builds it once.
-   [Breadcrumb mixin](../../src/crud_views/lib/breadcrumb.py)
+5. **Lazy navbar rendering (resolved 2026-11-18).** D-08 and A-02 specify one request-local result shared
+   by the tag and both partials. Acceptance criteria 4 and 7 cover omitted bars, modals and split placement.
+   [Existing use of SimpleLazyObject for template data](../../src/crud_views/lib/views/manage.py)
 
-6. **A missing mixin introduces a package-wide check.** A-04 scans every registered view to find a
-   `cv_navbar` declaration without the mixin. Keep target and relationship checks on participating views.
-   Document the attachment example and defer the global scan until a downstream project encounters this mistake.
+6. **Missing mixin (resolved 2026-11-18).** Setting `cv_navbar` alone can leave the bar absent without a
+   warning. D-03 shows how to pair the declaration and mixin. D-13 limits navbar checks to participating views.
 
-7. **The caption's destination depends on item order and visibility.** Under D-11, “Acme Coffee” could
-   open Orders when Details is hidden. Make the caption plain text by default and let the section links
-   handle navigation. This would revise D-11 and still allow an app to link the caption in its identity partial.
+7. **Caption link (resolved 2026-11-18).** D-11 makes the caption plain text by default. Section links
+   provide navigation. A project can link the caption in its identity partial.

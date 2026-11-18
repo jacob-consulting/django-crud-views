@@ -2125,7 +2125,7 @@ Carry the approved D-01–D-16 decisions and acceptance criteria into execution;
 **Ordering:** Follows the child-link permission fix in 06.39; settle the navbar's stability tier and theme surface before Phase 7 freezes them.
 **Requirements**: None assigned; approved D-01–D-16 and AC1–AC9 are mapped in 06.40-COVERAGE.md.
 **Depends on:** Phase 06.39
-**Plans:** 4/8 plans executed
+**Plans:** 5/8 plans executed
 
 Planning converged in four external review cycles; no unresolved HIGH/actionable findings or decision conflicts.
 
@@ -2141,7 +2141,7 @@ Plans:
 - [x] 06.40-04-PLAN.md
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 06.40-05-PLAN.md
+- [x] 06.40-05-PLAN.md
 
 **Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 06.40-06-PLAN.md
@@ -2278,5 +2278,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 06.33. Structured manage page (#366) | 10/10 | Awaiting verification | - |
 | 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
-| 06.40. Object navbar: opt-in section navigation (#381) | 4/8 | In Progress | - |
+| 06.40. Object navbar: opt-in section navigation (#381) | 5/8 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.40"
 current_phase_name: "Object navbar: opt-in section navigation (#381)"
-current_plan: 5
+current_plan: 6
 status: executing
-stopped_at: Completed 06.40-04-PLAN.md
-last_updated: "2026-11-18T17:16:07.768Z"
+stopped_at: Completed 06.40-05-PLAN.md
+last_updated: "2026-11-18T17:30:26.410Z"
 last_activity: 2026-11-18
-last_activity_desc: Completed plan 06.40-04; four plans remain
-state_head: 2907824aa3731bc74ef3e5b204ecd37868feec81
+last_activity_desc: Completed plan 06.40-05; three plans remain
+state_head: e7c784982b20e142e71ec32f861bb645101250fe
 progress:
   total_phases: 46
   completed_phases: 44
   total_plans: 254
-  completed_plans: 250
+  completed_plans: 251
 milestone_name: milestone
 ---
 
@@ -32,12 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-18)
 ## Current Position
 
 Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — IN PROGRESS
-Current Plan: 5
+Current Plan: 6
 Total Plans in Phase: 8
 Status: Ready to execute
-Last activity: 2026-11-18 -- Completed plan 06.40-04; four plans remain
+Last activity: 2026-11-18 -- Completed plan 06.40-05; three plans remain
 
 Next: $gsd-execute-phase 06.40
+
+### Phase 06.40 plan 05 execution — 2026-11-18
+
+- All three tasks complete, six RED/GREEN commits through 44ed9788; summary e7c78498 committed before progress. Independent Order/Item/Address CRUD, four Customer sections, bounded Alice/Bob/Charlie seeds, filtered introduction and index/navbar placement delivered.
+- Final prescribed supported Nox suite: 114 passed and 53 subtests passed, Python 3.12.3/Django 5.2.19, four workers. Task suites 37 then 44 passed; earlier shared seed/login/i18n 70 passed and 67 subtests. Migration drift, scoped Ruff/format/whitespace and complete nonparticipant response/header parity pass.
+- Extra broad suite: 591 passed, 250 subtests passed, one failure in test_every_feature_declares_doc_refs because the actual navbar reference/DocRef belongs to plan06. DocRefsPanelTest is intentionally excluded by plan05. Committed deferred-items.md retains this dependency; plan06 must close it with full shared/doc-link verification. No assertion weakened or fake reference added; WINDOWS append still rejects the pre-existing table/JSON mismatch.
+- ROADMAP records 5/8 plans executed, complete=false; Current Plan advanced to6 and global completion to251/254. Existing unscoped progress limitation retained; stale state.json restored byte-identically. Documentation, companion and browser/matrix work remain later plans; no phase completion or ship claimed.
 
 ### Phase 06.40 plan 04 execution — 2026-11-18
 
@@ -1556,6 +1563,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.40 P02 | 7min | 2 tasks | 9 files |
 | Phase 06.40 P03 | 8min | 2 tasks | 4 files |
 | Phase 06.40 P04 | 7min | 2 tasks | 11 files |
+| Phase 06.40 P05 | 10min | 3 tasks | 16 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1884,6 +1892,10 @@ Recent decisions affecting current work:
 - [Phase 06.40]: Preserve the already-correct navbar builder and permission/ancestor/button code; plan03 adds regression proof only.
 - [Phase 06.40]: Measure navbar costs after request loading; warm actor means Django model permissions, without a persistent Guardian checker.
 - [Phase 06.40]: Independent navbar example keeps forms/tables in views.py and explicitly maps navbar_tenant to tenant; strict Tenant object grants cascade to model-permission Customer CRUD.
+- [Phase 06.40]: Plan05 keeps explicit cascading on nested ViewSets and strict Guardian object grants only on Tenant.
+- [Phase 06.40]: Plan05 introduction choices use GuardianViewSet.get_objects_for_user and Customer view permission without username gates.
+- [Phase 06.40]: Plan05 preserves shared translated notices and developer grants; its introduction exposes all three usable credentials.
+- [Phase 06.40]: Plan06 owns real documentation references; plan05 records the broad documentation failure as an open dependency.
 
 ### Pending Todos
 
@@ -1977,6 +1989,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T17:16:01.514Z
-Stopped at: Completed 06.40-04-PLAN.md
+Last session: 2026-11-18T17:29:45.346Z
+Stopped at: Completed 06.40-05-PLAN.md
 Resume file: None

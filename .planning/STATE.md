@@ -1,25 +1,24 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.39"
+current_phase_name: Immediate-parent permission checks for child links
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.37 complete, ready to plan Phase 7
-last_updated: "2026-11-17T09:50:13.950Z"
+stopped_at: Ready to plan Phase 06.39
+last_updated: "2026-11-18T10:23:23.543Z"
 last_activity: 2026-11-17
 last_activity_desc: "Phase 06.37 shipped as PR #379"
-state_head: 8ec15bc8c96226b4ea8c1653e96bd31624fdc6ae
+state_head: eb197cd9aaa3cc6130eebe7bf79428433940c884
 progress:
-  total_phases: 44
+  total_phases: 45
   completed_phases: 42
   total_plans: 244
   completed_plans: 244
-  percent: 95
 milestone_name: milestone
 ---
 
-Total Phases: 43
+Total Phases: 45
 
 # Project State
 
@@ -28,17 +27,17 @@ Total Phases: 43
 See: .planning/PROJECT.md (updated 2026-11-16)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.39 — Immediate-parent permission checks for child links (#380)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.39 — Immediate-parent permission checks for child links (#380)
 Current Plan: Not started
-Total Plans in Phase: 4
+Total Plans in Phase: 0
 Status: Ready to plan
 Last activity: 2026-11-17 -- Phase 06.37 shipped as PR #379
 
-Next: $gsd-discuss-phase 7 (Phase 7 needs a spec or maintainer decision before planning).
+Next: $gsd-plan-phase 06.39
 
 ### Phase 06.37 completion — 2026-11-16
 
@@ -1883,6 +1882,7 @@ None yet.
 - Phase 06.35 inserted after Phase 06.34: Approved issue #372; corrected from initial 06.25.2 at maintainer request; D-01–D-07 context captured
 - Phase 06.36 inserted after Phase 06.35: ViewSet configuration CLI and versioned JSON contract (#371); approved D-01–D-09, A-01–A-04 and acceptance items 1–10; builds on completed #372 before Phase 7 (URGENT)
 - Phase 06.37 inserted after Phase 06.36: cv_access Pydantic JSON contract validation and schema (#375) (URGENT)
+- Phase 06.39 inserted after Phase 06.37: Immediate-parent permission checks for child links (#380), ahead of the object navbar (#381) (URGENT)
 
 ## Deferred Items
 
@@ -1893,5 +1893,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-16T21:05:00Z
-Stopped at: Phase 06.37 complete, ready to plan Phase 7
+Stopped at: Ready to plan Phase 06.39
 Resume file: None

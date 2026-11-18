@@ -7,7 +7,8 @@ import pytest
 from django.contrib.auth.models import AnonymousUser
 from django.template import Context, Template, TemplateDoesNotExist
 from django.template.loader import get_template
-from django.test import RequestFactory, override_settings
+from django.test import Client, RequestFactory, override_settings
+from django.urls import reverse
 from django.utils.functional import SimpleLazyObject
 from django.utils.safestring import mark_safe
 from django.utils.translation import override
@@ -22,6 +23,7 @@ from tests.test1.test_navbar import (
     owner_routes,
     section_objects,
     section_routes,
+    section_url,
 )
 
 TEMPLATES = ["navbar", "navbar_identity", "navbar_items"]
@@ -334,3 +336,41 @@ def test_configuration_errors_propagate_without_retry_or_placeholder(name):
         _, data = view_context(ns)
         with pytest.raises(ImproperlyConfigured, match="unregistered destination"):
             render('{% include "crud_views/tags/' + name + '.html" %}', data)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("modal", [False, True])
+def test_real_response_omits_all_navbar_work_without_consumers_or_in_custom_modal(modal, monkeypatch):
+    forbidden = Mock(side_effect=AssertionError("Navbar work in omitted/modal response"))
+    monkeypatch.setattr(navbar, "_build", forbidden)
+    obj = Publisher.objects.create(name="Owner")
+    with navbar_routes(owner_routes) as ns:
+        ns.view.cv_modal = modal
+        ns.view.cv_extends_template = "navbar/without.html"
+        monkeypatch.setattr(ns.view, "cv_has_access", forbidden)
+        monkeypatch.setattr(ns.view, "_cv_action_enabled_for_rendering", forbidden)
+        custom_modal = "".join('{% include "crud_views/tags/' + name + '.html" %}' for name in TEMPLATES)
+        with navbar_templates({"crud_views/modal/content.html": custom_modal}):
+            url = reverse(ns.owner.get_router_name("detail"), kwargs={ns.owner.pk_name: obj.pk})
+            response = Client().get(url, HTTP_X_CV_MODAL="true" if modal else "false")
+        assert response.status_code == 200
+        if modal:
+            assert response.content == b""
+            assert response.context["cv_navbar"] is None
+        else:
+            assert b"Unchanged page header" in response.content
+        forbidden.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_descendant_current_section_is_still_a_clickable_collection_link():
+    with navbar_routes(section_routes) as ns:
+        owner, child, grand = section_objects(ns)
+        response = Client().get(section_url(ns, ns.grand, "update", owner, child, grand))
+        tree = html.fromstring(response.content)
+        nav = tree.xpath('.//nav[@aria-label="Sections for Customer"]')[0]
+        current = nav.xpath('.//a[@aria-current="true"]')
+        assert len(current) == 1
+        assert current[0].text_content().strip() == "Orders"
+        assert current[0].get("href") == section_url(ns, ns.child, "list", owner, child, grand)
+        assert current[0].get("tabindex") is None

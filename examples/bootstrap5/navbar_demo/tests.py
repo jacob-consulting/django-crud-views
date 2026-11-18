@@ -52,6 +52,19 @@ def customer_url(key, tenant, customer=None):
 
 
 @pytest.mark.django_db
+def test_customer_bar_has_four_ordered_sections(client, scenario):
+    tenant, _, customer, _, _ = scenario
+    response = client.get(customer_url("detail", tenant, customer))
+    assert response.status_code == 200
+    assert [item["label"] for item in response.context["cv_navbar"]["items"]] == [
+        "Details",
+        "Notes",
+        "Orders",
+        "Addresses",
+    ]
+
+
+@pytest.mark.django_db
 def test_owned_details_notes_share_identity_and_distinct_active_sections(client, scenario, local_routes):
     tenant, _, customer, _, user = scenario
     assert not user.is_superuser

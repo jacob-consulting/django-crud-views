@@ -5,27 +5,27 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.37 complete, ready to plan Phase 7
-last_updated: "2026-11-17T09:50:13.950Z"
-last_activity: 2026-11-17
-last_activity_desc: "Phase 06.37 shipped as PR #379"
-state_head: 8ec15bc8c96226b4ea8c1653e96bd31624fdc6ae
+stopped_at: Phase 06.39 complete, ready to plan Phase 7
+last_updated: "2026-11-18T13:40:13.584Z"
+last_activity: 2026-11-18
+last_activity_desc: "Phase 06.39 shipped as PR #382"
+state_head: 360412373cccae58be90b6933b8a15382d55cc27
 progress:
-  total_phases: 44
-  completed_phases: 42
-  total_plans: 244
-  completed_plans: 244
-  percent: 95
+  total_phases: 45
+  completed_phases: 44
+  total_plans: 246
+  completed_plans: 246
+  percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 43
+Total Phases: 45
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-16)
+See: .planning/PROJECT.md (updated 2026-11-18)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -34,11 +34,44 @@ See: .planning/PROJECT.md (updated 2026-11-16)
 
 Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: 4
+Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-17 -- Phase 06.37 shipped as PR #379
+Last activity: 2026-11-18 -- Phase 06.39 shipped as PR #382
 
-Next: $gsd-discuss-phase 7 (Phase 7 needs a spec or maintainer decision before planning).
+Next: $gsd-ship 06.39; refresh codebase maps after shipping before subsequent work.
+
+### Phase 06.39 completion — 2026-11-18
+
+- Both plans and all six tasks complete; final goal verification passed 11/11, D-01–D-12 covered. Nyquist compliant; all eight threats closed; deep review zero open findings. No human verification items remain.
+- Review found custom-backend anonymous/inactive actor mismatch. Permanent regression16ad5f02 reproduced12 failures with12 provider-none controls; bounded core correction3e699221 independently verified68 cases. Existing errors, own-first ordering, one helper, and no-provider access remain intact.
+- Final corrected-source Python3.12 suites: Django4.2 15865 passed/14 existing skips;5.2 15878/1;6.0 15879/0. Focused normal/recorder247 each;750 targeted;40 cost checks. All825 input hashes match. Independent verifier90 cases passed. Earlier execution receipts below are historical and superseded by final ACCEPTANCE.
+- Final supplementary regressions:548 examples+264 subtests,2 integration,177 Node; unchanged pureJS457 retained. Strict docs/lint pass; costs unchanged. Only Python3.12 exercised; installed-wheel, full browser and external Tabler verification remain unclaimed.
+- Original dirty state.json preserved byte-for-byte. Concurrent navbar edits preserved; no merge or publication performed. Branch from local HEAD deliberately retained the18 approved planning commits absent from origin. Map drift advisory remains for the required post-ship refresh.
+
+### Phase 06.39 plan 02 execution — 2026-11-18
+
+- All three references document plain/Guardian child-link policy, immediate-parent limits, parent-owned fallback, render-time errors and measured costs. Breaking #380 links to the new migration section from both root CHANGELOG and the docs reference; strict builds and the exact anchor assertion pass.
+- Navbar D-09/A-03 consume the destination permission hook once. The committed handoff preserves owner and open-state choices. Later external working-tree edits changed the navbar state decision; those edits are preserved uncommitted, separately fingerprinted, and still retain the once-only permission hook.
+- Full source suites on Python 3.12.3/Guardian 3.5.2: Django 4.2.30 **15841 passed/14 existing skips**, 5.2.19 **15854/1**, 6.0.10 **15855/0**. Four workers each, sequential series. Focused normal/recorder each **223 passed**; scoped Ruff/format and strict MkDocs pass. 825 runtime/test/published-doc input hashes remained unchanged.
+- Three tasks/seven task files/about 29 minutes; measured task diff 9557 chars/4 tokens. Commits 133852f9, b9d827ec, 97f895f5; summary 66dc16f8 committed before progress. ROADMAP reports 2/2 plans executed, complete=false.
+- STATE.md updated directly; original dirty state.json remains byte-identical. Other Python versions, installed-wheel acceptance and full recorder suites were not run by this plan. No merge, publication, navbar implementation or phase completion claimed; independent gates remain pending.
+
+### Phase 06.39 plan 01 execution — 2026-11-18
+
+- Original Book view + Publisher change mismatch is permanently reproduced (4 RED visibility failures, 2 own-denial passes; machine/semantic evidence valid). Core now checks own access then the immediate parent; shipped Guardian collection/create perform one gate and standalone queryset-only behavior remains explicit.
+- Both renderers cover hide/disable, actual host 200/child 403 and same-parent empty child 200 after grant. Real operation/provider/actor/error matrices and three-level rendering versus denied request tests preserve existing authorization boundaries.
+- Final bounded selection 665 passed, child-link module 223 passed, cost selection 40 passed; Python 3.12.3/Django 5.2.19, four workers. Scoped Ruff/format/whitespace pass.
+- COST records sixteen renderer/provider/cache combinations: plain-parent total SQL 6/4/2/0 and Guardian-parent 8/6/4/2, with exactly one helper and no parent/child row fetches. Mixed CoreList uses CHANGE_READ plus its real object change grant; warm Guardian links still perform permission SQL without a rendering-view checker.
+- Three tasks/five task files/about nine minutes. Commits cdeb43b0, ab70bf07, c6a69681, ee41ecc0; summary 9a9aa3e5 committed before progress. ROADMAP reports 1/2 In Progress, complete=false.
+- STATE.md updated directly to preserve original dirty state.json byte-for-byte. Plan 02 and phase verification remain pending; no publication or phase completion claimed.
+
+### Phase 06.39 planning convergence — 2026-11-18
+
+- Two plans, six tasks, two sequential waves; all 12 approved decisions covered. Plan structure checks pass without warnings.
+- Fable, Grok and Gemini completed all three review cycles: unresolved HIGH/actionable counts 0/7 → 0/1 → 0/0. All eight findings are incorporated; the writer-owned conflict slot is empty.
+- Final plans: `eddfd6a8`; final review: `37233500`. Source-grounding coverage records the Python/intel and dotted-phase status-parser limitations rather than claiming unsupported checks passed.
+- Research reproduced the original link/GET mismatch and recorded 127 baseline child-link tests passing on Django 5.2 with four workers. Implementation, final cost measurements and supported-series acceptance remain execution work.
+- Pre-existing dirty state.json preserved byte-for-byte. STATE.md records the ready-to-execute handoff; no product source changed.
 
 ### Phase 06.37 completion — 2026-11-16
 
@@ -1257,7 +1290,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 235
+- Total plans completed: 237
 
 - Total plans completed: 186
 - Average duration: -
@@ -1267,6 +1300,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
+| 06.39 | 2 | - | - |
 | 01 | 5 | - | - |
 | 02 | 1 | - | - |
 | 03 | 2 | - | - |
@@ -1494,6 +1528,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 ## Accumulated Context
 
 ### Decisions
+
+- [Phase 06.39 plan 01] Keep the existing renderer calls and ancestor engine; the destination hook owns one own-first immediate-parent gate. Guardian create retains its existing access contract and standalone queryset-only keeps its explicit exception. Report helper invocations separately from cache-sensitive SQL.
 
 - [Phase 06.36 plan 03] Preserve already-correct actor/holder paths; Guardian computes one policy code at its owner for both machine representations. Keep authorization guards unchanged and verify supplied-ViewSet table refusals before SQL.
 
@@ -1883,6 +1919,7 @@ None yet.
 - Phase 06.35 inserted after Phase 06.34: Approved issue #372; corrected from initial 06.25.2 at maintainer request; D-01–D-07 context captured
 - Phase 06.36 inserted after Phase 06.35: ViewSet configuration CLI and versioned JSON contract (#371); approved D-01–D-09, A-01–A-04 and acceptance items 1–10; builds on completed #372 before Phase 7 (URGENT)
 - Phase 06.37 inserted after Phase 06.36: cv_access Pydantic JSON contract validation and schema (#375) (URGENT)
+- Phase 06.39 inserted after Phase 06.37: Immediate-parent permission checks for child links (#380), ahead of the object navbar (#381) (URGENT)
 
 ## Deferred Items
 
@@ -1892,6 +1929,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-16T21:05:00Z
-Stopped at: Phase 06.37 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-18T11:49:27Z
+Stopped at: Phase 06.39 complete, ready to plan Phase 7
+Resume file: .planning/phases/06.39-immediate-parent-permission-checks-for-child-links-380/06.39-02-PLAN.md

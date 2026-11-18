@@ -527,7 +527,18 @@ class CrudView(metaclass=CrudViewMetaClass):
     @classmethod
     def _cv_child_link_has_access(cls, user, parent_obj) -> bool:
         """Access for a child link whose URL uses the supplied immediate parent."""
-        return cls.cv_has_access(user, parent_obj)
+        access = cls.cv_has_access(user, parent_obj)
+        if not access or not cls.cv_viewset.has_parent:
+            return access
+        from crud_views.lib.ancestors import _effective_provider, _immediate_parent_access
+
+        if not _immediate_parent_access(cls, user, parent_obj):
+            return False
+        # A backend grant cannot waive protected ancestry's actor rule. Keep the helper's
+        # configuration errors and provider-none bypass, without consulting farther ancestors.
+        return (user.is_authenticated and user.is_active) or _effective_provider(
+            cls.cv_viewset.parent.viewset
+        ) == "none"
 
     @classmethod
     def cv_action_enabled(cls, user: User, obj: Model | None = None) -> bool:

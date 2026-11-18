@@ -286,23 +286,41 @@ class PublisherCardListView(CardListViewPermissionRequired):
     ]
 ```
 
-Child actions use the child view's `cv_has_access` and independent `cv_action_enabled`, passing the card's
-object to each. For shipped Guardian list/card destinations, rendering also checks the existing parent
-permission rule on that same object used for the URL, like `ChildContextButton`. For example, a user may see
-Publisher A's card through `view` permission, but its Books action requires `change` when that is the child
-ViewSet's parent policy. Without it the action is hidden or disabled and the destination returns 403; granting
+Child actions and `ChildContextButton` use the destination's child-link hook once, passing the card's object as
+the URL parent. Plain nested targets honor their own `cv_has_access` first, then check that immediate parent
+using the destination operation's nearest key. Independent `cv_action_enabled` still receives the card object.
+For example, a user may see Publisher A's card through `view` permission, but its Books action requires `change`
+when that is the child ViewSet's nearest Read key. Without it the action is hidden or disabled and the
+destination returns 403; granting
 it restores a usable action and a 200 response, even for an empty authorized Books collection.
 
-The target view's global fallback is respected. Anonymous/inactive actors deny; `None` skips only the parent
-permission check. Custom access denials and independent state still apply, and child create actions retain
-their existing policy. Custom access overrides receive the original card object. Queryset-only Guardian
+The parent's provider and `AncestorPolicy(accept_global_perms=True)` own parent fallback; the target's
+`cv_guardian_accept_global_perms` does not. Core parents use model permission, Guardian parents object/group
+grants with model fallback only when the parent allows it. `provider="none"` skips only the parent gate.
+Nested Guardian collection links deny anonymous/inactive actors; this adds no actor rule to plain custom views.
+Own denial stops parent work. Independent state still applies, and child create actions retain
+their existing policy. Shipped Guardian collection and create paths perform the parent check once.
+Custom access overrides receive the original card object. Queryset-only Guardian
 compositions without the parent helper retain delegated access after the actor check and gain no parent
 authorization. `LinkChildColumn` in tables still renders without this permission check.
 
 Ordinary denial follows [Hide or disable inaccessible actions](inaccessible_actions.md): disabled actions have
 no usable URL. Read the [Guardian collection-link limits and configuration failures](guardian.md#parent-to-child-collection-links)
 for the remaining direct/sibling/object/filter/navigation/M2M boundaries and missing parent declarations that
-can now fail the host page during rendering. Rendering does not replace destination request authorization.
+can fail the host page during rendering.
+
+Eligible plain child links add one parent-policy invocation after own access, with cache-dependent SQL. Both
+renderers measured 6/4/2/0 total queries with a plain parent and 8/6/4/2 with a strict Guardian parent for
+fresh-cold/warm-cold/fresh-warm/warm-warm actor/vocabulary states. They reuse the supplied parent without a
+parent-row fetch. See [measurement conditions](context_buttons.md#permission-cost-and-configuration-failures)
+and the separate Guardian guidance above; repeated Guardian links can still query permissions.
+
+A missing required parent permission key, a nested operation without requirements, or reached authorization
+records routed away from `default` raises `ImproperlyConfigured` while rendering, rather than producing a
+hidden/disabled action. Own denial skips parent work; `provider="none"` preserves the helper's early bypass.
+Only the supplied immediate parent is checked: a farther ancestor can still deny GET, even with an immediate
+`provider="none"`. Sibling links and ordinary row actions are unchanged. URL construction is not an access
+proof; [full request authorization](nested.md#visible-links-and-buttons) remains authoritative.
 
 | Field | Required | Description |
 |---|---|---|

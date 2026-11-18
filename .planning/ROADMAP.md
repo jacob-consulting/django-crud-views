@@ -64,6 +64,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.35: Resource manage pages with cv_access parity (#372) (INSERTED)** - approved D-01–D-07 handover; shared ManageView, Resource permission badges, and UI/CLI trace parity. (completed 2026-11-15)
 - [x] **Phase 06.36: ViewSet configuration CLI and versioned JSON contract (#371) (INSERTED)** - approved diagnostic command, catalogue and validated text/JSON output. (completed 2026-11-16)
 - [x] **Phase 06.37: cv_access Pydantic JSON contract validation and schema (#375) (INSERTED)** - validate the existing version-1 trace with Pydantic output models and add `cv_access --schema`. (completed 2026-11-16)
+- [x] **Phase 06.39: Immediate-parent permission checks for child links (#380) (INSERTED)** (completed 2026-11-18)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2094,6 +2095,24 @@ Plans:
 
 **Wave 3**
 - [x] 06.37-04-PLAN.md — Independent schema conformance of real exports and full multicore suite on Django 4.2/5.2/6.0
+
+### Phase 06.39: Immediate-parent permission checks for child links (#380) (INSERTED)
+
+**Goal:** Apply the destination's immediate-parent permission check once when rendering child context buttons
+and child card actions. Respect the configured hide-or-disable behavior and preserve Guardian access rules.
+**Source:** [Issue #380 and its GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/380#gsd-handover).
+Complete this fix before the object navbar (#381).
+**Depends on:** Phase 6
+**Plans:** 2/2 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.39-01-PLAN.md — Permanent child-link regression, bounded core/Guardian gate, policy preservation and measured costs.
+
+**Wave 2**
+- [x] 06.39-02-PLAN.md — Consumer guidance, Breaking/migration/navbar handoff and supported-series acceptance evidence.
+
+Both plans executed; independent phase security/review/verifier gates remain pending.
 
 ### Phase 7: Theme-surface stability policy
 

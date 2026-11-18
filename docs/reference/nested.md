@@ -559,10 +559,35 @@ this URL path, not every parent an object belongs to.
 
 ### Visible links and buttons
 
-Request enforcement is authoritative. Buttons and links check at most the immediate parent (its provider and the
-target's nearest key); they do not evaluate farther ancestors. A visible link can therefore lead to a 403 from
-a higher ancestor, and with a `"none"` immediate parent the link stays visible while the request is denied
-further up. The manage page shows the declared policy, not whether a user can pass it.
+`ChildContextButton` and child `CardAction` call the destination's child-link hook once. Plain nested targets
+first honor their own `cv_has_access(user, parent_obj)` result, then check the supplied immediate parent using
+the destination operation's nearest key. The parent owns the provider and `accept_global_perms` policy: core
+parents use model permissions; Guardian parents use object/group grants with model fallback only when that
+parent's `AncestorPolicy(accept_global_perms=True)` allows it. `provider="none"` bypasses only this parent gate.
+Shipped Guardian collection/create paths retain one parent check and their existing actor/create policy;
+standalone queryset-only compositions keep their documented exception. See
+[Guardian collection links](guardian.md#parent-to-child-collection-links).
+
+A user with Book `view` and Publisher `change`, but without Publisher `view`, can open Publisher update while
+the default Books list GET returns 403. Both child renderers now hide or disable that Books control according
+to the destination's setting, with no usable disabled URL. Grant Publisher `view` and the same parent's empty
+Books collection is accessible. Custom own denials and independent action-state policy still apply.
+
+Each eligible plain link adds one parent-policy call, not necessarily one SQL query, and reuses the supplied
+parent without another parent-row fetch. For both renderers, measured fresh/cold through warm/warm totals were
+6/4/2/0 SQL queries with a plain parent and 8/6/4/2 with a strict Guardian parent. See the
+[measurement conditions and permission cost](context_buttons.md#permission-cost-and-configuration-failures):
+actor/vocabulary caches and the provider determine SQL, and repeated Guardian links can still query permissions.
+
+Parent-policy configuration errors propagate as `ImproperlyConfigured` during host rendering: a required key
+missing from the parent's permission map, a nested operation without requirements, or reached authorization
+records routed away from `default`. Own denial short-circuits parent work; `provider="none"` retains its early
+helper bypass before these validations. These failures are not ordinary hidden/disabled denials.
+
+Request enforcement remains authoritative for the full ancestor chain. Rendering checks only the supplied
+immediate parent, so a visible link can still lead to a 403 from a farther ancestor, including when the immediate
+provider is `"none"`. Sibling links and ordinary row actions are unchanged, and URL construction proves no
+authorization. The manage page shows declared policy, not whether a user can pass it.
 
 ## See also
 

@@ -180,21 +180,58 @@ ChildContextButton(
 The button requires `context.object` to build the child URL (the current object becomes the
 parent PK in the child's URL). It returns an empty context when there is no object.
 
-The child view's `cv_has_access(user, obj)` receives the current parent object, including in custom overrides.
-For shipped Guardian list/card destinations, rendering also checks the existing parent permission rule on
-that exact URL parent. If Publisher A is viewable but its Books collection requires `change` on Publisher A,
-the Books button is hidden or disabled and the destination returns 403. Granting `change` makes the button
-usable and the destination returns 200, including an empty authorized collection.
+Both `ChildContextButton` and child `CardAction` use the destination's child-link hook once. For plain nested
+targets it first calls `cv_has_access(user, parent_obj)`, including custom overrides, with the supplied URL
+parent. Own-access denial stops there. Otherwise it checks that exact immediate parent with the destination
+operation's **nearest** permission key, using the existing [ancestor policy](nested.md#ancestor-authorization).
 
-The target's per-view global fallback applies. Anonymous/inactive actors deny; a `None` parent policy skips
-only parent permission, while custom denial and independent action state remain effective. Child create
-buttons retain their existing create policy. A queryset-only Guardian composition without the parent helper
-retains delegated access after the actor check; it does not acquire parent authorization.
-See [Guardian collection-link scope and configuration failures](guardian.md#parent-to-child-collection-links),
-including missing parent declarations that can now fail the hosting page during rendering and the remaining
-sibling/object/table/filter/navigation/M2M limits. These checks do not replace destination authorization.
-The target's [hide/disable mode](inaccessible_actions.md) controls ordinary denial; disabled buttons have no
-usable URL.
+For example, a user with Book `view` and Publisher `change`, but no Publisher `view`, can open a Publisher's
+update page. Its default Books list requires Publisher `view`: the Books GET returns 403, and the child button
+or card action now hides or disables. Granting Publisher `view` makes the same parent's link usable and its
+collection GET return 200, even when it contains no Books. The target's
+[hide/disable mode](inaccessible_actions.md) controls denial; a disabled control has no usable URL.
+
+The parent's provider owns this check: a core parent uses model permission; a Guardian parent uses object/group
+grants, admitting model grants only with that parent's `AncestorPolicy(accept_global_perms=True)`.
+The target's `cv_guardian_accept_global_perms` does not change parent fallback. `provider="none"` skips only
+the immediate-parent gate. Custom own denials and independent `cv_action_enabled` state remain effective.
+Shipped Guardian collection and create paths check the parent once; create keeps its existing create policy.
+Nested Guardian collections deny anonymous/inactive actors, while a queryset-only Guardian composition without
+the parent helper keeps delegated access after that actor check. These Guardian actor rules do not impose a new
+actor rule on plain custom views. See [Guardian collection-link scope](guardian.md#parent-to-child-collection-links).
+
+Rendering reuses only the supplied parent. Farther ancestors can still deny the destination GET, including with
+an immediate `provider="none"`. Sibling links and ordinary row actions keep their existing behavior; building a
+URL does not prove access. See [visible links and buttons](nested.md#visible-links-and-buttons).
+
+### Permission cost and configuration failures
+
+For existing pages, follow the [child-link migration guide](../migrating-1.0.md#child-link-parent-permissions).
+
+An eligible plain child link adds one immediate-parent policy invocation after own access. This is not a fixed
+SQL count. In measured Django 5.2/Guardian 3.5 runs, both context and card renderers had the following totals for
+a real core list destination; actor setup and permission grants were outside the measurement:
+
+| Actor / permission vocabulary | Own-access SQL | With plain model parent | With strict Guardian parent |
+|---|---|---|---|
+| fresh / cold | 4 | 6 | 8 |
+| warm / cold | 2 | 4 | 6 |
+| fresh / warm | 2 | 2 | 4 |
+| warm / warm | 0 | 0 | 2 |
+
+Warm actors had already populated Django's model-permission cache; warm vocabulary had both ViewSets' permission
+maps and content types cached. The plain case used Book/Publisher `view`; the Guardian case used the configured
+nearest `change` with a real parent object grant. Each integrated render called the parent helper once and
+fetched no parent, child or relation rows. These are scoped measurements, not universal query budgets: backend,
+provider and cache state matter. The hook has no rendering-view argument to reuse a request-local Guardian
+checker, so repeated Guardian links can still query permissions. See the separate
+[Guardian query-cost guidance](guardian.md#parent-to-child-collection-links); no new cache is introduced.
+
+The parent helper raises `ImproperlyConfigured` while the host renders a control if a required parent permission
+key is missing from its map, a nested operation lacks requirements, or reached authorization records route away
+from `default`. These configuration failures propagate instead of becoming hidden/disabled output. Own-access
+denial avoids parent work; `provider="none"` retains its early bypass before operation and authorization-record
+validation in this helper. Full request validation remains authoritative.
 
 ### Example
 

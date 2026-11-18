@@ -735,6 +735,23 @@ FEATURES: list[Feature] = [
             ),
         ),
     ),
+    Feature(
+        app="navbar_demo",
+        group="ui",
+        title="Object navigation",
+        description="Customer sections stay with you through tenant-scoped Orders and Items.",
+        about=(
+            "Declare a Customer navbar once and attach it only to selected views. Details, Notes, Orders and "
+            "Addresses preserve the Customer identity even on an Item page. Alice and Bob manage separate "
+            "tenants; Charlie reads Alice's customers, orders and items without Addresses or write actions."
+        ),
+        look_at=(
+            "customer_navbar and NavbarMixin in views.py; explicit ParentViewSet attributes and cascading "
+            "AncestorPolicy; seed.py for Tenant object grants and ordinary business-model permissions."
+        ),
+        url_name="navbar-demo-home",
+        icon="fa-solid fa-address-card",
+    ),
 ]
 
 

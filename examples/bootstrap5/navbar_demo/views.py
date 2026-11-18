@@ -2,9 +2,10 @@ import django_tables2 as tables
 from crispy_forms.layout import Row
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import RedirectView
+from django.views.generic import TemplateView
 from project.views import BreadcrumbMixin
 
+from crud_views.lib.breadcrumb import Breadcrumb, BreadcrumbItem
 from crud_views.lib.crispy import Column6, Column12, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.navbar import CrudViewNavBarMixin, NavBar, NavItem
 from crud_views.lib.table import LinkChildColumn, LinkDetailColumn, Table
@@ -46,9 +47,22 @@ class TenantDetailView(BreadcrumbMixin, ObjectDetailMixin, GuardianDetailViewPer
     cv_property_display = [{"title": _("Tenant"), "properties": ["id", "name"]}]
 
 
-class NavbarDemoHomeView(LoginRequiredMixin, RedirectView):
-    pattern_name = "navbar_tenant-list"
-    permanent = False
+class NavbarDemoHomeView(BreadcrumbMixin, LoginRequiredMixin, TemplateView):
+    template_name = "navbar_demo/home.html"
+
+    def cv_breadcrumb_get(self):
+        return Breadcrumb(items=(*self.cv_breadcrumb_prefix(), BreadcrumbItem(title=_("Object navigation"))))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["cv_breadcrumb"] = self.cv_breadcrumb()
+        tenants = cv_tenant.get_objects_for_user(self.request.user, "view")
+        context["customers"] = (
+            Customer.objects.filter(tenant__in=tenants).select_related("tenant")
+            if self.request.user.has_perm("navbar_demo.view_customer")
+            else Customer.objects.none()
+        )
+        return context
 
 
 cv_customer = ViewSet(

@@ -102,6 +102,179 @@ class ObjectNavbarLandingTest(TestCase):
         for credential in ("alice/alice", "bob/bob", "charlie/charlie"):
             self.assertContains(response, credential)
         self.assertContains(response, f'href="{reverse("login")}"')
+        self.assertContains(response, "No items found.")
+        self.assertContains(response, "snippet-panels")
+        self.assertContains(response, "example-about")
+        self.assertContains(response, 'aria-label="breadcrumb"')
+
+    def test_index_and_intro_follow_only_permitted_customer_paths(self):
+        from lxml import html
+        from navbar_demo.seed import seed
+
+        seed()
+        for username, tenant_id, customer_name in (
+            ("alice", 101, "Acme Coffee"),
+            ("bob", 202, "Bayside Books"),
+            ("charlie", 101, "Acme Coffee"),
+        ):
+            with self.subTest(username=username):
+                self.client.post(reverse("login"), {"username": username, "password": username})
+                index = html.fromstring(self.client.get(reverse("home")).content)
+                links = index.xpath("//a[@href=$url]", url=reverse("navbar-demo-home"))
+                self.assertTrue(links)
+                landing = self.client.get(links[0].get("href"))
+                self.assertEqual(landing.status_code, 200)
+                self.assertEqual({customer.tenant_id for customer in landing.context["customers"]}, {tenant_id})
+                document = html.fromstring(landing.content.split(b'id="snippet-panels"')[0])
+                entries = document.xpath('//a[normalize-space(text())="Explore object navigation"]')
+                self.assertTrue(entries)
+                target = next(link for link in entries if customer_name in link.getparent().text_content())
+                response = self.client.get(target.get("href"))
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(str(response.context["object"]), customer_name)
+                sections = {item["label"]: item["url"] for item in response.context["cv_navbar"]["items"]}
+                self.assertEqual(
+                    list(sections), ["Details", "Notes", "Orders"] + ([] if username == "charlie" else ["Addresses"])
+                )
+                self.assertEqual(self.client.get(sections["Notes"]).status_code, 200)
+                orders = self.client.get(sections["Orders"])
+                self.assertEqual(orders.status_code, 200)
+                order = orders.context["object_list"].first()
+                item_list = reverse(
+                    "navbar_item-list",
+                    kwargs={
+                        "navbar_tenant_pk": tenant_id,
+                        "navbar_customer_pk": order.customer_id,
+                        "navbar_order_pk": order.pk,
+                    },
+                )
+                self.assertContains(orders, item_list)
+                items = self.client.get(item_list)
+                item = items.context["object_list"].first()
+                item_detail = reverse(
+                    "navbar_item-detail",
+                    kwargs={
+                        "navbar_tenant_pk": tenant_id,
+                        "navbar_customer_pk": order.customer_id,
+                        "navbar_order_pk": order.pk,
+                        "pk": item.pk,
+                    },
+                )
+                self.assertContains(items, item_detail)
+                detail = self.client.get(item_detail)
+                self.assertEqual(detail.status_code, 200)
+                bar = detail.context["cv_navbar"]
+                self.assertEqual({item["label"]: item["url"] for item in bar["items"]}, sections)
+                self.assertEqual([item["label"] for item in bar["items"] if item["active"]], ["Orders"])
+                self.client.logout()
+
+    def test_empty_permitted_set_discloses_no_other_tenant_choices(self):
+        from navbar_demo.models import Customer, Tenant
+        from navbar_demo.seed import seed
+
+        from project.seeding import grant_model_perms
+
+        seed()
+        reader = get_user_model().objects.create_user(username="unassigned")
+        grant_model_perms(reader, Customer, actions=("view",))
+        # Even a global Tenant read is not a strict Guardian object grant.
+        grant_model_perms(reader, Tenant, actions=("view",))
+        self.client.force_login(reader)
+        response = self.client.get(reverse("navbar-demo-home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(list(response.context["customers"]), [])
+        markup = response.content.decode().split('id="snippet-panels"')[0]
+        for secret in ("Acme Coffee", "Bayside Books", "Tenant Alice", "Tenant Bob", "Explore object navigation"):
+            self.assertNotIn(secret, markup)
+        self.assertIn("No items found.", markup)
+
+    def test_landing_uses_grants_instead_of_account_names(self):
+        from guardian.shortcuts import assign_perm
+        from navbar_demo.models import Customer, Tenant
+
+        from project.seeding import grant_model_perms
+
+        reader = get_user_model().objects.create_user(username="different-reader")
+        tenant = Tenant.objects.create(name="Independent tenant")
+        customer = Customer.objects.create(tenant=tenant, name="Independent customer")
+        grant_model_perms(reader, Customer, actions=("view",))
+        assign_perm("view_tenant", reader, tenant)
+        self.client.force_login(reader)
+        response = self.client.get(reverse("navbar-demo-home"))
+        self.assertEqual(list(response.context["customers"]), [customer])
+        reader.user_permissions.clear()
+        self.assertEqual(list(self.client.get(reverse("navbar-demo-home")).context["customers"]), [])
+
+
+class ObjectNavbarPlacementTest(TestCase):
+    @staticmethod
+    def without_navbar_settings():
+        from copy import deepcopy
+        from pathlib import Path
+
+        from django.conf import settings
+
+        source = (Path(__file__).parent / "templates/project/crud_views.html").read_text()
+        block = "{% block cv_navbar %}{% cv_navbar %}{% endblock cv_navbar %}"
+        assert source.count(block) == 1
+        templates = deepcopy(settings.TEMPLATES)
+        templates[0]["APP_DIRS"] = False
+        templates[0]["OPTIONS"]["loaders"] = [
+            ("django.template.loaders.locmem.Loader", {"project/crud_views.html": source.replace(block, "")}),
+            "django.template.loaders.filesystem.Loader",
+            "django.template.loaders.app_directories.Loader",
+        ]
+        return templates
+
+    def test_nonparticipant_response_is_byte_identical_without_navbar_work(self):
+        from unittest.mock import patch
+
+        admin = get_user_model().objects.create_superuser(username="navbar-parity", password="pw")
+        self.client.force_login(admin)
+        templates = self.without_navbar_settings()
+        with (
+            patch("crud_views.lib.navbar._build", side_effect=AssertionError("nonparticipant navbar work")),
+            patch("django.template.context_processors.get_token", return_value="fixed-test-csrf"),
+        ):
+            with override_settings(TEMPLATES=templates):
+                before = self.client.get(reverse("author-list"))
+            after = self.client.get(reverse("author-list"))
+        self.assertEqual(before.status_code, 200)
+        self.assertEqual(after.status_code, 200)
+        self.assertEqual(after.content, before.content)
+
+    def test_identity_links_precede_unchanged_heading_and_context_actions(self):
+        from lxml import html
+        from navbar_demo.seed import seed
+
+        seed()
+        templates = self.without_navbar_settings()
+        for username in ("alice", "charlie"):
+            with self.subTest(username=username):
+                self.client.force_login(get_user_model().objects.get(username=username))
+                url = reverse("navbar_customer-detail", kwargs={"navbar_tenant_pk": 101, "pk": 303})
+                with override_settings(TEMPLATES=templates):
+                    baseline = self.client.get(url)
+                response = self.client.get(url)
+                document = html.fromstring(response.content.split(b'id="snippet-panels"')[0])
+                original = html.fromstring(baseline.content.split(b'id="snippet-panels"')[0])
+                identity = document.cssselect(".cv-navbar-identity")[0]
+                nav = document.xpath('//nav[starts-with(@aria-label,"Sections for ")]')[0]
+                header = document.cssselect(".card-header")[0]
+                self.assertEqual(identity.text_content().strip(), "Acme Coffee")
+                self.assertLess(list(document.iter()).index(identity), list(document.iter()).index(nav))
+                self.assertLess(list(document.iter()).index(nav), list(document.iter()).index(header))
+                self.assertEqual(html.tostring(header), html.tostring(original.cssselect(".card-header")[0]))
+                self.assertTrue(header.cssselect("[cv-context-container]"))
+                keys = [control.get("cv-key") for control in header.cssselect("[cv-key]")]
+                self.assertEqual("update" in keys, username == "alice")
+                self.assertEqual("delete" in keys, username == "alice")
+                links = nav.cssselect("a")
+                self.assertEqual(
+                    [link.text_content().strip() for link in links],
+                    ["Details", "Notes", "Orders"] + ([] if username == "charlie" else ["Addresses"]),
+                )
+                self.assertEqual(len(nav.cssselect('[aria-current="true"]')), 1)
 
 
 class SeedCommandTest(TestCase):
@@ -482,6 +655,7 @@ class FeatureGroupsTest(SimpleTestCase):
                     "flash_messages",
                     "disabled_actions",
                     "theming",
+                    "navbar_demo",
                 ],
                 "extensions": ["workflow", "polymorphic_demo", "guardian_demo", "object_detail"],
             },

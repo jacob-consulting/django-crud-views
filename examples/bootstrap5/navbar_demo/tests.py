@@ -132,7 +132,8 @@ def test_public_routes_preserve_owner_links_and_authenticated_entry(client, scen
     tenant, _, customer, _, _ = scenario
     response = client.get(reverse("navbar-demo-home"), follow=True)
     assert response.status_code == 200
-    assert response.redirect_chain == [(reverse("navbar_tenant-list"), 302)]
+    assert response.redirect_chain == []
+    assert customer in response.context["customers"]
     for key in ("detail", "notes", "update", "delete"):
         url = customer_url(key, tenant, customer)
         assert url.startswith("/object-navbar/")

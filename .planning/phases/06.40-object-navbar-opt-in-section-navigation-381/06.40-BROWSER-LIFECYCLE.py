@@ -21,7 +21,7 @@ def main():
     root = Path.cwd()
     assert root == Path("/home/alex/projects/alex/django-crud-views")
     phase = Path(__file__).parent
-    port = int(os.environ.get("CV_NAVBAR_BROWSER_PORT", "8765"))
+    port = int(os.environ.get("CV_NAVBAR_BROWSER_PORT", "9000"))
     settings = root / ".pytest_cache/navbar_browser_settings.py"
     report = {"run": sys.argv[1], "settings": str(settings), "pid": None, "port": port}
     owned_settings = False

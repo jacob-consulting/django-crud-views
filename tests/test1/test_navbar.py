@@ -89,7 +89,7 @@ def test_real_owner_navbar():
         soup = html.fromstring(response.content)
         nav = soup.xpath('//div[contains(@class,"cv-navbar ")]')[0]
         assert nav is not None
-        assert nav.xpath('.//*[@class="cv-navbar-identity"]')[0].text_content().strip() == obj.name
+        assert nav.xpath('.//*[contains(@class,"cv-navbar-identity")]')[0].text_content().strip() == obj.name
         link = nav.xpath(".//a")[0]
         assert link.text_content().strip() == "Details"
         assert link.get("href") == reverse(ns.owner.get_router_name("detail"), kwargs={"pk": obj.pk})
@@ -128,7 +128,7 @@ def test_plain_owner_and_item_text(text, default, monkeypatch):
     with navbar_routes(lambda sfx: owner_routes(sfx, **options)) as ns:
         response = get_owner(ns, obj)
         nav = html.fromstring(response.content).xpath('//div[contains(@class,"cv-navbar ")]')[0]
-        assert nav.xpath('.//*[@class="cv-navbar-identity"]')[0].text_content().strip() == str(text)
+        assert nav.xpath('.//*[contains(@class,"cv-navbar-identity")]')[0].text_content().strip() == str(text)
         # A rendered safe input is decoded once by the default-label normalization contract.
         expected = str(text)
         assert nav.xpath(".//a")[0].text_content().strip() == expected

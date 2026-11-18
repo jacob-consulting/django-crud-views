@@ -1,20 +1,21 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.39"
-current_phase_name: "Immediate-parent permission checks for child links (#380)"
-current_plan: "02"
-status: verifying
-stopped_at: Completed 06.39-02-PLAN.md; phase security/review/verifier gates pending
-last_updated: "2026-11-18T12:18:56Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.39 complete, ready to plan Phase 7
+last_updated: "2026-11-18T13:13:00.933Z"
 last_activity: 2026-11-18
-last_activity_desc: "Phase 06.39 both plans executed; consumer guidance and three-series source acceptance recorded"
-state_head: 66dc16f8
+last_activity_desc: Phase 06.39 complete, transitioned to Phase 7
+state_head: 1dd91ea8a3ceee29f3270e28c0bffe3f368dd895
 progress:
   total_phases: 45
-  completed_phases: 42
+  completed_phases: 44
   total_plans: 246
   completed_plans: 246
+  percent: 98
 milestone_name: milestone
 ---
 
@@ -24,20 +25,28 @@ Total Phases: 45
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-16)
+See: .planning/PROJECT.md (updated 2026-11-18)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.39 — Immediate-parent permission checks for child links (#380)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.39 (Immediate-parent permission checks for child links (#380)) — AWAITING VERIFICATION
-Current Plan: 02 (01 and 02 complete)
-Total Plans in Phase: 2
-Status: Awaiting phase gates — 2/2 plans complete
-Last activity: 2026-11-18 -- Phase 06.39 plan 02 complete; supported-series source checks passed
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: 0
+Status: Ready to plan
+Last activity: 2026-11-18 — Phase 06.39 complete, transitioned to Phase 7
 
-Next: Orchestrator security/review/verifier gates for phase 06.39
+Next: $gsd-ship 06.39; refresh codebase maps after shipping before subsequent work.
+
+### Phase 06.39 completion — 2026-11-18
+
+- Both plans and all six tasks complete; final goal verification passed 11/11, D-01–D-12 covered. Nyquist compliant; all eight threats closed; deep review zero open findings. No human verification items remain.
+- Review found custom-backend anonymous/inactive actor mismatch. Permanent regression16ad5f02 reproduced12 failures with12 provider-none controls; bounded core correction3e699221 independently verified68 cases. Existing errors, own-first ordering, one helper, and no-provider access remain intact.
+- Final corrected-source Python3.12 suites: Django4.2 15865 passed/14 existing skips;5.2 15878/1;6.0 15879/0. Focused normal/recorder247 each;750 targeted;40 cost checks. All825 input hashes match. Independent verifier90 cases passed. Earlier execution receipts below are historical and superseded by final ACCEPTANCE.
+- Final supplementary regressions:548 examples+264 subtests,2 integration,177 Node; unchanged pureJS457 retained. Strict docs/lint pass; costs unchanged. Only Python3.12 exercised; installed-wheel, full browser and external Tabler verification remain unclaimed.
+- Original dirty state.json preserved byte-for-byte. Concurrent navbar edits preserved; no merge or publication performed. Branch from local HEAD deliberately retained the18 approved planning commits absent from origin. Map drift advisory remains for the required post-ship refresh.
 
 ### Phase 06.39 plan 02 execution — 2026-11-18
 
@@ -1281,7 +1290,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 235
+- Total plans completed: 237
 
 - Total plans completed: 186
 - Average duration: -
@@ -1291,7 +1300,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 06.39 | 1/2 | 9min (3 tasks, 5 files) | 9min |
+| 06.39 | 2 | - | - |
 | 01 | 5 | - | - |
 | 02 | 1 | - | - |
 | 03 | 2 | - | - |
@@ -1921,5 +1930,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-18T11:49:27Z
-Stopped at: Completed 06.39-01-PLAN.md; plan 02 pending
+Stopped at: Phase 06.39 complete, ready to plan Phase 7
 Resume file: .planning/phases/06.39-immediate-parent-permission-checks-for-child-links-380/06.39-02-PLAN.md

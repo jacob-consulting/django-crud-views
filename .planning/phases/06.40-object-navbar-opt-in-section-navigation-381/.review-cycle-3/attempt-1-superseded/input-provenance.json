@@ -1,0 +1,32 @@
+{
+  "review_cycle": 3,
+  "reviewed_head": "cd45a954094c675b7611ee42f830aa56927c430a",
+  "prompt_sha256": "a72c090f4a91e1fa7f0a82d5c99973e581b4674d128bd99a24f436e926df5ffb",
+  "prompt_bytes": 661153,
+  "selection": "Configured default reviewers; no flags or model substitutions",
+  "input_hashes": {
+    "AGENTS.md": "59d2319a8e8aa20e878d6e6e6300976cc2dbb2a3cb24054b36483671810a4a70",
+    ".planning/PROJECT.md": "4867c6d218bf717cad580b0a053d3b96a77819dc656ae3a517b42f4ef345f4cd",
+    ".planning/ROADMAP.md": "5e309f2266617298344a222016d0ce3e1f6e738773152874b861c98deab83e3e",
+    ".planning/REQUIREMENTS.md": "4a0c18999e6a03c0450569ca2839fe6821e175e0215aa5509a13442ff1c183b4",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-CONTEXT.md": "070523410b10ea8ebcba24d03f36abbb0104235fc68c56047edcedd4fe8fd6fa",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-RESEARCH.md": "aba9999c449d6caf4274ba300cb6b2b7fd066dda511f934c0827ce3e6dc66528",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-UI-SPEC.md": "b76e6bb6c6bff6095352b68fc26541b2db27754d37f1ceb94db803259a50eabd",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-PATTERNS.md": "96815a88e18070a99c25b251c2353879acd4666c0a8fc476a07dcff5c4548cd5",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-VALIDATION.md": "85972379e2408463e93152953703f74be7814b73ecc72adff7c77f552b9bab83",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-COMPANION-GUIDANCE.md": "90ddb1b7f871d143a687decd6f404866d7862011fb1e92f63937b5ba08db8d8f",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-COVERAGE.md": "ba7c46701deda9afa835d5aa4652dad22330b7346721b53b1a81bbf0ac693a77",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md": "dcbeb4433c53d5e3eeb8bbb68ed152f266d6eca1b7806bfe31cd006275a2a676",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-02-PLAN.md": "7b80908638636ef280ccce8fa07ef9a1f263fea617291ff19bf434d55305b1da",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-03-PLAN.md": "24331950159f1624fa7be151e1441e063956d5cc58b050d2316af587672d40d6",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-04-PLAN.md": "60ba822f59753747eeb85a1234049eed9d078e847580fe2ecf65f342b8261cf1",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-05-PLAN.md": "20278c323b0ede991e8fddc8fedb07d5e3666689da7d55b400730dfa28ab3dbe",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-06-PLAN.md": "1212867dd3495d7b9d07311a3e6609215504ad193db2f07bd3b10cf8a946b500",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-07-PLAN.md": "b6222b948cb815c05c1496ef833551b990443c573285cc02ca73a3ae4f05585e",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-08-PLAN.md": "b052fb1b7b5f46fd40b94edf030048dd589b216b3b3fbbfa9e1aaff80bc6432e",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-REVIEWS.md": "06b35a79dfecec701f13d2f574e66cb8219a2ef0e0aa074809c9f84c92803f02",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/.review-cycle-2/gsd-review-fable-review.md": "11bf0f45aeaf756323ea6637681d8ef4c020dd5bacacc8c79e44bd6c4fe524ce",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/.review-cycle-2/gsd-review-gemini-review.md": "e095ad18878ab6d70760766f5c5b49360a4c9482fefbb418121aa575ad793426",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/.review-cycle-2/gsd-review-grok-review.md": "5b2d1fa235d672830e659932ac8994e2f82151098a9db1984da5adbe5a401210"
+  }
+}

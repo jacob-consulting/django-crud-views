@@ -1,0 +1,9 @@
+{
+  "slug": "claude",
+  "ok": true,
+  "stubbed": false,
+  "model": {
+    "value": "claude-fable-5-1 (reasoning=high)",
+    "source": "pinned"
+  }
+}

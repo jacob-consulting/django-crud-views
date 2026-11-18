@@ -1,0 +1,14 @@
+{
+  "slug": "claude",
+  "ok": false,
+  "reason": "prompt_exceeds_context",
+  "detail": "estimated 164900 tokens exceeds the 130000-token cap for lane 'claude' (source: context-window, 200000-token context window); raise review.context_window_tokens.claude if this lane's model has a larger window, or set it to 0 to remove the cap",
+  "reviewPath": "/tmp/gsd-review-lo79rl85/gsd-review-fable-review.md",
+  "stubWritten": true,
+  "refusal": {
+    "estimatedTokens": 164900,
+    "cap": 130000,
+    "capSource": "context-window",
+    "contextWindowTokens": 200000
+  }
+}

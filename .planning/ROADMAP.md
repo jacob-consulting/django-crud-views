@@ -2198,7 +2198,7 @@ Starts from the list, card and custom-form views on `main`; the phase 06.38 impl
 **Requirements**: None; the approved issue contract supplies phase acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the bulk classes, attributes, POST field names and class keys.
-**Plans:** 10 plans
+**Plans:** 11 plans
 
 Plans:
 - [ ] 06.41-01-PLAN.md — Tracer: table selection through review and confirmation to execution; selection mistakes return to the source (wave 1)
@@ -2209,8 +2209,9 @@ Plans:
 - [ ] 06.41-06-PLAN.md — Source rendering: toolbar with label modes, card selection, return navigation (wave 4)
 - [ ] 06.41-07-PLAN.md — System checks, Guardian warning and German catalogs (wave 5)
 - [ ] 06.41-08-PLAN.md — Reference guide, stability listing, cross-links and changelog (wave 6)
-- [ ] 06.41-09-PLAN.md — Bootstrap example app `bulk_selection` with its project registration (wave 6)
-- [ ] 06.41-10-PLAN.md — Guide and example synchronized; full gates on Django 4.2, 5.2 and 6.0 (wave 7)
+- [ ] 06.41-09-PLAN.md — Bootstrap example app `bulk_selection` with table and card selection and three bulk actions (wave 6)
+- [ ] 06.41-10-PLAN.md — Example registered in the project: feature entry, inventories, developer account, German catalog (wave 7)
+- [ ] 06.41-11-PLAN.md — Guide and example synchronized; full gates on Django 4.2, 5.2 and 6.0 (wave 8)
 
 ### Phase 7: Theme-surface stability policy
 

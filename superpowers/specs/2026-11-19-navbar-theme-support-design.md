@@ -100,6 +100,81 @@ Repeated Guardian permission queries deserve their own design and query-count ac
 That work must consider custom destination hooks, parent checks and request isolation. No checker-sharing
 mechanism is approved here; theme improvements must be able to proceed independently.
 
+## Implementation examples from Tabler
+
+These examples illustrate the approved decisions; they add no new API or requirements. The inspected
+Tabler checkout was clean at `b9b568db792d806a67ea627217608185b0562018`.
+
+### Owner heading with the existing items component (finding 38)
+
+The following is an excerpt from the theme's `page.html`. Its `page_header_top` slot belongs to the
+Tabler layout and sits above the existing view title/subtitle/action row; it is not an upstream block API.
+
+```django
+{% block page_header_top %}{% if cv_navbar %}
+<div class="cv-tabler-owner">
+  {% cv_breadcrumb %}
+  <div class="d-flex align-items-center gap-3 mt-2 mb-3">
+    {% if cv_navbar.icon %}<span class="avatar avatar-md bg-primary-lt">{% cv_icon cv_navbar.icon %}</span>{% endif %}
+    <h1 class="page-title text-break">{{ cv_navbar.label }}</h1>
+  </div>
+  {% block cv_navbar %}<div class="cv-tabler-navbar d-print-none mb-3">{% cv_navbar_items %}</div>{% endblock %}
+</div>
+{% endif %}{% endblock %}
+{% block breadcrumb %}{% if not cv_navbar %}{% cv_breadcrumb %}{% endif %}{% endblock %}
+```
+
+The containing template loads `crud_views`. Owner text remains autoescaped, the icon uses the registered
+renderer, and the items component keeps its own accessible landmark. The ordinary title/subtitle/actions
+remain outside the `if cv_navbar` guard. The breadcrumb moves into the owner header when present and
+stays in its ordinary location otherwise.
+
+The same template preserves the action extension points below the tabs:
+
+```django
+{% block actions %}{% block cv_context %}{% cv_context_actions object %}{% endblock cv_context %}{% endblock %}
+```
+
+See [the actual theme template](https://github.com/alexander-jacob/tabler-test/blob/b9b568db792d806a67ea627217608185b0562018/src/crud_views_tabler/templates/crud_views_tabler/page.html#L10)
+and [its parent layout](https://github.com/alexander-jacob/tabler-test/blob/b9b568db792d806a67ea627217608185b0562018/src/django_tabler/templates/django_tabler/layouts/app.html#L13).
+The full downstream template also suppresses duplicate view headings; that behavior is deliberately
+excluded from this issue. For the upstream recipe, retain the view heading and choose a coherent heading
+hierarchy in the surrounding theme.
+
+### Class registration replacing the styling workaround (finding 36)
+
+This is an illustrative consumer recipe for the approved new keys, **not code already in Tabler**.
+Add the entries to a theme's existing registration in `AppConfig.ready()` after the keys ship:
+
+```python
+from crud_views.lib.button_classes import register_button_classes
+
+register_button_classes({
+    "navbar:nav": "nav nav-tabs flex-wrap gap-1",
+    "navbar:link": "nav-link mw-100 text-break gap-2",
+    "navbar:link-active": "active",
+})
+```
+
+This selects real tab classes while retaining wrapping and long-label utilities. Tabler's links are flex
+rows, so `gap-2` gives icon/label separation where literal template whitespace collapses. It is an example
+spacing choice, not an exact reproduction of the current `.375rem` gap or a change to upstream defaults.
+Wrapper, identity and item keys retain their defaults unless separately overridden; this split placement
+renders its own owner/wrapper markup, so their keys apply only when the corresponding stock templates run.
+
+The [current CSS workaround](https://github.com/alexander-jacob/tabler-test/blob/b9b568db792d806a67ea627217608185b0562018/src/crud_views_tabler/static/crud_views_tabler/crud_views_tabler.css#L95)
+restyles `.nav-pills` as underline tabs. It demonstrates why class keys are useful; do not port that CSS
+into core. The recipe is a starting point for theme validation, not a claim of pixel-identical Tabler output.
+
+### Existing downstream regression examples
+
+[Theme rendering tests](https://github.com/alexander-jacob/tabler-test/blob/b9b568db792d806a67ea627217608185b0562018/tests/crud_views_tabler/test_theme.py#L196) check breadcrumb → owner heading →
+tabs → view heading → update action order, a single breadcrumb, the section landmark and active-link
+semantics, registered icon rendering, and the ordinary header when no navbar is present.
+[Roastery tests](https://github.com/alexander-jacob/tabler-test/blob/b9b568db792d806a67ea627217608185b0562018/example/sales/tests/test_navbar.py#L145) separately check that Update/Delete remain
+below the tabs. Adapt those assertions to upstream fixtures; do not import the downstream application,
+its duplicate-heading helper, print policy, or removal of redundant context buttons.
+
 ## References
 
 - [Downstream findings 36–38](../../../tabler-test/docs/crud_views_upstream_findings_roastery.md)

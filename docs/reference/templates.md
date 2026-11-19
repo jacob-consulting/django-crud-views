@@ -196,6 +196,14 @@ items leaf's translated landmark name. Templates do not call permission hooks. T
 later consumers reuse the result. No consumer means no navbar work. See the executable
 [global, leaf, split and per-bar examples](navbar.md#placement-and-overrides).
 
+The stock identity is plain text. Themes may compose an
+[owner-as-page-heading layout](navbar.md#owner-as-page-heading) from these same context fields and the
+items component, retaining escaped labels, registered icons, view title/subtitle, actions and inherited
+blocks. The theme owns the heading hierarchy and useful absent-navbar/modal fallback; the package does
+not infer levels or suppress equal titles. The six ordinary navbar keys support
+[class registration](theme.md#navbar-class-registration) without copying templates; wrapper and identity
+keys affect only layouts that render their corresponding stock leaves.
+
 ## Snippet variables
 
 Header content and its icon are independent: a custom header template or template-code snippet keeps the usual

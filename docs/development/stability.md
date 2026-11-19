@@ -60,8 +60,17 @@ The override contract includes exactly `crud_views/tags/navbar.html`,
 `crud_views/tags/navbar_identity.html`, and `crud_views/tags/navbar_items.html`, with the documented
 `cv_navbar` value and fields `object`, `label`, `icon`, `items`, `template`; item fields are `label`, `icon`,
 `url`, `active`. See [ViewSet Navigation context](../reference/templates.md#viewset-navigation-context) for their meanings
-and independent empty guards. Private builders, resolvers, normalization helpers and check carriers remain
-internal. There is no navbar-specific provisional exception: public breaking changes follow the major-release,
+and independent empty guards. The six ordinary class keys `navbar:wrapper`, `navbar:identity`, `navbar:nav`,
+`navbar:item`, `navbar:link` and `navbar:link-active` use the existing registry, theme registration and
+project-setting precedence, including empty removal. See their
+[defaults](../reference/buttons.md#viewset-navigation-classes) and
+[registration recipe](../reference/theme.md#navbar-class-registration).
+Supported composition includes the [owner-heading recipe](../reference/navbar.md#owner-as-page-heading)
+through existing context and components, retaining view titles, actions, extension blocks and fallback.
+Heading hierarchy belongs to the theme; the stock plain identity is unchanged. `NavBar(template=...)`
+selects only the full wrapper; component tags and direct includes retain normal independent leaf selection.
+Private builders, resolvers, normalization helpers and check carriers remain internal.
+There is no navbar-specific provisional exception: public breaking changes follow the major-release,
 deprecation and migration policy below.
 
 **Settings**: all `CRUD_VIEWS_*` settings documented in the

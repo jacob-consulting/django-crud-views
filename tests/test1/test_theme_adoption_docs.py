@@ -17,7 +17,8 @@ from crud_views.lib.view.label_mode import default_label_mode, register_label_mo
 from tests.test1.test_crispy_columns import render_column
 from tests.test1.test_form_frame import THEME_FRAME, _theme_templates
 from tests.test1.test_heading_docs import recipe
-from tests.test1.test_navbar_templates import NAVBAR_CLASSES, TAG, assert_navbar_classes, navbar_class_context
+from tests.test1.test_navbar_templates import NAVBAR_CLASSES, TAG, assert_navbar_classes
+from tests.test1.test_navbar_templates import navbar_class_context as navbar_class_context
 from tests.test1.test_theme_action_groups import OrdinaryForm, filter_helper, render_filter, render_group
 from tests.test1.test_theme_form_ownership import _library_form, assert_owned_form_markup
 

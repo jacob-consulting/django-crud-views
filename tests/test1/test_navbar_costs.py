@@ -27,7 +27,7 @@ from tests.test1.app.models import Book, BookNote, Publisher
 from tests.test1.test_guardian_child_link_visibility import sql_categories
 from tests.test1.test_navbar import get_owner, navbar_routes, navbar_templates, owner_routes
 from tests.test1.test_navbar_permissions import TAG, grant, permission_routes
-from tests.test1.test_navbar_templates import SPLIT
+from tests.test1.test_navbar_templates import COMPONENTS, IDENTITY, ITEMS, SPLIT
 
 
 @contextmanager
@@ -90,7 +90,7 @@ def cost_routes(sfx, composition):
 @pytest.mark.django_db
 @pytest.mark.parametrize("composition", ["plain", "guardian", "mixed"])
 @pytest.mark.parametrize("page", ["owner", "deep"])
-@pytest.mark.parametrize("placement", ["tag", "split", "repeated"])
+@pytest.mark.parametrize("placement", ["tag", "split", "repeated", "components", "mixed-repeated"])
 @pytest.mark.parametrize("vocabulary", ["cold", "warm"])
 @pytest.mark.parametrize("actor_cache", ["cold", "warm"])
 def test_navbar_isolated_costs(
@@ -138,10 +138,11 @@ def test_navbar_isolated_costs(
             with CaptureQueriesContext(connection) as capture:
                 data = view.get_context_data(object=view.object)
                 context = Context(data)
-                rendered = Template(SPLIT if placement == "split" else TAG).render(context)
-                if placement == "repeated":
-                    Template(TAG + SPLIT).render(copy(context))
-                    Template(TAG).render(Context(view.get_context_data(object=view.object)))
+                source = {"split": SPLIT, "components": COMPONENTS, "mixed-repeated": ITEMS + IDENTITY}.get(placement, TAG)
+                rendered = Template(source).render(context)
+                if placement in {"repeated", "mixed-repeated"}:
+                    Template(TAG + SPLIT + COMPONENTS).render(copy(context))
+                    Template(ITEMS + IDENTITY + TAG).render(Context(view.get_context_data(object=view.object)))
             assert rendered
             build.assert_called_once_with(view)
             for index, spy in enumerate(spies):

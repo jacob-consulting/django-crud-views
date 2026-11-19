@@ -6,6 +6,7 @@ from unittest.mock import Mock
 import pytest
 from django.contrib.auth.models import AnonymousUser
 from django.template import Context, Template, TemplateDoesNotExist
+from django.template.library import SimpleNode
 from django.template.loader import get_template
 from django.test import Client, RequestFactory, override_settings
 from django.urls import reverse
@@ -28,6 +29,9 @@ from tests.test1.test_navbar import (
 
 TEMPLATES = ["navbar", "navbar_identity", "navbar_items"]
 TAG = "{% load crud_views %}{% cv_navbar %}"
+IDENTITY = "{% load crud_views %}{% cv_navbar_identity %}"
+ITEMS = "{% load crud_views %}{% cv_navbar_items %}"
+COMPONENTS = IDENTITY + "<main>Page content</main>" + ITEMS
 SPLIT = (
     '{% include "crud_views/tags/navbar_identity.html" %}'
     "<main>Page content</main>"
@@ -97,8 +101,9 @@ def test_overrides_receive_the_same_named_context(mode, monkeypatch):
             assert data["cv_navbar"] is lazy
 
 
+@pytest.mark.parametrize("source", [SPLIT, COMPONENTS, ITEMS + IDENTITY])
 @pytest.mark.parametrize("copied", ["copy", "new", "flatten", "include-only"])
-def test_context_copies_and_repeated_calls_reuse_one_lazy_build(copied, monkeypatch):
+def test_context_copies_and_repeated_calls_reuse_one_lazy_build(copied, source, monkeypatch):
     build = Mock(wraps=navbar._build)
     monkeypatch.setattr(navbar, "_build", build)
     with navbar_routes(owner_routes) as ns:
@@ -115,7 +120,7 @@ def test_context_copies_and_repeated_calls_reuse_one_lazy_build(copied, monkeypa
         source = (
             '{% include "crud_views/tags/navbar_identity.html" with cv_navbar=cv_navbar only %}'
             if copied == "include-only"
-            else SPLIT
+            else source
         )
         assert "Owner" in render(source, other)
         assert "Owner" in render(TAG, view.get_context_data())
@@ -134,7 +139,7 @@ def test_omitted_consumers_and_modal_direct_includes_do_no_work(modal, monkeypat
         view.get_context_data()
         if modal:
             assert data["cv_navbar"] is None
-            assert render(TAG, data) == ""
+            assert render(TAG + IDENTITY + ITEMS, data) == ""
             for name in TEMPLATES:
                 assert render('{% include "crud_views/tags/' + name + '.html" %}', data) == ""
         forbidden.assert_not_called()
@@ -153,7 +158,7 @@ def test_all_hidden_renders_exactly_empty_and_is_cached(denial, monkeypatch):
         view, data = view_context(ns)
         for name in TEMPLATES:
             assert render('{% include "crud_views/tags/' + name + '.html" %}', data) == ""
-        assert render(TAG, view.get_context_data()) == ""
+        assert render(TAG + IDENTITY + ITEMS, view.get_context_data()) == ""
         assert build.call_count == 1
 
 
@@ -171,10 +176,10 @@ def test_separate_requests_do_not_share_users_or_results(monkeypatch):
         _, second = view_context(ns, name="Second", user=denied)
         assert first["cv_navbar"] is not second["cv_navbar"]
         assert calls == []
-        assert "First" in render(TAG, first)
-        assert render(TAG, second) == ""
+        assert "First" in render(IDENTITY + ITEMS, first)
+        assert render(ITEMS + IDENTITY, second) == ""
         assert calls == [(allowed, "First"), (denied, "Second")]
-        assert "First" in render(TAG, first)
+        assert "First" in render(IDENTITY + ITEMS, first)
         assert len(calls) == 2
 
 
@@ -193,14 +198,16 @@ def test_split_real_request_keeps_header_placement():
             assert header.text_content().strip() == "Unchanged page header"
 
 
-def test_german_landmark_uses_shipped_translation():
+@pytest.mark.parametrize("source", ['{% include "crud_views/tags/navbar_items.html" %}', ITEMS])
+def test_german_landmark_uses_shipped_translation(source):
     with navbar_routes(owner_routes) as ns:
         _, data = view_context(ns)
         with override("de"):
-            tree = html.fromstring(render('{% include "crud_views/tags/navbar_items.html" %}', data))
+            tree = html.fromstring(render(source, data))
         assert tree.get("aria-label") == "Abschnitte für Owner"
 
 
+@pytest.mark.parametrize("source", [TAG, COMPONENTS])
 @pytest.mark.parametrize("language,prefix", [("en", "Sections for "), ("de", "Abschnitte für ")])
 @pytest.mark.parametrize("default_label", [False, True])
 @pytest.mark.parametrize(
@@ -213,14 +220,14 @@ def test_german_landmark_uses_shipped_translation():
         mark_safe('" onmouseover="alert(1)" & <img src=x onerror=alert(1)>'),
     ],
 )
-def test_plain_labels_and_accessible_names_are_escaped_once(language, prefix, default_label, text, monkeypatch):
+def test_plain_labels_and_accessible_names_are_escaped_once(source, language, prefix, default_label, text, monkeypatch):
     monkeypatch.setattr(Publisher, "__str__", lambda self: text)
     options = {"template_code": "{{ object }}"} if default_label else {"label": text}
     with navbar_routes(lambda sfx: owner_routes(sfx, **options)) as ns:
         _, data = view_context(ns)
         with override(language):
-            output = render(TAG, data)
-        tree = html.fromstring(output)
+            output = render(source, data)
+        tree = html.fragment_fromstring(output, create_parent="div")
         identity = tree.xpath('.//*[contains(@class,"cv-navbar-identity")]')[0]
         link = tree.xpath(".//a")[0]
         nav = tree.xpath(".//nav")[0]
@@ -327,7 +334,7 @@ def test_long_text_is_complete_and_uses_wrapping_utilities():
         assert not tree.xpath('.//*[contains(@class,"text-truncate") or contains(@class,"overflow-hidden")]')
 
 
-@pytest.mark.parametrize("name", TEMPLATES)
+@pytest.mark.parametrize("name", TEMPLATES + ["identity-tag", "items-tag"])
 def test_configuration_errors_propagate_without_retry_or_placeholder(name):
     from django.core.exceptions import ImproperlyConfigured
 
@@ -335,7 +342,10 @@ def test_configuration_errors_propagate_without_retry_or_placeholder(name):
         ns.bar.items[0].key = "unregistered"
         _, data = view_context(ns)
         with pytest.raises(ImproperlyConfigured, match="unregistered destination"):
-            render('{% include "crud_views/tags/' + name + '.html" %}', data)
+            source = {"identity-tag": IDENTITY, "items-tag": ITEMS}.get(
+                name, '{% include "crud_views/tags/' + name + '.html" %}'
+            )
+            render(source, data)
 
 
 @pytest.mark.django_db
@@ -349,7 +359,7 @@ def test_real_response_omits_all_navbar_work_without_consumers_or_in_custom_moda
         ns.view.cv_extends_template = "navbar/without.html"
         monkeypatch.setattr(ns.view, "cv_has_access", forbidden)
         monkeypatch.setattr(ns.view, "_cv_action_enabled_for_rendering", forbidden)
-        custom_modal = "".join('{% include "crud_views/tags/' + name + '.html" %}' for name in TEMPLATES)
+        custom_modal = IDENTITY + ITEMS + "".join('{% include "crud_views/tags/' + name + '.html" %}' for name in TEMPLATES)
         with navbar_templates({"crud_views/modal/content.html": custom_modal}):
             url = reverse(ns.owner.get_router_name("detail"), kwargs={ns.owner.pk_name: obj.pk})
             response = Client().get(url, HTTP_X_CV_MODAL="true" if modal else "false")
@@ -374,3 +384,81 @@ def test_descendant_current_section_is_still_a_clickable_collection_link():
         assert current[0].text_content().strip() == "Orders"
         assert current[0].get("href") == section_url(ns, ns.child, "list", owner, child, grand)
         assert current[0].get("tabindex") is None
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("components", [("identity",), ("items",), ("identity", "items"), ("items", "identity")])
+def test_component_tags_render_independently_in_real_response(components):
+    obj = Publisher.objects.create(name="Owner")
+    sources = {"identity": IDENTITY, "items": ITEMS}
+    source = '<main data-body="yes">Page content</main>'.join(sources[name] for name in components)
+    with navbar_routes(owner_routes) as ns:
+        base = get_template("navbar/base.html").template.source
+        with navbar_templates({"navbar/base.html": base.replace("{% cv_navbar %}", source)}):
+            response = get_owner(ns, obj)
+        assert response.status_code == 200
+        tree = html.fromstring(response.content)
+        identities = tree.xpath('.//*[contains(@class,"cv-navbar-identity")]')
+        navs = tree.xpath('.//nav[@aria-label="Sections for Owner"]')
+        assert len(identities) == ("identity" in components)
+        assert len(navs) == ("items" in components)
+        assert not tree.xpath('.//*[@class="cv-navbar mb-3"]')
+        nodes = list(tree.iter())
+        if len(components) == 2:
+            parts = {"identity": identities[0], "items": navs[0]}
+            body = tree.xpath('.//*[@data-body="yes"]')[0]
+            assert nodes.index(parts[components[0]]) < nodes.index(body) < nodes.index(parts[components[1]])
+        header = tree.xpath('.//*[@data-test-page-title]')[0]
+        assert header.text_content().strip() == "Unchanged page header"
+
+
+def test_default_wrapper_delegates_to_component_tags():
+    from crud_views.templatetags.crud_views import cv_navbar_identity, cv_navbar_items
+
+    template = get_template("crud_views/tags/navbar.html").template
+    functions = [node.func for node in template.nodelist.get_nodes_by_type(SimpleNode)]
+    assert functions == [cv_navbar_identity, cv_navbar_items]
+
+
+@pytest.mark.parametrize("theme", ["crud_views", "alternate"])
+@pytest.mark.parametrize("with_request", [False, True])
+def test_component_tags_preserve_caller_context_and_theme_overrides(theme, with_request, monkeypatch):
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "theme_path", theme)
+    with navbar_routes(owner_routes) as ns:
+        ns.bar.template = "custom/component-wrapper.html"
+        _, data = view_context(ns)
+        data["marker"] = "caller"
+        request = RequestFactory().get("/original/")
+        if with_request:
+            data["request"] = request
+        seen = []
+
+        def observe(value):
+            seen.append(value)
+            return ""
+
+        data["observe"] = lambda: observe((data["cv_navbar"], data["view"], data.get("request")))
+        leaf = '{{ observe }}{{ marker }}:{{ view.cv_key }}:{{ request.path }}:{{ cv_navbar.label }}'
+        overrides = {
+            f"{theme}/tags/navbar_identity.html": "identity:" + leaf,
+            f"{theme}/tags/navbar_items.html": "items:" + leaf,
+            ns.bar.template: 'wrapper:{% load crud_views %}{% cv_navbar_items %}|{% cv_navbar_identity %}',
+        }
+        with navbar_templates(overrides):
+            suffix = "caller:detail:" + ("/original/" if with_request else "") + ":Owner"
+            assert render(IDENTITY, data) == "identity:" + suffix
+            assert render(ITEMS, data) == "items:" + suffix
+            assert render(TAG, data) == "wrapper:items:" + suffix + "|identity:" + suffix
+        assert len(seen) == 4
+        for lazy, view, original_request in seen:
+            assert lazy is data["cv_navbar"]
+            assert view is data["view"]
+            assert original_request is (request if with_request else None)
+
+
+@pytest.mark.parametrize("source", [IDENTITY, ITEMS, IDENTITY + ITEMS])
+@pytest.mark.parametrize("data", [{}, {"cv_navbar": None}, {"cv_navbar": SimpleLazyObject(lambda: None)}])
+def test_component_tags_emit_exactly_nothing_when_absent(source, data):
+    assert render(source, data) == ""

@@ -1,25 +1,26 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: 06.40.1
+current_phase_name: "ViewSet Navigation: theme class keys and owner-heading layouts"
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.40 complete, ready to plan Phase 7
-last_updated: "2026-11-19T10:31:48.147Z"
+stopped_at: "Phase 06.40.1 inserted; approved #384 design ready for planning"
+last_updated: "2026-11-19T12:11:25.677Z"
 last_activity: 2026-11-19
-last_activity_desc: "Phase 06.40 shipped as PR #383"
-state_head: 498eaa843406b44b1acb830ba8692e185e0dcf0c
+last_activity_desc: "Integrated Phase 06.40.1 roadmap and approved issue #384 handover on main after PR #383 merge"
+state_head: 5cab3deda0b669755da23eaafcb0a065d4094b9f
 progress:
-  total_phases: 46
+  total_phases: 47
   completed_phases: 45
   total_plans: 255
   completed_plans: 255
-  percent: 98
+  percent: 96
 milestone_name: milestone
 ---
 
-Total Phases: 46
+Total Phases: 47
+Completed Phases: 45
 
 # Project State
 
@@ -28,17 +29,17 @@ Total Phases: 46
 See: .planning/PROJECT.md (updated 2026-11-19)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.40.1 — ViewSet Navigation: theme class keys and owner-heading layouts (#384)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.40.1 — ViewSet Navigation: theme class keys and owner-heading layouts (#384)
 Current Plan: Not started
 Total Plans in Phase: Not yet planned
 Status: Ready to plan
-Last activity: 2026-11-19 -- Phase 06.40 shipped as PR #383
+Last activity: 2026-11-19 -- Integrated Phase 06.40.1 roadmap and approved issue #384 handover on main after PR #383 merge
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.40.1
 
 ### Phase 06.40 component-tag completion — 2026-11-19
 
@@ -2061,6 +2062,7 @@ None yet.
 - Phase 06.37 inserted after Phase 06.36: cv_access Pydantic JSON contract validation and schema (#375) (URGENT)
 - Phase 06.39 inserted after Phase 06.37: Immediate-parent permission checks for child links (#380), ahead of the object navbar (#381) (URGENT)
 - Phase 06.40 inserted after Phase 06.39: Object navbar: opt-in section navigation (#381) (URGENT)
+- Phase 06.40.1 inserted after Phase 06.40: ViewSet Navigation: theme class keys and owner-heading layouts (#384); findings 36 and 38, Guardian finding 37 separate (URGENT)
 
 ## Deferred Items
 
@@ -2071,5 +2073,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-19T09:48:27Z
-Stopped at: Phase 06.40 complete, ready to plan Phase 7
+Stopped at: Phase 06.40.1 inserted; approved #384 design ready for planning
 Resume file: None

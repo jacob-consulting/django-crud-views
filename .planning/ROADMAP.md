@@ -66,6 +66,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.37: cv_access Pydantic JSON contract validation and schema (#375) (INSERTED)** - validate the existing version-1 trace with Pydantic output models and add `cv_access --schema`. (completed 2026-11-16)
 - [x] **Phase 06.39: Immediate-parent permission checks for child links (#380) (INSERTED)** (completed 2026-11-18)
 - [x] **Phase 06.40: Object navbar: opt-in section navigation (#381) (INSERTED)** - all nine plans complete, including independent navbar component tags (plan 09). (completed 2026-11-19)
+- [ ] **Phase 06.40.1: ViewSet Navigation: theme class keys and owner-heading layouts (#384) (INSERTED)** - expose navbar class keys and document theme-owned owner headings.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2156,12 +2157,30 @@ Plans:
 **Wave 7** *(depends on completed plan 08)*
 - [x] 06.40-09-PLAN.md
 
+### Phase 06.40.1: ViewSet Navigation: theme class keys and owner-heading layouts (#384) (INSERTED)
+
+**Goal:** Theme authors can style ViewSet Navigation through six existing-registry class keys and use the
+owner identity as the page heading through documented context/component recipes, preserving stock defaults,
+view actions, accessibility and the existing lazy runtime paths.
+**Source:** [Issue #384 and its GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/384#gsd-handover).
+**Approved design:** [ViewSet Navigation theme support](../superpowers/specs/2026-11-19-navbar-theme-support-design.md), approved 2026-11-19.
+Carry approved D-01–D-07 and acceptance criteria into planning. The issue and design include pinned Tabler
+examples as implementation evidence; adapt reusable recipes into upstream documentation.
+**Scope:** Downstream findings 36 and 38. Finding 37 (Guardian checker reuse) is a separate issue, not a dependency.
+**Requirements**: None; the approved issue contract supplies phase acceptance criteria.
+**Depends on:** Phase 06.40
+**Ordering:** Complete before Phase 7 inventories/freezes the new navbar class keys and owner-heading theme contract.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run $gsd-plan-phase 06.40.1 to break down)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Additional ordering:** Phases 06.30, 06.31 and 06.40 must settle before this freeze; inventory their final conditional-field, developer-diagnostic and object-navbar contracts.
+**Additional ordering:** Phases 06.30, 06.31, 06.40 and 06.40.1 must settle before this freeze; inventory their final conditional-field, developer-diagnostic and object-navbar contracts, including the navbar class keys and owner-heading theme guidance from #384.
 **Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
 bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
@@ -2285,4 +2304,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.33. Structured manage page (#366) | 10/10 | Awaiting verification | - |
 | 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
 | 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Complete | 2026-11-19 |
+| 06.40.1. ViewSet Navigation: theme class keys and owner-heading layouts (#384) | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

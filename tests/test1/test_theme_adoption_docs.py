@@ -17,6 +17,8 @@ from crud_views.lib.view.label_mode import default_label_mode, register_label_mo
 from tests.test1.test_crispy_columns import render_column
 from tests.test1.test_form_frame import THEME_FRAME, _theme_templates
 from tests.test1.test_heading_docs import recipe
+from tests.test1.test_navbar_templates import NAVBAR_CLASSES, TAG, assert_navbar_classes
+from tests.test1.test_navbar_templates import navbar_class_context as navbar_class_context
 from tests.test1.test_theme_action_groups import OrdinaryForm, filter_helper, render_filter, render_group
 from tests.test1.test_theme_form_ownership import _library_form, assert_owned_form_markup
 
@@ -41,6 +43,35 @@ def _python(section, path=THEME):
     namespace = {}
     exec(compile(recipe(path, section, "python"), str(path), "exec"), namespace)
     return namespace
+
+
+def test_documented_navbar_defaults_match_registry():
+    documented = dict(re.findall(r"^\| `(navbar:[^`]+)` \| `([^`]+)` \|$", BUTTONS.read_text(), re.M))
+    assert len(documented) == 6
+    assert documented == {key: value for key, value in bc.DEFAULT_BUTTON_CLASSES.items() if key.startswith("navbar:")}
+
+
+@pytest.mark.parametrize("override", ["project", "", None])
+def test_navbar_class_registration_recipe_renders_with_project_precedence(navbar_class_context, override):
+    assert "### Navbar class registration" in THEME.read_text(), "Publish the navbar class registration recipe"
+    _python("### Navbar class registration")["ready"](None)
+    classes = {
+        **NAVBAR_CLASSES,
+        "navbar:nav": "nav nav-tabs flex-wrap gap-1",
+        "navbar:link": "nav-link d-flex flex-wrap align-items-center mw-100 text-break gap-2",
+        "navbar:link-active": "active",
+    }
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={}):
+        assert_navbar_classes(TAG, "full", navbar_class_context, classes)
+        project = {key: f"project-{key.split(':')[1]}" if override else override for key in classes}
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=project):
+            assert_navbar_classes(
+                TAG, "full", navbar_class_context, {key: value or "" for key, value in project.items()}
+            )
+        # Per-key overrides must preserve the other registrations and stock defaults.
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"navbar:link-active": override}):
+            assert_navbar_classes(TAG, "full", navbar_class_context, {**classes, "navbar:link-active": override or ""})
+        assert_navbar_classes(TAG, "full", navbar_class_context, classes)
 
 
 def _context(form):
@@ -298,9 +329,9 @@ def test_workflow_presentation_docs():
     assert manage_defaults == {
         key: value for key, value in bc.DEFAULT_BUTTON_CLASSES.items() if key.startswith("manage:")
     }
-    assert len(bc.DEFAULT_BUTTON_CLASSES) == 122
-    assert len(bc._get_default_button_classes()) == 140
-    assert "140 effective default keys" in section
+    assert len(bc.DEFAULT_BUTTON_CLASSES) == 128
+    assert len(bc._get_default_button_classes()) == 146
+    assert "146 effective default keys" in section
     precedence = text.split("### Precedence\n", 1)[1].split("\n## ", 1)[0]
     assert "core defaults + installed-app defaults + theme registrations + CRUD_VIEWS_BUTTON_CLASSES" in precedence
     assert "collisions with core or another app's defaults are rejected" in precedence

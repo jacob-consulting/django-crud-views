@@ -28,6 +28,25 @@ def test_default_config_has_no_messages():
 
 
 @pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize("slot", ["wrapper", "identity", "nav", "item", "link", "link-active"])
+@pytest.mark.parametrize("value", ["theme-navbar", "", None, 42])
+def test_navbar_ordinary_keys_accept_classes_and_clear_invalid_values(source, slot, value):
+    key = f"navbar:{slot}"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: value} if source == "settings" else {}):
+        if source == "theme":
+            register_button_classes({key: value})
+        assert ids(check_button_classes()) == (["crud_views.E361"] if value == 42 else [])
+        assert bc.get_button_class("navbar", slot) == (value if isinstance(value, str) else "")
+    assert "navbar" not in bc.VARIANT_LOCATIONS
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize("key", ["navbar:lnik", "navbar:link:icon"])
+def test_navbar_typos_and_mode_suffixes_warn(source, key):
+    assert ids(messages_for({key: "theme-navbar"}, source)) == ["crud_views.W362"]
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
 @pytest.mark.parametrize("width", range(1, 13))
 @pytest.mark.parametrize("value", ["span-6", "", None, 42])
 def test_column_utility_checks(source, width, value):

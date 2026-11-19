@@ -647,6 +647,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **ViewSet Navigation theme support** (#384): six ordinary navbar class keys allow theme registration and
+  per-key project overrides, including empty values, with unchanged stock defaults and active-link semantics.
+  Executable [class registration](docs/reference/theme.md#navbar-class-registration) and
+  [owner-heading layout](docs/reference/navbar.md#owner-as-page-heading) recipes retain view titles, actions,
+  extension blocks and the ordinary header when navigation is absent. Heading hierarchy remains theme-owned.
+
 - **ViewSet Navigation components**: `cv_navbar_identity` and `cv_navbar_items` add convenient independent
   placement of the existing identity and section-link leaves. The default `cv_navbar` wrapper composes both
   tags; existing split includes remain supported. See [placement and overrides](docs/reference/navbar.md#placement-and-overrides).

@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ Six existing-registry navbar class keys and executable owner-heading/startup-registration recipes preserve stock rendering, actions, accessibility and lazy runtime behavior — Phase 06.40.1; verification 9/9, decisions 7/7, security 7/7, five tasks covered and all review findings resolved. Source-only UI scope; no new browser/matrix claim.
+
 - ✓ Opt-in object navbar declarations, owner-stable descendant links, destination permission/state admission, lazy overridable accessible templates, protected tenant example and companion guidance — Phase 06.40; verification38/38, security22/22, clean deep incremental review. Independent component tags and executable recipes complete D-17. Fresh six-width static UI audit23/24; minor landing-copy typography advisory remains. Full matrix/interaction receipts retain their historical source revisions.
 
 - ✓ Immediate-parent permission checks run once for child context/card links, honoring hide/disable, protected-parent actor admission and Guardian provider policy; measured costs, Breaking/migration guidance and navbar handoff delivered — Phase 06.39; verification11/11, review clean, security8/8.
@@ -167,6 +169,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Use six ordinary registry keys and theme-owned owner-heading markup | Reuse existing lookups/context/components without new runtime state, queries or global heading behavior | Validated (Phase 06.40.1; 9/9) |
 | Keep object-navbar behavior opt-in in one module and app-owned template placement | Reuse resolved ancestry and destination hooks once, preserving established context-button and request paths | Validated (Phase 06.40; 38/38) |
 | Stabilize navbar declarations, full/component tags, three templates and documented context at 1.0 | Executable recipes and separately committed companion guidance make the public surface traceable | Validated (Phase 06.40; companion cab8a85a) |
 | Require active configured-group membership for manage diagnostics, including staff/superusers | One shared request/action policy preserves independent CRUD and ancestor authorization | Validated (Phase 06.31) |
@@ -258,4 +261,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-19 after Phase 06.40 component-tag completion*
+*Last updated: 2026-11-19 after Phase 06.40.1 completion*

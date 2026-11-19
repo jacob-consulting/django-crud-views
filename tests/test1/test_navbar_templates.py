@@ -15,6 +15,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import override
 from lxml import html
 
+from crud_views.lib import button_classes as bc
 from crud_views.lib import navbar
 from tests.test1.app.models import Publisher
 from tests.test1.test_navbar import (
@@ -50,6 +51,89 @@ def view_context(ns, *, name="Owner", user=None, modal=False):
     view.setup(request, pk=1)
     view.object = Publisher(pk=1, name=name)
     return view, view.get_context_data()
+
+
+NAVBAR_CLASSES = {
+    "navbar:wrapper": "cv-navbar mb-3",
+    "navbar:identity": "cv-navbar-identity mb-2 fw-medium mw-100 text-break",
+    "navbar:nav": "nav nav-pills flex-wrap gap-1",
+    "navbar:item": "nav-item mw-100",
+    "navbar:link": "nav-link mw-100 text-break",
+    "navbar:link-active": "active",
+}
+NAVBAR_RENDER_PATHS = [
+    pytest.param(TAG, "full", id="full-tag"),
+    pytest.param('{% include "crud_views/tags/navbar.html" %}', "full", id="full-include"),
+    pytest.param(IDENTITY, "identity", id="identity-tag"),
+    pytest.param('{% include "crud_views/tags/navbar_identity.html" %}', "identity", id="identity-include"),
+    pytest.param(ITEMS, "items", id="items-tag"),
+    pytest.param('{% include "crud_views/tags/navbar_items.html" %}', "items", id="items-include"),
+]
+
+
+@pytest.fixture
+def navbar_class_context(db):
+    snapshot = dict(bc._THEME_BUTTON_CLASSES)
+    bc.reset_button_classes_cache()
+    try:
+        with navbar_routes(section_routes) as ns:
+            owner, _, _ = section_objects(ns)
+            view = ns.views[(ns.owner.name, "detail")]()
+            request = RequestFactory().get("/")
+            request.user = AnonymousUser()
+            view.setup(request, owner_pk=owner.pk)
+            view.object = owner
+            yield view.get_context_data()
+    finally:
+        bc._THEME_BUTTON_CLASSES.clear()
+        bc._THEME_BUTTON_CLASSES.update(snapshot)
+        bc.reset_button_classes_cache()
+
+
+def assert_navbar_classes(source, leaf, data, classes):
+    tree = html.fragment_fromstring(render(source, data), create_parent="main")
+    if leaf == "full":
+        assert tree[0].get("class") == classes["navbar:wrapper"]
+    if leaf in {"full", "identity"}:
+        identity = tree[0][0] if leaf == "full" else tree[0]
+        assert identity.get("class") == classes["navbar:identity"]
+    if leaf in {"full", "items"}:
+        nav = tree.xpath(".//nav")[0]
+        assert nav.get("class") is None
+        assert nav[0].get("class") == classes["navbar:nav"]
+        links = nav.xpath("./ul/li/a")
+        assert len(links) == len(data["cv_navbar"]["items"]) == 4
+        for link, item in zip(links, data["cv_navbar"]["items"], strict=True):
+            assert link.getparent().get("class") == classes["navbar:item"]
+            expected = classes["navbar:link"]
+            if item["active"]:
+                expected += " " + classes["navbar:link-active"]
+            assert link.get("class") == expected
+            assert link.get("href") == item["url"]
+            assert link.get("aria-current") == ("true" if item["active"] else None)
+        assert len(nav.xpath('.//a[@aria-current="true"]')) == 1
+    assert not tree.xpath(".//script | .//img | .//*[@onmouseover] | .//*[@onerror] | .//*[@data-injected]")
+
+
+@pytest.mark.parametrize("source,leaf", NAVBAR_RENDER_PATHS)
+@pytest.mark.parametrize("theme", [False, True], ids=["defaults", "registered"])
+def test_navbar_class_defaults_and_theme_registration(source, leaf, theme, navbar_class_context):
+    classes = {key: "theme-" + key.replace(":", "-") for key in NAVBAR_CLASSES} if theme else NAVBAR_CLASSES
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={}):
+        if theme:
+            bc.register_button_classes(classes)
+        assert_navbar_classes(source, leaf, navbar_class_context, classes)
+
+
+@pytest.mark.parametrize("source,leaf", NAVBAR_RENDER_PATHS)
+@pytest.mark.parametrize("key", NAVBAR_CLASSES)
+@pytest.mark.parametrize("value", ["project-current", "", None, '" data-injected="yes"><img src=x onerror=bad>'])
+def test_navbar_project_classes_override_each_theme_key(source, leaf, key, value, navbar_class_context):
+    classes = {key: "theme-" + key.replace(":", "-") for key in NAVBAR_CLASSES}
+    bc.register_button_classes(classes)
+    classes = {**classes, key: value or ""}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: value}):
+        assert_navbar_classes(source, leaf, navbar_class_context, classes)
 
 
 @pytest.mark.parametrize("name", TEMPLATES)
@@ -415,11 +499,11 @@ def test_component_tags_render_independently_in_real_response(components):
 
 
 def test_default_wrapper_delegates_to_component_tags():
-    from crud_views.templatetags.crud_views import cv_navbar_identity, cv_navbar_items
+    from crud_views.templatetags.crud_views import cv_button_class, cv_navbar_identity, cv_navbar_items
 
     template = get_template("crud_views/tags/navbar.html").template
     functions = [node.func for node in template.nodelist.get_nodes_by_type(SimpleNode)]
-    assert functions == [cv_navbar_identity, cv_navbar_items]
+    assert functions == [cv_button_class, cv_navbar_identity, cv_navbar_items]
 
 
 @pytest.mark.parametrize("theme", ["crud_views", "alternate"])

@@ -1,26 +1,26 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 06.40.1
-current_phase_name: "ViewSet Navigation: theme class keys and owner-heading layouts"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: "Phase 06.40.1 inserted; approved #384 design ready for planning"
-last_updated: "2026-11-19T12:11:25.677Z"
+stopped_at: Phase 06.40.1 complete, ready to plan Phase 7
+last_updated: "2026-11-19T13:24:43.811Z"
 last_activity: 2026-11-19
-last_activity_desc: "Integrated Phase 06.40.1 roadmap and approved issue #384 handover on main after PR #383 merge"
-state_head: 5cab3deda0b669755da23eaafcb0a065d4094b9f
+last_activity_desc: "Phase 06.40.1 shipped as PR #386"
+state_head: 3676829908a93fbd2f383d45e38a558591b7a3a2
 progress:
   total_phases: 47
-  completed_phases: 45
-  total_plans: 255
-  completed_plans: 255
-  percent: 96
+  completed_phases: 46
+  total_plans: 257
+  completed_plans: 257
+  percent: 98
 milestone_name: milestone
 ---
 
 Total Phases: 47
-Completed Phases: 45
+Completed Phases: 46
 
 # Project State
 
@@ -29,17 +29,32 @@ Completed Phases: 45
 See: .planning/PROJECT.md (updated 2026-11-19)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.40.1 — ViewSet Navigation: theme class keys and owner-heading layouts (#384)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.40.1 — ViewSet Navigation: theme class keys and owner-heading layouts (#384)
+Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: Not yet planned
+Total Plans in Phase: TBD
 Status: Ready to plan
-Last activity: 2026-11-19 -- Integrated Phase 06.40.1 roadmap and approved issue #384 handover on main after PR #383 merge
+Last activity: 2026-11-19 -- Phase 06.40.1 shipped as PR #386
 
-Next: $gsd-plan-phase 06.40.1
+Next: $gsd-discuss-phase 7
+
+### Phase 06.40.1 completion — 2026-11-19
+
+- Both plans and all five tasks complete. Independent goal verification passed 9/9; all seven approved decisions honored, validation 5/5 and security 7/7 closed. CLI verification.status passed with its covered-input fingerprint.
+- Six ordinary navbar class keys and executable owner-heading/registration recipes delivered. Affected regression: 1,655 passed; strict docs and scoped Ruff/format passed. Three documentation review findings fixed in 701455b6, followed by 77 recipe tests and four independent verifier checks.
+- Source-only UI audit retained as historical 22/24; all three findings resolved. No new browser or full-matrix acceptance claim. Deep review covered 15 files with no open findings.
+- phase.complete advanced to Phase 7; stale dotted progress row and completed-phase count reconciled. SDK missing-file warning parses two Ruff commands as paths, not missing artifacts. Original state.json restored after the known derived rewrite.
+- Issue #384 labeled P06.40.1 at user request. No requirement IDs, pending parent UAT gaps, matching todos or learning promotion. Global learnings disabled by default; no LEARNINGS files. Unrelated work preserved. Codebase-map refresh follows a future gsd-ship.
+
+### Phase 06.40.1 plan 02 execution — 2026-11-19
+
+- All 2 plans/5 tasks executed; phase acceptance remains pending. Plan02 SUMMARY committed at 3f4cc47b before progress updates.
+- Executable owner-heading and startup recipes preserve actions, blocks, escaping, fallback and project precedence. Fresh affected suite: 1,655 passed in 10.46s; strict docs and scoped Ruff/format pass. Fixture re-export cleanup followed by 34 passing tests in 2.11s.
+- ROADMAP SDK records 2/2 executed, complete=false. Known dotted progress-table omission reconciled to that result; state.update-progress skipped its existing unscoped-phase limitation. Derived state.json preserved byte-identically; unrelated untracked work untouched.
+- No phase.complete, review, ship, push, PR or merge performed. Production changes remain the registry and three navbar leaves.
 
 ### Phase 06.40 component-tag completion — 2026-11-19
 
@@ -1396,7 +1411,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 246
+- Total plans completed: 248
 
 - Total plans completed: 186
 - Average duration: -
@@ -1448,6 +1463,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.36 | 8 | - | - |
 | 06.37 | 4 | - | - |
 | 06.40 | 9 | - | - |
+| 06.40.1 | 2 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1635,6 +1651,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.40 P07 | 7min | 2 tasks | 5 files |
 | Phase 06.40 P08 | 136min | 2 tasks | 22 files |
 | Phase 06.40 P09 | 15min | 3 tasks | 10 files |
+| Phase 06.40.1 P01 | 4min | 2 tasks | 9 files |
+| Phase 06.40.1 P02 | 5min | 3 tasks | 7 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1977,6 +1995,8 @@ Recent decisions affecting current work:
 - [Phase 06.40]: Use user-directed port 9000 with owned isolated database/settings and deliberate-failure cleanup evidence.
 - [Phase 06.40]: Preserve failed attempts and qualify earlier full-suite evidence by changed scope; exact affected reruns close the test-only revision.
 - [Phase 06.40]: Split remaining verification into two disjoint four-worker groups; use ordinary per-test temporary directories for core schema exports.
+- [Phase 06.40.1]: Use the six approved ordinary navbar keys without changing registry algorithms, tags or navigation admission.
+- [Phase 06.40.1]: Owner-heading examples use explicit theme-owned h1/h2 markup; global heading settings do not infer navbar presence.
 
 ### Pending Todos
 
@@ -2072,6 +2092,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-19T09:48:27Z
-Stopped at: Phase 06.40.1 inserted; approved #384 design ready for planning
+Last session: 2026-11-19T13:15:37.896966+00:00
+Stopped at: Phase 06.40.1 complete, ready to plan Phase 7
 Resume file: None

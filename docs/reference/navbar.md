@@ -230,6 +230,56 @@ existing layouts need no migration. This equivalent recipe uses the unchanged pu
 {% include "crud_views/tags/navbar_items.html" %}
 ```
 
+### Owner as page heading
+
+A theme may use the owner identity as the page heading, followed by section links and a subordinate
+view header. The stock layout keeps its plain identity and ordinary view header unchanged. This complete
+base fragment preserves the existing extension blocks; integrate it into your theme's own header rather
+than treating its surrounding HTML as a new shared block API:
+
+<!-- navbar-recipe: owner-heading -->
+```django
+{% load crud_views %}
+{% block cv_breadcrumb %}{% cv_breadcrumb %}{% endblock %}
+{% if cv_navbar %}
+  <h1 class="d-flex flex-wrap align-items-center gap-2 text-break">
+    {% if cv_navbar.icon %}{% cv_icon cv_navbar.icon %}{% endif %}
+    {{ cv_navbar.label }}
+  </h1>
+  {% cv_navbar_items %}
+{% endif %}
+<header class="mb-3">
+  {% cv_heading_icon view.cv_get_header_icon location="page" as title_icon %}
+  {% if cv_navbar %}<h2 class="text-break {{ title_icon.host_class }}">{% else %}<h1 class="text-break {{ title_icon.host_class }}">{% endif %}
+    {{ title_icon.inline_html }}
+    {% block cv_header %}{% cv_header %}{% endblock %}
+  {% if cv_navbar %}</h2>{% else %}</h1>{% endif %}
+  {% block cv_context %}{% cv_context_actions object %}{% endblock %}
+  {% block cv_paragraph %}{% cv_paragraph %}{% endblock %}
+</header>
+<main>
+  {% block cv_filter %}{% endblock %}
+  {% block cv_content %}{% endblock %}
+</main>
+```
+
+The owner is `h1` and the view is `h2`; without navigation, the view becomes `h1`. Equal owner and view
+titles are intentionally retained. Missing, unconfigured, fully hidden and modal navigation all leave the
+ordinary header, actions, filters and content available. The breadcrumb appears once, outside the guard.
+Keep autoescaping enabled for `cv_navbar.label`; icons use the registered renderer and links use the
+resolved items component. Actions are independent of navbar visibility and stay below the section links.
+
+This conditional hierarchy uses explicit theme-owned markup. `CRUD_VIEWS_HEADER_LEVEL` controls existing
+package header/content heading helpers globally; it does not inspect `cv_navbar`. A theme must coordinate
+its content-heading policy with this layout, including absent-navbar and modal fallbacks. Do not mutate the
+setting per render, or assume a literal `cv_heading "header" level=...` overrides a configured header level.
+
+Retain wrapping, complete long labels and visible keyboard focus at narrow widths; test the surrounding
+theme header and action layout at those widths. The [class-registration recipe](theme.md#navbar-class-registration)
+can select tabs and link spacing without copying the items template. Wrapper and identity class keys apply
+only when those stock leaves are used: this fragment owns their replacement markup. Do not also render
+the full navbar or identity component here, which would duplicate the owner.
+
 ### Per-bar wrapper
 
 Set `template="myapp/customer_navbar.html"` on `NavBar`. This selects only `cv_navbar`'s full wrapper for
@@ -245,8 +295,9 @@ Create that template with the same context contract:
 </aside>{% endif %}
 ```
 
-All override paths use the normal [theme loader order](theme.md#how-resolution-works). No new button-class keys
-are introduced. Include the normal [assets](assets.md) for the stock wrapping styles.
+All override paths use the normal [theme loader order](theme.md#how-resolution-works). For class-only changes,
+use the [six navbar keys](buttons.md#the-class-table) and [registration recipe](theme.md#navbar-class-registration);
+use template overrides for structural changes. Include the normal [assets](assets.md) for the stock wrapping styles.
 
 ## Validation and supported scope
 

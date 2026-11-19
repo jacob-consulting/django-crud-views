@@ -67,6 +67,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.39: Immediate-parent permission checks for child links (#380) (INSERTED)** (completed 2026-11-18)
 - [x] **Phase 06.40: Object navbar: opt-in section navigation (#381) (INSERTED)** - all nine plans complete, including independent navbar component tags (plan 09). (completed 2026-11-19)
 - [x] **Phase 06.40.1: ViewSet Navigation: theme class keys and owner-heading layouts (#384) (INSERTED)** - expose navbar class keys and document theme-owned owner headings. (completed 2026-11-19)
+- [ ] **Phase 06.41: Current-page bulk selection and action forms for table and card views (#387) (INSERTED)** - opt-in selection on table and card views, submitted to registered action form views in the same ViewSet.
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2179,12 +2180,35 @@ examples as implementation evidence; adapt reusable recipes into upstream docume
 **Wave 2** *(depends on plan 01)*
 - [x] 06.40.1-02-PLAN.md
 
+### Phase 06.41: Current-page bulk selection and action forms for table and card views (#387) (INSERTED)
+
+**Goal:** A developer opts a table or card view into current-page selection and lists the registered action
+views it offers in the same ViewSet. Each destination is an ordinary action form view that owns admission,
+scoped resolution of the submitted IDs, eligibility, confirmation and execution.
+**Source:** [Issue #387 and its GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/387#gsd-handover),
+including [the code-examples comment](https://github.com/jacob-consulting/django-crud-views/issues/387#issuecomment-7015125582)
+(sections 6 and 7: application examples, draft package implementation, templates, script and system checks).
+Both are captured in `06.41-ISSUE-387.md` in the phase directory.
+**Approved design:** [Simple bulk selection and action form views](../superpowers/specs/2026-11-18-simple-bulk-actions-design.md),
+behavior reviewed and revised 2026-11-19.
+Carry approved D-01–D-10 and the acceptance criteria into planning. Public API names, return navigation, the
+no-JavaScript controls and the code sketches in the comment remain proposals for planning.
+**Scope:** `crud_views` core, one `crud_views_guardian` system check, a Bootstrap example app and the reference guide.
+Starts from the list, card and custom-form views on `main`; the phase 06.38 implementation (#378) stays off `main`.
+**Requirements**: None; the approved issue contract supplies phase acceptance criteria.
+**Depends on:** Phase 06.40
+**Ordering:** Complete before Phase 7 inventories/freezes the bulk classes, attributes, POST field names and class keys.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run $gsd-plan-phase 06.41 to break down)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Additional ordering:** Phases 06.30, 06.31, 06.40 and 06.40.1 must settle before this freeze; inventory their final conditional-field, developer-diagnostic and object-navbar contracts, including the navbar class keys and owner-heading theme guidance from #384.
+**Additional ordering:** Phases 06.30, 06.31, 06.40, 06.40.1 and 06.41 must settle before this freeze; inventory their final conditional-field, developer-diagnostic, object-navbar and bulk-action contracts, including the navbar class keys and owner-heading theme guidance from #384 and the bulk class keys from #387.
 **Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
 bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
@@ -2309,4 +2333,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
 | 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Complete | 2026-11-19 |
 | 06.40.1. ViewSet Navigation: theme class keys and owner-heading layouts (#384) | 2/2 | Complete | 2026-11-19 |
+| 06.41. Current-page bulk selection and action forms for table and card views (#387) | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

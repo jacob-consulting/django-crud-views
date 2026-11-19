@@ -77,7 +77,8 @@ def test_owner_heading_recipe_preserves_header_actions_and_fallback(header_level
         headings = tree.xpath(".//h1 | .//h2")
         assert [node.tag for node in headings] == (["h1", "h2"] if state == "present" else ["h1"])
         assert headings[-1].text_content().strip() == "Unchanged page header"
-        assert "View subtitle" in tree.text_content() and "Page body" in tree.text_content()
+        assert "View subtitle" in tree.text_content()
+        assert "Page body" in tree.text_content()
         assert not tree.xpath(".//img | .//*[@onerror]")
         actions = tree.xpath('.//a[@cv-key="detail"]')
         assert len(actions) == 1
@@ -88,7 +89,8 @@ def test_owner_heading_recipe_preserves_header_actions_and_fallback(header_level
         if state == "present":
             assert headings[0].text_content().strip() == 'Owner <img src=x onerror="bad">'
             icon = headings[0].xpath(".//i")[0]
-            assert "host-building" in icon.classes and icon.get("aria-hidden") == "true"
+            assert "host-building" in icon.classes
+            assert icon.get("aria-hidden") == "true"
             link = navs[0].xpath(".//a")[0]
             assert link.get("aria-current") == "true"
             assert link.get("href") == actions[0].get("href")

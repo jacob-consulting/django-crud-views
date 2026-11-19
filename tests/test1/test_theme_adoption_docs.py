@@ -43,6 +43,12 @@ def _python(section, path=THEME):
     return namespace
 
 
+def test_documented_navbar_defaults_match_registry():
+    documented = dict(re.findall(r"^\| `(navbar:[^`]+)` \| `([^`]+)` \|$", BUTTONS.read_text(), re.M))
+    assert len(documented) == 6
+    assert documented == {key: value for key, value in bc.DEFAULT_BUTTON_CLASSES.items() if key.startswith("navbar:")}
+
+
 def _context(form):
     return Context(
         {
@@ -298,9 +304,9 @@ def test_workflow_presentation_docs():
     assert manage_defaults == {
         key: value for key, value in bc.DEFAULT_BUTTON_CLASSES.items() if key.startswith("manage:")
     }
-    assert len(bc.DEFAULT_BUTTON_CLASSES) == 122
-    assert len(bc._get_default_button_classes()) == 140
-    assert "140 effective default keys" in section
+    assert len(bc.DEFAULT_BUTTON_CLASSES) == 128
+    assert len(bc._get_default_button_classes()) == 146
+    assert "146 effective default keys" in section
     precedence = text.split("### Precedence\n", 1)[1].split("\n## ", 1)[0]
     assert "core defaults + installed-app defaults + theme registrations + CRUD_VIEWS_BUTTON_CLASSES" in precedence
     assert "collisions with core or another app's defaults are rejected" in precedence

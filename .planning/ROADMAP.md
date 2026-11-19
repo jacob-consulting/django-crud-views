@@ -2201,18 +2201,35 @@ Starts from the list, card and custom-form views on `main`; the phase 06.38 impl
 **Plans:** 13 plans
 
 Plans:
+**Wave 1**
 - [ ] 06.41-01-PLAN.md — Tracer: table selection through review and confirmation to execution; selection mistakes return to the source (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.41-02-PLAN.md — Confirmation outcomes (skip, mixed, input form, all blocked) and execution guarantees (wave 2)
 - [ ] 06.41-03-PLAN.md — Register the `bulk` label-mode location with its floor (wave 2)
 - [ ] 06.41-04-PLAN.md — Toolbar script `bulk.js` with its unit test and script inventories (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.41-05-PLAN.md — Key types, default database, parent and tenant scope, admission order (wave 3)
 - [ ] 06.41-06-PLAN.md — Register the seven `bulk:*` class keys (wave 3)
+
+**Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 06.41-07-PLAN.md — Source rendering: toolbar with label modes and card selection (wave 4)
+
+**Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 06.41-08-PLAN.md — Return navigation after cancel, warning, plain GET and success (wave 5)
+
+**Wave 6** *(blocked on Wave 5 completion)*
 - [ ] 06.41-09-PLAN.md — System checks, Guardian warning and German catalogs (wave 6)
+
+**Wave 7** *(blocked on Wave 6 completion)*
 - [ ] 06.41-10-PLAN.md — Reference guide, stability listing, cross-links and changelog (wave 7)
 - [ ] 06.41-11-PLAN.md — Bootstrap example app `bulk_selection` with table and card selection and three bulk actions (wave 7)
+
+**Wave 8** *(blocked on Wave 7 completion)*
 - [ ] 06.41-12-PLAN.md — Example registered in the project: feature entry, inventories, developer account, German catalog (wave 8)
+
+**Wave 9** *(blocked on Wave 8 completion)*
 - [ ] 06.41-13-PLAN.md — Guide and example synchronized; full gates on Django 4.2, 5.2 and 6.0 (wave 9)
 
 ### Phase 7: Theme-surface stability policy

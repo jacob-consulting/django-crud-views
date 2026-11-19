@@ -1,12 +1,13 @@
 # ViewSet Navigation: theme class keys and owner-heading layouts
 
 **Date:** 2026-11-19
-**Status:** approach 1 selected; design awaiting maintainer approval.
+**Status:** design approved by the maintainer on 2026-11-19; issue handover, not implementation authorization.
+**Issue:** [#384](https://github.com/jacob-consulting/django-crud-views/issues/384).
 **Scope:** a small follow-up issue to phase 06.40 / #381, covering tabler-test findings 36 and 38.
 Finding 37 (Guardian checker reuse) belongs in a separate issue. This document does not schedule a phase
 or authorize product implementation.
 
-## Intent and constraints
+## Problem / motivation
 
 Let themes style ViewSet Navigation through the established class registry and use the owner identity as
 the page heading. Tabler already builds that layout from the documented context and component tags; its
@@ -17,7 +18,7 @@ Keep the stock Bootstrap appearance and plain identity unchanged. Reuse existing
 Developer maintainability is a hard constraint: this is template and documentation work, with no changes
 to permission admission, owner resolution, URLs or the lazy navbar builder.
 
-## Approaches
+## Alternatives considered
 
 1. **Class keys plus theme guidance — selected by the maintainer.** Preserve default rendering, expose
    styling through the existing registry, and document a theme-owned owner heading. Themes retain ownership
@@ -25,12 +26,21 @@ to permission admission, owner resolution, URLs or the lazy navbar builder.
 2. **Also ship a configurable heading variant — not selected.** Reduces theme markup but adds rendering
    configuration and heading-level decisions whose correct values depend on the surrounding page.
 
-## Proposed contract
+## gsd-handover
 
-### Class keys
+Carry these approved decisions and the acceptance criteria into GSD planning. Finding 38 is explicitly
+included alongside finding 36. Filing this issue does not create a phase, schedule work, or authorize
+implementation; finding 37 remains separate and is not a dependency of this work.
 
-Use six ordinary keys in the existing registry. The exact names below are the assistant's proposal for
-review; their defaults reproduce today's classes. `navbar:nav` styles the list inside the `nav` landmark.
+### D-01 — Bounded theme-support follow-up
+
+Implement the selected class-keys-plus-guidance approach. Preserve the stock layout and proven runtime
+paths; reuse existing registry and template mechanisms. Developer maintainability remains a hard constraint.
+
+### D-02 — Class keys (finding 36)
+
+Use six ordinary keys in the existing registry. These names and defaults were proposed by the assistant
+and approved with the design. `navbar:nav` styles the list inside the `nav` landmark.
 
 | Key | Default |
 |---|---|
@@ -46,7 +56,7 @@ Follow existing registry precedence and empty-value behavior. Do not retain hard
 classes outside the keys. A theme can choose `nav nav-tabs flex-wrap gap-1` and add link spacing through
 `navbar:link` without copying the items template.
 
-### Owner as page heading
+### D-03 — Owner as page heading (finding 38)
 
 Replace the universal prohibition in the theme contract with a distinction between the stock layout and
 theme-owned layouts. A theme may use the owner identity as its page heading, put section links below it,
@@ -57,11 +67,13 @@ Document a recipe using escaped `cv_navbar.label`, the existing icon renderer an
 guarded by `cv_navbar`, with the ordinary header retained when the bar is absent. Explain integration with
 the theme's own header blocks rather than inventing a new shared block contract.
 
+### D-04 — Accessibility and component boundaries
+
 Keep independent empty guards, visible labels, decorative icons, translated navigation naming, clickable
 active links, keyboard focus and wrapping. `NavBar(template=...)` continues to select only the full wrapper;
 component tags continue to resolve their theme leaves independently.
 
-## Acceptance and documentation
+### D-05 — Acceptance and documentation
 
 - Default classes and markup semantics remain equivalent; ordinary pages retain the stock layout.
 - Theme registration and project settings can override all six keys through existing precedence rules,
@@ -73,7 +85,7 @@ component tags continue to resolve their theme leaves independently.
 - Update the navbar reference, theme/class-key inventory, relevant stability inventory and changelog.
   Add focused rendering/recipe coverage and run the affected existing suites with bounded pytest workers.
 
-## Non-goals and implementation discretion
+### D-06 — Non-goals and implementation discretion
 
 No Guardian optimization, heading variant, automatic duplicate-title suppression, per-bar component-template
 configuration, Tabler source changes or redesign of the shipped example. Requiring a template copy merely
@@ -81,6 +93,12 @@ to change classes, or broadening this into permission infrastructure, would defe
 
 The implementer chooses test organization and recipe placement using existing conventions. Any genuine
 breaking change must be identified explicitly and follow the paired changelog/migration rule.
+
+### D-07 — Separate Guardian follow-up (finding 37)
+
+Repeated Guardian permission queries deserve their own design and query-count acceptance criteria.
+That work must consider custom destination hooks, parent checks and request isolation. No checker-sharing
+mechanism is approved here; theme improvements must be able to proceed independently.
 
 ## References
 

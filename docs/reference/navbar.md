@@ -135,7 +135,7 @@ are no row counts, badges, existence probes or row-count-based hiding.
 
 Reached configuration errors propagate; invalid policy or URL configuration is not silently treated as denial.
 If no items survive, the entire bar, including identity and spacing, is absent. Modals omit the bar. Context
-creation is lazy: omitting the tag **and** both partials performs zero navbar construction or admission work.
+creation is lazy: omitting all three tags **and** both partials performs zero navbar construction or admission work.
 Repeated template/context access on the same view/request shares one result; declarations do not cache users.
 Pages without participation add no navbar work or queries.
 
@@ -148,7 +148,24 @@ In your base template, load the library and place the tag before the existing vi
 {% load crud_views %}{% cv_navbar %}
 ```
 
-The default wrapper and leaves are:
+For independent placement, use either no-argument component tag from the same library:
+
+<!-- navbar-recipe: identity-tag -->
+```django
+{% load crud_views %}{% cv_navbar_identity %}
+```
+
+<!-- navbar-recipe: items-tag -->
+```django
+{% load crud_views %}{% cv_navbar_items %}
+```
+
+`cv_navbar` renders the full wrapper. `cv_navbar_identity` renders only identity, and `cv_navbar_items`
+renders only the section links. All three reuse the same named lazy `cv_navbar` value and preserve the
+full caller context and request. Components can appear alone or in either order.
+
+The default wrapper composes the two component tags, identity first. Its public leaves remain:
+
 
 | Path | Responsibility |
 |---|---|
@@ -169,9 +186,9 @@ the package ships only layout B and has no layout/location setting:
 
 <!-- navbar-recipe: wrapper -->
 ```django
-{% if cv_navbar %}<div class="d-flex flex-wrap gap-2 mb-3">
-  {% include "crud_views/tags/navbar_identity.html" %}
-  {% include "crud_views/tags/navbar_items.html" %}
+{% if cv_navbar %}{% load crud_views %}<div class="d-flex flex-wrap gap-2 mb-3">
+  {% cv_navbar_identity %}
+  {% cv_navbar_items %}
 </div>{% endif %}
 ```
 
@@ -191,27 +208,40 @@ The items leaf is independently replaceable at its listed path using `cv_navbar.
 
 ### Split placement
 
-Omit the wrapper tag and include the leaves at separate locations in your base using the same context:
+Place the component tags at separate locations in your base using the same context:
 
 <!-- navbar-recipe: split -->
+```django
+{% load crud_views %}{% cv_navbar_identity %}
+<main>{% block cv_content %}{% endblock %}</main>
+{% cv_navbar_items %}
+```
+
+Do not also place `cv_navbar`, which would duplicate the UI. Both components share the lazy result.
+To put items first, swap the two component calls. Keep `cv_content` so child templates retain their page body.
+
+Split includes already worked and remain supported. The component tags add a convenient placement API;
+existing layouts need no migration. This equivalent recipe uses the unchanged public leaf paths:
+
+<!-- navbar-recipe: split-includes -->
 ```django
 {% include "crud_views/tags/navbar_identity.html" %}
 <main>{% block cv_content %}{% endblock %}</main>
 {% include "crud_views/tags/navbar_items.html" %}
 ```
 
-Do not also place the tag, which would duplicate the UI. Both leaves share the lazy result.
-
 ### Per-bar wrapper
 
-Set `template="myapp/customer_navbar.html"` on `NavBar`. This chooses the tag's wrapper for just this declaration;
-direct split includes keep the paths you chose. Create that template with the same context contract:
+Set `template="myapp/customer_navbar.html"` on `NavBar`. This selects only `cv_navbar`'s full wrapper for
+that declaration. Component tags always select their corresponding theme leaves with normal loader precedence,
+even from a custom wrapper; they ignore the per-bar wrapper choice. Direct includes keep the paths you chose.
+Create that template with the same context contract:
 
 <!-- navbar-recipe: per-bar -->
 ```django
-{% if cv_navbar %}<aside class="mb-3">
-  {% include "crud_views/tags/navbar_identity.html" %}
-  {% include "crud_views/tags/navbar_items.html" %}
+{% if cv_navbar %}{% load crud_views %}<aside class="mb-3">
+  {% cv_navbar_identity %}
+  {% cv_navbar_items %}
 </aside>{% endif %}
 ```
 
@@ -230,7 +260,7 @@ attachments. An empty items list is intentionally valid. Preserve `super().check
 There are no groups, dropdowns, nested items, global application menu or downstream theme adoption in this API.
 It does not change context buttons, ancestor policy or existing URL construction. Custom route extras still
 use the destination's existing URL-kwargs hook; arbitrary dynamic route captures are not inferred.
-Declarations, attachment, tag, three templates and documented context are [stable at 1.0](../development/stability.md).
+Declarations, attachment, all three tags, three templates and documented context are [stable at 1.0](../development/stability.md).
 Builders, resolvers and check carriers remain internal.
 
 ## Measured costs
@@ -266,3 +296,8 @@ All 72 measured combinations built once, called owner access once and child admi
 check per admitted item. They read no Publisher/Book/BookNote rows and performed no collection probes or
 actor/session reads. Repeated access added no hooks or SQL. See also [child-link costs](context_buttons.md)
 and [ancestor authorization](nested.md#ancestor-authorization); [breadcrumbs](breadcrumb.md) have their own work.
+
+The component-tag follow-up separately exercises 48 additional combinations: component pairs and reversed,
+mixed/repeated component, wrapper and direct-include consumers across the same depth/cache/composition axes.
+These checks retain the SQL totals above, one build and once-only per-item hooks. The historical 72-combination
+receipt describes the original placements; it is not relabeled as component-tag evidence.

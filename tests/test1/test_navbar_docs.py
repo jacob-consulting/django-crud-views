@@ -40,7 +40,9 @@ def test_documented_declarations_construct_with_translated_labels():
     ]
 
 
-@pytest.mark.parametrize("mode", ["tag", "wrapper", "identity", "split", "per-bar", "identity-tag", "items-tag", "split-includes"])
+@pytest.mark.parametrize(
+    "mode", ["tag", "wrapper", "identity", "split", "per-bar", "identity-tag", "items-tag", "split-includes"]
+)
 def test_published_override_recipes_render_real_context(mode, monkeypatch):
     build = Mock(wraps=navbar._build)
     monkeypatch.setattr(navbar, "_build", build)
@@ -55,10 +57,15 @@ def test_published_override_recipes_render_real_context(mode, monkeypatch):
             overrides[ns.bar.template] = snippets[mode]
         with navbar_templates(overrides):
             _, context = view_context(ns, name="A <b>plain</b> owner")
-            source = snippets[mode] if mode in {"split", "split-includes", "identity-tag", "items-tag"} else snippets["tag"]
+            source = (
+                snippets[mode] if mode in {"split", "split-includes", "identity-tag", "items-tag"} else snippets["tag"]
+            )
             output = Template(source).render(Context(context))
             tree = html.fragment_fromstring(output, create_parent="div")
-            assert "A <b>plain</b> owner" in tree.text_content()
+            if mode == "items-tag":
+                assert tree.xpath(".//nav")[0].get("aria-label") == "Sections for A <b>plain</b> owner"
+            else:
+                assert "A <b>plain</b> owner" in tree.text_content()
             assert not tree.xpath(".//b")
             links = tree.xpath(".//nav//a")
             assert len(links) == (0 if mode == "identity-tag" else 1)
@@ -107,14 +114,15 @@ def test_documented_context_inventory_resolves_real_render_data():
         assert get_template(path).render({"cv_navbar": None}) == ""
 
 
-@pytest.mark.parametrize("mode", ["split", "per-bar"])
+@pytest.mark.parametrize("mode", ["wrapper", "split", "per-bar"])
 def test_published_wrappers_use_component_tags(mode):
     from django.template.library import SimpleNode
     from crud_views.templatetags.crud_views import cv_navbar_identity, cv_navbar_items
 
     template = Template(recipes()[mode])
     assert [node.func for node in template.nodelist.get_nodes_by_type(SimpleNode)] == [
-        cv_navbar_identity, cv_navbar_items
+        cv_navbar_identity,
+        cv_navbar_items,
     ]
 
 

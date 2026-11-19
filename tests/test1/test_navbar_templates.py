@@ -359,7 +359,9 @@ def test_real_response_omits_all_navbar_work_without_consumers_or_in_custom_moda
         ns.view.cv_extends_template = "navbar/without.html"
         monkeypatch.setattr(ns.view, "cv_has_access", forbidden)
         monkeypatch.setattr(ns.view, "_cv_action_enabled_for_rendering", forbidden)
-        custom_modal = IDENTITY + ITEMS + "".join('{% include "crud_views/tags/' + name + '.html" %}' for name in TEMPLATES)
+        custom_modal = (
+            IDENTITY + ITEMS + "".join('{% include "crud_views/tags/' + name + '.html" %}' for name in TEMPLATES)
+        )
         with navbar_templates({"crud_views/modal/content.html": custom_modal}):
             url = reverse(ns.owner.get_router_name("detail"), kwargs={ns.owner.pk_name: obj.pk})
             response = Client().get(url, HTTP_X_CV_MODAL="true" if modal else "false")
@@ -408,7 +410,7 @@ def test_component_tags_render_independently_in_real_response(components):
             parts = {"identity": identities[0], "items": navs[0]}
             body = tree.xpath('.//*[@data-body="yes"]')[0]
             assert nodes.index(parts[components[0]]) < nodes.index(body) < nodes.index(parts[components[1]])
-        header = tree.xpath('.//*[@data-test-page-title]')[0]
+        header = tree.xpath(".//*[@data-test-page-title]")[0]
         assert header.text_content().strip() == "Unchanged page header"
 
 
@@ -425,7 +427,7 @@ def test_default_wrapper_delegates_to_component_tags():
 def test_component_tags_preserve_caller_context_and_theme_overrides(theme, with_request, monkeypatch):
     from crud_views.lib.settings import crud_views_settings
 
-    monkeypatch.setattr(crud_views_settings, "theme_path", theme)
+    monkeypatch.setattr(type(crud_views_settings), "theme_path", property(lambda self: theme))
     with navbar_routes(owner_routes) as ns:
         ns.bar.template = "custom/component-wrapper.html"
         _, data = view_context(ns)
@@ -435,23 +437,34 @@ def test_component_tags_preserve_caller_context_and_theme_overrides(theme, with_
             data["request"] = request
         seen = []
 
-        def observe(value):
-            seen.append(value)
-            return ""
+        from crud_views.templatetags import crud_views as tags
 
-        data["observe"] = lambda: observe((data["cv_navbar"], data["view"], data.get("request")))
-        leaf = '{{ observe }}{{ marker }}:{{ view.cv_key }}:{{ request.path }}:{{ cv_navbar.label }}'
+        original_get_template = tags.get_template
+
+        def observe_template(path):
+            template = original_get_template(path)
+            original_render = template.render
+
+            def observe(context, request=None):
+                seen.append((context["cv_navbar"], context["view"], request))
+                return original_render(context, request=request)
+
+            template.render = observe
+            return template
+
+        monkeypatch.setattr(tags, "get_template", observe_template)
+        leaf = "{{ marker }}:{{ view.cv_key }}:{{ request.path }}:{{ cv_navbar.label }}"
         overrides = {
             f"{theme}/tags/navbar_identity.html": "identity:" + leaf,
             f"{theme}/tags/navbar_items.html": "items:" + leaf,
-            ns.bar.template: 'wrapper:{% load crud_views %}{% cv_navbar_items %}|{% cv_navbar_identity %}',
+            ns.bar.template: "wrapper:{% load crud_views %}{% cv_navbar_items %}|{% cv_navbar_identity %}",
         }
         with navbar_templates(overrides):
             suffix = "caller:detail:" + ("/original/" if with_request else "") + ":Owner"
             assert render(IDENTITY, data) == "identity:" + suffix
             assert render(ITEMS, data) == "items:" + suffix
             assert render(TAG, data) == "wrapper:items:" + suffix + "|identity:" + suffix
-        assert len(seen) == 4
+        assert len(seen) == 5
         for lazy, view, original_request in seen:
             assert lazy is data["cv_navbar"]
             assert view is data["view"]

@@ -138,7 +138,9 @@ def test_navbar_isolated_costs(
             with CaptureQueriesContext(connection) as capture:
                 data = view.get_context_data(object=view.object)
                 context = Context(data)
-                source = {"split": SPLIT, "components": COMPONENTS, "mixed-repeated": ITEMS + IDENTITY}.get(placement, TAG)
+                source = {"split": SPLIT, "components": COMPONENTS, "mixed-repeated": ITEMS + IDENTITY}.get(
+                    placement, TAG
+                )
                 rendered = Template(source).render(context)
                 if placement in {"repeated", "mixed-repeated"}:
                     Template(TAG + SPLIT + COMPONENTS).render(copy(context))

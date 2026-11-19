@@ -459,6 +459,26 @@ def cv_navbar(context):
     return get_template(wrapper).render(context.flatten(), request=context.get("request"))
 
 
+@register.simple_tag(takes_context=True)
+def cv_navbar_identity(context):
+    """Render the identity leaf using the shared request-local navbar."""
+    if not context.get("cv_navbar"):
+        return ""
+    return get_template(f"{crud_views_settings.theme_path}/tags/navbar_identity.html").render(
+        context.flatten(), request=context.get("request")
+    )
+
+
+@register.simple_tag(takes_context=True)
+def cv_navbar_items(context):
+    """Render the section links using the shared request-local navbar."""
+    if not context.get("cv_navbar"):
+        return ""
+    return get_template(f"{crud_views_settings.theme_path}/tags/navbar_items.html").render(
+        context.flatten(), request=context.get("request")
+    )
+
+
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/messages.html", takes_context=True)
 def cv_messages(context):
     return {"cv_message_alerts": message_alerts(context.get("messages"))}

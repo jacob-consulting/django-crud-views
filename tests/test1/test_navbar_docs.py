@@ -7,11 +7,16 @@ from unittest.mock import Mock
 import pytest
 from django.template import Context, Template
 from django.template.loader import get_template
+from django.test import Client, override_settings
+from django.urls import reverse
 from lxml import html
 
 from crud_views.lib import navbar
 from crud_views.lib.navbar import CrudViewNavBarMixin, NavBar, NavItem
+from crud_views.lib.view import ChildContextButton
+from tests.test1.app.models import Publisher
 from tests.test1.test_navbar import navbar_routes, navbar_templates, owner_routes
+from tests.test1.test_navbar_permissions import grant, permission_routes
 from tests.test1.test_navbar_templates import view_context
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -20,6 +25,102 @@ REFERENCE = ROOT / "docs/reference/navbar.md"
 
 def recipes():
     return dict(re.findall(r"<!-- navbar-recipe: ([\w-]+) -->\n```django\n(.*?)\n```", REFERENCE.read_text(), re.S))
+
+
+def owner_heading_recipe():
+    snippets = recipes()
+    assert "owner-heading" in snippets, "Publish the owner-heading recipe"
+    return snippets["owner-heading"]
+
+
+@pytest.mark.parametrize("header_level", [None, 3])
+@pytest.mark.parametrize("state", ["present", "missing", "unconfigured", "hidden", "modal"])
+def test_owner_heading_recipe_preserves_header_actions_and_fallback(header_level, state):
+    source = owner_heading_recipe()
+    with navbar_routes(lambda sfx: owner_routes(sfx, configured=state != "unconfigured")) as ns:
+        ns.view.cv_context_actions = ["detail"]
+        ns.view.cv_paragraph_template = None
+        ns.view.cv_paragraph_template_code = "View subtitle"
+        if state == "hidden":
+            # Hide the sole navbar item without denying the independent detail action.
+            ns.bar.items = [NavItem(key="detail", label="Hidden section")]
+            ns.view.cv_is_active = classmethod(lambda cls, request, obj=None: False)
+        _, data = view_context(ns, name='Owner <img src=x onerror="bad">', modal=state == "modal")
+        if state == "missing":
+            data.pop("cv_navbar")
+        with override_settings(CRUD_VIEWS_HEADER_LEVEL=header_level), navbar_templates({"owner.html": source}):
+            output = Template('{% extends "owner.html" %}{% block cv_content %}Page body{% endblock %}').render(
+                Context(data)
+            )
+        tree = html.fragment_fromstring(output, create_parent="div")
+        headings = tree.xpath(".//h1 | .//h2")
+        assert [node.tag for node in headings] == (["h1", "h2"] if state == "present" else ["h1"])
+        assert headings[-1].text_content().strip() == "Unchanged page header"
+        assert "View subtitle" in tree.text_content() and "Page body" in tree.text_content()
+        assert not tree.xpath(".//img | .//*[@onerror]")
+        actions = tree.xpath('.//a[@cv-key="detail"]')
+        assert len(actions) == 1
+        assert actions[0].get("href") == reverse(ns.owner.get_router_name("detail"), kwargs={"pk": 1})
+        assert actions[0].text_content().strip()
+        navs = tree.xpath('.//nav[starts-with(@aria-label,"Sections for ")]')
+        assert len(navs) == (state == "present")
+        if state == "present":
+            assert headings[0].text_content().strip() == 'Owner <img src=x onerror="bad">'
+            link = navs[0].xpath(".//a")[0]
+            assert link.get("aria-current") == "true"
+            assert link.get("href") == actions[0].get("href")
+
+
+@pytest.mark.parametrize("present", [False, True])
+def test_owner_heading_recipe_retains_equal_titles_and_inherited_blocks(present):
+    source = owner_heading_recipe()
+    blocks = ["cv_breadcrumb", "cv_header", "cv_context", "cv_paragraph", "cv_filter", "cv_content"]
+    assert re.findall(r"{% block (\w+) %}", source) == blocks
+    with navbar_routes(lambda sfx: owner_routes(sfx, configured=present)) as ns:
+        _, data = view_context(ns, name="Unchanged page header")
+        with navbar_templates({"owner.html": source}):
+            plain = html.fragment_fromstring(Template(source).render(Context(data)), create_parent="div")
+            assert [h.text_content().strip() for h in plain.xpath(".//h1 | .//h2")] == ["Unchanged page header"] * (
+                2 if present else 1
+            )
+            child = '{% extends "owner.html" %}' + "".join(
+                "{% block " + block + " %}override-" + block + "{% endblock %}" for block in blocks
+            )
+            output = Template(child).render(Context(data))
+        for block in blocks:
+            assert output.count("override-" + block) == 1
+
+
+@pytest.mark.django_db
+def test_owner_heading_recipe_orders_real_actions_after_navigation(django_user_model):
+    source = owner_heading_recipe()
+    with navbar_routes(permission_routes) as ns:
+        owner = Publisher.objects.create(name="Owner heading")
+        actor = django_user_model.objects.create_user(username="owner-heading")
+        grant(ns, actor, owner)
+        ns.host.cv_context_buttons = [ChildContextButton(key="children", child_name=ns.child.name, label_mode="label")]
+        ns.host.cv_context_actions = ["children", "detail"]
+        ns.host.cv_extends_template = "owner.html"
+        client = Client()
+        client.force_login(actor)
+        with navbar_templates({"owner.html": source}):
+            response = client.get(reverse(ns.owner.get_router_name("host"), kwargs={"pk": owner.pk}))
+        assert response.status_code == 200
+        tree = html.fromstring(response.content)
+        actions = tree.xpath("//a[@cv-key]")
+        assert [a.get("cv-key") for a in actions] == ["list", "detail"]
+        assert [a.get("href") for a in actions] == [
+            reverse(ns.child.get_router_name("list"), kwargs={"publisher_pk": owner.pk}),
+            reverse(ns.owner.get_router_name("detail"), kwargs={"pk": owner.pk}),
+        ]
+        assert all(a.text_content().strip() for a in actions)
+        breadcrumbs = tree.xpath('//nav[@aria-label="breadcrumb"]')
+        assert len(breadcrumbs) == 1
+        nav = tree.xpath('//nav[starts-with(@aria-label,"Sections for ")]')[0]
+        title = tree.xpath("//h2")[0]
+        ordered = list(tree.iter())
+        assert ordered.index(breadcrumbs[0]) < ordered.index(tree.xpath("//h1")[0]) < ordered.index(nav)
+        assert ordered.index(nav) < ordered.index(title) < ordered.index(actions[0]) < ordered.index(actions[1])
 
 
 def test_documented_declarations_construct_with_translated_labels():

@@ -191,15 +191,39 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `manage:trace-not-reached` | `badge bg-secondary` |
 | `manage:trace-not-evaluated` | `badge bg-warning text-dark` |
 
-The default table has 122 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 128 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
 Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
 keys and two dismissal utilities; the two form-group utilities each contribute one key, numbered columns contribute
-twelve width keys, and manage diagnostics contribute twenty keys. Manage values replace complete class strings;
+twelve width keys, ViewSet Navigation contributes six keys, and manage diagnostics contribute twenty keys. Manage values replace complete class strings;
 theme registrations override defaults and project settings override the theme. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
+
+### ViewSet Navigation classes
+
+These six ordinary utility keys replace the complete class strings in the stock navbar leaves.
+They do not accept label-mode suffixes.
+
+| Key | Complete default classes |
+|---|---|
+| `navbar:wrapper` | `cv-navbar mb-3` |
+| `navbar:identity` | `cv-navbar-identity mb-2 fw-medium mw-100 text-break` |
+| `navbar:nav` | `nav nav-pills flex-wrap gap-1` |
+| `navbar:item` | `nav-item mw-100` |
+| `navbar:link` | `nav-link mw-100 text-break` |
+| `navbar:link-active` | `active` |
+
+`navbar:nav` styles the `ul` inside the navigation landmark; `navbar:item` styles each `li`.
+`navbar:link-active` adds classes only to current links, independently of their `aria-current="true"`
+and clickable `href`. The wrapper and identity keys apply when their corresponding stock leaves render.
+
+The existing precedence applies per key: core defaults + installed-app defaults + theme registrations +
+`CRUD_VIEWS_BUTTON_CLASSES`. Theme values registered with `register_button_classes()` replace defaults;
+project settings override the theme. An explicit `None` or `""` removes that key's class contribution,
+without restoring default classes. Clearing or replacing the active classes preserves current-link semantics.
+See [ViewSet Navigation](navbar.md) for the full wrapper and independent component templates.
 
 ### Manage diagnostic classes
 
@@ -222,7 +246,7 @@ registry strings lets a theme own their appearance; the default-state JS uses da
 Keep textual labels and focus/help behavior when restyling. The one Show defaults switch hides default rows in
 Views and Presentation only after successful JS setup; without JavaScript all rows are readable. See the
 [theme registration recipe](theme.md#manage-class-registration) and [external asset contract](javascript.md#manage-defaults).
-The exact inventories are 122 core / 140 with workflow, including all twenty manage keys.
+The exact inventories are 128 core / 146 with workflow, including all twenty manage keys.
 
 ### Numbered column classes
 
@@ -246,8 +270,8 @@ an alternate framework's grid.
 
 ### Optional workflow defaults
 
-The 122-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
-for 140 effective default keys with only that contribution. Other installed extensions may add more.
+The 128-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
+for 146 effective default keys with only that contribution. Other installed extensions may add more.
 
 | Key | Complete default classes |
 |---|---|

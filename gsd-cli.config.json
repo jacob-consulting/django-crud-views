@@ -6,7 +6,7 @@
   "runtimes": {
     "claude": {
       "high": {
-        "session_model": "claude-fable-5-1",
+        "session_model": "claude-fable-5-2",
         "agent_model": "fable",
         "session_effort": "high"
       },
@@ -78,7 +78,7 @@
   "reviewers": {
     "fable-review": {
       "cli": "claude",
-      "model": "claude-fable-5-1"
+      "model": "claude-fable-5-2"
     },
     "astra-review": {
       "cli": "codex",

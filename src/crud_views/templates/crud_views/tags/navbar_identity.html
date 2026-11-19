@@ -1,1 +1,1 @@
-{% if cv_navbar %}{% load crud_views %}<div class="cv-navbar-identity mb-2 fw-medium mw-100 text-break">{% if cv_navbar.icon %}{% cv_icon cv_navbar.icon %} {% endif %}{{ cv_navbar.label }}</div>{% endif %}
+{% if cv_navbar %}{% load crud_views %}<div class="{% cv_button_class "navbar" "identity" %}">{% if cv_navbar.icon %}{% cv_icon cv_navbar.icon %} {% endif %}{{ cv_navbar.label }}</div>{% endif %}

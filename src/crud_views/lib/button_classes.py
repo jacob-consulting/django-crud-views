@@ -97,6 +97,12 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "formset:control-danger": "btn btn-danger",
     "card-order:toggle": "btn btn-outline-secondary",
     "card-order:container": "btn-group btn-group-sm",
+    "navbar:wrapper": "cv-navbar mb-3",
+    "navbar:identity": "cv-navbar-identity mb-2 fw-medium mw-100 text-break",
+    "navbar:nav": "nav nav-pills flex-wrap gap-1",
+    "navbar:item": "nav-item mw-100",
+    "navbar:link": "nav-link mw-100 text-break",
+    "navbar:link-active": "active",
     # utility slots the leaves used to hard-code (#227): the current page's button, a stretched card action and
     # the screen-reader text of an icon-only button; a theme registers its framework's words here
     "context:active": "active",

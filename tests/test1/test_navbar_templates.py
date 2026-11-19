@@ -499,11 +499,11 @@ def test_component_tags_render_independently_in_real_response(components):
 
 
 def test_default_wrapper_delegates_to_component_tags():
-    from crud_views.templatetags.crud_views import cv_navbar_identity, cv_navbar_items
+    from crud_views.templatetags.crud_views import cv_button_class, cv_navbar_identity, cv_navbar_items
 
     template = get_template("crud_views/tags/navbar.html").template
     functions = [node.func for node in template.nodelist.get_nodes_by_type(SimpleNode)]
-    assert functions == [cv_navbar_identity, cv_navbar_items]
+    assert functions == [cv_button_class, cv_navbar_identity, cv_navbar_items]
 
 
 @pytest.mark.parametrize("theme", ["crud_views", "alternate"])

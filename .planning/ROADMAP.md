@@ -2171,10 +2171,13 @@ examples as implementation evidence; adapt reusable recipes into upstream docume
 **Approved contract:** Issue #384 D-01–D-07 and its acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the new navbar class keys and owner-heading theme contract.
-**Plans:** 0 plans
+**Plans:** 2 plans in 2 waves
 
-Plans:
-- [ ] TBD (run $gsd-plan-phase 06.40.1 to break down)
+**Wave 1**
+- [ ] 06.40.1-01-PLAN.md
+
+**Wave 2** *(depends on plan 01)*
+- [ ] 06.40.1-02-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
 
@@ -2305,5 +2308,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.33. Structured manage page (#366) | 10/10 | Awaiting verification | - |
 | 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
 | 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Complete | 2026-11-19 |
-| 06.40.1. ViewSet Navigation: theme class keys and owner-heading layouts (#384) | 0/TBD | Not started | - |
+| 06.40.1. ViewSet Navigation: theme class keys and owner-heading layouts (#384) | 0/2 | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

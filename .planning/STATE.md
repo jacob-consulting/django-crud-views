@@ -2,18 +2,18 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 06.40.1
-current_phase_name: "ViewSet Navigation: theme class keys and owner-heading layouts"
+current_phase_name: "ViewSet Navigation: theme class keys and owner-heading layouts (#384)"
 current_plan: Not started
-status: planning
-stopped_at: "Phase 06.40.1 inserted; approved #384 design ready for planning"
-last_updated: "2026-11-19T12:11:25.677Z"
+status: executing
+stopped_at: Phase 06.40.1 researched and planned; two verified plans ready to execute
+last_updated: "2026-11-19T12:36:04.337Z"
 last_activity: 2026-11-19
-last_activity_desc: "Integrated Phase 06.40.1 roadmap and approved issue #384 handover on main after PR #383 merge"
-state_head: 5cab3deda0b669755da23eaafcb0a065d4094b9f
+last_activity_desc: "Planned Phase 06.40.1 from issue #384: two plans, five tasks, independent verification and seven-decision coverage passed"
+state_head: 3e2eed79c9d92f45112b0281055da405b6152456
 progress:
   total_phases: 47
   completed_phases: 45
-  total_plans: 255
+  total_plans: 257
   completed_plans: 255
   percent: 96
 milestone_name: milestone
@@ -33,13 +33,13 @@ See: .planning/PROJECT.md (updated 2026-11-19)
 
 ## Current Position
 
-Phase: 06.40.1 — ViewSet Navigation: theme class keys and owner-heading layouts (#384)
+Phase: 06.40.1 (ViewSet Navigation: theme class keys and owner-heading layouts (#384)) — READY TO EXECUTE
 Current Plan: Not started
-Total Plans in Phase: Not yet planned
-Status: Ready to plan
-Last activity: 2026-11-19 -- Integrated Phase 06.40.1 roadmap and approved issue #384 handover on main after PR #383 merge
+Total Plans in Phase: 2
+Status: Ready to execute
+Last activity: 2026-11-19 -- Planned Phase 06.40.1 from issue #384: two plans, five tasks, independent verification and seven-decision coverage passed
 
-Next: $gsd-plan-phase 06.40.1
+Next: $gsd-execute-phase 06.40.1
 
 ### Phase 06.40 component-tag completion — 2026-11-19
 
@@ -2073,5 +2073,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-19T09:48:27Z
-Stopped at: Phase 06.40.1 inserted; approved #384 design ready for planning
+Stopped at: Phase 06.40.1 researched and planned; two verified plans ready to execute
 Resume file: None

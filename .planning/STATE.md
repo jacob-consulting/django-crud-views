@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: 06.40.1
 current_phase_name: "ViewSet Navigation: theme class keys and owner-heading layouts (#384)"
 current_plan: 2
-status: executing
-stopped_at: Completed 06.40.1-01-PLAN.md
-last_updated: "2026-11-19T12:47:39.695Z"
+status: verifying
+stopped_at: Completed 06.40.1-02-PLAN.md; phase review and verification pending
+last_updated: "2026-11-19T12:57:29.417Z"
 last_activity: 2026-11-19
-last_activity_desc: Phase 06.40.1 execution started
-state_head: ff6ce9ab17efad423f0ae9ebc51d8b49ca4ada2d
+last_activity_desc: Phase 06.40.1 plans executed; phase review and verification pending
+state_head: 3f4cc47b8fb0345eb189c29be8f965de595c4113
 progress:
   total_phases: 47
   completed_phases: 45
   total_plans: 257
-  completed_plans: 256
+  completed_plans: 257
 milestone_name: milestone
 ---
 
@@ -32,13 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-19)
 
 ## Current Position
 
-Phase: 06.40.1 (ViewSet Navigation: theme class keys and owner-heading layouts (#384)) — EXECUTING
+Phase: 06.40.1 (ViewSet Navigation: theme class keys and owner-heading layouts (#384)) — VERIFYING
 Current Plan: 2
 Total Plans in Phase: 2
-Status: Ready to execute
-Last activity: 2026-11-19 — Phase 06.40.1 execution started
+Status: Plans executed — phase review and verification pending
+Last activity: 2026-11-19 — Phase 06.40.1 plans executed with fresh affected-scope verification
 
 Next: $gsd-execute-phase 06.40.1
+
+### Phase 06.40.1 plan 02 execution — 2026-11-19
+
+- All 2 plans/5 tasks executed; phase acceptance remains pending. Plan02 SUMMARY committed at 3f4cc47b before progress updates.
+- Executable owner-heading and startup recipes preserve actions, blocks, escaping, fallback and project precedence. Fresh affected suite: 1,655 passed in 10.46s; strict docs and scoped Ruff/format pass. Fixture re-export cleanup followed by 34 passing tests in 2.11s.
+- ROADMAP SDK records 2/2 executed, complete=false. Known dotted progress-table omission reconciled to that result; state.update-progress skipped its existing unscoped-phase limitation. Derived state.json preserved byte-identically; unrelated untracked work untouched.
+- No phase.complete, review, ship, push, PR or merge performed. Production changes remain the registry and three navbar leaves.
 
 ### Phase 06.40 component-tag completion — 2026-11-19
 
@@ -1635,6 +1642,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.40 P08 | 136min | 2 tasks | 22 files |
 | Phase 06.40 P09 | 15min | 3 tasks | 10 files |
 | Phase 06.40.1 P01 | 4min | 2 tasks | 9 files |
+| Phase 06.40.1 P02 | 5min | 3 tasks | 7 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1978,6 +1986,7 @@ Recent decisions affecting current work:
 - [Phase 06.40]: Preserve failed attempts and qualify earlier full-suite evidence by changed scope; exact affected reruns close the test-only revision.
 - [Phase 06.40]: Split remaining verification into two disjoint four-worker groups; use ordinary per-test temporary directories for core schema exports.
 - [Phase 06.40.1]: Use the six approved ordinary navbar keys without changing registry algorithms, tags or navigation admission.
+- [Phase 06.40.1]: Owner-heading examples use explicit theme-owned h1/h2 markup; global heading settings do not infer navbar presence.
 
 ### Pending Todos
 
@@ -2073,6 +2082,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-19T12:47:33.039Z
-Stopped at: Completed 06.40.1-01-PLAN.md
+Last session: 2026-11-19T12:57:22.616Z
+Stopped at: Completed 06.40.1-02-PLAN.md; phase review and verification pending
 Resume file: None

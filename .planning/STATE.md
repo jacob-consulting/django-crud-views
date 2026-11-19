@@ -6,10 +6,10 @@ current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
 stopped_at: Phase 06.40.1 complete, ready to plan Phase 7
-last_updated: "2026-11-19T13:14:31.913Z"
+last_updated: "2026-11-19T13:24:43.811Z"
 last_activity: 2026-11-19
-last_activity_desc: Phase 06.40.1 complete, transitioned to Phase 7
-state_head: 8dcd4dbd89876668acd0511fed58a4acf9b73d2d
+last_activity_desc: "Phase 06.40.1 shipped as PR #386"
+state_head: 3676829908a93fbd2f383d45e38a558591b7a3a2
 progress:
   total_phases: 47
   completed_phases: 46
@@ -37,7 +37,7 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: TBD
 Status: Ready to plan
-Last activity: 2026-11-19 — Phase 06.40.1 complete, transitioned to Phase 7
+Last activity: 2026-11-19 -- Phase 06.40.1 shipped as PR #386
 
 Next: $gsd-discuss-phase 7
 

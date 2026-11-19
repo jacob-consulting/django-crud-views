@@ -819,7 +819,8 @@ also removes the form-contained cancel control. A copied alert leaf must render 
 ## ViewSet Navigation templates
 
 The opt-in [ViewSet Navigation](navbar.md) feature adds three independently overridable templates, all receiving the same
-lazy `cv_navbar` value. Override them using the normal loader order above; no button-class keys are added.
+lazy `cv_navbar` value. Override them using the normal loader order above. Class-only customization uses
+the six ordinary [navbar class keys and defaults](buttons.md#viewset-navigation-classes), with no template copy.
 
 | Template | Purpose |
 |---|---|
@@ -830,9 +831,14 @@ lazy `cv_navbar` value. Override them using the normal loader order above; no bu
 The stable [context fields](templates.md#viewset-navigation-context) are already resolved and access/state filtered.
 Preserve each template's independent empty guard (including no whitespace), escaping and visible labels.
 Keep active links clickable with `aria-current="true"`, decorative icons and visible keyboard focus.
-Wrap long captions/labels without horizontal page scrolling, truncation or a collapsed menu. The identity must
-not become another page heading or replace the existing view header/actions. Split placement remains valid
-because the items leaf supplies its own translated accessible name, independent of the identity element.
+Wrap long captions/labels without horizontal page scrolling, truncation or a collapsed menu. The stock
+identity remains plain text above the ordinary view header. Themes may instead compose an
+[owner-as-page-heading layout](navbar.md#owner-as-page-heading) using escaped `cv_navbar.label`, the existing
+icon renderer and `cv_navbar_items`. Retain the view title/subtitle, actions and extension blocks, including
+an ordinary header when navigation is absent. The theme owns the heading hierarchy and its integration
+with global `CRUD_VIEWS_HEADER_LEVEL` policy; no heading inference or duplicate-title suppression is supplied.
+Split placement remains valid because the items leaf supplies its own translated accessible name,
+independent of the identity element.
 
 `NavBar(template=...)` selects only the full `cv_navbar` wrapper for that declaration. The stock wrapper
 composes `cv_navbar_identity` and `cv_navbar_items` from the `crud_views` tag library. Each component resolves
@@ -841,6 +847,35 @@ the full caller context/request and same lazy value. Components ignore the per-b
 called from a custom wrapper. Direct partial includes keep their selected public paths and normal loader
 behavior. See [independent and split placement](navbar.md#split-placement). Layout A is an application
 [wrapper example](navbar.md#global-wrapper), not an additional package layout setting.
+
+### Navbar class registration
+
+Add these entries to your theme's `AppConfig.ready()` registration:
+
+```python
+def ready(self):
+    from crud_views.lib.button_classes import register_button_classes
+
+    register_button_classes(
+        {
+            "navbar:nav": "nav nav-tabs flex-wrap gap-1",
+            "navbar:link": "nav-link mw-100 text-break gap-2",
+            "navbar:link-active": "active",
+        }
+    )
+```
+
+`navbar:nav` styles the `ul` within the navigation landmark. This recipe selects tabs and spacing;
+the links remain ordinary page links, with clickable active anchors and `aria-current="true"` independent
+of classes. `navbar:wrapper`, `navbar:identity` and `navbar:item` retain their defaults unless separately
+overridden. Wrapper/identity keys apply only when those stock leaves render, not to a theme's custom owner
+heading markup. All six keys are ordinary registry entries without label-mode variants.
+
+`CRUD_VIEWS_BUTTON_CLASSES` wins per key over these theme registrations. `None` or `""` clears that key's
+class contribution, including active styling, without restoring its default or changing link semantics.
+These are suggested consumer values, not already-shipped Tabler code or a promise of pixel-identical output.
+Validate spacing, wrapping and keyboard focus in your own theme. No additional settings or per-bar leaf
+configuration are needed.
 
 ## Structured manage contracts
 

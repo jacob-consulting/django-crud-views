@@ -6,10 +6,10 @@ current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
 stopped_at: Phase 06.40 complete, ready to plan Phase 7
-last_updated: "2026-11-19T07:44:46.980Z"
+last_updated: "2026-11-19T08:03:43.386Z"
 last_activity: 2026-11-19
-last_activity_desc: Completed quick task 261119-ap2 — ViewSet Navigation naming on the phase 06.40 branch
-state_head: 39821bca80267e06773c98b566a4e313fe39c220
+last_activity_desc: Phase 06.40 verification refreshed after ViewSet Navigation naming; 33/33 passed
+state_head: 6955fccf139b7f5424a9c0e4f99e9751ee96a386
 progress:
   total_phases: 46
   completed_phases: 45
@@ -25,7 +25,7 @@ Total Phases: 46
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-18)
+See: .planning/PROJECT.md (updated 2026-11-19)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -36,9 +36,17 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-19 — Completed quick task 261119-ap2: ViewSet Navigation naming on the phase 06.40 branch
+Last activity: 2026-11-19 -- Phase 06.40 verification refreshed after ViewSet Navigation naming; 33/33 passed
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.40 verification refresh — 2026-11-19
+
+- Refreshed stale verification after ViewSet Navigation naming commit 39821bca. Owner query reports passed, 33/33; fresh CLI fingerprint covers 1,175 files. All eight plans remain complete; Phase 7 stays next.
+- Fresh checks: 299 navbar tests; 215 example tests plus 75 subtests; strict docs; scoped Ruff/format; companion validator; 457 JavaScript regressions. Both pytest runs use four workers. Decision coverage 16/16; security 20/20 closed; incremental review of all fifteen changed files found no issue.
+- User chose to reuse the original UI review (23/24), including its open minor typography advisory. Original browser/matrix receipts remain historical at their recorded revisions: 1,091/1,106 INPUTS hashes unchanged, fifteen naming files covered by fresh checks; all 24 retained matrix log hashes match.
+- No new requirement, decision, parent-UAT gap, resolved-phase todo or learning promotion. Existing completion bookkeeping already captures Phase 7; CLI summary warnings still misread command strings as file paths. Original state.json preserved after its unrelated derived rewrite.
+- Shipping remains pending clean-tree handling for unrelated untracked files. No push, PR or merge yet; codebase maps will refresh after shipping.
 
 ### Phase 06.40 completion — 2026-11-18
 

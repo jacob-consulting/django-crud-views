@@ -19,7 +19,7 @@ tags *you* place, so they stay silent until you do:
 | `{% cv_config %}` | in `<head>`, before `{% cv_js %}` | the [JavaScript config and modal shell](javascript.md) |
 | `{% cv_messages %}` | top of the content area | [flash messages](messages.md), including the ones create, update, delete and action views emit themselves |
 | `{% cv_breadcrumb %}` | above the content | the [breadcrumb trail](breadcrumb.md) |
-| `{% cv_navbar %}` | before the existing view header/card | opt-in [object section navigation](navbar.md) |
+| `{% cv_navbar %}` | before the existing view header/card | opt-in [ViewSet Navigation](navbar.md) |
 
 These tags use `{% load crud_views %}` and render nothing when they have nothing to show, so they are
 safe to place unconditionally. Bootstrap's own CSS and JavaScript are not a Python dependency —
@@ -159,7 +159,9 @@ class FooListView(MySpecialBase, ListView): ...
     Point the override at a normal base template — one that extends your own
     site base (e.g. `{% extends "base.html" %}`) or none at all.
 
-## Object navbar context
+<a id="object-navbar-context"></a>
+
+## ViewSet Navigation context
 
 The optional `CrudViewNavBarMixin` supplies `cv_navbar` as one lazy result per view/request. It is absent or
 `None` without participation, `None` in modals, and evaluates to `None` when no items are visible. This is

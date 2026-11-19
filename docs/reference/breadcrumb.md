@@ -1,6 +1,6 @@
 # Breadcrumb
 
-For persistent owner identity and sibling sections across descendant pages, see [Object navbar](navbar.md).
+For persistent owner identity and sibling sections across descendant pages, see [ViewSet Navigation](navbar.md).
 Breadcrumbs and navbars are independent and may be placed together.
 
 `CrudViewBreadcrumbMixin` adds a Bootstrap 5.3 breadcrumb to any CrudView. The trail follows

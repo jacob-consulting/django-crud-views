@@ -738,7 +738,7 @@ FEATURES: list[Feature] = [
     Feature(
         app="navbar_demo",
         group="ui",
-        title="Object navigation",
+        title="ViewSet Navigation",
         description="Customer sections stay with you through tenant-scoped Orders and Items.",
         about=(
             "Declare a Customer navbar once and attach it only to selected views. Details, Notes, Orders and "
@@ -752,9 +752,11 @@ FEATURES: list[Feature] = [
         url_name="navbar-demo-home",
         icon="fa-solid fa-address-card",
         docs=(
-            DocRef(page="reference/navbar.md", label="Object navbar reference"),
+            DocRef(page="reference/navbar.md", label="ViewSet Navigation reference"),
             DocRef(
-                page="reference/navbar.md", label="Object navbar — template overrides", anchor="placement-and-overrides"
+                page="reference/navbar.md",
+                label="ViewSet Navigation — template overrides",
+                anchor="placement-and-overrides",
             ),
         ),
     ),

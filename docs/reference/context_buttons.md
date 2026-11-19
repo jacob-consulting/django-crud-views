@@ -1,6 +1,6 @@
 # Context Buttons
 
-[Object navbars](navbar.md) provide opt-in section navigation alongside these buttons. Context buttons remain
+[ViewSet Navigation](navbar.md) provides opt-in section navigation alongside these buttons. Context buttons remain
 supported and unchanged; applications may keep both or omit redundant actions explicitly.
 
 Context buttons are the action buttons rendered in the header area of a view — controlled by

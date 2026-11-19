@@ -18,13 +18,13 @@ differences:
   with them.
 - **Delete**, which also uses per-object permissions: each user sees their own projects and tasks. One of alice's
   projects is blocked by a task of bob's that she cannot see. Permitted protected Task labels are plain text.
-- **[Object navigation](https://django-crud-views-demo.onrender.com/object-navbar/)** gives Alice and Bob full
+- **[ViewSet Navigation](https://django-crud-views-demo.onrender.com/object-navbar/)** gives Alice and Bob full
   Customer/Order/Item/Address CRUD within separate tenants. Charlie reads Customers, Orders and Items in Alice's
   tenant, without Addresses or writes. Strict Guardian Tenant grants and cascading ancestor checks protect copied
   descendant URLs. Open an Item to see the same Customer identity with Orders active; an empty Orders collection
-  remains reachable. See the [object-navbar reference](../reference/navbar.md).
+  remains reachable. See the [ViewSet Navigation reference](../reference/navbar.md).
 
-All three object-navigation credentials (`alice` / `alice`, `bob` / `bob`, `charlie` / `charlie`) are also listed
+All three ViewSet Navigation credentials (`alice` / `alice`, `bob` / `bob`, `charlie` / `charlie`) are also listed
 in that scenario's introduction. Charlie is specific to this scenario; the unchanged shared translated
 login/home/banner notices do not enumerate all three accounts. Other examples keep their own authorization rules.
 

@@ -51,7 +51,7 @@ class NavbarDemoHomeView(BreadcrumbMixin, LoginRequiredMixin, TemplateView):
     template_name = "navbar_demo/home.html"
 
     def cv_breadcrumb_get(self):
-        return Breadcrumb(items=(*self.cv_breadcrumb_prefix(), BreadcrumbItem(title=_("Object navigation"))))
+        return Breadcrumb(items=(*self.cv_breadcrumb_prefix(), BreadcrumbItem(title=_("ViewSet Navigation"))))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

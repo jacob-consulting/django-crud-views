@@ -43,8 +43,8 @@ A theme app is an ordinary Django app:
 
 ## JavaScript
 
-Object section navigation needs no JavaScript; its ordinary full-page links use the
-[navbar template contract](#object-navbar-templates).
+ViewSet Navigation needs no JavaScript; its ordinary full-page links use the
+[navbar template contract](#viewset-navigation-templates).
 
 The scripts call Bootstrap through replaceable adapters (`cv.adapters`), so a theme for a Bootstrap-compatible or
 non-Bootstrap UI library swaps them from its own registered asset. See [JavaScript](javascript.md).
@@ -814,9 +814,11 @@ also removes the form-contained cancel control. A copied alert leaf must render 
 `alert.body_template` as well as heading/items to show the generic sentence. See
 [Protected objects](delete_view.md#protected-objects).
 
-## Object navbar templates
+<a id="object-navbar-templates"></a>
 
-The opt-in [object navbar](navbar.md) adds three independently overridable templates, all receiving the same
+## ViewSet Navigation templates
+
+The opt-in [ViewSet Navigation](navbar.md) feature adds three independently overridable templates, all receiving the same
 lazy `cv_navbar` value. Override them using the normal loader order above; no button-class keys are added.
 
 | Template | Purpose |
@@ -825,7 +827,7 @@ lazy `cv_navbar` value. Override them using the normal loader order above; no bu
 | `crud_views/tags/navbar_identity.html` | Plain, unlinked owner caption and header icon. |
 | `crud_views/tags/navbar_items.html` | Translated named navigation landmark, wrapping list and ordinary anchors. |
 
-The stable [context fields](templates.md#object-navbar-context) are already resolved and access/state filtered.
+The stable [context fields](templates.md#viewset-navigation-context) are already resolved and access/state filtered.
 Preserve each template's independent empty guard (including no whitespace), escaping and visible labels.
 Keep active links clickable with `aria-current="true"`, decorative icons and visible keyboard focus.
 Wrap long captions/labels without horizontal page scrolling, truncation or a collapsed menu. The identity must

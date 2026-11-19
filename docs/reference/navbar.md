@@ -1,15 +1,18 @@
-# Object navbar
+<a id="object-navbar"></a>
 
-An object navbar keeps one object's identity and section links visible on selected owner and descendant pages.
+# ViewSet Navigation
+
+ViewSet Navigation connects an object's views and child ViewSets with a shared navigation bar.
+It keeps the object's identity and section links visible on selected owner and descendant pages.
 It is opt-in per view. The default layout puts plain identity above wrapping section links, before your existing
 view header and actions. [Context buttons](context_buttons.md) remain independent and may coexist with it;
 omit redundant buttons in your application only if you want to.
 
 !!! example "Try it live"
-    [Try the object navbar example](https://django-crud-views-demo.onrender.com/object-navbar/).
+    [Try the ViewSet Navigation example](https://django-crud-views-demo.onrender.com/object-navbar/).
     Sign in as `alice` / `alice` or `bob` / `bob` to manage separate tenants, or `charlie` / `charlie` for
     read-only Customer, Order and Item access in Alice's tenant, without Addresses or writes. All three
-    credentials are listed in the object-navbar introduction and [Live demo](../getting_started/demo.md),
+    credentials are listed in the ViewSet Navigation introduction and [Live demo](../getting_started/demo.md),
     which explains daily resets and wake-up time. Shared login/home notices are not a list of this scenario's accounts.
 
 ## Declare once, attach per view
@@ -155,7 +158,7 @@ The default wrapper and leaves are:
 
 All three independently guard `cv_navbar` and emit exactly nothing when it is empty. The items leaf owns its
 landmark label (`Sections for %(object)s`), so it does not rely on a neighbouring identity element or ID.
-Use the documented [navbar context](templates.md#object-navbar-context); templates consume resolved items,
+Use the documented [navbar context](templates.md#viewset-navigation-context); templates consume resolved items,
 without permission calls. Keep normal link focus, active markers, translated landmark naming and text wrapping.
 
 ### Global wrapper

@@ -52,14 +52,14 @@ tree, per-formset plumbing) is internal, and stays internal in 1.0.
 **Resources** — `crud_views.lib.resource`:
 `Resource`, `ResourceViewMixin`
 
-**Object navbar** — `crud_views.lib.navbar`:
+**ViewSet Navigation** — `crud_views.lib.navbar`:
 `NavBar`, `NavItem`, `CrudViewNavBarMixin`, the per-view `cv_navbar` attachment, and the
 `{% cv_navbar %}` tag in the `crud_views` tag library. The declaration fields and supported behavior in the
-[object-navbar reference](../reference/navbar.md) are stable at 1.0 under this policy.
+[ViewSet Navigation reference](../reference/navbar.md) are stable at 1.0 under this policy.
 The override contract includes exactly `crud_views/tags/navbar.html`,
 `crud_views/tags/navbar_identity.html`, and `crud_views/tags/navbar_items.html`, with the documented
 `cv_navbar` value and fields `object`, `label`, `icon`, `items`, `template`; item fields are `label`, `icon`,
-`url`, `active`. See [Object navbar context](../reference/templates.md#object-navbar-context) for their meanings
+`url`, `active`. See [ViewSet Navigation context](../reference/templates.md#viewset-navigation-context) for their meanings
 and independent empty guards. Private builders, resolvers, normalization helpers and check carriers remain
 internal. There is no navbar-specific provisional exception: public breaking changes follow the major-release,
 deprecation and migration policy below.

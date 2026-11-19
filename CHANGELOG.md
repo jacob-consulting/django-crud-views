@@ -647,7 +647,7 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
-- **Opt-in object navbar** ([#381](https://github.com/jacob-consulting/django-crud-views/issues/381)):
+- **ViewSet Navigation** ([#381](https://github.com/jacob-consulting/django-crud-views/issues/381)):
   declare owner and direct-child sections once with `NavBar`/`NavItem`, attach them to selected views with
   `CrudViewNavBarMixin`, and retain owner identity across descendants. Permission/state-filtered full-page
   links, active sections, lazy rendering and global/leaf/split/per-bar template overrides coexist with existing

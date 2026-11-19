@@ -30,7 +30,7 @@
 - [ActionView](action_view.md) — run a side-effecting action on an object with success/error messages
 - [Context Buttons](context_buttons.md) — context action buttons for navigation within and across viewsets
 - [Breadcrumb](breadcrumb.md) — a Bootstrap breadcrumb following the ViewSet hierarchy
-- [Object navbar](navbar.md) — opt-in owner identity and section links across descendant pages
+- [ViewSet Navigation](navbar.md) — opt-in owner identity and section links across descendant pages
 - [Modals](modals.md) — open supported views in a Bootstrap modal instead of a full page
 - [Conditionally disabling an action](action_enabled.md) — disable an action a user is otherwise permitted to perform, based on object state
 - [Hide or disable inaccessible actions](inaccessible_actions.md) — render actions the user may not use greyed out instead of hidden

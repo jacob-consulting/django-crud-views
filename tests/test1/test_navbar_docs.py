@@ -74,8 +74,8 @@ def test_split_recipe_preserves_inherited_crud_content():
 
 def test_documented_context_inventory_resolves_real_render_data():
     text = (ROOT / "docs/reference/templates.md").read_text()
-    assert "## Object navbar context" in text, "The navbar needs a separate documented context contract"
-    section = text.split("## Object navbar context", 1)[1].split("\n## ", 1)[0]
+    assert "## ViewSet Navigation context" in text, "The navbar needs a separate documented context contract"
+    section = text.split("## ViewSet Navigation context", 1)[1].split("\n## ", 1)[0]
     expressions = re.findall(r"^\| `((?:cv_navbar|item)\.[a-z_]+)` \|", section, re.M)
     with navbar_routes(lambda sfx: owner_routes(sfx, label="Details")) as ns:
         _, context = view_context(ns)

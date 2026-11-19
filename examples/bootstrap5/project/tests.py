@@ -126,7 +126,7 @@ class ObjectNavbarLandingTest(TestCase):
                 self.assertEqual(landing.status_code, 200)
                 self.assertEqual({customer.tenant_id for customer in landing.context["customers"]}, {tenant_id})
                 document = html.fromstring(landing.content.split(b'id="snippet-panels"')[0])
-                entries = document.xpath('//a[normalize-space(text())="Explore object navigation"]')
+                entries = document.xpath('//a[normalize-space(text())="Explore ViewSet Navigation"]')
                 self.assertTrue(entries)
                 target = next(link for link in entries if customer_name in link.getparent().text_content())
                 response = self.client.get(target.get("href"))
@@ -184,7 +184,7 @@ class ObjectNavbarLandingTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(list(response.context["customers"]), [])
         markup = response.content.decode().split('id="snippet-panels"')[0]
-        for secret in ("Acme Coffee", "Bayside Books", "Tenant Alice", "Tenant Bob", "Explore object navigation"):
+        for secret in ("Acme Coffee", "Bayside Books", "Tenant Alice", "Tenant Bob", "Explore ViewSet Navigation"):
             self.assertNotIn(secret, markup)
         self.assertIn("No items found.", markup)
 

@@ -11,7 +11,7 @@
 
     <div class="card">
         <div class="card-header">
-            <h1 class="h3 mb-0">{% translate "Object navigation" %}</h1>
+            <h1 class="h3 mb-0">{% translate "ViewSet Navigation" %}</h1>
         </div>
         <div class="card-body">
             <p>{% translate "Alice and Bob manage customers, orders, items and addresses in separate tenants." %}</p>
@@ -24,7 +24,7 @@
                 {% for customer in customers %}
                     <li class="mb-3">
                         <span>{{ customer.tenant }} — {{ customer }}</span>
-                        <a class="btn btn-primary" href="{% url 'navbar_customer-detail' navbar_tenant_pk=customer.tenant_id pk=customer.pk %}">{% translate "Explore object navigation" %}</a>
+                        <a class="btn btn-primary" href="{% url 'navbar_customer-detail' navbar_tenant_pk=customer.tenant_id pk=customer.pk %}">{% translate "Explore ViewSet Navigation" %}</a>
                     </li>
                 {% empty %}
                     <li>{% translate "No items found." %}</li>

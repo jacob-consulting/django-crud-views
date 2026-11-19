@@ -2127,7 +2127,7 @@ Follow-up D-17 (2026-11-19) adds independent navbar component tags, wrapper comp
 **Requirements**: None
 **Approved contract:** D-01–D-16 and AC1–AC9 are mapped in 06.40-COVERAGE.md.
 **Depends on:** Phase 06.39
-**Plans:** 8/9 plans complete; plan 09 ready to execute.
+**Plans:** 9/9 plans executed; plan 09 ready to execute.
 
 Original plans 01–08 converged in four external review cycles and are complete. Plan 09 has an independent
 plan check with no blockers and a documented ten-file sizing advisory; D-17 is covered by all three new tasks.
@@ -2154,7 +2154,7 @@ Plans:
 - [x] 06.40-08-PLAN.md
 
 **Wave 7** *(depends on completed plan 08)*
-- [ ] 06.40-09-PLAN.md
+- [x] 06.40-09-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
 
@@ -2284,5 +2284,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 06.33. Structured manage page (#366) | 10/10 | Awaiting verification | - |
 | 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
-| 06.40. Object navbar: opt-in section navigation (#381) | 8/9 | Ready to execute | - |
+| 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Verifying | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

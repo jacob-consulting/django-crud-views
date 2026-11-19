@@ -117,7 +117,8 @@ Proposed exports from `crud_views.lib.bulk`:
 | `cv_bulk_has_permission(obj) -> bool` | Optional read-only item permission check; default `True` means no extra per-item policy beyond endpoint admission and queryset visibility |
 | `cv_bulk_check(obj) -> list[str]` | Optional read-only business eligibility check; default `[]` |
 | `cv_bulk_objects` | Tuple of freshly resolved eligible model instances available to form hooks |
-| `form_class` | Ordinary Django form; defaults to empty `forms.Form` |
+| `form_class` | A `CrispyForm` subclass, as in every other form view of the package; defaults to `BulkConfirmForm` |
+| `BulkConfirmForm` | Default action form: no fields, themed Confirm and Cancel buttons |
 | `cv_form_valid(context)` | Existing custom-form execution hook; application owns the operation |
 | `cv_atomic`, `cv_on_commit`, `cv_success_key`, `cv_success_keys`, `cv_cancel_keys` | Existing form-view lifecycle and navigation settings, not a new bulk contract |
 | `cv_modal` | Not supported on bulk destinations; the existing check rejects it |
@@ -158,12 +159,12 @@ The two-stage flow below applies when confirmation is enabled. The review is a f
 4. Item permission runs before labels or business reasons are rendered. Objects outside the scope are represented only as unavailable.
 5. Business checks partition visible, permitted objects into eligible and blocked groups.
 6. The response shows an unbound action form, eligible objects, and informational blocked rows.
-7. The confirmation carries eligible IDs as `cv_bulk_ids` and excluded IDs as `cv_bulk_blocked_ids`. It posts `cv_bulk_stage=execute` and `cv_bulk_confirmed=1` through the actual submit button, to the same URL including its query string so the origin survives.
+7. The confirmation carries eligible IDs as `cv_bulk_ids` and excluded IDs as `cv_bulk_blocked_ids`. It posts `cv_bulk_stage=execute` through the form's own submit button, to the same URL including its query string so the origin survives.
 8. On the execution POST, the destination enters its configured transaction, resolves and checks the submitted IDs once, then binds and validates the form with those eligible objects.
 9. If the candidate membership has changed, nothing executes. The same bound form is rendered with the new partition and a message requesting confirmation again.
 10. Otherwise the ordinary custom-form mutation hooks run with `cv_bulk_objects` set to the fresh eligible tuple.
 
-An execute POST goes through all checks even if a caller bypasses the initial review POST. The confirmation button records the user's intent in the normal UI flow.
+An execute POST goes through all checks even if a caller bypasses the initial review POST. No separate confirmation field is posted: D-05 accepts an authorized direct execution request, so the stage alone identifies it.
 
 ### Skip confirmation
 
@@ -186,6 +187,10 @@ An action whose form declares fields needs no special case. Its review page is t
 `BulkFormView` includes the existing `MessageMixin` with a default template: “3 records processed.” A developer overrides `cv_message_template_code` for better wording, for example “3 documents archived.” The library reports only how many records it handed to the action. Per-record outcomes such as “7 sent, 1 failed” are application messages.
 
 The toolbar builds each action URL with the existing `cv_get_link_url`, which carries the origin key and the signed query state of the source page. Cancel, the warning redirect, and a plain GET all return to that page with its filter, sort, and page number. Success follows `cv_success_key`, or the origin when it is listed in `cv_success_keys`.
+
+Success redirects to the plain URL of that view, exactly as after a single-record update or delete. A source that uses `ListViewTableFilterMixin`, table or card, gets its stored query string back from the session while filter persistence is enabled, which is the default. A source without it shows its first page in default order. Only cancel restores the page state for every source. Success is deliberately not given its own restore logic: the shared success path stays unchanged, and the first page is a safe place after an action that may have emptied the page the user was on.
+
+The origin is only carried for a source whose key the destination accepts. With the default `cv_cancel_keys = "auto"` that is `list` and `card`. A source registered under another key sets `cv_cancel_keys` on the destination; otherwise cancel falls back to `cv_cancel_key`.
 
 ### Eligible and blocked groups
 
@@ -296,11 +301,17 @@ This uses ordinary `save()` semantics. A developer may choose a queryset update 
 ```python
 from django import forms
 
+from crud_views.lib.crispy import CrispyForm
+
 from .models import StaffMember
 
 
-class AssignOwnerForm(forms.Form):
+class AssignOwnerForm(CrispyForm):
+    submit_label = "Assign"
     owner = forms.ModelChoiceField(queryset=StaffMember.objects.none())
+
+    def get_layout_fields(self):
+        return ["owner"]
 
 
 class AssignOwnerView(ArchiveDocumentsView):
@@ -337,13 +348,19 @@ Suppose the Document model declares `Meta.permissions = [("send_message", "Can s
 ```python
 from django import forms
 
+from crud_views.lib.crispy import CrispyForm
+
 from .models import MessageDelivery
 from .policies import can_message_document
 
 
-class MessageForm(forms.Form):
+class MessageForm(CrispyForm):
+    submit_label = "Queue messages"
     subject = forms.CharField(max_length=200)
     body = forms.CharField(widget=forms.Textarea)
+
+    def get_layout_fields(self):
+        return ["subject", "body"]
 
 
 class SendMessagesView(BulkFormView):
@@ -588,27 +605,37 @@ def _read_ids(post, field):
     return candidates, excluded
 ```
 
-Integer, UUID, and string IDs stay strings in transport. The view bounds the count against `cv_bulk_max` before this function runs, so parsing work is limited; an empty or oversized selection is a user mistake answered with a warning, not an error. Django's standard field/body limits still apply. A malformed request is rejected, not partially accepted. Selection IDs, stage, and confirmation metadata travel in four fields outside the developer's action form: `cv_bulk_ids`, `cv_bulk_blocked_ids`, `cv_bulk_stage`, and `cv_bulk_confirmed`. The `cv_bulk_` prefix is reserved and documented. Because an application form field cannot plausibly use it, no collision check is provided.
+Integer, UUID, and string IDs stay strings in transport. The view bounds the count against `cv_bulk_max` before this function runs, so parsing work is limited; an empty or oversized selection is a user mistake answered with a warning, not an error. Django's standard field/body limits still apply. A malformed request is rejected, not partially accepted. Selection IDs, stage, and confirmation metadata travel in three fields outside the developer's action form: `cv_bulk_ids`, `cv_bulk_blocked_ids`, and `cv_bulk_stage`. The `cv_bulk_` prefix is reserved and documented. Because an application form field cannot plausibly use it, no collision check is provided.
 
 ### 7.3 Destination scope and item checks
 
 ```python
 from functools import partial
 
-from django import forms
 from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
 from django.db import DEFAULT_DB_ALIAS, router, transaction
 from django.db.models import QuerySet, Subquery
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy
 
 from crud_views.lib.ancestors import _scope_child_queryset
+from crud_views.lib.crispy import CrispyForm, CrispyViewMixin
 from crud_views.lib.views.form import CustomFormNoObjectViewPermissionRequired
 from crud_views.lib.views.mixins import MessageMixin
 
 
-class BulkFormView(MessageMixin, CustomFormNoObjectViewPermissionRequired):
+class BulkConfirmForm(CrispyForm):
+    """Default action form: no fields, only the themed Confirm and Cancel buttons."""
+
+    submit_label = gettext_lazy("Confirm")
+
+    def get_layout_fields(self):
+        return []
+
+
+class BulkFormView(MessageMixin, CrispyViewMixin, CustomFormNoObjectViewPermissionRequired):
     cv_object = False
     cv_permission = None  # Require an explicit action permission, not the parent's "view" default.
     cv_modal_supported = False  # The review is always a full page.
@@ -616,7 +643,7 @@ class BulkFormView(MessageMixin, CustomFormNoObjectViewPermissionRequired):
     cv_bulk_max = 100
     cv_bulk_confirm = True
     cv_message_template = "crud_views/snippets/message/bulk.html"  # "3 records processed."
-    form_class = forms.Form
+    form_class = BulkConfirmForm
     cv_content_template = "crud_views/bulk_simple/form.html"
     cv_header_template_code = "{{ view.cv_bulk_label }}"
     cv_paragraph_template_code = (
@@ -725,8 +752,6 @@ The following methods belong to the same `BulkFormView` class. They override the
         if request.POST.getlist("cv_bulk_stage") not in (["review"], ["execute"]):
             raise BadRequest("Invalid bulk stage.")
         stage = request.POST["cv_bulk_stage"]
-        if stage == "execute" and request.POST.getlist("cv_bulk_confirmed") != ["1"]:
-            raise BadRequest("Explicit confirmation is required.")
 
         # User mistakes: warn and return to the source before parsing or loading anything.
         count = len(request.POST.getlist("cv_bulk_ids")) + len(request.POST.getlist("cv_bulk_blocked_ids"))
@@ -796,7 +821,7 @@ Source toolbar, included only when `view.cv_bulk_actions` is nonempty:
 Card checkbox. The grid wrapper `view_card.content.html` renders it, not the card template, so an application's own `cv_card_template` needs no change and cannot end up without a checkbox. It straddles the card's top-left corner, half outside the card, so it covers a piece of border and no card content:
 
 ```django
-{% load l10n crud_views %}
+{% load i18n l10n crud_views %}{# i18n stays for the existing empty-state text #}
 <div class="{{ view.cv_card_container_class }}">
   {% if view.cv_bulk_actions %}
     <div class="{% cv_button_class 'bulk' 'card-cell' %}">
@@ -877,15 +902,15 @@ Ship this as an external asset using the existing asset mechanism. Production te
 
 ### 7.6 Destination template
 
-Proposed `bulk_simple/form.html` uses the existing custom-form frame. The example uses Django's normal field rendering for clarity. A theme may render fields differently, but must not create a nested form or duplicate the transport controls.
+Proposed `bulk_simple/form.html` uses the existing custom-form frame and the package's form rendering. The action form's own crispy helper supplies the themed submit and cancel buttons, as in every other form view; the cancel button already resolves through the origin mechanism. The template adds only the two record lists and the transport fields.
 
 ```django
 {% extends "crud_views/snippets/form_frame.html" %}
-{% load l10n %}
+{% load l10n crud_views %}
 
 {% block cv_form_body %}
 {# The header already shows cv_bulk_label. The full path keeps the origin query string. #}
-<form method="post" action="{{ request.get_full_path }}" enctype="multipart/form-data">
+<form class="cv-form" method="post" action="{{ request.get_full_path }}" enctype="multipart/form-data" novalidate>
   {% csrf_token %}
   <input type="hidden" name="cv_bulk_stage" value="execute">
 
@@ -912,18 +937,16 @@ Proposed `bulk_simple/form.html` uses the existing custom-form frame. The exampl
     {% endfor %}
   </ul>
 
-  {{ form.as_p }}
   {% if bulk_review.objects %}
-    <button type="submit" name="cv_bulk_confirmed" value="1">
-      Process {{ bulk_review.objects|length }} objects
-    </button>
+    {% cv_render_form %}{# fields, submit and cancel from the form's helper #}
+  {% else %}
+    <a href="{{ view.cv_bulk_back_url }}">Cancel</a>{# nothing eligible: no form, no execution control #}
   {% endif %}
-  <a href="{{ view.cv_bulk_back_url }}">Cancel</a>
 </form>
 {% endblock %}
 ```
 
-Production markup must use translations and existing theme classes. Every label/reason is autoescaped. There are no editable selection checkboxes here.
+Production markup must use translations and existing theme classes. Every label/reason is autoescaped. There are no editable selection checkboxes here. The “eligible selection changed” message is a non-field form error; implementation must confirm that `cv_render_form` displays it and add it to the template if it does not.
 
 ### 7.7 Simple system checks
 
@@ -953,6 +976,9 @@ def bulk_configuration_errors(viewset):
                 errors.append((view, "BulkFormView supports ORM models only."))
             if not isinstance(view.cv_bulk_max, int) or view.cv_bulk_max < 1:
                 errors.append((view, "cv_bulk_max must be a positive integer."))
+            if not issubclass(view.form_class, CrispyForm):
+                # A plain Django form would render without a submit button.
+                errors.append((view, "form_class must be a CrispyForm subclass."))
             if not view.cv_bulk_label:
                 errors.append((view, "Set cv_bulk_label."))
             if not view.cv_permission:
@@ -962,13 +988,14 @@ def bulk_configuration_errors(viewset):
     return errors
 ```
 
-Also validate supported list/card source types, scalar PKs, normal form subclasses, non-object destination configuration, and registered success keys. The existing `cv_modal_supported` check already rejects `cv_modal = True` on a bulk destination. Prefer existing checks where they already cover these declarations. Do not inspect arbitrary method bodies, trusted owners, wrappers, or effective MROs to guess compatibility. Unknown application behavior remains application code.
+Also validate supported list/card source types, scalar PKs, non-object destination configuration, and registered success keys. The existing `cv_modal_supported` check already rejects `cv_modal = True` on a bulk destination. Prefer existing checks where they already cover these declarations. Do not inspect arbitrary method bodies, trusted owners, wrappers, or effective MROs to guess compatibility. Unknown application behavior remains application code.
 
 **Guardian warning.** In a `GuardianViewSet` the ordinary views require an object grant per record, while `cv_bulk_has_permission()` defaults to `True`. A bulk action could therefore be more permissive than the single-record view beside it. The Guardian package warns at startup when a bulk destination in a `GuardianViewSet` keeps the default. It is a warning, not an error: a developer who enforces the policy by narrowing `get_queryset()` silences it by ID. The check lives in `crud_views_guardian/checks.py`, so core never imports Guardian, and it compares one method with the base class without inspecting method bodies.
 
 ```python
 def guardian_bulk_warnings(viewset):
-    # Called for each GuardianViewSet from the existing crud_views_guardian check function.
+    # The existing crud_views_guardian check function iterates all ViewSets:
+    # call this only when isinstance(viewset, GuardianViewSet).
     warnings = []
     for view in viewset.get_all_views().values():
         if issubclass(view, BulkFormView) and view.cv_bulk_has_permission is BulkFormView.cv_bulk_has_permission:
@@ -992,8 +1019,9 @@ The collector must not instantiate application forms or execute queryset/permiss
 | JavaScript test for the toolbar script | `tests/js/`, beside the existing script tests |
 | Check IDs | Unused IDs for the core checks and the Guardian warning, documented where existing IDs are listed |
 | Public API listing | `docs/development/stability.md` |
+| Example app label | Not `bulk_actions`: a local `examples/bootstrap5/db.sqlite3` can still hold that label's migration record and tables from phase 06.38, which would skip the new app's first migration. Use another label or document a database reset |
 
-The bulk API is listed as **stable** in `docs/development/stability.md`, with no provisional category: `BulkMixin`, `BulkFormView`, the `cv_bulk_*` attributes and hooks of section 4, the four `cv_bulk_*` POST field names, and the `bulk:*` class keys. After 1.0, changing any of them follows the normal deprecation policy.
+The bulk API is listed as **stable** in `docs/development/stability.md`, with no provisional category: `BulkMixin`, `BulkFormView`, `BulkConfirmForm`, the `cv_bulk_*` attributes and hooks of section 4, the three `cv_bulk_*` POST field names, and the `bulk:*` class keys. After 1.0, changing any of them follows the normal deprecation policy.
 
 ## 8. Where inspect_deletion helps, and where it does not
 
@@ -1056,11 +1084,12 @@ Test behavior rather than implementation structure:
 - IDs normalize and deduplicate; malformed IDs, overlapping candidate/excluded sets, and unsupported querysets fail clearly.
 - Missing, out-of-scope, and permission-denied records display identical text and omit the object label. A permitted record blocked by a business rule displays its label and the specific reason.
 - Review is read-only and leaves the action form unbound.
+- The review renders the action form through the package's form rendering: a `CrispyForm` with a custom layout shows its fields, themed submit, and a cancel button that returns to the source. The default `BulkConfirmForm` shows Confirm and Cancel. With nothing eligible, no form and no submit control is rendered. A `form_class` that is not a `CrispyForm` fails a system check. An invalid form and a changed selection both show their error on the rerendered review.
 - Count eligibility checks per request across review, confirmation, skip confirmation, and redisplay. Each request checks each permitted selected item once. With `cv_atomic=True`, verify that the execution check runs inside the configured transaction before any writes.
 - Two groups survive invalid form submissions; reasons come from fresh server checks.
 - The confirmation displays the eligible subset and keeps previously excluded objects out of the confirmation submission.
 - Expose the same action from a table and a card. Both honor the destination's `cv_bulk_confirm`. With confirmation skipped, an all-eligible selection on a field-less action runs immediately and a mixed selection opens the full-page review from either source.
-- Act from a filtered, sorted card page 2 and cancel: the user returns to that same page. The warning redirect returns there too. With `cv_success_keys` listing both sources, success returns to the source used; without it, to `cv_success_key`.
+- Act from a filtered, sorted card page 2 and cancel: the user returns to that same page. The warning redirect returns there too. With `cv_success_keys` listing both sources, success returns to the source used; without it, to `cv_success_key`. After success, a source with `ListViewTableFilterMixin` and filter persistence shows its stored filter again; a source without it shows its first page.
 - Every execution, including skipped confirmation, shows a success message with the number of processed records. A custom `cv_message_template_code` replaces the default. A rerender or a rolled-back execution shows no success message.
 - Direct execution with confirmation skipped enforces the same scope, permission, and eligibility checks.
 - With skip confirmation enabled on an action requiring input, the source opens the form before any writes. One valid submission with unchanged eligibility executes the action without a second confirmation screen.

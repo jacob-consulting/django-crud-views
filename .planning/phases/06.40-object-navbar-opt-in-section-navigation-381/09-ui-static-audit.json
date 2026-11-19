@@ -1,0 +1,634 @@
+{
+  "product_revision": "6e8434394b73fe160210c22dab248d4cf3714b7d",
+  "interaction_capture": "off",
+  "port": 53687,
+  "capture_exit": 0,
+  "browser": "159.0.8154.6",
+  "landing": [
+    {
+      "text": "Alice and Bob manage customers, orders, items and addresses in separate tenants.",
+      "fontSize": "16px"
+    },
+    {
+      "text": "Charlie can read customers, orders and items in Alice's tenant. Addresses and write actions are unavailable.",
+      "fontSize": "16px"
+    },
+    {
+      "text": "alice/alice, bob/bob, charlie/charlie \u2014 Sign in",
+      "fontSize": "16px"
+    },
+    {
+      "text": "Open Notes, Orders or Addresses, then follow an Order to an Item. The identity and section links still belong to the Customer.",
+      "fontSize": "16px"
+    },
+    {
+      "text": "This customer has no orders yet. Orders stays available because you can open the section. Try New customer to see this empty section.",
+      "fontSize": "16px"
+    },
+    {
+      "text": "A visible section link does not guarantee access. The destination checks its permissions when you open it.",
+      "fontSize": "16px"
+    }
+  ],
+  "measurements": [
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "identity": {
+        "text": "Acme Coffee",
+        "box": {
+          "x": 72,
+          "y": 273.1875,
+          "width": 1296,
+          "height": 24,
+          "right": 1368,
+          "bottom": 297.1875
+        },
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      "nav": {
+        "x": 72,
+        "y": 305.1875,
+        "width": 1296,
+        "height": 40,
+        "right": 1368,
+        "bottom": 345.1875
+      },
+      "name": "Sections for Acme Coffee",
+      "links": [
+        {
+          "text": "Details",
+          "box": {
+            "x": 72,
+            "y": 305.1875,
+            "width": 130,
+            "height": 40,
+            "right": 202,
+            "bottom": 345.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)"
+        },
+        {
+          "text": "Notes",
+          "box": {
+            "x": 206,
+            "y": 305.1875,
+            "width": 110,
+            "height": 40,
+            "right": 316,
+            "bottom": 345.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Orders",
+          "box": {
+            "x": 320,
+            "y": 305.1875,
+            "width": 120,
+            "height": 40,
+            "right": 440,
+            "bottom": 345.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Addresses",
+          "box": {
+            "x": 444,
+            "y": 305.1875,
+            "width": 144,
+            "height": 40,
+            "right": 588,
+            "bottom": 345.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        }
+      ],
+      "current": 1,
+      "header": {
+        "x": 89,
+        "y": 377.390625,
+        "width": 185,
+        "height": 33.59375,
+        "right": 274,
+        "bottom": 410.984375
+      }
+    },
+    {
+      "width": 375,
+      "scrollWidth": 375,
+      "identity": {
+        "text": "Acme Coffee",
+        "box": {
+          "x": 12,
+          "y": 508.375,
+          "width": 351,
+          "height": 24,
+          "right": 363,
+          "bottom": 532.375
+        },
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      "nav": {
+        "x": 12,
+        "y": 540.375,
+        "width": 351,
+        "height": 84,
+        "right": 363,
+        "bottom": 624.375
+      },
+      "name": "Sections for Acme Coffee",
+      "links": [
+        {
+          "text": "Details",
+          "box": {
+            "x": 12,
+            "y": 540.375,
+            "width": 130,
+            "height": 40,
+            "right": 142,
+            "bottom": 580.375
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)"
+        },
+        {
+          "text": "Notes",
+          "box": {
+            "x": 146,
+            "y": 540.375,
+            "width": 110,
+            "height": 40,
+            "right": 256,
+            "bottom": 580.375
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Orders",
+          "box": {
+            "x": 12,
+            "y": 584.375,
+            "width": 120,
+            "height": 40,
+            "right": 132,
+            "bottom": 624.375
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Addresses",
+          "box": {
+            "x": 136,
+            "y": 584.375,
+            "width": 144,
+            "height": 40,
+            "right": 280,
+            "bottom": 624.375
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        }
+      ],
+      "current": 1,
+      "header": {
+        "x": 29,
+        "y": 649.375,
+        "width": 152,
+        "height": 27.65625,
+        "right": 181,
+        "bottom": 677.03125
+      }
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "identity": {
+        "text": "Acme Coffee",
+        "box": {
+          "x": 36,
+          "y": 321.1875,
+          "width": 696,
+          "height": 24,
+          "right": 732,
+          "bottom": 345.1875
+        },
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      "nav": {
+        "x": 36,
+        "y": 353.1875,
+        "width": 696,
+        "height": 40,
+        "right": 732,
+        "bottom": 393.1875
+      },
+      "name": "Sections for Acme Coffee",
+      "links": [
+        {
+          "text": "Details",
+          "box": {
+            "x": 36,
+            "y": 353.1875,
+            "width": 130,
+            "height": 40,
+            "right": 166,
+            "bottom": 393.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)"
+        },
+        {
+          "text": "Notes",
+          "box": {
+            "x": 170,
+            "y": 353.1875,
+            "width": 110,
+            "height": 40,
+            "right": 280,
+            "bottom": 393.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Orders",
+          "box": {
+            "x": 284,
+            "y": 353.1875,
+            "width": 120,
+            "height": 40,
+            "right": 404,
+            "bottom": 393.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Addresses",
+          "box": {
+            "x": 408,
+            "y": 353.1875,
+            "width": 144,
+            "height": 40,
+            "right": 552,
+            "bottom": 393.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        }
+      ],
+      "current": 1,
+      "header": {
+        "x": 53,
+        "y": 426.9375,
+        "width": 173,
+        "height": 30.484375,
+        "right": 226,
+        "bottom": 457.421875
+      }
+    },
+    {
+      "width": 1280,
+      "scrollWidth": 1280,
+      "identity": {
+        "text": "Acme Coffee",
+        "box": {
+          "x": 82,
+          "y": 273.1875,
+          "width": 1116,
+          "height": 24,
+          "right": 1198,
+          "bottom": 297.1875
+        },
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      "nav": {
+        "x": 82,
+        "y": 305.1875,
+        "width": 1116,
+        "height": 40,
+        "right": 1198,
+        "bottom": 345.1875
+      },
+      "name": "Sections for Acme Coffee",
+      "links": [
+        {
+          "text": "Details",
+          "box": {
+            "x": 82,
+            "y": 305.1875,
+            "width": 130,
+            "height": 40,
+            "right": 212,
+            "bottom": 345.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)"
+        },
+        {
+          "text": "Notes",
+          "box": {
+            "x": 216,
+            "y": 305.1875,
+            "width": 110,
+            "height": 40,
+            "right": 326,
+            "bottom": 345.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Orders",
+          "box": {
+            "x": 330,
+            "y": 305.1875,
+            "width": 120,
+            "height": 40,
+            "right": 450,
+            "bottom": 345.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Addresses",
+          "box": {
+            "x": 454,
+            "y": 305.1875,
+            "width": 144,
+            "height": 40,
+            "right": 598,
+            "bottom": 345.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        }
+      ],
+      "current": 1,
+      "header": {
+        "x": 99,
+        "y": 377.390625,
+        "width": 185,
+        "height": 33.59375,
+        "right": 284,
+        "bottom": 410.984375
+      }
+    },
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "identity": {
+        "text": "Acme Coffee",
+        "box": {
+          "x": 12,
+          "y": 580.375,
+          "width": 296,
+          "height": 24,
+          "right": 308,
+          "bottom": 604.375
+        },
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      "nav": {
+        "x": 12,
+        "y": 612.375,
+        "width": 296,
+        "height": 84,
+        "right": 308,
+        "bottom": 696.375
+      },
+      "name": "Sections for Acme Coffee",
+      "links": [
+        {
+          "text": "Details",
+          "box": {
+            "x": 12,
+            "y": 612.375,
+            "width": 130,
+            "height": 40,
+            "right": 142,
+            "bottom": 652.375
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)"
+        },
+        {
+          "text": "Notes",
+          "box": {
+            "x": 146,
+            "y": 612.375,
+            "width": 110,
+            "height": 40,
+            "right": 256,
+            "bottom": 652.375
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Orders",
+          "box": {
+            "x": 12,
+            "y": 656.375,
+            "width": 120,
+            "height": 40,
+            "right": 132,
+            "bottom": 696.375
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Addresses",
+          "box": {
+            "x": 136,
+            "y": 656.375,
+            "width": 144,
+            "height": 40,
+            "right": 280,
+            "bottom": 696.375
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        }
+      ],
+      "current": 1,
+      "header": {
+        "x": 29,
+        "y": 721.375,
+        "width": 152,
+        "height": 27.25,
+        "right": 181,
+        "bottom": 748.625
+      }
+    },
+    {
+      "width": 640,
+      "scrollWidth": 640,
+      "identity": {
+        "text": "Acme Coffee",
+        "box": {
+          "x": 62,
+          "y": 393.1875,
+          "width": 516,
+          "height": 24,
+          "right": 578,
+          "bottom": 417.1875
+        },
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      "nav": {
+        "x": 62,
+        "y": 425.1875,
+        "width": 516,
+        "height": 40,
+        "right": 578,
+        "bottom": 465.1875
+      },
+      "name": "Sections for Acme Coffee",
+      "links": [
+        {
+          "text": "Details",
+          "box": {
+            "x": 62,
+            "y": 425.1875,
+            "width": 130,
+            "height": 40,
+            "right": 192,
+            "bottom": 465.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)"
+        },
+        {
+          "text": "Notes",
+          "box": {
+            "x": 196,
+            "y": 425.1875,
+            "width": 110,
+            "height": 40,
+            "right": 306,
+            "bottom": 465.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Orders",
+          "box": {
+            "x": 310,
+            "y": 425.1875,
+            "width": 120,
+            "height": 40,
+            "right": 430,
+            "bottom": 465.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Addresses",
+          "box": {
+            "x": 434,
+            "y": 425.1875,
+            "width": 144,
+            "height": 40,
+            "right": 578,
+            "bottom": 465.1875
+          },
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)"
+        }
+      ],
+      "current": 1,
+      "header": {
+        "x": 79,
+        "y": 499.40625,
+        "width": 163,
+        "height": 29.5625,
+        "right": 242,
+        "bottom": 528.96875
+      }
+    }
+  ],
+  "screenshots": "captured (6/6)",
+  "interaction_captures": "off; login used only to reach authenticated static page",
+  "server_exit": -15,
+  "settings_and_database_removed": true,
+  "port_released": true
+}

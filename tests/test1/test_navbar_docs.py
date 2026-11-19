@@ -117,6 +117,7 @@ def test_documented_context_inventory_resolves_real_render_data():
 @pytest.mark.parametrize("mode", ["wrapper", "split", "per-bar"])
 def test_published_wrappers_use_component_tags(mode):
     from django.template.library import SimpleNode
+
     from crud_views.templatetags.crud_views import cv_navbar_identity, cv_navbar_items
 
     template = Template(recipes()[mode])

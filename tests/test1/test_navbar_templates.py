@@ -334,7 +334,7 @@ def test_long_text_is_complete_and_uses_wrapping_utilities():
         assert not tree.xpath('.//*[contains(@class,"text-truncate") or contains(@class,"overflow-hidden")]')
 
 
-@pytest.mark.parametrize("name", TEMPLATES + ["identity-tag", "items-tag"])
+@pytest.mark.parametrize("name", [*TEMPLATES, "identity-tag", "items-tag"])
 def test_configuration_errors_propagate_without_retry_or_placeholder(name):
     from django.core.exceptions import ImproperlyConfigured
 

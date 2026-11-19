@@ -647,6 +647,10 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **ViewSet Navigation components**: `cv_navbar_identity` and `cv_navbar_items` add convenient independent
+  placement of the existing identity and section-link leaves. The default `cv_navbar` wrapper composes both
+  tags; existing split includes remain supported. See [placement and overrides](docs/reference/navbar.md#placement-and-overrides).
+
 - **ViewSet Navigation** ([#381](https://github.com/jacob-consulting/django-crud-views/issues/381)):
   declare owner and direct-child sections once with `NavBar`/`NavItem`, attach them to selected views with
   `CrudViewNavBarMixin`, and retain owner identity across descendants. Permission/state-filtered full-page

@@ -19,7 +19,9 @@ tags *you* place, so they stay silent until you do:
 | `{% cv_config %}` | in `<head>`, before `{% cv_js %}` | the [JavaScript config and modal shell](javascript.md) |
 | `{% cv_messages %}` | top of the content area | [flash messages](messages.md), including the ones create, update, delete and action views emit themselves |
 | `{% cv_breadcrumb %}` | above the content | the [breadcrumb trail](breadcrumb.md) |
-| `{% cv_navbar %}` | before the existing view header/card | opt-in [ViewSet Navigation](navbar.md) |
+| `{% cv_navbar %}` | before the existing view header/card | full opt-in [ViewSet Navigation](navbar.md) wrapper |
+| `{% cv_navbar_identity %}` | wherever owner identity belongs | independent [identity component](navbar.md#placement-and-overrides) |
+| `{% cv_navbar_items %}` | wherever section links belong | independent [items component](navbar.md#split-placement) |
 
 These tags use `{% load crud_views %}` and render nothing when they have nothing to show, so they are
 safe to place unconditionally. Bootstrap's own CSS and JavaScript are not a Python dependency —
@@ -186,7 +188,10 @@ The optional `CrudViewNavBarMixin` supplies `cv_navbar` as one lazy result per v
 | `crud_views/tags/navbar_items.html` | Named navigation landmark and ordinary section links. |
 
 Each template independently guards `cv_navbar` before emitting HTML or whitespace. Both leaves take the same
-named context and work independently for split placement. Retain escaping, wrapping, readable labels and the
+named context and work independently for split placement. The no-argument `cv_navbar_identity` and
+`cv_navbar_items` tags select those theme leaves with the full caller context and request; the stock wrapper
+composes both tags. `NavBar(template=...)` selects only the full `cv_navbar` wrapper. Direct includes retain
+normal loader behavior and remain supported. Retain escaping, wrapping, readable labels and the
 items leaf's translated landmark name. Templates do not call permission hooks. The first consumer builds once;
 later consumers reuse the result. No consumer means no navbar work. See the executable
 [global, leaf, split and per-bar examples](navbar.md#placement-and-overrides).

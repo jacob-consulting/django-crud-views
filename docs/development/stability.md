@@ -54,7 +54,7 @@ tree, per-formset plumbing) is internal, and stays internal in 1.0.
 
 **ViewSet Navigation** — `crud_views.lib.navbar`:
 `NavBar`, `NavItem`, `CrudViewNavBarMixin`, the per-view `cv_navbar` attachment, and the
-`{% cv_navbar %}` tag in the `crud_views` tag library. The declaration fields and supported behavior in the
+`{% cv_navbar %}`, `{% cv_navbar_identity %}` and `{% cv_navbar_items %}` tags in the `crud_views` tag library. The declaration fields and supported behavior in the
 [ViewSet Navigation reference](../reference/navbar.md) are stable at 1.0 under this policy.
 The override contract includes exactly `crud_views/tags/navbar.html`,
 `crud_views/tags/navbar_identity.html`, and `crud_views/tags/navbar_items.html`, with the documented

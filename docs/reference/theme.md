@@ -834,9 +834,13 @@ Wrap long captions/labels without horizontal page scrolling, truncation or a col
 not become another page heading or replace the existing view header/actions. Split placement remains valid
 because the items leaf supplies its own translated accessible name, independent of the identity element.
 
-`NavBar(template=...)` selects a wrapper for that declaration's tag; direct partial includes keep their selected
-paths. The stock wrapper uses relative includes so individual leaf overrides still apply. Layout A is an
-application [wrapper example](navbar.md#global-wrapper), not an additional package layout setting.
+`NavBar(template=...)` selects only the full `cv_navbar` wrapper for that declaration. The stock wrapper
+composes `cv_navbar_identity` and `cv_navbar_items` from the `crud_views` tag library. Each component resolves
+its corresponding leaf under the current theme path using normal template-loader precedence and preserves
+the full caller context/request and same lazy value. Components ignore the per-bar wrapper, including when
+called from a custom wrapper. Direct partial includes keep their selected public paths and normal loader
+behavior. See [independent and split placement](navbar.md#split-placement). Layout A is an application
+[wrapper example](navbar.md#global-wrapper), not an additional package layout setting.
 
 ## Structured manage contracts
 

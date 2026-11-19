@@ -1,25 +1,26 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 06.40.1
-current_phase_name: "ViewSet Navigation: theme class keys and owner-heading layouts (#384)"
-current_plan: 2
-status: verifying
-stopped_at: Completed 06.40.1-02-PLAN.md; phase review and verification pending
-last_updated: "2026-11-19T12:57:29.417Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.40.1 complete, ready to plan Phase 7
+last_updated: "2026-11-19T13:14:31.913Z"
 last_activity: 2026-11-19
-last_activity_desc: Phase 06.40.1 plans executed; phase review and verification pending
-state_head: 3f4cc47b8fb0345eb189c29be8f965de595c4113
+last_activity_desc: Phase 06.40.1 complete, transitioned to Phase 7
+state_head: 8dcd4dbd89876668acd0511fed58a4acf9b73d2d
 progress:
   total_phases: 47
-  completed_phases: 45
+  completed_phases: 46
   total_plans: 257
   completed_plans: 257
+  percent: 98
 milestone_name: milestone
 ---
 
 Total Phases: 47
-Completed Phases: 45
+Completed Phases: 46
 
 # Project State
 
@@ -28,17 +29,25 @@ Completed Phases: 45
 See: .planning/PROJECT.md (updated 2026-11-19)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.40.1 — ViewSet Navigation: theme class keys and owner-heading layouts (#384)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.40.1 (ViewSet Navigation: theme class keys and owner-heading layouts (#384)) — VERIFYING
-Current Plan: 2
-Total Plans in Phase: 2
-Status: Plans executed — phase review and verification pending
-Last activity: 2026-11-19 — Phase 06.40.1 plans executed with fresh affected-scope verification
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: TBD
+Status: Ready to plan
+Last activity: 2026-11-19 — Phase 06.40.1 complete, transitioned to Phase 7
 
-Next: $gsd-execute-phase 06.40.1
+Next: $gsd-discuss-phase 7
+
+### Phase 06.40.1 completion — 2026-11-19
+
+- Both plans and all five tasks complete. Independent goal verification passed 9/9; all seven approved decisions honored, validation 5/5 and security 7/7 closed. CLI verification.status passed with its covered-input fingerprint.
+- Six ordinary navbar class keys and executable owner-heading/registration recipes delivered. Affected regression: 1,655 passed; strict docs and scoped Ruff/format passed. Three documentation review findings fixed in 701455b6, followed by 77 recipe tests and four independent verifier checks.
+- Source-only UI audit retained as historical 22/24; all three findings resolved. No new browser or full-matrix acceptance claim. Deep review covered 15 files with no open findings.
+- phase.complete advanced to Phase 7; stale dotted progress row and completed-phase count reconciled. SDK missing-file warning parses two Ruff commands as paths, not missing artifacts. Original state.json restored after the known derived rewrite.
+- Issue #384 labeled P06.40.1 at user request. No requirement IDs, pending parent UAT gaps, matching todos or learning promotion. Global learnings disabled by default; no LEARNINGS files. Unrelated work preserved. Codebase-map refresh follows a future gsd-ship.
 
 ### Phase 06.40.1 plan 02 execution — 2026-11-19
 
@@ -1402,7 +1411,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 246
+- Total plans completed: 248
 
 - Total plans completed: 186
 - Average duration: -
@@ -1454,6 +1463,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.36 | 8 | - | - |
 | 06.37 | 4 | - | - |
 | 06.40 | 9 | - | - |
+| 06.40.1 | 2 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2082,6 +2092,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-19T12:57:22.616Z
-Stopped at: Completed 06.40.1-02-PLAN.md; phase review and verification pending
+Last session: 2026-11-19T13:15:37.896966+00:00
+Stopped at: Phase 06.40.1 complete, ready to plan Phase 7
 Resume file: None

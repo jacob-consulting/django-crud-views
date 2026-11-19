@@ -3,19 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 06.40.1
 current_phase_name: "ViewSet Navigation: theme class keys and owner-heading layouts (#384)"
-current_plan: Not started
+current_plan: 2
 status: executing
-stopped_at: Phase 06.40.1 researched and planned; two verified plans ready to execute
-last_updated: "2026-11-19T12:36:04.337Z"
+stopped_at: Completed 06.40.1-01-PLAN.md
+last_updated: "2026-11-19T12:47:39.695Z"
 last_activity: 2026-11-19
-last_activity_desc: "Planned Phase 06.40.1 from issue #384: two plans, five tasks, independent verification and seven-decision coverage passed"
-state_head: 3e2eed79c9d92f45112b0281055da405b6152456
+last_activity_desc: Phase 06.40.1 execution started
+state_head: ff6ce9ab17efad423f0ae9ebc51d8b49ca4ada2d
 progress:
   total_phases: 47
   completed_phases: 45
   total_plans: 257
-  completed_plans: 255
-  percent: 96
+  completed_plans: 256
 milestone_name: milestone
 ---
 
@@ -33,11 +32,11 @@ See: .planning/PROJECT.md (updated 2026-11-19)
 
 ## Current Position
 
-Phase: 06.40.1 (ViewSet Navigation: theme class keys and owner-heading layouts (#384)) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.40.1 (ViewSet Navigation: theme class keys and owner-heading layouts (#384)) — EXECUTING
+Current Plan: 2
 Total Plans in Phase: 2
 Status: Ready to execute
-Last activity: 2026-11-19 -- Planned Phase 06.40.1 from issue #384: two plans, five tasks, independent verification and seven-decision coverage passed
+Last activity: 2026-11-19 — Phase 06.40.1 execution started
 
 Next: $gsd-execute-phase 06.40.1
 
@@ -1635,6 +1634,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.40 P07 | 7min | 2 tasks | 5 files |
 | Phase 06.40 P08 | 136min | 2 tasks | 22 files |
 | Phase 06.40 P09 | 15min | 3 tasks | 10 files |
+| Phase 06.40.1 P01 | 4min | 2 tasks | 9 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1977,6 +1977,7 @@ Recent decisions affecting current work:
 - [Phase 06.40]: Use user-directed port 9000 with owned isolated database/settings and deliberate-failure cleanup evidence.
 - [Phase 06.40]: Preserve failed attempts and qualify earlier full-suite evidence by changed scope; exact affected reruns close the test-only revision.
 - [Phase 06.40]: Split remaining verification into two disjoint four-worker groups; use ordinary per-test temporary directories for core schema exports.
+- [Phase 06.40.1]: Use the six approved ordinary navbar keys without changing registry algorithms, tags or navigation admission.
 
 ### Pending Todos
 
@@ -2072,6 +2073,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-19T09:48:27Z
-Stopped at: Phase 06.40.1 researched and planned; two verified plans ready to execute
+Last session: 2026-11-19T12:47:33.039Z
+Stopped at: Completed 06.40.1-01-PLAN.md
 Resume file: None

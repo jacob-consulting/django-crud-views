@@ -2171,10 +2171,10 @@ examples as implementation evidence; adapt reusable recipes into upstream docume
 **Approved contract:** Issue #384 D-01–D-07 and its acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the new navbar class keys and owner-heading theme contract.
-**Plans:** 2 plans in 2 waves
+**Plans:** 1/2 plans executed in 2 waves
 
 **Wave 1**
-- [ ] 06.40.1-01-PLAN.md
+- [x] 06.40.1-01-PLAN.md
 
 **Wave 2** *(depends on plan 01)*
 - [ ] 06.40.1-02-PLAN.md

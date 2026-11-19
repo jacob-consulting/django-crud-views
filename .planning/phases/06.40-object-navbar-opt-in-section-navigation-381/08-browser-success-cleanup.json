@@ -1,0 +1,12 @@
+{
+  "run": "success",
+  "settings": "/home/alex/projects/alex/django-crud-views/.pytest_cache/navbar_browser_settings.py",
+  "pid": 779345,
+  "port": 9000,
+  "directory": "/tmp/cv08-browser-7x4d9649",
+  "server_exit": -15,
+  "port_released": true,
+  "settings_removed": true,
+  "database_removed": true,
+  "bytecode_absent": true
+}

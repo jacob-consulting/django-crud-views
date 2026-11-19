@@ -1,0 +1,13 @@
+{
+  "run": "deliberate-failure",
+  "settings": "/home/alex/projects/alex/django-crud-views/.pytest_cache/navbar_browser_settings.py",
+  "pid": 778821,
+  "port": 9000,
+  "directory": "/tmp/cv08-browser-hdke85pa",
+  "interruption_or_error": "KeyboardInterrupt('signal 2')",
+  "server_exit": -15,
+  "port_released": true,
+  "settings_removed": true,
+  "database_removed": true,
+  "bytecode_absent": true
+}

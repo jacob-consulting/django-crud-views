@@ -1,0 +1,252 @@
+[
+  {
+    "id": "R1",
+    "severity": "HIGH",
+    "plans": [
+      "01",
+      "02"
+    ],
+    "required_property": "Owner default short-action labels and explicit caption/label values render as plain text without double escaping or preserving unsafe HTML.",
+    "description": "PLAN01:83,95 and PLAN02:97 require forced plain escaping while owner defaults come from cv_get_action_short_label. src/crud_views/lib/view/base.py:578-592,638-643 returns already rendered mark_safe text. The plans do not distinguish pre-escaped default output from raw override/owner strings.",
+    "fix_hint": "Define the normalization boundary and test ampersands/apostrophes/entities plus safe markup for both default and explicit labels; do not blindly adopt a particular escaping recipe.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R2",
+    "severity": "HIGH",
+    "plans": [
+      "04",
+      "05"
+    ],
+    "required_property": "Every prefixed example ParentViewSet maps to the actual child model FK.",
+    "description": "PLAN04:95 names navbar_tenant/navbar_customer; PLAN05:103 adds Order(customer), Item(order), Address(customer) with navbar_* ViewSets. ParentViewSet.get_attribute defaults to the parent ViewSet name (src/crud_views/lib/viewset/parentviewset.py:62-66), and ancestors.py:158-174 validates that model field. Explicit relationship attributes are not specified.",
+    "fix_hint": "Specify attribute=tenant/customer/order as appropriate and exercise every hierarchy edge.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R3",
+    "severity": "HIGH",
+    "plans": [
+      "05",
+      "06"
+    ],
+    "required_property": "The new FEATURES entry preserves the existing exact feature-group test contract.",
+    "description": "PLAN05:127 adds navbar_demo to group ui, but no plan owns examples/bootstrap5/project/tests.py. Its FeatureGroupsTest.test_grouping_matches_spec at :457-477 asserts exact ordered membership without navbar_demo.",
+    "fix_hint": "Own the bounded shared-test update and run the shared example integration tests alongside new scenario tests.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "existence",
+    "status": "unresolved"
+  },
+  {
+    "id": "R4",
+    "severity": "HIGH",
+    "plans": [
+      "05",
+      "06"
+    ],
+    "required_property": "The registered standalone landing satisfies all existing feature-page contracts.",
+    "description": "PLAN05:127 owns a new standalone home but does not wire its standard feature panels/breadcrumb. examples/bootstrap5/project/tests.py:75-81,238-247,278-284,394-403 requires unseeded-superuser 200, example-about, Home breadcrumb and documentation panel. theming/views.py:21-34 and theming/templates/theming/index.html:1-41 demonstrate the existing composition.",
+    "fix_hint": "Name the landing composition and shared integration verification; any implementation satisfying the contracts is sufficient.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R5",
+    "severity": "HIGH",
+    "plans": [
+      "06"
+    ],
+    "required_property": "Navbar override documentation preserves the separate existing snippet-variable schema.",
+    "description": "PLAN06:120 adds documented context to templates.md without placing it relative to its final Snippet variables section. tests/test1/test_snippet_docs.py:27-36 parses that section through the next level-two heading and requires exactly eight named rows. Gemini identifies a conditional documentation regression, not an existing failing test; this undiscounted singleton judgment remains for explicit disposition.",
+    "fix_hint": "Place navbar data in its own documented section or explicitly preserve the snippet table; add the existing snippet-doc regression to focused verification.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R6",
+    "severity": "HIGH",
+    "plans": [
+      "05",
+      "06"
+    ],
+    "required_property": "Charlie credential discovery matches the promised rendered surfaces and retains existing translated account notices.",
+    "description": "PLAN05:115 claims adding DEMO_USERS makes shared login/home help discover Charlie. Account notices are hard-coded in registration/login.html:15-17, project/home.html:42-45 and project/base.html:51-53. These files/catalogs are unowned; examples/bootstrap5/test_i18n.py:185-200 also requires developer credentials last. Grok raises HIGH and Fable materially corroborates at MEDIUM.",
+    "fix_hint": "Own and test the promised surfaces/catalog changes, or explicitly correct the plan to an approved own-example discovery path that actually renders all three credentials; retain developer invariants.",
+    "reviewers": [
+      "grok-review",
+      "fable-review"
+    ],
+    "claim_class": "existence",
+    "status": "unresolved"
+  },
+  {
+    "id": "R7",
+    "severity": "MEDIUM",
+    "plans": [
+      "01",
+      "03"
+    ],
+    "required_property": "Real-request navbar and byte-preservation tests use an explicitly owned template harness that places the tag.",
+    "description": "PLAN01:83 promises real-GET header placement and PLAN03:91 paired whole-page byte evidence. tests/test1/app/templates/app/crud_views.html:1-40 has no navbar tag; neither plan names a local loader/base override or owns a shared base-template edit. Region goldens alone cannot prove whole-page preservation.",
+    "fix_hint": "Specify test-local cv_extends_template/loader placement and paired page comparison inside the owned test modules, or own a bounded template change.",
+    "reviewers": [
+      "fable-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R8",
+    "severity": "MEDIUM",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Registry-dependent navbar startup errors operate on a completed registry.",
+    "description": "PLAN01:107 calls cooperative checks without a readiness rule. src/crud_views/checks.py:38-47 runs ViewSet checks directly; :172-212 deliberately imports URLconfs before completion-dependent ancestor diagnostics. Partial imports can otherwise appear as missing names/keys.",
+    "fix_hint": "Reuse the existing completion-readiness mechanism in a bounded way and test early/complete registry states.",
+    "reviewers": [
+      "fable-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R9",
+    "severity": "MEDIUM",
+    "plans": [
+      "01",
+      "03"
+    ],
+    "required_property": "Isolated fixtures preserve project registrations and reset every cache classified as cold.",
+    "description": "PLAN01:83 constructs isolated route fixtures; PLAN03:91 measures cold/warm caches. tests/test1/test_ancestor_authorization.py:38 preimports project URLs before :46-76 snapshots; src/crud_views/lib/viewset/__init__.py:489-490 also caches permission vocabulary per ViewSet. Neither ordering nor that reset is explicit in the new fixture contract.",
+    "fix_hint": "Reuse the proven fixture or record its import ordering and reset ViewSet/ContentType/actor caches around cold measurements.",
+    "reviewers": [
+      "fable-review",
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R10",
+    "severity": "MEDIUM",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Configured nonexistent NavBar.template behavior is explicit and tested.",
+    "description": "PLAN01:107 enumerates target/attachment checks but not missing custom-wrapper behavior; src/crud_views/lib/check.py:232-253 supplies existing optional-template startup validation.",
+    "fix_hint": "Adopt that check pattern or explicitly document/test intentional render-time failure.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R11",
+    "severity": "MEDIUM",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Invalid destination shapes have an explicit construction-versus-startup validation contract.",
+    "description": "PLAN01:83 declares NavItem(key=None, child=None); PLAN01:107 does not state neither-selected-item or empty-items behavior and when malformed declarations fail. This affects whether invalid fixture construction reaches cooperative checks.",
+    "fix_hint": "State and test the accepted empty-bar case and the error boundary for an item with neither owner key nor child.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R12",
+    "severity": "MEDIUM",
+    "plans": [
+      "08"
+    ],
+    "required_property": "Browser verification releases its own background server and temporary settings/database on every exit path.",
+    "description": "PLAN08:89 starts runserver and writes an isolated SQLite/settings module but contains no cleanup step; repeat execution can retain port8765 or a stale fixture.",
+    "fix_hint": "Record process/path ownership and run cleanup in a finally block after evidence capture, including failures.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R13",
+    "severity": "MEDIUM",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Declared owner and child references remain late-bound string names.",
+    "description": "PLAN01:83 omits field types from NavBar(viewset, items, template=None) and NavItem(child=None). Its A-01 adoption relies on construction before registration (issue381:328-332); Grok incorrectly calls A-01 locked, but the adopted design still needs an explicit executable type contract.",
+    "fix_hint": "Pin viewset:str and child:str|None and test declaration before registry population, or document a bounded alternative preserving late binding.",
+    "reviewers": [
+      "grok-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R14",
+    "severity": "LOW",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Every owner attachment lacking an object is rejected, including card and custom collection pages.",
+    "description": "PLAN01:107 explicitly names owner list/create attachment checks. CardListView and custom no-object owner pages share cv_object=False and cannot supply self.object; the invariant is broader than two key names.",
+    "fix_hint": "Specify the check using object capability and test card/custom owner collections.",
+    "reviewers": [
+      "grok-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R15",
+    "severity": "MEDIUM",
+    "plans": [
+      "02",
+      "06"
+    ],
+    "required_property": "The new translated public navigation landmark ships with German catalog coverage.",
+    "description": "PLAN02:97 adds translated Sections for %(object)s, but no plan owns src/crud_views/locale/de/LC_MESSAGES/django.po or its compiled catalog. Existing tests/test1/test_i18n.py:65-73 only validates entries already present.",
+    "fix_hint": "Own catalog extraction/translation/compilation and a rendered German accessible-name assertion.",
+    "reviewers": [
+      "grok-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  },
+  {
+    "id": "R16",
+    "severity": "MEDIUM",
+    "plans": [
+      "04"
+    ],
+    "required_property": "The required no-migration-drift outcome is decided by an executable failing verification.",
+    "description": "PLAN04:108 requires makemigrations --check --dry-run, but task02 automated verification at :109 invokes only navbar_demo/tests.py and its actions do not establish a test running the migration check.",
+    "fix_hint": "Add the explicit migration command in the supported example cwd/environment or a meaningful test that executes the same drift gate.",
+    "reviewers": [
+      "grok-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  }
+]

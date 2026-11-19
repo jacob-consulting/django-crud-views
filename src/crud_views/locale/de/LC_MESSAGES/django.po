@@ -1583,3 +1583,8 @@ msgstr "Unbekannte Ansicht: %(name)s"
 #, python-format
 msgid "Unknown user: %(name)s"
 msgstr "Unbekannter Benutzer: %(name)s"
+
+#: src/crud_views/templates/crud_views/tags/navbar_items.html
+#, python-format
+msgid "Sections for %(object)s"
+msgstr "Abschnitte für %(object)s"

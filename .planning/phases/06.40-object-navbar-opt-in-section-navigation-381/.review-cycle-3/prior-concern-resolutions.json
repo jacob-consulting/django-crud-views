@@ -1,0 +1,61 @@
+{
+  "R1-R16": "Remain closed; all three current reviewers preserve prior signoff. Cycle2 evidence remains in .review-cycle-2.",
+  "round2": [
+    {
+      "id": "R17",
+      "status": "closed-at-planning-review",
+      "reviewer_signoff": [
+        "fable-review",
+        "grok-review",
+        "gemini-review"
+      ],
+      "evidence": [
+        {
+          "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+          "line": 83,
+          "quote": "  <action>Per D-01/D-03/D-05/D-07/D-09/D-11/D-13/D-14, create the single navbar module, its Pydantic NavItem(key: str | None = None, child: str | None = None, label=None, icon=None), NavBar(viewset: str, items: list[NavItem], template: str | None = None), and cooperative CrudViewNavBarMixin.cv_navbar=None. Keep declarations configuration-only and all resolution/building helpers private. Use Pydantic features available at 2.2.1; accept lazy translated labels without preserving HTML safety. Add one view-instance SimpleLazyObject in get_context_data without evaluating it, with None for modal requests (X-CV-Modal: true). Add the context-taking cv_navbar tag and guarded layout-B wrapper. Wire one real owner detail GET, declaration, lazy context, access then existing state helper, registered reverse and escaped identity/link HTML. Reuse the existing icon renderer. Addresses review concern R17 per D-05/D-11: call the destination's cv_get_action_short_label with a request-local ViewContext whose view is the rendering view and whose object is the resolved navbar owner. Do not mutate the rendering view's object/context or shared declarations. Only perform this label work after access and state pass. Add an object-dependent short-label template regression on the real owner request; Task02 extends the same assertion to descendants with distinct object captions. Addresses review concern R1: normalize only the already-rendered result of cv_get_action_short_label with one stdlib html.unescape pass, then remove SafeData by coercing to an exact built-in str (str.__str__(str(value))). This preserves its rendered ampersands/apostrophes without carrying HTML trust into navbar data. For raw str(owner), explicit NavItem.label, and child plural labels, remove SafeData the same way but never entity-decode them: literal entity-looking input must remain literal. Keep any markup characters as text, without stripping tags or adding an HTML parser/sanitizer. Ordinary Django autoescape then escapes the normalized text exactly once in text and attribute contexts; do not force-escape the rendered default a second time. Test default template literals and interpolated values, explicit labels and owner captions with ampersands, apostrophes, literal entity sequences, safe markup and lazy translations; assert both serialized escaping and parsed visible text, with no created markup. The tag selects bar.template or theme-path tags/navbar.html and returns exactly empty output with absent/None/falsy data. Keep base.py, router, ancestor policy and context-button implementation untouched. Addresses review concerns R7/R9: own the real-request harness inside test_navbar.py using a test-local locmem template loader prepended to normal loaders and cv_extends_template selecting that base. Derive the local base from the unchanged app/crud_views.html layout and insert the tag with whitespace-neutral delimiters immediately before its existing header/card; keep an otherwise identical tag-free base for paired comparisons. Do not edit the shared test base. Import tests.test1.project.urls before taking registry snapshots, matching isolated_routes in test_ancestor_authorization.py; reuse that context manager or preserve its ordering exactly. Restore registry and check_module._VOCAB_CACHE snapshots, temporary URLconf module, URL caches and ContentType cache in finally; snapshot/restore any existing ViewSet._default_permissions values touched by tests. First tests prove this real path, not only builder return dictionaries. Addresses review concern R13: viewset and child remain string names throughout declaration; no ViewSet object, callable resolver or registration-time lookup is accepted. Prove a declaration can precede registration of its owner and child, then renders after they register. Pydantic handles field-type errors at construction. Addresses review concern R11: items=[] is valid and renders nothing; NavItem() is structurally representable but an attached item with neither a nonempty owner key nor a nonempty child name is a named startup error. This keeps destination-shape diagnostics in the same cooperative check pipeline as A-04. Empty supplied names/keys are invalid selections, not aliases for an omitted key.</action>"
+        },
+        {
+          "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+          "line": 95,
+          "quote": "  <action>Expand the traced path per D-04/D-05/D-06/D-12. Resolve owner pages from self.object and descendants with _resolved_ancestor(view, owner_name), never a new object fetch; missing resolved state is a clear configuration/lifecycle error. Use bounded _walk_ancestors metadata to find the owner's direct child even across intermediate views without the mixin. Require literal registration before get_view_class/get_router_name for explicit keys; omitted child key selects registered list, then registered card only if list is absent. Do not substitute because a selected list is invalid or denied. Build kwargs from target ancestry names, resolved owner PK and only required higher-ancestor values from rendering kwargs. Addresses review concern R18: for owner links use owner_viewset.pk_name as the route argument name and owner.pk as its value; for child links use child.parent.get_pk_name() as the argument name with the same owner.pk value. Preserve cv_get_url_extra_kwargs for supported custom captures while structural PK values remain authoritative. Do not infer arbitrary dynamic route captures. Mark visible matching owner key or direct-child section active, retain active href, otherwise no active item. Keep item order and label/icon defaults: child plural/header icon, owner short action label; explicit overrides including empty icon win. Addresses review concern R17: extend Task01's object-dependent short-label test across real child and grandchild requests with distinct captions, asserting the same resolved owner's text at every depth and ViewContext.object identity with that owner.</action>"
+        }
+      ],
+      "scope": "Executable plan coverage signed off; future implementation/test execution not claimed."
+    },
+    {
+      "id": "R18",
+      "status": "closed-at-planning-review",
+      "reviewer_signoff": [
+        "fable-review",
+        "grok-review",
+        "gemini-review"
+      ],
+      "evidence": [
+        {
+          "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+          "line": 95,
+          "quote": "  <action>Expand the traced path per D-04/D-05/D-06/D-12. Resolve owner pages from self.object and descendants with _resolved_ancestor(view, owner_name), never a new object fetch; missing resolved state is a clear configuration/lifecycle error. Use bounded _walk_ancestors metadata to find the owner's direct child even across intermediate views without the mixin. Require literal registration before get_view_class/get_router_name for explicit keys; omitted child key selects registered list, then registered card only if list is absent. Do not substitute because a selected list is invalid or denied. Build kwargs from target ancestry names, resolved owner PK and only required higher-ancestor values from rendering kwargs. Addresses review concern R18: for owner links use owner_viewset.pk_name as the route argument name and owner.pk as its value; for child links use child.parent.get_pk_name() as the argument name with the same owner.pk value. Preserve cv_get_url_extra_kwargs for supported custom captures while structural PK values remain authoritative. Do not infer arbitrary dynamic route captures. Mark visible matching owner key or direct-child section active, retain active href, otherwise no active item. Keep item order and label/icon defaults: child plural/header icon, owner short action label; explicit overrides including empty icon win. Addresses review concern R17: extend Task01's object-dependent short-label test across real child and grandchild requests with distinct captions, asserting the same resolved owner's text at every depth and ViewContext.object identity with that owner.</action>"
+        }
+      ],
+      "scope": "Executable plan coverage signed off; future implementation/test execution not claimed."
+    },
+    {
+      "id": "R19",
+      "status": "closed-at-planning-review",
+      "reviewer_signoff": [
+        "fable-review",
+        "grok-review",
+        "gemini-review"
+      ],
+      "evidence": [
+        {
+          "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-03-PLAN.md",
+          "line": 91,
+          "quote": "  <action>Per D-02/D-08/D-13/D-14 and A-07, add cost/preservation cases using isolated fixtures from plan 01 (reuse via explicit imports/pytest_plugins only where needed, without permanent registry edits). Measure builder, each admission hook, each permitted state hook, owner-row queries and total SQL separately for owner/deep-descendant, plain/Guardian/mixed bars, cold/warm vocabulary and actor permission caches, tag/split/repeated context, omitted consumers, modal and no-mixin/no-declaration controls. Compare equivalent requests and capture navbar-only work after ordinary request object loading; do not count unrelated breadcrumb work as navbar cost. No owner reload or collection probe is allowed. Record observed totals, environment and fixture composition in COST.md; do not promise all Guardian/custom checks are query-free. Assert untouched existing goldens byte-for-byte and pair equivalent nonparticipant pages before/after tag placement; preserve context buttons alone and alongside a bar, including their existing order/behavior. For shared page template placement later, use whitespace-neutral Django block delimiters so unconfigured pages remain byte-identical. Count only the navbar's isolated work, not duplicate context-button hooks on a coexistence page. Addresses review concerns R7/R9: reuse plan01's owned locmem/cv_extends_template harness for paired complete response.content comparisons with the tag-free and tag-present bases; freeze CSRF and other request-varying inputs identically or exclude them through the fixture configuration, never normalize away navbar/header output. Cover no-mixin and configured-mixin-with-None pages, not only component goldens. Preimport project URL registrations before snapshotting. A cold-vocabulary cell clears both check_module._VOCAB_CACHE and each participating ViewSet._default_permissions plus ContentType.objects.clear_cache(). Addresses review concern R19: also call guardian.shortcuts.clear_ct_cache() in the cold-vocabulary reset, matching reset_discovery in test_guardian_child_link_visibility.py; record this separate Guardian content-type cache reset explicitly in COST.md's cold/warm conditions. A cold-actor cell uses a fresh actor or removes _perm_cache/_user_perm_cache/_group_perm_cache and any exercised Guardian checker cache. Warm cells explicitly prewarm only the named caches outside measurement. Snapshot and restore pre-existing ViewSet cache values in finally and record the exact cold/warm definitions in COST.md.</action>"
+        }
+      ],
+      "scope": "Executable plan coverage signed off; future implementation/test execution not claimed."
+    }
+  ]
+}

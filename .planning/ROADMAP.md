@@ -65,6 +65,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.36: ViewSet configuration CLI and versioned JSON contract (#371) (INSERTED)** - approved diagnostic command, catalogue and validated text/JSON output. (completed 2026-11-16)
 - [x] **Phase 06.37: cv_access Pydantic JSON contract validation and schema (#375) (INSERTED)** - validate the existing version-1 trace with Pydantic output models and add `cv_access --schema`. (completed 2026-11-16)
 - [x] **Phase 06.39: Immediate-parent permission checks for child links (#380) (INSERTED)** (completed 2026-11-18)
+- [x] **Phase 06.40: Object navbar: opt-in section navigation (#381) (INSERTED)** - all nine plans complete, including independent navbar component tags (plan 09). (completed 2026-11-19)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2114,12 +2115,53 @@ Plans:
 
 Both plans executed; independent phase security/review/verifier gates remain pending.
 
+### Phase 06.40: Object navbar: opt-in section navigation (#381) (INSERTED)
+
+**Goal:** A project declares an object navbar once, attaches it to selected owner and descendant views,
+and renders the object's identity and active section links with destination permission and state checks.
+Keep the feature opt-in and self-contained, preserve context-button behavior, and let the app control templates and placement.
+**Source:** [Issue #381 and its GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/381#gsd-handover).
+Carry the approved D-01–D-16 decisions and acceptance criteria into execution; implementation proposals remain proposals.
+Follow-up D-17 (2026-11-19) adds independent navbar component tags, wrapper composition and documentation.
+**Ordering:** Follows the child-link permission fix in 06.39; settle the navbar's stability tier and theme surface before Phase 7 freezes them.
+**Requirements**: None
+**Approved contract:** D-01–D-16 and AC1–AC9 are mapped in 06.40-COVERAGE.md.
+**Depends on:** Phase 06.39
+**Plans:** 9/9 plans complete; independent verification 38/38 passed.
+
+Original plans 01–08 converged in four external review cycles and are complete. Plan 09 has an independent
+plan check with no blockers and a documented ten-file sizing advisory; D-17 is covered by all three new tasks.
+
+Plans:
+**Wave 1**
+- [x] 06.40-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.40-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.40-03-PLAN.md
+- [x] 06.40-04-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.40-05-PLAN.md
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [x] 06.40-06-PLAN.md
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [x] 06.40-07-PLAN.md
+- [x] 06.40-08-PLAN.md
+
+**Wave 7** *(depends on completed plan 08)*
+- [x] 06.40-09-PLAN.md
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Additional ordering:** Phases 06.30 and 06.31 must settle before this freeze; inventory their final conditional-field and developer-diagnostic contracts.
+**Additional ordering:** Phases 06.30, 06.31 and 06.40 must settle before this freeze; inventory their final conditional-field, developer-diagnostic and object-navbar contracts.
 **Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
 bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
@@ -2242,4 +2284,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 06.33. Structured manage page (#366) | 10/10 | Awaiting verification | - |
 | 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
+| 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Complete | 2026-11-19 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

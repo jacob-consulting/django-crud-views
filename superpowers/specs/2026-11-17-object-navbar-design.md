@@ -88,7 +88,8 @@ Carry the approved decisions below into planning without reopening them absent a
 proposals in the following section distinct from decisions made by the maintainer. The prose and acceptance
 criteria are part of the handover, not just this decision index. Decisions marked *(proposed by the assistant,
 approved)* were put to the maintainer as proposals and approved on 2026-11-17; the others are the maintainer's
-own statements. The maintainer updated D-04 through D-06, D-09 and D-12 on 2026-11-18.
+own statements. The maintainer updated D-04 through D-06, D-09 and D-12, and approved the dedicated
+example in D-15, on 2026-11-18.
 
 ### D-01 — Purpose, and what this supersedes
 
@@ -264,6 +265,47 @@ once this ships); any change to context buttons, ancestor authorization or URL b
 child-link check of context buttons with the immediate-parent gate is supplied by the separate #380 fix;
 this navbar consumes that hook as described in D-09/A-03.
 
+### D-15 — Dedicated navbar and authorization example
+
+Add one self-contained app within `examples/bootstrap5`, focused on the new navbar and authorization.
+It owns its models, views, navbar, seed data and tests. Do not extend an existing complex app, import models
+from another example app, or require cross-links to other example apps. Shared project infrastructure such
+as login, base styling and the example index is fine.
+
+The model hierarchy is Tenant → Customer → (Order → Item, Address). Seed two tenants with business data:
+
+| User | Tenant | Access |
+|---|---|---|
+| Alice | A | Full CRUD within her tenant |
+| Bob | B | Full CRUD within his tenant |
+| Charlie | A | Read customers, orders and items; no addresses or writes |
+
+Alice and Bob are key account managers. Each of these three users is restricted to their assigned tenant,
+including when following a copied direct URL to a descendant such as an Item. Charlie provides a restricted
+comparison against Alice on the same data; no permission-management UI is needed.
+
+Customer owns the navbar, with Details, Notes, Orders and Addresses. Notes is a second detail view of the
+same Customer, displaying a simple text field on Customer. On an Item page the Customer identity and links remain
+stable and Orders is active. Charlie's navbar hides Addresses, and direct Address and write requests are
+also denied. Seed an accessible empty Orders collection to show that an empty section remains visible.
+
+Use Guardian object permissions on Tenant and ordinary Django model permissions on Customer, Order, Item
+and Address. Tenant grants restrict entry to the assigned tenant; model grants control operations below it.
+Keep ancestor cascading enabled so descendant requests enforce the Tenant gate at every depth. Alice and
+Bob receive the business-model CRUD permissions; Charlie receives only the three permitted view permissions.
+New business records require no individual Guardian grants. Guardian at every level was considered and
+rejected because individual-record sharing is unnecessary and would add grant-management code.
+
+This example uses the navbar access contract in D-06/D-09; it does not add higher-ancestor permission checks
+to navbar rendering. The current page and destination request enforce their configured ancestor policies.
+
+Documentation and the example must cross-reference each other through clickable URLs: the example links
+to the navbar reference, and the reference links to the live example's landing page. This is documentation
+navigation, not cross-linking the scenario to another example app. *(Approved 2026-11-18.)*
+
+*(Approved 2026-11-18. The tenant-level Guardian approach and the Notes detail page were proposed by the
+assistant and approved.)*
+
 ## Proposed defaults and bounded implementation contract
 
 Not discussed with the maintainer. The planner may change these with a stated reason; anything that would
@@ -338,9 +380,14 @@ configuration errors through the existing check infrastructure.
 - `docs/reference/navbar.md`: declaration, attachment through a project mixin, the object rule, access rule,
   supported depth and the unsupported cases, the three override levels, and layout A as the override example.
   Reciprocal links from `nested.md`, `context_buttons.md` and the breadcrumb reference.
-- A working demonstration in `examples/bootstrap5` (extend `nested` or add a small app; planner's choice)
-  with an owner, at least two child ViewSets and a second owner detail view, reachable from the example index
-  and covered by the example tests.
+- Implement the dedicated example in D-15 within `examples/bootstrap5`, reachable from the example index
+  and covered by example tests. Verify the Alice/Bob tenant boundary, Charlie's hidden Addresses section and
+  denied direct requests/writes, both Customer detail entries, Customer navigation from Item pages, and the
+  visible empty Orders collection. Creating a new app is decided; extending `nested` is no longer an option.
+- Register the example's documentation URLs through `Feature.docs` / `DocRef`, including the navbar reference.
+  Each referenced documentation page must provide a reciprocal live-example URL in its `Try it live` box.
+  Follow the existing documentation/demo URL conventions and verify pages, heading anchors and reciprocal
+  links with `examples/bootstrap5/test_doc_links.py`.
 - Tests in `tests/test1/`: resolution on owner, child and grandchild views, active section, hidden items per
   permission (model permissions and Guardian), empty bar, modal request, checks, query counts, template
   override and `NavBar(template=...)`.
@@ -384,7 +431,8 @@ No cross-request caching.
    template, each demonstrated by a test or the example. Rendering the identity and items partials in
    separate places on one page invokes the navbar builder exactly once.
 8. Items wrap on a narrow viewport without horizontal page scroll (checked in the example app).
-9. Reference documentation and a working example exist as in A-06; the full test matrix passes.
+9. Reference documentation and a working example exist as in A-06, with clickable URL links in both directions.
+   Documentation-link checks cover the new example and its referenced pages; the full test matrix passes.
 
 ## Implementation references
 

@@ -1,0 +1,5 @@
+{% if cv_navbar %}{% load crud_views i18n %}<nav aria-label="{% blocktranslate with object=cv_navbar.label %}Sections for {{ object }}{% endblocktranslate %}">
+    <ul class="nav nav-pills flex-wrap gap-1">
+        {% for item in cv_navbar.items %}<li class="nav-item mw-100"><a class="nav-link mw-100 text-break{% if item.active %} active{% endif %}" href="{{ item.url }}"{% if item.active %} aria-current="true"{% endif %}>{% if item.icon %}{% cv_icon item.icon %} {% endif %}{{ item.label }}</a></li>{% endfor %}
+    </ul>
+</nav>{% endif %}

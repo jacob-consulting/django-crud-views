@@ -5,27 +5,27 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.39 complete, ready to plan Phase 7
-last_updated: "2026-11-18T13:40:13.584Z"
-last_activity: 2026-11-18
-last_activity_desc: "Phase 06.39 shipped as PR #382"
-state_head: 360412373cccae58be90b6933b8a15382d55cc27
+stopped_at: Phase 06.40 complete, ready to plan Phase 7
+last_updated: "2026-11-19T10:31:48.147Z"
+last_activity: 2026-11-19
+last_activity_desc: "Phase 06.40 shipped as PR #383"
+state_head: 498eaa843406b44b1acb830ba8692e185e0dcf0c
 progress:
-  total_phases: 45
-  completed_phases: 44
-  total_plans: 246
-  completed_plans: 246
+  total_phases: 46
+  completed_phases: 45
+  total_plans: 255
+  completed_plans: 255
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 45
+Total Phases: 46
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-18)
+See: .planning/PROJECT.md (updated 2026-11-19)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -34,11 +34,116 @@ See: .planning/PROJECT.md (updated 2026-11-18)
 
 Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: 0
+Total Plans in Phase: Not yet planned
 Status: Ready to plan
-Last activity: 2026-11-18 -- Phase 06.39 shipped as PR #382
+Last activity: 2026-11-19 -- Phase 06.40 shipped as PR #383
 
-Next: $gsd-ship 06.39; refresh codebase maps after shipping before subsequent work.
+Next: $gsd-discuss-phase 7
+
+### Phase 06.40 component-tag completion — 2026-11-19
+
+- All9plans/22tasks complete. Independent goal verifier passed38/38,233cases and17/17decisions; owner verification.status passed with CLI fingerprint over1186inputs. Code review10files/0findings; security22/22closed and Nyquist22/22tasks covered.
+- User authorized fresh UI audit:23/24, six authenticated static widths with no overflow; existing minor16px/14px landing-copy advisory remains nonblocking. Owned server/settings/database cleaned. Historical UI review preserved; no fresh interaction or full-matrix claim.
+- Fresh implementation evidence remains275focused,495Python regressions,457JS, strict docs and scoped Ruff/format. Product6e843439; original01–08receipts remain revision-bound. No source changes during audits.
+- phase.complete recorded9/9 and advanced to7. Reconciled stale dotted progress-table row and45/46completed checkbox count. SDK command-as-path warnings remain false positives; actual scoped artifacts verified. state.json derived rewrite restored byte-identically.
+- No requirement IDs, pending parent UAT gap, resolves_phase todo or learning promotion. Global learnings disabled; no LEARNINGS files. Unrelated untracked work preserved. No ship/push/PR/merge; codebase-map refresh follows a future gsd-ship.
+
+### Phase 06.40 plan 09 execution — 2026-11-19
+
+- Three tasks executed in five task commits through 6e843439; SUMMARY 38049a12 committed before progress updates.
+- Independent component tags, stock wrapper delegation, executable placement/override recipes and public inventories delivered. No dependency, leaf markup, builder/access/route, example or companion change.
+- Fresh Python 3.12.3/Django 5.2.19/four-worker checks: 245 templates/costs, 30 recipes, combined 275 passed; strict docs and scoped Ruff/format pass. Historical browser/full-matrix receipts remain revision-bound.
+- New validation rows reviewed: 22/22 total tasks; security22/22 closed via authored-register ASVS L1 check. Independent deep review clean on10files,275tests freshly passed; goal verification pending existing UI-review choice.
+- SDK recorded all9plans executed with complete=false; stale dotted progress-table row reconciled. Existing state.json derived rewrite restored byte-identically. Unrelated untracked files preserved.
+
+### Phase 06.40 follow-up planning — 2026-11-19
+
+- User reopened with --force and approved D-17: cv_navbar_identity/cv_navbar_items, default wrapper composition and documentation.
+- Added plan 09, wave 7, depending on completed plan 08: three tasks; 8/9 plans completed. Historical plans and execution receipts retained.
+- Independent plan check: no functional blockers; ten-file sizing advisory retained with bounded-task rationale. Decision coverage and post-planning gap analysis: 17/17 covered.
+- Product code/tests/docs unchanged; no implementation tests run. New validation tasks remain pending, and previous passed verification applies to the original completed scope only.
+- Existing codebase maps are stale; current source was inspected. Map refresh remains scheduled after gsd-ship.
+- state.planned-phase updated STATE.md; its unrelated stale state.json rewrite was restored byte-identically. Phase 7 follows completion of plan 09.
+
+### Phase 06.40 verification refresh — 2026-11-19
+
+- Refreshed stale verification after ViewSet Navigation naming commit 39821bca. Owner query reports passed, 33/33; fresh CLI fingerprint covers 1,175 files. All eight plans remain complete; Phase 7 stays next.
+- Fresh checks: 299 navbar tests; 215 example tests plus 75 subtests; strict docs; scoped Ruff/format; companion validator; 457 JavaScript regressions. Both pytest runs use four workers. Decision coverage 16/16; security 20/20 closed; incremental review of all fifteen changed files found no issue.
+- User chose to reuse the original UI review (23/24), including its open minor typography advisory. Original browser/matrix receipts remain historical at their recorded revisions: 1,091/1,106 INPUTS hashes unchanged, fifteen naming files covered by fresh checks; all 24 retained matrix log hashes match.
+- No new requirement, decision, parent-UAT gap, resolved-phase todo or learning promotion. Existing completion bookkeeping already captures Phase 7; CLI summary warnings still misread command strings as file paths. Original state.json preserved after its unrelated derived rewrite.
+- Shipping remains pending clean-tree handling for unrelated untracked files. No push, PR or merge yet; codebase maps will refresh after shipping.
+
+### Phase 06.40 completion — 2026-11-18
+
+- All8plans/19tasks complete. Independent goal verification33/33 passed with current1175-file covered fingerprint; no human items. Nyquist19/19, security20/20closed, deep review45files/0findings. UI23/24 retains one minor open landing-copy16px-versus14px advisory; no blocker.
+- All20installed core passes,10example cells (602tests+272subtests each), two crispyfloors4223each, Pydanticfloor792 and source4.2/5.2/6.0 pass. Four unsupported Nox sessions are declared skips; zero unavailable. Native browser345assertions/13states on9000 and success/failurecleanup pass. Receipt preserves failed attempts, corrected environment setup and historical scope qualifications.
+- Independent fresh validation/review/verifier runs pass299core,215example+75subtests and134named cases; all1106input and24log hashes checked. Regression457JS+2integration+177Node pass. Historical externalTabler runtime remains outside this phase's delivered contract. Companion localcommitcab8a85a clean/validated; no publication.
+- phase.complete advanced to7; dotted progress-table/count omissions reconciled from45/46actual completed checkboxes. CLI 'missing file' warnings refer to command strings in summaries, not missing delivered artifacts; independent verification checked actual targets/receipts. Requirements line now explicitly None with approved decisions separately retained. No LEARNINGS files exist for graduation; global learnings disabled by default; no resolves_phase todos.
+- Original state.json preserved byte-identically. Unrelated untracked work preserved. No ship/push/merge; required codebase-map refresh follows a future gsd-ship. Next:$gsd-discuss-phase7.
+
+### Phase 06.40 plan 08 execution — 2026-11-18
+
+- Both tasks complete; five task commits through 92f060a4 and SUMMARY 500bbd74 committed before progress. Corrected inherited cv_content recipe, example-local narrow reflow, and an existing coverage-incompatible test mock. Product revision 7ccee139; final test-helper revision 9a8da2e8; final 1,106-file input hash cb2f842f86330139297e4a9b702db3f8c66113c7ca72caf84ae1d36e7a74dab9 is unchanged.
+- Native browser: 345 assertions, 13 states, Customer and Item at 320/640/1280 CSS pixels, keyboard/accessibility and both success/deliberate-failure owned cleanup pass on port 9000. All 20 installed core passes, 10 example cells (602 tests/272 subtests each), two crispy floors (4,223 each), Pydantic floor (792), source suites, docs, Ruff, 457 JavaScript tests and package allowlists pass. Four unsupported Nox sessions remain declared skips; no unavailable cell. Python 3.15 runtime is 3.15.0rc2.
+- ACCEPTANCE/MATRIX/SCHEDULING retain invalidated environment collisions, the covered-mock failure and export-directory mistakes with exact successful corrections and source-scope qualifications. No active tests or fixture paths were interrupted/mutated. Companion cab8a85a remains clean and its native validator passes. No new package, push, merge, release or publication.
+- ROADMAP SDK records 8/8 executed, complete=false; STATE is verifying, Current Plan 8, global completed plans 254/254. Its known unscoped progress-update limitation remains; the dotted ROADMAP table row is reconciled to the successful detail update. Stale state.json is preserved byte-identically. Independent phase verification and required reviews remain; the phase is not marked complete.
+
+### Phase 06.40 plan 07 execution — 2026-11-18
+
+- Both tasks complete; product evidence aa41d1b0/e9b9ad0c and summary 7d690610 committed before progress. Verified companion checkout /home/alex/projects/alex/skills-navbar-06-40, exact origin jacob-consulting/skills, base4ce13d8e, local branch docs/navbar-06.40 and scoped four-file commit cab8a85ae032641ab442f03af5e0acb441d86f8c; companion checkout clean.
+- Native validator and skill-format checks pass. Four extracted template recipes, translated declaration/mixin, inherited cv_content and exact context inventory pass against real Django5.2 navbar data. Independent reference retrieval supports all five scenarios after edits. No install, version change, push, tag or publication.
+- Companion split recipe uses cv_content. Product docs/reference/navbar.md:196 still uses block content; plan08 must correct it and add inherited-page-content coverage in test_navbar_docs.py before final acceptance. WINDOWS append retains its pre-existing table/JSON mismatch; handoff is recorded in receipt, summary and deferred-items.
+- ROADMAP records7/8 plans executed, complete=false; Current Plan advanced to8 and global completion253/254. Existing unscoped progress limitation retained; stale state.json restored byte-identically. Browser/matrix/floor and phase acceptance remain plan08; no phase completion or ship claimed.
+
+### Phase 06.40 plan 06 execution — 2026-11-18
+
+- All three tasks complete, four task commits through fb8738f7; summary c2e03cd7 committed before progress. Complete navbar reference, measured costs, executable override recipes, stable declaration/tag/template/context inventory and additive release notice delivered.
+- Core documentation and unchanged snippet-schema tests: 13 passed. Full prescribed Nox navbar/shared/i18n/doc-links suite: 233 passed and 75 subtests. Complete examples suite: 602 passed and 272 subtests, without exclusions, Python 3.12.3/Django 5.2.19/four workers. Strict docs, built-site anchor/live backlink and scoped Ruff/format/whitespace checks pass.
+- Real navbar DocRefs and the exact reciprocal landing URL close plan05's documentation dependency in deferred-items.md. All three scenario credentials are documented without changing shared translated notices or other examples' policies.
+- ROADMAP records 6/8 plans executed, complete=false; Current Plan advanced to7 and global completion to252/254. Existing unscoped progress limitation retained; stale state.json restored byte-identically. Companion and browser/matrix/floor acceptance remain plans07/08; no phase completion or ship claimed.
+
+### Phase 06.40 plan 05 execution — 2026-11-18
+
+- All three tasks complete, six RED/GREEN commits through 44ed9788; summary e7c78498 committed before progress. Independent Order/Item/Address CRUD, four Customer sections, bounded Alice/Bob/Charlie seeds, filtered introduction and index/navbar placement delivered.
+- Final prescribed supported Nox suite: 114 passed and 53 subtests passed, Python 3.12.3/Django 5.2.19, four workers. Task suites 37 then 44 passed; earlier shared seed/login/i18n 70 passed and 67 subtests. Migration drift, scoped Ruff/format/whitespace and complete nonparticipant response/header parity pass.
+- Extra broad suite: 591 passed, 250 subtests passed, one failure in test_every_feature_declares_doc_refs because the actual navbar reference/DocRef belongs to plan06. DocRefsPanelTest is intentionally excluded by plan05. Committed deferred-items.md retains this dependency; plan06 must close it with full shared/doc-link verification. No assertion weakened or fake reference added; WINDOWS append still rejects the pre-existing table/JSON mismatch.
+- ROADMAP records 5/8 plans executed, complete=false; Current Plan advanced to6 and global completion to251/254. Existing unscoped progress limitation retained; stale state.json restored byte-identically. Documentation, companion and browser/matrix work remain later plans; no phase completion or ship claimed.
+
+### Phase 06.40 plan 04 execution — 2026-11-18
+
+- Both tasks complete; RED/GREEN pairs 2f0ced99/0205f12c and 94ea62ba/f468a97b, summary 2907824a committed before progress updates. Independent navbar_demo owns Tenant/Customer, strict Guardian Tenant ancestry, model-permission Customer CRUD and Details/Notes navigation.
+- Focused supported Nox example suite: 21 passed. Full example suite: 569 passed and 264 subtests passed, Python 3.12.3/Django 5.2.19, four workers. Separate migration drift gate exited 0; isolated apply/reverse/reapply and scoped Ruff/format/whitespace checks passed.
+- Actual project routes prove copied cross-Tenant URL denial, independent operation/ancestor write gates, server-bound parent creation/update, and stable owner identity without Customer object grants. No task acceptance gate remains.
+- ROADMAP records 4/8 plans executed, complete=false; Current Plan advanced to 5 and global completion to 250/254. Existing unscoped progress limitation retained; stale state.json restored byte-identically. Expanded hierarchy/seed/template placement and later browser/matrix gates remain assigned to later plans; no phase completion or ship claimed.
+
+### Phase 06.40 plan 03 execution — 2026-11-18
+
+- Both tasks complete; commits 771e4f3d/6fe60363 and summary 7ee8ee82. Fifty permission cases and 78 cost/preservation cases prove existing behavior without production changes. Regression-only adjustment is explicit; no fabricated product RED/GREEN claim.
+- Permission task 309 passed; cost task 337 passed; affected navbar/permission/breadcrumb/context/golden regressions 776 passed. All 128 new cases also pass on Django 4.2.30 and 6.0.10, with Python 3.12.3/four workers. Scoped Ruff/format/whitespace passed.
+- COST and 72-cell receipt record plain 6/4/2/0, Guardian 8/8/4/4 and mixed 10/8/6/4 SQL across cold/warm vocabulary/actor caches; zero owner/collection reads and one build/hook per item. Entire nonparticipant response/SQL and raw context-header bytes remain unchanged.
+- ROADMAP records 3/8 plans executed, complete=false; Current Plan advanced to 4 and global completion to 249/254. Existing unscoped progress limitation retained; stale state.json restored byte-identically. WINDOWS append still fails on pre-existing table/JSON disagreement; no unrelated repair made. Later example/docs/browser/matrix gates remain; no phase completion or ship claimed.
+
+### Phase 06.40 plan 02 execution — 2026-11-18
+
+- Both tasks complete; five task commits through 207f7e8f and summary f56dc55c. Guarded wrapper/identity/items templates support global, per-bar and split placement with one lazy request result. No extra cache or navbar builder change was needed.
+- Template suite: 70 passed. Template plus i18n: 89 passed on each installed Django 4.2.30/5.2.19/6.0.10. Affected navbar/template/icon/modal regressions: 651 passed; four workers, Python 3.12.3, scoped Ruff and whitespace checks passed.
+- German landmark source/compiled catalogs, parsed plain-text escaping, decorative icons, zero/one/many/partial states, copied context paths and actual custom modal responses have passing evidence. Browser wrapping/focus/zoom remains plan 08.
+- ROADMAP records 2/8 plans executed, complete=false; Current Plan advanced to 3 and global completed-plan count is 248/254. SDK's existing unscoped progress limitation was retained explicitly; stale state.json restored unchanged. No phase completion or ship is claimed.
+
+### Phase 06.40 plan 01 execution — 2026-11-18
+
+- Three tasks complete; six TDD task commits plus summary 6b212b5c. Public declarations, lazy owner navigation, exact nested links and metadata-only startup diagnostics are implemented in the bounded opt-in module.
+- Focused navbar tests: 50 routing/rendering plus 43 checks on Django 5.2; all 93 on Django 4.2 and 6.0. Affected ancestor/context/system-check regression: 3094 passed. Python 3.12.3, four workers, scoped Ruff and whitespace checks passed.
+- First completed cold-URLconf checks report every late view; failed and reentrant imports preserve local errors without import retries inside registry iteration. No database/access/state work occurs in navbar checks.
+- ROADMAP records 1/8 plans executed, complete=false. SDK position parsing required replacing the pre-existing “Not started” value with the completed numeric plan before advancing; the progress handler reported its existing unscoped-phase limitation. Disk summaries show 247/254 plans complete; the phase remains in progress.
+- Remaining plans own templates/partials, permission-cost proof, the dedicated example, documentation/companion delivery, browser checks and full matrix. No phase completion, merge or publication is claimed; unrelated untracked files remain intact.
+
+### Phase 06.40 planning convergence — 2026-11-18
+
+- Eight plans, nineteen tasks, six waves; all sixteen approved decisions covered. Plan schemas, structure, bounded file ownership, wave dependencies and unique threat IDs validated.
+- Fable, Grok and Gemini each covered all eight plans in all four completed review cycles. Remaining HIGH/actionable counts: 6/10 → 0/3 → 0/1 → 0/0. All twenty findings are closed at planning review; the writer-owned conflict slot is empty.
+- Final plans: `eecc8111`; final review and evidence: `85cc3652`. Review ledgers preserve dispositions and source provenance. The Python/intel and dotted-phase status-parser limitations remain explicitly uncheckable.
+- Stable-at-1.0 decision D-16 is retained. Implementation, application acceptance, browser evidence and companion-repository delivery remain execution work; no product source changed during planning convergence.
 
 ### Phase 06.39 completion — 2026-11-18
 
@@ -1290,7 +1395,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 237
+- Total plans completed: 246
 
 - Total plans completed: 186
 - Average duration: -
@@ -1341,6 +1446,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.35 | 7 | - | - |
 | 06.36 | 8 | - | - |
 | 06.37 | 4 | - | - |
+| 06.40 | 9 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1517,6 +1623,17 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.37 P02 | 8 min | 3 tasks | 5 files |
 | Phase 06.37 P03 | 8min | 2 tasks | 3 files |
 | Phase 06.37 P04 | 15min | 2 tasks | 1 files |
+| Phase 06.40 P01 | 12min | 3 tasks | 9 files |
+| Phase 06.40 P02 | 7min | 2 tasks | 9 files |
+| Phase 06.40 P03 | 8min | 2 tasks | 4 files |
+| Phase 06.40 P04 | 7min | 2 tasks | 11 files |
+| Phase 06.40 P05 | 10min | 3 tasks | 16 files |
+| Phase 06.40 P06 | 6min | 3 tasks | 13 files |
+| Phase 06.40 P06 | 6min | 3 tasks | 13 files |
+| Phase 06.40 P07 | 7min | 2 tasks | 5 files |
+| Phase 06.40 P07 | 7min | 2 tasks | 5 files |
+| Phase 06.40 P08 | 136min | 2 tasks | 22 files |
+| Phase 06.40 P09 | 15min | 3 tasks | 10 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1837,6 +1954,28 @@ Recent decisions affecting current work:
 - [Phase 06.37]: 06.37-03: Non-outcome cv_access invocations get a separate Invocation or failure | Exit | Streams table so the six-outcome parser is untouched
 - [Phase 06.37]: 06.37-03: Pre-existing xdist-order failure of test_published_command_examples logged to deferred-items.md, reproduced at base c56ef82d
 - [Phase 06.37]: 06.37-04: independent jsonschema 4.10.3 evidence accepts 7 real core-fixture cv_access documents and rejects 6 mutations; re-check passes at detected Pydantic 2.14.3 and the 2.2.1 floor
+- [Phase 06.40]: Keep declaration references as strings and all request resolution private to navbar.py.
+- [Phase 06.40]: Normalize rendered default labels once; raw labels and captions retain literal entities and lose HTML trust.
+- [Phase 06.40]: Complete URLconf before registry iteration and use cached-only readiness probes inside navbar checks.
+- [Phase 06.40]: Retain the proven lazy builder unchanged; copied template contexts preserve one request-local result.
+- [Phase 06.40]: Items own the translated nav landmark; wrapper composes guarded identity and items leaves using relative includes.
+- [Phase 06.40]: Preserve the already-correct navbar builder and permission/ancestor/button code; plan03 adds regression proof only.
+- [Phase 06.40]: Measure navbar costs after request loading; warm actor means Django model permissions, without a persistent Guardian checker.
+- [Phase 06.40]: Independent navbar example keeps forms/tables in views.py and explicitly maps navbar_tenant to tenant; strict Tenant object grants cascade to model-permission Customer CRUD.
+- [Phase 06.40]: Plan05 keeps explicit cascading on nested ViewSets and strict Guardian object grants only on Tenant.
+- [Phase 06.40]: Plan05 introduction choices use GuardianViewSet.get_objects_for_user and Customer view permission without username gates.
+- [Phase 06.40]: Plan05 preserves shared translated notices and developer grants; its introduction exposes all three usable credentials.
+- [Phase 06.40]: Plan06 owns real documentation references; plan05 records the broad documentation failure as an open dependency.
+- [Phase 06.40]: Plan06 inventories navbar view context separately from the exact eight-row snippet schema; both execute against real render data.
+- [Phase 06.40]: Plan06 inventories navbar view context separately from the exact eight-row snippet schema; both execute against real render data.
+- [Phase 06.40]: Plan06 attaches only real navbar DocRefs and closes plan05 documentation dependency with the complete unexcluded 602-test example suite.
+- [Phase 06.40]: Plan06 attaches only real navbar DocRefs and closes plan05 documentation dependency with the complete unexcluded 602-test example suite.
+- [Phase 06.40]: Companion navbar guidance is explicitly upstream Unreleased; existing package/plugin versions remain unchanged.
+- [Phase 06.40]: Companion navbar guidance is explicitly upstream Unreleased; existing package/plugin versions remain unchanged.
+- [Phase 06.40]: Keep narrow-width corrections inside the new navbar example; preserve shared templates, action contents and nonparticipant pages.
+- [Phase 06.40]: Use user-directed port 9000 with owned isolated database/settings and deliberate-failure cleanup evidence.
+- [Phase 06.40]: Preserve failed attempts and qualify earlier full-suite evidence by changed scope; exact affected reruns close the test-only revision.
+- [Phase 06.40]: Split remaining verification into two disjoint four-worker groups; use ordinary per-test temporary directories for core schema exports.
 
 ### Pending Todos
 
@@ -1877,6 +2016,7 @@ None yet.
 | 261109-9rw | Update examples app for 06.18 ancestor authorization (nested Guardian example + core nested grants) | 2026-11-09 | 0cb0cb47 | [261109-9rw-update-examples-app-for-06-18-ancestor-a](./quick/261109-9rw-update-examples-app-for-06-18-ancestor-a/) |
 | 261109-bf5 | Fix core ViewSet.default_permissions vocabulary N+1 (one ContentType read per permission row) | 2026-11-09 | 741830cf | [261109-bf5-fix-core-viewset-default-permissions-voc](./quick/261109-bf5-fix-core-viewset-default-permissions-voc/) |
 | 261109-bvq | Refresh 06.18-COSTS.md from post-fix evidence (plain cold vocabulary + Guardian guard/rest split after WR-01) | 2026-11-09 | a39efcc7 | [261109-bvq-refresh-06-18-costs-md-from-post-fix-evi](./quick/261109-bvq-refresh-06-18-costs-md-from-post-fix-evi/) |
+| 261119-ap2 | Rename the feature to ViewSet Navigation in the example app and documentation (phase 06.40 branch) | 2026-11-19 | 39821bca | [261119-ap2-rename-the-feature-to-viewset-navigation](./quick/261119-ap2-rename-the-feature-to-viewset-navigation/) |
 
 ### Roadmap Evolution
 
@@ -1920,6 +2060,7 @@ None yet.
 - Phase 06.36 inserted after Phase 06.35: ViewSet configuration CLI and versioned JSON contract (#371); approved D-01–D-09, A-01–A-04 and acceptance items 1–10; builds on completed #372 before Phase 7 (URGENT)
 - Phase 06.37 inserted after Phase 06.36: cv_access Pydantic JSON contract validation and schema (#375) (URGENT)
 - Phase 06.39 inserted after Phase 06.37: Immediate-parent permission checks for child links (#380), ahead of the object navbar (#381) (URGENT)
+- Phase 06.40 inserted after Phase 06.39: Object navbar: opt-in section navigation (#381) (URGENT)
 
 ## Deferred Items
 
@@ -1929,6 +2070,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-18T11:49:27Z
-Stopped at: Phase 06.39 complete, ready to plan Phase 7
-Resume file: .planning/phases/06.39-immediate-parent-permission-checks-for-child-links-380/06.39-02-PLAN.md
+Last session: 2026-11-19T09:48:27Z
+Stopped at: Phase 06.40 complete, ready to plan Phase 7
+Resume file: None

@@ -43,6 +43,9 @@ A theme app is an ordinary Django app:
 
 ## JavaScript
 
+ViewSet Navigation needs no JavaScript; its ordinary full-page links use the
+[navbar template contract](#viewset-navigation-templates).
+
 The scripts call Bootstrap through replaceable adapters (`cv.adapters`), so a theme for a Bootstrap-compatible or
 non-Bootstrap UI library swaps them from its own registered asset. See [JavaScript](javascript.md).
 
@@ -810,6 +813,34 @@ confirmation form only inside `{% if not has_protected_objects %}` (and retain t
 also removes the form-contained cancel control. A copied alert leaf must render `alert.text` or
 `alert.body_template` as well as heading/items to show the generic sentence. See
 [Protected objects](delete_view.md#protected-objects).
+
+<a id="object-navbar-templates"></a>
+
+## ViewSet Navigation templates
+
+The opt-in [ViewSet Navigation](navbar.md) feature adds three independently overridable templates, all receiving the same
+lazy `cv_navbar` value. Override them using the normal loader order above; no button-class keys are added.
+
+| Template | Purpose |
+|---|---|
+| `crud_views/tags/navbar.html` | Default layout B wrapper: identity above links. |
+| `crud_views/tags/navbar_identity.html` | Plain, unlinked owner caption and header icon. |
+| `crud_views/tags/navbar_items.html` | Translated named navigation landmark, wrapping list and ordinary anchors. |
+
+The stable [context fields](templates.md#viewset-navigation-context) are already resolved and access/state filtered.
+Preserve each template's independent empty guard (including no whitespace), escaping and visible labels.
+Keep active links clickable with `aria-current="true"`, decorative icons and visible keyboard focus.
+Wrap long captions/labels without horizontal page scrolling, truncation or a collapsed menu. The identity must
+not become another page heading or replace the existing view header/actions. Split placement remains valid
+because the items leaf supplies its own translated accessible name, independent of the identity element.
+
+`NavBar(template=...)` selects only the full `cv_navbar` wrapper for that declaration. The stock wrapper
+composes `cv_navbar_identity` and `cv_navbar_items` from the `crud_views` tag library. Each component resolves
+its corresponding leaf under the current theme path using normal template-loader precedence and preserves
+the full caller context/request and same lazy value. Components ignore the per-bar wrapper, including when
+called from a custom wrapper. Direct partial includes keep their selected public paths and normal loader
+behavior. See [independent and split placement](navbar.md#split-placement). Layout A is an application
+[wrapper example](navbar.md#global-wrapper), not an additional package layout setting.
 
 ## Structured manage contracts
 

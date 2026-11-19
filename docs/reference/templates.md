@@ -19,8 +19,11 @@ tags *you* place, so they stay silent until you do:
 | `{% cv_config %}` | in `<head>`, before `{% cv_js %}` | the [JavaScript config and modal shell](javascript.md) |
 | `{% cv_messages %}` | top of the content area | [flash messages](messages.md), including the ones create, update, delete and action views emit themselves |
 | `{% cv_breadcrumb %}` | above the content | the [breadcrumb trail](breadcrumb.md) |
+| `{% cv_navbar %}` | before the existing view header/card | full opt-in [ViewSet Navigation](navbar.md) wrapper |
+| `{% cv_navbar_identity %}` | wherever owner identity belongs | independent [identity component](navbar.md#placement-and-overrides) |
+| `{% cv_navbar_items %}` | wherever section links belong | independent [items component](navbar.md#split-placement) |
 
-All four `{% load crud_views %}` and render nothing when they have nothing to show, so they are
+These tags use `{% load crud_views %}` and render nothing when they have nothing to show, so they are
 safe to place unconditionally. Bootstrap's own CSS and JavaScript are not a Python dependency —
 load them in this template from a CDN or your own static files.
 
@@ -157,6 +160,41 @@ class FooListView(MySpecialBase, ListView): ...
 
     Point the override at a normal base template — one that extends your own
     site base (e.g. `{% extends "base.html" %}`) or none at all.
+
+<a id="object-navbar-context"></a>
+
+## ViewSet Navigation context
+
+The optional `CrudViewNavBarMixin` supplies `cv_navbar` as one lazy result per view/request. It is absent or
+`None` without participation, `None` in modals, and evaluates to `None` when no items are visible. This is
+**view context**, separate from the snippet variables below. Consume it only where the bar should render.
+
+| Expression | Meaning |
+|---|---|
+| `cv_navbar.object` | The owner object, reused from the current page or resolved ancestry. |
+| `cv_navbar.label` | Plain `str(owner)` caption, escaped by the template. |
+| `cv_navbar.icon` | Owner ViewSet header icon, or no icon. |
+| `cv_navbar.items` | Ordered visible items, with permissions/state already checked and URLs resolved. |
+| `cv_navbar.template` | Optional per-bar wrapper path, or `None` for the default wrapper. |
+| `item.label` | Plain destination label; lazy translations resolve at rendering. |
+| `item.icon` | Destination default or explicit item icon; an empty value suppresses it. |
+| `item.url` | Registered destination URL preserving owner and higher ancestor coordinates. |
+| `item.active` | Boolean section match; active links remain clickable. |
+
+| Template | Contract |
+|---|---|
+| `crud_views/tags/navbar.html` | Wrapper used by the tag unless `NavBar(template=...)` selects another. |
+| `crud_views/tags/navbar_identity.html` | Owner icon and plain caption. |
+| `crud_views/tags/navbar_items.html` | Named navigation landmark and ordinary section links. |
+
+Each template independently guards `cv_navbar` before emitting HTML or whitespace. Both leaves take the same
+named context and work independently for split placement. The no-argument `cv_navbar_identity` and
+`cv_navbar_items` tags select those theme leaves with the full caller context and request; the stock wrapper
+composes both tags. `NavBar(template=...)` selects only the full `cv_navbar` wrapper. Direct includes retain
+normal loader behavior and remain supported. Retain escaping, wrapping, readable labels and the
+items leaf's translated landmark name. Templates do not call permission hooks. The first consumer builds once;
+later consumers reuse the result. No consumer means no navbar work. See the executable
+[global, leaf, split and per-bar examples](navbar.md#placement-and-overrides).
 
 ## Snippet variables
 

@@ -1,0 +1,89 @@
+{
+  "original_command": "PATH=\"/home/alex/.local/share/uv/python/cpython-3.13-linux-x86_64-gnu/bin:/home/alex/.local/share/uv/python/cpython-3.14-linux-x86_64-gnu/bin:$PATH\" .venv/bin/nox -s tests examples crispy_floor -- -n 4 -q",
+  "original_log": ".pytest_cache/cv08-matrix.log",
+  "original_dispatcher_pid": 747192,
+  "original_tool_exit": 143,
+  "completed_sessions": [
+    "tests-3.12(django='4.2')",
+    "tests-3.12(django='5.2')"
+  ],
+  "failed_pass": {
+    "session": "tests-3.12(django='6.0')",
+    "mode": "normal",
+    "pytest_pid": 798919,
+    "encoded_wait_status": 256,
+    "exit_code": 1,
+    "result": "3 failed, 16199 passed in 636.24s",
+    "cause": "Existing floor-probe test replaced sysconfig.get_paths with a zero-argument lambda; coverage calls it with a scheme argument.",
+    "fix_commit": "9a8da2e8"
+  },
+  "boundary": "An idle recorder-boundary watcher was canceled when the normal pass reported failures. Only the Nox dispatcher was stopped; its active pytest child and four workers finished uninterrupted. After pytest became a zombie with encoded status 256 and wrote its terminal summary, the dispatcher was terminated and resumed to deliver SIGTERM. The tool returned 143. This partial broad command is not claimed as successful.",
+  "tests_interrupted": false,
+  "reason_for_split": "User-authorized bounded scheduling on eight CPUs: two independent Nox groups, four pytest workers each, distinct session environments and coverage/log paths. All source reruns finish before these groups start. No repository orchestration framework was added.",
+  "group_a": {
+    "sessions": [
+      "tests-3.12(django='6.0')",
+      "tests-3.13(django='4.2')",
+      "tests-3.13(django='5.2')",
+      "tests-3.13(django='6.0')"
+    ],
+    "coverage_file": ".pytest_cache/cv08-coverage-a",
+    "log": ".pytest_cache/cv08-matrix-a.log",
+    "status": "stopped after active3.12/6.0 recorder child exited1",
+    "command": "export PATH=\"/home/alex/.local/share/uv/python/cpython-3.13-linux-x86_64-gnu/bin:/home/alex/.local/share/uv/python/cpython-3.14-linux-x86_64-gnu/bin:$PATH\"\nexport COVERAGE_FILE=\"$PWD/.pytest_cache/cv08-coverage-a\"\nexport CV_MANAGE_SCHEMA_EXPORT_DIR=\"$(mktemp -d /tmp/cv08-schema-a-XXXXXX)\"\nprintf '%s\\n' \"$CV_MANAGE_SCHEMA_EXPORT_DIR\" > .pytest_cache/cv08-schema-a.path\n.venv/bin/nox -s \"tests-3.12(django='6.0')\" \"tests-3.13(django='4.2')\" \"tests-3.13(django='5.2')\" \"tests-3.13(django='6.0')\" -- -n 4 -q > .pytest_cache/cv08-matrix-a.log 2>&1\nresult=$?\nprintf '%s\\n' \"$result\" > .pytest_cache/cv08-matrix-a.exit\nexit \"$result\"",
+    "schema_export_dir": "/tmp/cv08-schema-a-2OVdgF",
+    "tool_exit": 143
+  },
+  "group_b": {
+    "sessions": [
+      "tests-3.14(django='4.2')",
+      "tests-3.14(django='5.2')",
+      "tests-3.14(django='6.0')",
+      "tests-3.15(django='4.2')",
+      "tests-3.15(django='5.2')",
+      "tests-3.15(django='6.0')",
+      "examples",
+      "crispy_floor"
+    ],
+    "coverage_file": ".pytest_cache/cv08-coverage-b",
+    "log": ".pytest_cache/cv08-matrix-b.log",
+    "status": "stopped after active3.14/6.0 normal child exited1",
+    "command": "export PATH=\"/home/alex/.local/share/uv/python/cpython-3.13-linux-x86_64-gnu/bin:/home/alex/.local/share/uv/python/cpython-3.14-linux-x86_64-gnu/bin:$PATH\"\nexport COVERAGE_FILE=\"$PWD/.pytest_cache/cv08-coverage-b\"\nexport CV_MANAGE_SCHEMA_EXPORT_DIR=\"$(mktemp -d /tmp/cv08-schema-b-XXXXXX)\"\nprintf '%s\\n' \"$CV_MANAGE_SCHEMA_EXPORT_DIR\" > .pytest_cache/cv08-schema-b.path\n.venv/bin/nox -s \"tests-3.14(django='4.2')\" \"tests-3.14(django='5.2')\" \"tests-3.14(django='6.0')\" \"tests-3.15(django='4.2')\" \"tests-3.15(django='5.2')\" \"tests-3.15(django='6.0')\" examples crispy_floor -- -n 4 -q > .pytest_cache/cv08-matrix-b.log 2>&1\nresult=$?\nprintf '%s\\n' \"$result\" > .pytest_cache/cv08-matrix-b.exit\nexit \"$result\"",
+    "schema_export_dir": "/tmp/cv08-schema-b-7H8fHH",
+    "tool_exit": 143
+  },
+  "source_reruns_finished_before_groups": true,
+  "source_6_0_result": "16202 passed in 548.62s; exit 0",
+  "export_directory_error": {
+    "cause": "One schema export directory per group was incorrectly reused by normal and recorder passes. The corpus test requires a fresh directory for every pytest invocation; its default tmp_path already provides this.",
+    "first_failure": "Python3.14/Django5.2 recorder:1 failed,16200 passed,1 skipped in318.25s",
+    "correction": "Do not mutate active fixture directories. Let active pytest children finish naturally with their actual result; pause only dispatchers to prevent further affected passes. After child exit, stop dispatchers and resume/retry with CV_MANAGE_SCHEMA_EXPORT_DIR unset.",
+    "active_fixture_paths_mutated": false,
+    "additional_failures": [
+      "3.14/6.0 normal:1 failed,16201 passed in392.31s",
+      "3.12/6.0 recorder:1 failed,16201 passed in592.57s"
+    ]
+  },
+  "group_d": {
+    "command": "unset CV_MANAGE_SCHEMA_EXPORT_DIR\nexport PATH=\"/home/alex/.local/share/uv/python/cpython-3.13-linux-x86_64-gnu/bin:/home/alex/.local/share/uv/python/cpython-3.14-linux-x86_64-gnu/bin:$PATH\"\nexport COVERAGE_FILE=\"$PWD/.pytest_cache/cv08-coverage-d\"\n.nox/tests-3-14-django-5-2/bin/python -I -c 'from pathlib import Path; import sysconfig, crud_views; origin=Path(crud_views.__file__).resolve(); print(\"Installed crud_views:\",origin); assert origin.is_relative_to(Path(sysconfig.get_paths()[\"purelib\"]).resolve()); assert not origin.is_relative_to(Path(\"src\").resolve())' > .pytest_cache/cv08-recorder-3-14-5-2.log 2>&1\nresult=$?\nif test \"$result\" -ne 0; then exit \"$result\"; fi\nPYTHONPATH= CV_ACCESS_RECORD_REQUESTS=1 .nox/tests-3-14-django-5-2/bin/pytest tests -n auto --no-cov -n 4 -q >> .pytest_cache/cv08-recorder-3-14-5-2.log 2>&1\nresult=$?\nprintf '%s\\n' \"$result\" > .pytest_cache/cv08-recorder-3-14-5-2.exit\nif test \"$result\" -ne 0; then exit \"$result\"; fi\n.venv/bin/nox -s \"tests-3.14(django='6.0')\" \"tests-3.15(django='4.2')\" \"tests-3.15(django='5.2')\" \"tests-3.15(django='6.0')\" examples crispy_floor -- -n 4 -q > .pytest_cache/cv08-matrix-d.log 2>&1\nresult=$?\nprintf '%s\\n' \"$result\" > .pytest_cache/cv08-matrix-d.exit\nexit \"$result\"",
+    "status": "passed",
+    "coverage_file": ".pytest_cache/cv08-coverage-d",
+    "log": ".pytest_cache/cv08-matrix-d.log",
+    "recorder_retry_log": ".pytest_cache/cv08-recorder-3-14-5-2.log",
+    "export_directory": "unset; pytest per-test tmp_path",
+    "tool_exit": 0,
+    "recorder_retry_exit": 0
+  },
+  "group_c": {
+    "command": "unset CV_MANAGE_SCHEMA_EXPORT_DIR\nexport PATH=\"/home/alex/.local/share/uv/python/cpython-3.13-linux-x86_64-gnu/bin:/home/alex/.local/share/uv/python/cpython-3.14-linux-x86_64-gnu/bin:$PATH\"\nexport COVERAGE_FILE=\"$PWD/.pytest_cache/cv08-coverage-c\"\n.nox/tests-3-12-django-6-0/bin/python -I -c 'from pathlib import Path; import sysconfig, crud_views; origin=Path(crud_views.__file__).resolve(); print(\"Installed crud_views:\",origin); assert origin.is_relative_to(Path(sysconfig.get_paths()[\"purelib\"]).resolve()); assert not origin.is_relative_to(Path(\"src\").resolve())' > .pytest_cache/cv08-recorder-3-12-6-0.log 2>&1\nresult=$?\nif test \"$result\" -ne 0; then exit \"$result\"; fi\nPYTHONPATH= CV_ACCESS_RECORD_REQUESTS=1 .nox/tests-3-12-django-6-0/bin/pytest tests -n auto --no-cov -n 4 -q >> .pytest_cache/cv08-recorder-3-12-6-0.log 2>&1\nresult=$?\nprintf '%s\\n' \"$result\" > .pytest_cache/cv08-recorder-3-12-6-0.exit\nif test \"$result\" -ne 0; then exit \"$result\"; fi\n.venv/bin/nox -s \"tests-3.13(django='4.2')\" \"tests-3.13(django='5.2')\" \"tests-3.13(django='6.0')\" -- -n 4 -q > .pytest_cache/cv08-matrix-c.log 2>&1\nresult=$?\nprintf '%s\\n' \"$result\" > .pytest_cache/cv08-matrix-c.exit\nexit \"$result\"",
+    "status": "passed",
+    "coverage_file": ".pytest_cache/cv08-coverage-c",
+    "log": ".pytest_cache/cv08-matrix-c.log",
+    "recorder_retry_log": ".pytest_cache/cv08-recorder-3-12-6-0.log",
+    "export_directory": "unset; pytest per-test tmp_path",
+    "tool_exit": 0,
+    "recorder_retry_exit": 0
+  },
+  "completed_at_utc": "2026-11-18T20:04:54.977469+00:00",
+  "active_fixture_paths_mutated": false
+}

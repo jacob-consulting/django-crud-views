@@ -1,0 +1,43 @@
+{
+  "Fable-import-during-iteration": {
+    "status": "actionable",
+    "canonical_id": "R20",
+    "evidence": "PLAN01:107 calls _url_configuration_loaded() inside the navbar mixin checks. ViewSet.checks at src/crud_views/lib/viewset/__init__.py:286-287 iterates self._views.values() live and yields each view.checks(); _url_configuration_loaded at src/crud_views/checks.py:172-195 imports URLconf modules and can register another view on that same ViewSet. Resuming the live dictionary iterator can raise RuntimeError: dictionary changed size during iteration. Existing check_ancestor_declarations calls its readiness barrier before taking its snapshot (checks.py:209-212); the proposed navbar path lacks an equivalent safe ordering or iteration mechanism."
+  },
+  "Fable-short-label-strip": {
+    "status": "source-disproved",
+    "evidence": "src/crud_views/lib/view/base.py:591-592 already strips result in render_snippet before cv_get_action_short_label returns it. PLAN01 normalizes that rendered result; adding another strip is not a missing property."
+  },
+  "Fable-Details-vs-Detail": {
+    "status": "fixture-detail-already-owned",
+    "evidence": "PLAN01 Task01 owns the declaration and rendered fixture; explicit NavItem label overrides are required/tested there. PLAN05 Task01 explicitly supplies Details where stock defaults differ. No change to stock labels is requested or necessary."
+  },
+  "Fable-R17-docs-sentence": {
+    "status": "already-incorporated",
+    "evidence": "PLAN06 Task01 explicitly covers D01\u2013D14, owner object rule, descendant owner reuse, exact public behavior and label defaults, and reads final navbar.py. PLAN01 Tasks01/02 now explicitly define and test owner label context. A preferred sentence does not add an invisible execution obligation."
+  },
+  "Fable-developer-untouched-assertion": {
+    "status": "already-incorporated",
+    "evidence": "PLAN05 Task02 explicitly preserves the developer read allowlist, unrelated grants and shared developer/seed/i18n regressions; Task03 runs project/tests.py and test_i18n.py, then PLAN06 runs them unfiltered. Existing developer policy is preserved and tested, not an unowned new requirement."
+  },
+  "Fable-test-module-count": {
+    "status": "advisory-wording-no-missing-check",
+    "evidence": "PLAN08 Task02 prose says six modules plus docs, but its actual command lists all six created navbar test modules including docs. No module is absent or extra path invoked; execution coverage is complete. Correcting the prose count is advisory."
+  },
+  "Fable-installed-origin-wording": {
+    "status": "advisory-wording-no-missing-obligation",
+    "evidence": "Existing origin assertions run in core tests and floor sessions; the example session installs the package but has no explicit origin assertion. PLAN08 says preserve existing assertions and requires actual per-cell source/installed provenance. Do not claim an example assertion exists; no additional assertion is required by this finding."
+  },
+  "Fable-other-reminders": {
+    "status": "already-incorporated-or-execution-advisory",
+    "evidence": "Bootstrap reflow fallback, cold cache names, companion network gate, format_html floor audit and Nox timing are already owned or explicitly non-defects. Navbar tag/template tables are owned by PLAN06 Task02."
+  },
+  "Grok-roadmap-stale-comment": {
+    "status": "advisory-not-convergence-counted",
+    "evidence": "0/8 executed is expected before implementation. The leftover TBD bullet is not a contradictory goal/requirement; deterministic phase-status remains uncheckable. No roadmap edits are authorized to this reviewer."
+  },
+  "Gemini-findings": {
+    "status": "no-new-actionable-finding",
+    "evidence": "All eight plan sections report no concerns; explicit R17\u2013R19 and R1\u2013R16 signoff."
+  }
+}

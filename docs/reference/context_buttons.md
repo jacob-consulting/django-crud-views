@@ -1,5 +1,8 @@
 # Context Buttons
 
+[ViewSet Navigation](navbar.md) provides opt-in section navigation alongside these buttons. Context buttons remain
+supported and unchanged; applications may keep both or omit redundant actions explicitly.
+
 Context buttons are the action buttons rendered in the header area of a view — controlled by
 the `cv_context_actions` attribute on each view class. They provide navigation between views
 within and across viewsets.

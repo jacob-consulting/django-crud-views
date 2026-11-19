@@ -1,0 +1,19 @@
+[
+  {
+    "id": "R20",
+    "severity": "MEDIUM",
+    "plans": [
+      "01"
+    ],
+    "task": "06.40-01-03",
+    "dimension": "startup_registration_safety",
+    "required_property": "Navbar startup checks remain safe when URLconf completion registers additional views on an already registered ViewSet, and completed checks still validate late registrations.",
+    "description": "PLAN01:107 calls _url_configuration_loaded() inside the navbar mixin checks. ViewSet.checks at src/crud_views/lib/viewset/__init__.py:286-287 iterates self._views.values() live and yields each view.checks(); _url_configuration_loaded at src/crud_views/checks.py:172-195 imports URLconf modules and can register another view on that same ViewSet. Resuming the live dictionary iterator can raise RuntimeError: dictionary changed size during iteration. Existing check_ancestor_declarations calls its readiness barrier before taking its snapshot (checks.py:209-212); the proposed navbar path lacks an equivalent safe ordering or iteration mechanism.",
+    "fix_hint": "Use a bounded readiness/iteration strategy that cannot mutate an active view iterator, and add a cold-URLconf system-check regression whose import registers another view on an already registered ViewSet. The mechanism may differ; preserve completed-registry validation and the existing opt-in/no-query boundaries.",
+    "reviewers": [
+      "fable-review"
+    ],
+    "claim_class": "judgment",
+    "status": "unresolved"
+  }
+]

@@ -647,6 +647,17 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **ViewSet Navigation components**: `cv_navbar_identity` and `cv_navbar_items` add convenient independent
+  placement of the existing identity and section-link leaves. The default `cv_navbar` wrapper composes both
+  tags; existing split includes remain supported. See [placement and overrides](docs/reference/navbar.md#placement-and-overrides).
+
+- **ViewSet Navigation** ([#381](https://github.com/jacob-consulting/django-crud-views/issues/381)):
+  declare owner and direct-child sections once with `NavBar`/`NavItem`, attach them to selected views with
+  `CrudViewNavBarMixin`, and retain owner identity across descendants. Permission/state-filtered full-page
+  links, active sections, lazy rendering and global/leaf/split/per-bar template overrides coexist with existing
+  context buttons. See the [reference and tenant-aware live example](docs/reference/navbar.md). The documented
+  declaration, attachment, tag, templates and context are stable at 1.0; request authorization remains authoritative.
+
 - **Access trace contract** (#375): `cv_access --schema` prints the generated JSON Schema of the version-1 trace
   document. Text and JSON output now validate the collected trace before printing; a validation failure writes one
   stderr diagnostic and exits 2, with no trace document, and is not an outcome. Valid output bytes, colors,

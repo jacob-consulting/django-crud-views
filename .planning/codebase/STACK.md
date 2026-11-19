@@ -1,90 +1,93 @@
 ---
-last_mapped_commit: 54c18a1b65f038e5fcdb5dc0038782133f93ffb8
-last_mapped_at: 2026-11-17
+last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
+last_mapped_at: 2026-11-19
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-17
+**Analysis Date:** 2026-11-19
 
 ## Languages
 
 **Primary:**
-- Python >=3.12 (tested 3.12, 3.13, 3.14, 3.15) - all package code in `src/`
-- Django templates (HTML, Bootstrap 5) - `src/crud_views/templates/`
+- Python >=3.12 (tested on 3.12–3.15) - five installable Django apps under `src/`
+- Django templates with Bootstrap 5 markup - theme templates under `src/crud_views/templates/`
 
 **Secondary:**
-- JavaScript (Node >=20) - dev-only unit-test harness (`package.json`, `vitest.config.js`, `vitest.integration.config.js`); package static JS under `src/*/static/`
-- YAML - CI (`.github/workflows/*.yml`), `taskfile.yaml`, `mkdocs.yml`, `render.yaml`
+- JavaScript (Node >=20) - development-only Vitest harness (`package.json`, `vitest.config.js`, `vitest.integration.config.js`); package scripts in `src/*/static/`
+- YAML - CI, task automation, deployment, docs, and dependency update configuration
 
 ## Runtime
 
 **Environment:**
-- CPython 3.12 baseline (`taskfile.yaml` var `PYTHON`, `.readthedocs.yaml`); demo deploy pins 3.13 (`render.yaml`)
-- Django 4.2 / 5.2 / 6.0 supported (Django 4.2 skipped on Python 3.14+ in `noxfile.py`)
+- CPython >=3.12; nox covers 3.12, 3.13, 3.14, and 3.15 (`noxfile.py`)
+- Django >=4.2; CI/nox matrix covers Django 4.2, 5.2, and 6.0 (`pyproject.toml`, `noxfile.py`); Django 4.2 is skipped on Python 3.14+
+- Demo runs Python 3.13 on Render (`render.yaml`)
 
 **Package Manager:**
-- uv (venv, `uv.lock`, nox `venv_backend="uv"`); pip with hashes in CI (`.github/requirements/ci.txt`)
-- npm for JS tests (`package-lock.json`)
-- Lockfile: present (`uv.lock`, `package-lock.json`, `docs/requirements.txt` hashed)
+- uv for Python environments and lockfile (`uv.lock`); nox uses its uv backend (`noxfile.py`)
+- npm for JavaScript checks (`package-lock.json`)
+- Lockfiles: `uv.lock`, `package-lock.json`; docs and CI dependencies are hash-pinned in `docs/requirements.txt` and `.github/requirements/ci.txt`
 
 ## Frameworks
 
 **Core:**
-- Django >=4.2 - web framework; class-based views
-- Pydantic >=2.2.1 - ViewSet and settings models (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/settings.py`)
-- django-tables2 >=2.5.3 - list tables
-- django-filter >=21.1 - list filtering
-- django-crispy-forms >=2.0 + crispy-bootstrap5 >=2023.10 - forms (`src/crud_views/lib/crispy/`)
+- Django >=4.2 - generic class-based views and reusable app integration (`src/crud_views/`)
+- Pydantic >=2.2.1 - ViewSet/settings and typed configuration (`src/crud_views/lib/viewset/`, `src/crud_views/lib/settings.py`)
+- django-tables2 >=2.5.3 and django-filter >=21.1 - table rendering and filtering
+- django-crispy-forms >=2.0 with crispy-bootstrap5 >=2023.10 - Bootstrap form rendering (`src/crud_views/lib/crispy/`)
 
 **Testing:**
-- pytest, pytest-django, pytest-xdist, pytest-cov, pytest-mock, pytest-random-order; lxml, cssselect, polib (`pyproject.toml` `test` extra)
-- nox - Python x Django matrix (`noxfile.py`)
-- vitest ^5.1 + jsdom ^31 + jquery ~3.7 - JS tests
+- pytest, pytest-django, pytest-xdist, pytest-cov, pytest-mock, pytest-random-order - Python test suite (`pyproject.toml` test extra)
+- nox - Python/Django compatibility matrix and installed-distribution checks (`noxfile.py`)
+- Vitest 5, jsdom 31, and jQuery 3.7 - static JavaScript unit and integration tests (`package.json`)
 
 **Build/Dev:**
-- hatchling - build backend (`pyproject.toml`)
-- ruff >=0.17,<0.18 - lint/format (line length 120, rules E,F,I,UP,B,C4,SIM,RUF)
-- pre-commit (`.pre-commit-config.yaml`), bump-my-version, go-task (`taskfile.yaml`)
-- mkdocs + awesome-pages + pymdown-extensions, readthedocs theme (`mkdocs.yml`)
+- hatchling - wheel and sdist backend; package allowlist in `pyproject.toml`, verified by `scripts/check_dist.py`
+- Ruff >=0.17,<0.18 - lint and format, 120-character lines (`pyproject.toml`)
+- pre-commit, bump-my-version, go-task - hooks, version updates, and task commands (`.pre-commit-config.yaml`, `pyproject.toml`, `taskfile.yaml`)
+- MkDocs with awesome-pages and pymdown-extensions; Read the Docs theme (`mkdocs.yml`)
 
 ## Key Dependencies
 
 **Critical:**
-- python-box >=6.0.2, typing-extensions >=4.7.1 - core runtime deps
+- `python-box` >=6.0.2 and `typing-extensions` >=4.7.1 - core runtime support (`pyproject.toml`)
+- Django, Pydantic, django-tables2, django-filter, django-crispy-forms, crispy-bootstrap5 - core view and form API (`pyproject.toml`)
 
-**Optional extras (one Django app each):**
-- `workflow`: django-fsm-2 >=4.0.0, django-fsm-2-admin >=2.0.1 (`src/crud_views_workflow`)
-- `polymorphic`: django-polymorphic >=3.1.0 (`src/crud_views_polymorphic`)
-- `ordered`: django-ordered-model >=3.4.3
-- `guardian`: django-guardian >=2.4 (`src/crud_views_guardian`)
-- `all` aggregates the above; `object_detail` app has no extra (`src/crud_views_object_detail`)
-- Test-only: django-pipeline (asset bundling tests)
+**Optional extras (one app/feature group each):**
+- `workflow`: django-fsm-2 >=4.0.0 and django-fsm-2-admin >=2.0.1 (`src/crud_views_workflow/`)
+- `polymorphic`: django-polymorphic >=3.1.0 (`src/crud_views_polymorphic/`)
+- `ordered`: django-ordered-model >=3.4.3 (`src/crud_views/lib/views/action_ordered.py`)
+- `guardian`: django-guardian >=2.4 (`src/crud_views_guardian/`)
+- `all` aggregates those extras; `object_detail` is included in the distribution without an extra (`pyproject.toml`)
+- Test extras include django-pipeline for asset-pipeline integration coverage (`pyproject.toml`)
 
-**Infrastructure (demo only, `requirements/demo.txt`):**
-- gunicorn >=23, whitenoise >=6.9, django-ratelimit >=4.1
+**Demo infrastructure:**
+- gunicorn, whitenoise, and django-ratelimit are declared in `requirements/demo.txt`
 
 ## Configuration
 
 **Environment:**
-- Library settings: Pydantic `CrudViewsSettings` reading `CRUD_VIEWS_*` Django settings (`src/crud_views/lib/settings.py`), e.g. `CRUD_VIEWS_EXTENDS`, `CRUD_VIEWS_THEME`, `CRUD_VIEWS_MANAGE_VIEWS_ENABLED`, `CRUD_VIEWS_MANAGE_ACCESS_TRACE`
-- Test env flag `CV_ACCESS_RECORD_REQUESTS` (set in `noxfile.py`)
-- `.env`-style file for dev tunnel at `dev/.env` (not read; template `dev/.env.example`)
-- Demo: `DJANGO_SETTINGS_MODULE=project.settings_demo`, `SECRET_KEY` (`render.yaml`)
+- Library configuration is Django settings with `CRUD_VIEWS_*` names, parsed by `CrudViewsSettings` in `src/crud_views/lib/settings.py`; includes theme/template and manage-view options
+- Tests set `CV_ACCESS_RECORD_REQUESTS` from `noxfile.py`
+- Local Cloudflare tunnel reads `TUNNEL_TOKEN` from `dev/.env`; only the existence of local env files was checked (`dev/.env.example`, `dev/docker-compose.yaml`)
+- Demo uses `DJANGO_SETTINGS_MODULE=project.settings_demo` and a generated `SECRET_KEY` (`render.yaml`)
 
 **Build:**
-- `pyproject.toml` (wheel packages: five `src/` apps; sdist allowlist checked by `scripts/check_dist.py`)
-- `noxfile.py`, `taskfile.yaml`, `codecov.yml`, `.sonarcloud.properties`
+- `pyproject.toml` defines dependencies and wheel/sdist file inclusion; `scripts/check_dist.py` checks the sdist allowlist
+- `noxfile.py`, `taskfile.yaml`, `codecov.yml`, `.sonarcloud.properties`, `mkdocs.yml`, and `vitest.config.js` configure development and CI tooling
 
 ## Platform Requirements
 
 **Development:**
-- uv, go-task, Python 3.12+, Node >=20 (JS tests), optional Docker for `dev/docker-compose.yaml`
-- Example project: `examples/bootstrap5/` (SQLite `db.sqlite3`)
+- uv, go-task, Python 3.12+, and Node >=20 for JavaScript tests
+- Optional Docker for Cloudflare tunnel in `dev/docker-compose.yaml`
+- Example application lives in `examples/bootstrap5/` and uses SQLite (`examples/bootstrap5/project/settings.py`)
 
 **Production:**
-- Library published to PyPI via `pypa/gh-action-pypi-publish` (`.github/workflows/publish.yml`)
-- Docs on Read the Docs (`.readthedocs.yaml`); public demo on Render free plan (`render.yaml`)
+- Package distribution to PyPI using GitHub Actions (`.github/workflows/publish.yml`)
+- Documentation hosted by Read the Docs (`.readthedocs.yaml`)
+- Public example demo hosted on Render (`render.yaml`)
 
 ---
 
-*Stack analysis: 2026-11-17*
+*Stack analysis: 2026-11-19*

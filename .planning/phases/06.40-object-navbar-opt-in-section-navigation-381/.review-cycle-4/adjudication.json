@@ -1,0 +1,33 @@
+{
+  "Fable-R20-fixture-isolation": {
+    "severity": "MEDIUM",
+    "status": "covered-obligation-not-new-plan-gap",
+    "required_property": "Cold-import regressions isolate registrations and can complete successfully after an earlier failed preflight.",
+    "evidence": "PLAN01 Task03 requires isolated registrations, restoration of temporary modules/resolver caches/registry state in finally using Task01 isolation ordering, and successful later completion reporting all late registrations. Task01 names isolated_routes; its build(sfx) contract creates test-owned ViewSets inside the isolation boundary (tests/test1/test_ancestor_authorization.py:47-59), before the cold import. A ViewSet may already exist before that import while still being test-owned. Reusing a shared project ViewSet without restoring its _views would violate the existing isolation obligation, not expose an absent requirement. register_view_class rejects duplicate keys at viewset/__init__.py:352-354, but the plan does not require a failure after registrations followed by replay of those same class bodies. A failed import before registration, or completion of a previously in-progress module, meets the required failed-then-complete check without that replay. Successful later completion and every distinct late diagnostic are already explicit assertions.",
+    "reminder": "Use test-owned pre-registered ViewSets as the named helper does; any chosen fixture that mutates shared instances must restore them. Preserve the real cold-import path and all required late diagnostic assertions. This is implementation guidance, not a new missing acceptance obligation."
+  },
+  "Fable-direct-check-callers": {
+    "severity": "LOW",
+    "status": "already-incorporated",
+    "evidence": "PLAN01 Task03 preserves shared iterators/default readiness and super checks; PLAN08 runs the full source and installed suites, including existing direct check_viewsets/checks_all callers. No missing test collection is identified."
+  },
+  "Fable-state-permission-composition": {
+    "severity": "LOW",
+    "status": "already-incorporated",
+    "evidence": "PLAN03 Task01 requires real protected-provider controls, actual owner-detail state denial GET 403, and reuse of existing helper/request behavior without upgrading plain views. Its read_first includes base.py and test_action_enabled.py; RESEARCH:249 explicitly names permission-required detail composition. The requested word makes fixture construction more explicit but adds no missing product behavior or acceptance check."
+  },
+  "Fable-other-observations": {
+    "severity": "LOW",
+    "status": "covered-or-optional",
+    "evidence": "PLAN02 explicitly requires view-instance request isolation, wrapping proof and scoped fallback. PLAN03 records measurement environment. PLAN04 already provisions Nox before migrations and tests real project URLs. PLAN05 intentionally sequences DocRefsPanelTest until PLAN06 supplies real docs and runs the complete shared/link suites. PLAN06 already tests usable inventory/imports/templates; regex/import_string is an optional method. PLAN07 acquisition and PLAN08 browser/runtime availability remain explicit unmet execution gates when unavailable. Optional helper docstring/in-progress fixture method does not add a new requirement."
+  },
+  "Grok-suggestions": {
+    "severity": "LOW",
+    "status": "covered-or-optional",
+    "evidence": "PLAN01 already supports/tests explicit labels; PLAN05 explicitly labels Details where defaults differ. PLAN04/06 require the actual object-navbar landing and reciprocal URL equality, so empty subpath is an implementation detail. Adding a .pages sidebar entry is optional because PLAN06 creates the required reference-index link. PLAN08 actual command already names all six navbar modules including docs; the prose count creates no missing gate."
+  },
+  "Gemini-findings": {
+    "status": "no-concerns",
+    "evidence": "All eight plan sections have no concerns; explicit R20 planning-level signoff and R1\u2013R19 retained closure."
+  }
+}

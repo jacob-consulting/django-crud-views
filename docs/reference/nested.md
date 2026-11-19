@@ -1,5 +1,8 @@
 # Nested ViewSets (parent/child)
 
+[ViewSet Navigation](navbar.md) can reuse an owner's identity and section links across selected descendant pages,
+including grandchildren. Link visibility is bounded; the destination still enforces the ancestor policy below.
+
 A child ViewSet can declare a parent ViewSet. Once declared:
 
 - the child's URLs are nested under the parent's URL (`parent_prefix/<parent_pk>/child_prefix/...`)

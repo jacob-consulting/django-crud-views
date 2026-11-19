@@ -1,84 +1,93 @@
 ---
-last_mapped_commit: 54c18a1b65f038e5fcdb5dc0038782133f93ffb8
-last_mapped_at: 2026-11-17
+last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
+last_mapped_at: 2026-11-19
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-17
+**Analysis Date:** 2026-11-19
 
-The package is a library; it makes no outbound network calls itself. Integrations are Django ecosystem packages plus dev/CI/deploy services.
+The package itself makes no outbound network calls. It integrates with Django ecosystem packages and leaves application services, database configuration, and resource backends to the host project.
 
 ## APIs & External Services
 
-**Django ecosystem (library integrations):**
-- django-tables2 / django-filter - list tables and filters (`ListViewTableMixin`, `ListViewTableFilterMixin` in `src/crud_views/lib/`)
-- django-crispy-forms + crispy-bootstrap5 - form rendering (`src/crud_views/lib/crispy/`)
-- django-fsm-2 - workflow transitions (`src/crud_views_workflow/lib/`)
-- django-polymorphic - polymorphic create flow (`src/crud_views_polymorphic/lib/`)
-- django-guardian - per-object permissions (`src/crud_views_guardian/lib/`)
+**Django ecosystem:**
+- django-tables2 and django-filter - list tables and filtering (`src/crud_views/lib/table/`)
+- django-crispy-forms and crispy-bootstrap5 - form rendering and Bootstrap layout integration (`src/crud_views/lib/crispy/`)
+- django-fsm-2 and django-fsm-2-admin - workflow transitions and admin integration (`src/crud_views_workflow/`)
+- django-polymorphic - model-aware create flow (`src/crud_views_polymorphic/`)
+- django-guardian - per-object permissions (`src/crud_views_guardian/`)
 - django-ordered-model - ordered up/down actions (`src/crud_views/lib/views/action_ordered.py`)
-- django-pipeline - asset bundling via `cv_sources` (`src/crud_views/lib/assets.py`; tested only)
+- django-pipeline - optional asset bundling through `cv_sources`; exercised by tests (`src/crud_views/lib/assets.py`)
 
-**Non-ORM data:**
-- `Resource` abstraction lets views show non-ORM data (S3, APIs) supplied by the host project (`src/crud_views/lib/resource.py`); no SDK bundled.
-
-**Front-end:**
-- Bootstrap 5 theme and jQuery-based JS; templates in `src/crud_views/templates/`
+**Host application extension points:**
+- `Resource` lets a host supply non-ORM data (including API or object-store-backed data); the package bundles no S3, HTTP, or cloud SDK (`src/crud_views/lib/resource.py`)
+- Bootstrap 5 theme templates, a configurable semantic icon registry, and shared ViewSet navbar rendering are package-side UI integration points (`src/crud_views/templates/crud_views/`, `src/crud_views/lib/icons.py`, `src/crud_views/lib/navbar.py`)
+- Navbar declarations are configured on ViewSets and rendered through `cv_navbar`, `cv_navbar_identity`, and `cv_navbar_items` template tags (`src/crud_views/lib/navbar.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/navbar.html`)
 
 ## Data Storage
 
 **Databases:**
-- Any Django-supported DB; library defines no connection. Example project and tests use SQLite (`examples/bootstrap5/project/settings.py`, in-memory via `tests/test1/conftest.py`)
+- Uses any database configured by the host Django project; the library provides no database connection configuration
+- Example project uses SQLite (`examples/bootstrap5/project/settings.py`); package tests configure in-memory Django test databases (`tests/test1/conftest.py`)
+- django-guardian stores object permission grants through its Django models when the optional integration is installed (`src/crud_views_guardian/`)
 
 **File Storage:**
-- Local filesystem only (static via whitenoise in demo)
+- No package-managed file/object storage. Demo static files are served with whitenoise (`requirements/demo.txt`, `examples/bootstrap5/project/settings_demo.py`)
 
 **Caching:**
-- None
+- No external cache service configured by the package
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Django `django.contrib.auth` permissions (`CrudViewPermissionRequiredMixin`); optional django-guardian object permissions
-- No third-party identity provider
+- Django `django.contrib.auth` users and model permissions are the core permission integration (`src/crud_views/lib/`)
+- django-guardian adds optional per-object permission checks (`src/crud_views_guardian/`)
+- No third-party identity provider is bundled; authentication setup belongs to the host project
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- None
+- No runtime error-tracking service integrated
 
 **Logs:**
-- Standard Python logging; Django system checks in `src/crud_views/checks.py`
-- Coverage reporting to Codecov (`codecov.yml`); SonarCloud config (`.sonarcloud.properties`)
+- Python/Django logging and Django system checks (`src/crud_views/checks.py`)
+- Coverage reports are uploaded to Codecov in CI (`.github/workflows/tests.yml`, `codecov.yml`); SonarCloud settings are present (`.sonarcloud.properties`)
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- PyPI (package), Read the Docs (docs), Render free web service (demo, `render.yaml`)
-- Cloudflare tunnel via `cloudflare/cloudflared` Docker image for remote dev (`dev/docker-compose.yaml`, `task cf`)
+- PyPI package publishing via GitHub Actions (`.github/workflows/publish.yml`)
+- Read the Docs builds the MkDocs documentation (`.readthedocs.yaml`, `mkdocs.yml`)
+- Render hosts the example demo; `render.yaml` declares manual workflow-driven deploys and an ephemeral SQLite filesystem
+- Optional remote-development tunnel uses the Cloudflare `cloudflared` container (`dev/docker-compose.yaml`, `task cf`)
 
 **CI Pipeline:**
-- GitHub Actions in `.github/workflows/`: `tests.yml` (nox matrix py3.12-3.15 x Django 4.2/5.2/6.0, examples sessions, Codecov upload), `lint.yml`, `js.yml`, `docs.yml`, `publish.yml`, `demo.yml` (Render API deploy), `readme-examples.yml`
-- Actions pinned: actions/checkout@v7, actions/setup-python@v7, codecov-action, pypa/gh-action-pypi-publish
+- GitHub Actions workflows cover Python/Django tests, linting, JavaScript tests, docs, package publishing, demo deploys, and README examples (`.github/workflows/`)
+- Python test workflow uses nox compatibility sessions and Codecov upload (`.github/workflows/tests.yml`, `noxfile.py`); JavaScript checks use npm/Vitest (`.github/workflows/js.yml`)
+- Demo deploy workflow invokes the Render API (`.github/workflows/demo.yml`); package publishing uses PyPI trusted publishing action (`.github/workflows/publish.yml`)
 
 ## Environment Configuration
 
 **Required env vars:**
-- CI secrets: `CODECOV_TOKEN`, `RENDER_API_KEY`, `RENDER_SERVICE_ID`
-- Dev: `TUNNEL_TOKEN` (`dev/.env`)
-- Demo: `DJANGO_SETTINGS_MODULE`, `SECRET_KEY`, `PYTHON_VERSION`
+- Runtime library: values are optional Django settings prefixed `CRUD_VIEWS_` (`src/crud_views/lib/settings.py`)
+- Demo: `DJANGO_SETTINGS_MODULE` and generated `SECRET_KEY` (`render.yaml`)
+- Cloudflare tunnel: `TUNNEL_TOKEN` when starting `task cf` (`dev/docker-compose.yaml`)
+- CI/deploy credentials are configured as GitHub Actions secrets for relevant workflows; names are referenced in workflow configuration and values are not documented here
 
 **Secrets location:**
-- GitHub Actions secrets; `dev/.env` (local, untracked); Render generated values
+- GitHub Actions secrets for CI and Render deployment
+- Local tunnel token in `dev/.env` (file existence only; template: `dev/.env.example`)
+- Render generates the demo `SECRET_KEY` from its blueprint (`render.yaml`)
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- None (demo health check `/login/` only)
+- No package webhook endpoints. The demo exposes the Django application's `/login/` health-check path (`render.yaml`)
 
 **Outgoing:**
-- `demo.yml` calls the Render API to trigger deploys
+- Demo deployment workflow calls Render's API (`.github/workflows/demo.yml`)
+- No outbound service callbacks from the library runtime
 
 ---
 
-*Integration audit: 2026-11-17*
+*Integration audit: 2026-11-19*

@@ -1,0 +1,35 @@
+
+> django-crud-views-js-tests@1.0.0 test:integration
+> vitest run --config vitest.integration.config.js
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.integration.config.js:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /home/alex/projects/alex/django-crud-views
+
+ ❯ tests/js-integration/formset.test.js (2 tests | 1 failed) 1604ms
+   ❯ real Django fragment insertion (1)
+     × inserts outer and second-sibling fragments and POSTs their real FormData 20ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/js-integration/formset.test.js > real Django fragment insertion > inserts outer and second-sibling fragments and POSTs their real FormData
+Error: CV_FRAGMENT_PYTHON is required: select an installed Python interpreter with the Django test dependencies.
+ ❯ selectedPython tests/js-integration/formset.test.js:120:15
+    118|     const selected = process.env.CV_FRAGMENT_PYTHON;
+    119|     if (!selected) {
+    120|         throw new Error("CV_FRAGMENT_PYTHON is required: select an ins…
+       |               ^
+    121|     }
+    122|     try {
+ ❯ tests/js-integration/formset.test.js:140:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  20:31:18
+   Duration  3.73s (environment 47%, tests 45%, setup 5%, transform 2%, import 1%)
+

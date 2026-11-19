@@ -1,0 +1,5311 @@
+{
+  "browser": "159.0.8154.6",
+  "urls": [
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/notes/",
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/",
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/505/navbar_item/",
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/505/navbar_item/707/detail/",
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/"
+  ],
+  "measurements": [
+    {
+      "width": 320,
+      "stress": false,
+      "method": "Customer page at 320 CSS px; retain any shared-layout failure",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "identity": {
+        "box": {
+          "left": 12,
+          "right": 308,
+          "top": 508.375,
+          "bottom": 532.375,
+          "width": 296,
+          "height": 24
+        },
+        "parent": {
+          "left": 12,
+          "right": 308,
+          "top": 508.375,
+          "bottom": 624.375,
+          "width": 296,
+          "height": 116
+        },
+        "text": "Acme Coffee",
+        "textRects": [
+          {
+            "left": 12,
+            "right": 30,
+            "top": 511.375,
+            "bottom": 527.375
+          },
+          {
+            "left": 30,
+            "right": 123.328125,
+            "top": 510.375,
+            "bottom": 530.375
+          }
+        ],
+        "scrollWidth": 296,
+        "clientWidth": 296,
+        "scrollHeight": 24,
+        "clientHeight": 24,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 12,
+        "right": 308,
+        "top": 540.375,
+        "bottom": 624.375,
+        "width": 296,
+        "height": 84
+      },
+      "links": [
+        {
+          "box": {
+            "left": 12,
+            "right": 115.671875,
+            "top": 540.375,
+            "bottom": 580.375,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 12,
+            "right": 115.671875,
+            "top": 540.375,
+            "bottom": 580.375,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 551.375,
+              "bottom": 567.375
+            },
+            {
+              "left": 46,
+              "right": 99.671875,
+              "top": 550.375,
+              "bottom": 570.375
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 119.671875,
+            "right": 215.6875,
+            "top": 540.375,
+            "bottom": 580.375,
+            "width": 96.015625,
+            "height": 40
+          },
+          "parent": {
+            "left": 119.671875,
+            "right": 215.6875,
+            "top": 540.375,
+            "bottom": 580.375,
+            "width": 96.015625,
+            "height": 40
+          },
+          "text": "Notes",
+          "textRects": [
+            {
+              "left": 135.671875,
+              "right": 153.671875,
+              "top": 551.375,
+              "bottom": 567.375
+            },
+            {
+              "left": 153.671875,
+              "right": 199.6875,
+              "top": 550.375,
+              "bottom": 570.375
+            }
+          ],
+          "scrollWidth": 96,
+          "clientWidth": 96,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 12,
+            "right": 113.125,
+            "top": 584.375,
+            "bottom": 624.375,
+            "width": 101.125,
+            "height": 40
+          },
+          "parent": {
+            "left": 12,
+            "right": 113.125,
+            "top": 584.375,
+            "bottom": 624.375,
+            "width": 101.125,
+            "height": 40
+          },
+          "text": "Orders",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 595.375,
+              "bottom": 611.375
+            },
+            {
+              "left": 46,
+              "right": 97.125,
+              "top": 594.375,
+              "bottom": 614.375
+            }
+          ],
+          "scrollWidth": 101,
+          "clientWidth": 101,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 117.125,
+            "right": 239.421875,
+            "top": 584.375,
+            "bottom": 624.375,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 117.125,
+            "right": 239.421875,
+            "top": 584.375,
+            "bottom": 624.375,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 133.125,
+              "right": 145.125,
+              "top": 595.375,
+              "bottom": 611.375
+            },
+            {
+              "left": 145.125,
+              "right": 223.421875,
+              "top": 594.375,
+              "bottom": 614.375
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 29,
+        "right": 157.109375,
+        "top": 649.375,
+        "bottom": 676.625,
+        "width": 128.109375,
+        "height": 27.25
+      },
+      "rows": 2
+    },
+    {
+      "width": 1280,
+      "stress": false,
+      "method": "1280 CSS px at 100% browser zoom",
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "clientWidth": 1280,
+      "identity": {
+        "box": {
+          "left": 82,
+          "right": 1198,
+          "top": 249.1875,
+          "bottom": 273.1875,
+          "width": 1116,
+          "height": 24
+        },
+        "parent": {
+          "left": 82,
+          "right": 1198,
+          "top": 249.1875,
+          "bottom": 321.1875,
+          "width": 1116,
+          "height": 72
+        },
+        "text": "Acme Coffee",
+        "textRects": [
+          {
+            "left": 82,
+            "right": 100,
+            "top": 252.1875,
+            "bottom": 268.1875
+          },
+          {
+            "left": 100,
+            "right": 193.328125,
+            "top": 251.1875,
+            "bottom": 271.1875
+          }
+        ],
+        "scrollWidth": 1116,
+        "clientWidth": 1116,
+        "scrollHeight": 24,
+        "clientHeight": 24,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 82,
+        "right": 1198,
+        "top": 281.1875,
+        "bottom": 321.1875,
+        "width": 1116,
+        "height": 40
+      },
+      "links": [
+        {
+          "box": {
+            "left": 82,
+            "right": 185.671875,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 82,
+            "right": 185.671875,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 98,
+              "right": 116,
+              "top": 292.1875,
+              "bottom": 308.1875
+            },
+            {
+              "left": 116,
+              "right": 169.671875,
+              "top": 291.1875,
+              "bottom": 311.1875
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 189.671875,
+            "right": 285.6875,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 96.015625,
+            "height": 40
+          },
+          "parent": {
+            "left": 189.671875,
+            "right": 285.6875,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 96.015625,
+            "height": 40
+          },
+          "text": "Notes",
+          "textRects": [
+            {
+              "left": 205.671875,
+              "right": 223.671875,
+              "top": 292.1875,
+              "bottom": 308.1875
+            },
+            {
+              "left": 223.671875,
+              "right": 269.6875,
+              "top": 291.1875,
+              "bottom": 311.1875
+            }
+          ],
+          "scrollWidth": 96,
+          "clientWidth": 96,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 289.6875,
+            "right": 390.8125,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 101.125,
+            "height": 40
+          },
+          "parent": {
+            "left": 289.6875,
+            "right": 390.8125,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 101.125,
+            "height": 40
+          },
+          "text": "Orders",
+          "textRects": [
+            {
+              "left": 305.6875,
+              "right": 323.6875,
+              "top": 292.1875,
+              "bottom": 308.1875
+            },
+            {
+              "left": 323.6875,
+              "right": 374.8125,
+              "top": 291.1875,
+              "bottom": 311.1875
+            }
+          ],
+          "scrollWidth": 101,
+          "clientWidth": 101,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 394.8125,
+            "right": 517.109375,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 394.8125,
+            "right": 517.109375,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 410.8125,
+              "right": 422.8125,
+              "top": 292.1875,
+              "bottom": 308.1875
+            },
+            {
+              "left": 422.8125,
+              "right": 501.109375,
+              "top": 291.1875,
+              "bottom": 311.1875
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 99,
+        "right": 186.15625,
+        "top": 353.390625,
+        "bottom": 386.984375,
+        "width": 87.15625,
+        "height": 33.59375
+      },
+      "rows": 1
+    },
+    {
+      "width": 320,
+      "stress": false,
+      "method": "320 CSS px at 100% browser zoom",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "identity": {
+        "box": {
+          "left": 12,
+          "right": 308,
+          "top": 532.375,
+          "bottom": 556.375,
+          "width": 296,
+          "height": 24
+        },
+        "parent": {
+          "left": 12,
+          "right": 308,
+          "top": 532.375,
+          "bottom": 648.375,
+          "width": 296,
+          "height": 116
+        },
+        "text": "Acme Coffee",
+        "textRects": [
+          {
+            "left": 12,
+            "right": 30,
+            "top": 535.375,
+            "bottom": 551.375
+          },
+          {
+            "left": 30,
+            "right": 123.328125,
+            "top": 534.375,
+            "bottom": 554.375
+          }
+        ],
+        "scrollWidth": 296,
+        "clientWidth": 296,
+        "scrollHeight": 24,
+        "clientHeight": 24,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 12,
+        "right": 308,
+        "top": 564.375,
+        "bottom": 648.375,
+        "width": 296,
+        "height": 84
+      },
+      "links": [
+        {
+          "box": {
+            "left": 12,
+            "right": 115.671875,
+            "top": 564.375,
+            "bottom": 604.375,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 12,
+            "right": 115.671875,
+            "top": 564.375,
+            "bottom": 604.375,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 575.375,
+              "bottom": 591.375
+            },
+            {
+              "left": 46,
+              "right": 99.671875,
+              "top": 574.375,
+              "bottom": 594.375
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 119.671875,
+            "right": 215.6875,
+            "top": 564.375,
+            "bottom": 604.375,
+            "width": 96.015625,
+            "height": 40
+          },
+          "parent": {
+            "left": 119.671875,
+            "right": 215.6875,
+            "top": 564.375,
+            "bottom": 604.375,
+            "width": 96.015625,
+            "height": 40
+          },
+          "text": "Notes",
+          "textRects": [
+            {
+              "left": 135.671875,
+              "right": 153.671875,
+              "top": 575.375,
+              "bottom": 591.375
+            },
+            {
+              "left": 153.671875,
+              "right": 199.6875,
+              "top": 574.375,
+              "bottom": 594.375
+            }
+          ],
+          "scrollWidth": 96,
+          "clientWidth": 96,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 12,
+            "right": 113.125,
+            "top": 608.375,
+            "bottom": 648.375,
+            "width": 101.125,
+            "height": 40
+          },
+          "parent": {
+            "left": 12,
+            "right": 113.125,
+            "top": 608.375,
+            "bottom": 648.375,
+            "width": 101.125,
+            "height": 40
+          },
+          "text": "Orders",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 619.375,
+              "bottom": 635.375
+            },
+            {
+              "left": 46,
+              "right": 97.125,
+              "top": 618.375,
+              "bottom": 638.375
+            }
+          ],
+          "scrollWidth": 101,
+          "clientWidth": 101,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 117.125,
+            "right": 239.421875,
+            "top": 608.375,
+            "bottom": 648.375,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 117.125,
+            "right": 239.421875,
+            "top": 608.375,
+            "bottom": 648.375,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 133.125,
+              "right": 145.125,
+              "top": 619.375,
+              "bottom": 635.375
+            },
+            {
+              "left": 145.125,
+              "right": 223.421875,
+              "top": 618.375,
+              "bottom": 638.375
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 29,
+        "right": 99.734375,
+        "top": 673.375,
+        "bottom": 700.625,
+        "width": 70.734375,
+        "height": 27.25
+      },
+      "rows": 2
+    },
+    {
+      "width": 640,
+      "stress": false,
+      "method": "200% reflow equivalent: 1280 physical CSS-px baseline / 2 = 640 CSS px; deviceScaleFactor unchanged",
+      "viewport": 640,
+      "scrollWidth": 640,
+      "clientWidth": 640,
+      "identity": {
+        "box": {
+          "left": 62,
+          "right": 578,
+          "top": 345.1875,
+          "bottom": 369.1875,
+          "width": 516,
+          "height": 24
+        },
+        "parent": {
+          "left": 62,
+          "right": 578,
+          "top": 345.1875,
+          "bottom": 417.1875,
+          "width": 516,
+          "height": 72
+        },
+        "text": "Acme Coffee",
+        "textRects": [
+          {
+            "left": 62,
+            "right": 80,
+            "top": 348.1875,
+            "bottom": 364.1875
+          },
+          {
+            "left": 80,
+            "right": 173.328125,
+            "top": 347.1875,
+            "bottom": 367.1875
+          }
+        ],
+        "scrollWidth": 516,
+        "clientWidth": 516,
+        "scrollHeight": 24,
+        "clientHeight": 24,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 62,
+        "right": 578,
+        "top": 377.1875,
+        "bottom": 417.1875,
+        "width": 516,
+        "height": 40
+      },
+      "links": [
+        {
+          "box": {
+            "left": 62,
+            "right": 165.671875,
+            "top": 377.1875,
+            "bottom": 417.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 62,
+            "right": 165.671875,
+            "top": 377.1875,
+            "bottom": 417.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 78,
+              "right": 96,
+              "top": 388.1875,
+              "bottom": 404.1875
+            },
+            {
+              "left": 96,
+              "right": 149.671875,
+              "top": 387.1875,
+              "bottom": 407.1875
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 169.671875,
+            "right": 265.6875,
+            "top": 377.1875,
+            "bottom": 417.1875,
+            "width": 96.015625,
+            "height": 40
+          },
+          "parent": {
+            "left": 169.671875,
+            "right": 265.6875,
+            "top": 377.1875,
+            "bottom": 417.1875,
+            "width": 96.015625,
+            "height": 40
+          },
+          "text": "Notes",
+          "textRects": [
+            {
+              "left": 185.671875,
+              "right": 203.671875,
+              "top": 388.1875,
+              "bottom": 404.1875
+            },
+            {
+              "left": 203.671875,
+              "right": 249.6875,
+              "top": 387.1875,
+              "bottom": 407.1875
+            }
+          ],
+          "scrollWidth": 96,
+          "clientWidth": 96,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 269.6875,
+            "right": 370.8125,
+            "top": 377.1875,
+            "bottom": 417.1875,
+            "width": 101.125,
+            "height": 40
+          },
+          "parent": {
+            "left": 269.6875,
+            "right": 370.8125,
+            "top": 377.1875,
+            "bottom": 417.1875,
+            "width": 101.125,
+            "height": 40
+          },
+          "text": "Orders",
+          "textRects": [
+            {
+              "left": 285.6875,
+              "right": 303.6875,
+              "top": 388.1875,
+              "bottom": 404.1875
+            },
+            {
+              "left": 303.6875,
+              "right": 354.8125,
+              "top": 387.1875,
+              "bottom": 407.1875
+            }
+          ],
+          "scrollWidth": 101,
+          "clientWidth": 101,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 374.8125,
+            "right": 497.109375,
+            "top": 377.1875,
+            "bottom": 417.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 374.8125,
+            "right": 497.109375,
+            "top": 377.1875,
+            "bottom": 417.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 390.8125,
+              "right": 402.8125,
+              "top": 388.1875,
+              "bottom": 404.1875
+            },
+            {
+              "left": 402.8125,
+              "right": 481.109375,
+              "top": 387.1875,
+              "bottom": 407.1875
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 79,
+        "right": 155.640625,
+        "top": 451.40625,
+        "bottom": 480.96875,
+        "width": 76.640625,
+        "height": 29.5625
+      },
+      "rows": 1
+    },
+    {
+      "width": 1280,
+      "stress": true,
+      "method": "100% browser zoom",
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "clientWidth": 1280,
+      "identity": {
+        "box": {
+          "left": 82,
+          "right": 1198,
+          "top": 249.1875,
+          "bottom": 297.1875,
+          "width": 1116,
+          "height": 48
+        },
+        "parent": {
+          "left": 82,
+          "right": 1198,
+          "top": 249.1875,
+          "bottom": 389.1875,
+          "width": 1116,
+          "height": 140
+        },
+        "text": "Long customer identity XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX with several descriptive words for complete wrapping",
+        "textRects": [
+          {
+            "left": 82,
+            "right": 100,
+            "top": 252.1875,
+            "bottom": 268.1875
+          },
+          {
+            "left": 100,
+            "right": 1127.40625,
+            "top": 251.1875,
+            "bottom": 271.1875
+          },
+          {
+            "left": 82,
+            "right": 362.53125,
+            "top": 275.1875,
+            "bottom": 295.1875
+          }
+        ],
+        "scrollWidth": 1116,
+        "clientWidth": 1116,
+        "scrollHeight": 48,
+        "clientHeight": 48,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 82,
+        "right": 1198,
+        "top": 305.1875,
+        "bottom": 389.1875,
+        "width": 1116,
+        "height": 84
+      },
+      "links": [
+        {
+          "box": {
+            "left": 82,
+            "right": 185.671875,
+            "top": 305.1875,
+            "bottom": 345.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 82,
+            "right": 185.671875,
+            "top": 305.1875,
+            "bottom": 345.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 98,
+              "right": 116,
+              "top": 316.1875,
+              "bottom": 332.1875
+            },
+            {
+              "left": 116,
+              "right": 169.671875,
+              "top": 315.1875,
+              "bottom": 335.1875
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 189.671875,
+            "right": 921.484375,
+            "top": 305.1875,
+            "bottom": 345.1875,
+            "width": 731.8125,
+            "height": 40
+          },
+          "parent": {
+            "left": 189.671875,
+            "right": 921.484375,
+            "top": 305.1875,
+            "bottom": 345.1875,
+            "width": 731.8125,
+            "height": 40
+          },
+          "text": "Long multiword section label describing customer delivery instructions and historical order activity",
+          "textRects": [
+            {
+              "left": 205.671875,
+              "right": 223.671875,
+              "top": 316.1875,
+              "bottom": 332.1875
+            },
+            {
+              "left": 223.671875,
+              "right": 905.484375,
+              "top": 315.1875,
+              "bottom": 335.1875
+            }
+          ],
+          "scrollWidth": 732,
+          "clientWidth": 732,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 82,
+            "right": 937.78125,
+            "top": 349.1875,
+            "bottom": 389.1875,
+            "width": 855.78125,
+            "height": 40
+          },
+          "parent": {
+            "left": 82,
+            "right": 937.78125,
+            "top": 349.1875,
+            "bottom": 389.1875,
+            "width": 855.78125,
+            "height": 40
+          },
+          "text": "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+          "textRects": [
+            {
+              "left": 98,
+              "right": 116,
+              "top": 360.1875,
+              "bottom": 376.1875
+            },
+            {
+              "left": 116,
+              "right": 921.78125,
+              "top": 359.1875,
+              "bottom": 379.1875
+            }
+          ],
+          "scrollWidth": 856,
+          "clientWidth": 856,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 941.78125,
+            "right": 1064.078125,
+            "top": 349.1875,
+            "bottom": 389.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 941.78125,
+            "right": 1064.078125,
+            "top": 349.1875,
+            "bottom": 389.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 957.78125,
+              "right": 969.78125,
+              "top": 360.1875,
+              "bottom": 376.1875
+            },
+            {
+              "left": 969.78125,
+              "right": 1048.078125,
+              "top": 359.1875,
+              "bottom": 379.1875
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 99,
+        "right": 186.15625,
+        "top": 421.390625,
+        "bottom": 454.984375,
+        "width": 87.15625,
+        "height": 33.59375
+      },
+      "rows": 2
+    },
+    {
+      "width": 320,
+      "stress": true,
+      "method": "100% browser zoom",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "identity": {
+        "box": {
+          "left": 12,
+          "right": 308,
+          "top": 532.375,
+          "bottom": 652.375,
+          "width": 296,
+          "height": 120
+        },
+        "parent": {
+          "left": 12,
+          "right": 308,
+          "top": 532.375,
+          "bottom": 1000.375,
+          "width": 296,
+          "height": 468
+        },
+        "text": "Long customer identity XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX with several descriptive words for complete wrapping",
+        "textRects": [
+          {
+            "left": 12,
+            "right": 30,
+            "top": 535.375,
+            "bottom": 551.375
+          },
+          {
+            "left": 30,
+            "right": 188.5,
+            "top": 534.375,
+            "bottom": 554.375
+          },
+          {
+            "left": 12,
+            "right": 305.25,
+            "top": 558.375,
+            "bottom": 578.375
+          },
+          {
+            "left": 12,
+            "right": 305.25,
+            "top": 582.375,
+            "bottom": 602.375
+          },
+          {
+            "left": 12,
+            "right": 289.609375,
+            "top": 606.375,
+            "bottom": 626.375
+          },
+          {
+            "left": 12,
+            "right": 292.53125,
+            "top": 630.375,
+            "bottom": 650.375
+          }
+        ],
+        "scrollWidth": 296,
+        "clientWidth": 296,
+        "scrollHeight": 120,
+        "clientHeight": 120,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 12,
+        "right": 308,
+        "top": 660.375,
+        "bottom": 1000.375,
+        "width": 296,
+        "height": 340
+      },
+      "links": [
+        {
+          "box": {
+            "left": 12,
+            "right": 115.671875,
+            "top": 660.375,
+            "bottom": 700.375,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 12,
+            "right": 115.671875,
+            "top": 660.375,
+            "bottom": 700.375,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 671.375,
+              "bottom": 687.375
+            },
+            {
+              "left": 46,
+              "right": 99.671875,
+              "top": 670.375,
+              "bottom": 690.375
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 109, 252)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 12,
+            "right": 308,
+            "top": 704.375,
+            "bottom": 816.375,
+            "width": 296,
+            "height": 112
+          },
+          "parent": {
+            "left": 12,
+            "right": 308,
+            "top": 704.375,
+            "bottom": 816.375,
+            "width": 296,
+            "height": 112
+          },
+          "text": "Long multiword section label describing customer delivery instructions and historical order activity",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 715.375,
+              "bottom": 731.375
+            },
+            {
+              "left": 46,
+              "right": 245.375,
+              "top": 714.375,
+              "bottom": 734.375
+            },
+            {
+              "left": 28,
+              "right": 226.421875,
+              "top": 738.375,
+              "bottom": 758.375
+            },
+            {
+              "left": 28,
+              "right": 249.703125,
+              "top": 762.375,
+              "bottom": 782.375
+            },
+            {
+              "left": 28,
+              "right": 75.921875,
+              "top": 786.375,
+              "bottom": 806.375
+            }
+          ],
+          "scrollWidth": 296,
+          "clientWidth": 296,
+          "scrollHeight": 112,
+          "clientHeight": 112,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 12,
+            "right": 308,
+            "top": 820.375,
+            "bottom": 956.375,
+            "width": 296,
+            "height": 136
+          },
+          "parent": {
+            "left": 12,
+            "right": 308,
+            "top": 820.375,
+            "bottom": 956.375,
+            "width": 296,
+            "height": 136
+          },
+          "text": "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 831.375,
+              "bottom": 847.375
+            },
+            {
+              "left": 28,
+              "right": 287.640625,
+              "top": 854.375,
+              "bottom": 874.375
+            },
+            {
+              "left": 28,
+              "right": 287.640625,
+              "top": 878.375,
+              "bottom": 898.375
+            },
+            {
+              "left": 28,
+              "right": 287.640625,
+              "top": 902.375,
+              "bottom": 922.375
+            },
+            {
+              "left": 28,
+              "right": 54.859375,
+              "top": 926.375,
+              "bottom": 946.375
+            }
+          ],
+          "scrollWidth": 296,
+          "clientWidth": 296,
+          "scrollHeight": 136,
+          "clientHeight": 136,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 12,
+            "right": 134.296875,
+            "top": 960.375,
+            "bottom": 1000.375,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 12,
+            "right": 134.296875,
+            "top": 960.375,
+            "bottom": 1000.375,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 40,
+              "top": 971.375,
+              "bottom": 987.375
+            },
+            {
+              "left": 40,
+              "right": 118.296875,
+              "top": 970.375,
+              "bottom": 990.375
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 29,
+        "right": 99.734375,
+        "top": 1025.375,
+        "bottom": 1052.625,
+        "width": 70.734375,
+        "height": 27.25
+      },
+      "rows": 4
+    },
+    {
+      "width": 640,
+      "stress": true,
+      "method": "200% equivalent CSS reflow (1280/2), not deviceScaleFactor",
+      "viewport": 640,
+      "scrollWidth": 640,
+      "clientWidth": 640,
+      "identity": {
+        "box": {
+          "left": 62,
+          "right": 578,
+          "top": 345.1875,
+          "bottom": 441.1875,
+          "width": 516,
+          "height": 96
+        },
+        "parent": {
+          "left": 62,
+          "right": 578,
+          "top": 345.1875,
+          "bottom": 693.1875,
+          "width": 516,
+          "height": 348
+        },
+        "text": "Long customer identity XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX with several descriptive words for complete wrapping",
+        "textRects": [
+          {
+            "left": 62,
+            "right": 80,
+            "top": 348.1875,
+            "bottom": 364.1875
+          },
+          {
+            "left": 80,
+            "right": 238.5,
+            "top": 347.1875,
+            "bottom": 367.1875
+          },
+          {
+            "left": 62,
+            "right": 570.875,
+            "top": 371.1875,
+            "bottom": 391.1875
+          },
+          {
+            "left": 62,
+            "right": 566.765625,
+            "top": 395.1875,
+            "bottom": 415.1875
+          },
+          {
+            "left": 62,
+            "right": 193,
+            "top": 419.1875,
+            "bottom": 439.1875
+          }
+        ],
+        "scrollWidth": 516,
+        "clientWidth": 516,
+        "scrollHeight": 96,
+        "clientHeight": 96,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 62,
+        "right": 578,
+        "top": 449.1875,
+        "bottom": 693.1875,
+        "width": 516,
+        "height": 244
+      },
+      "links": [
+        {
+          "box": {
+            "left": 62,
+            "right": 165.671875,
+            "top": 449.1875,
+            "bottom": 489.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 62,
+            "right": 165.671875,
+            "top": 449.1875,
+            "bottom": 489.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 78,
+              "right": 96,
+              "top": 460.1875,
+              "bottom": 476.1875
+            },
+            {
+              "left": 96,
+              "right": 149.671875,
+              "top": 459.1875,
+              "bottom": 479.1875
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 109, 252)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 62,
+            "right": 578,
+            "top": 493.1875,
+            "bottom": 557.1875,
+            "width": 516,
+            "height": 64
+          },
+          "parent": {
+            "left": 62,
+            "right": 578,
+            "top": 493.1875,
+            "bottom": 557.1875,
+            "width": 516,
+            "height": 64
+          },
+          "text": "Long multiword section label describing customer delivery instructions and historical order activity",
+          "textRects": [
+            {
+              "left": 78,
+              "right": 96,
+              "top": 504.1875,
+              "bottom": 520.1875
+            },
+            {
+              "left": 96,
+              "right": 498.59375,
+              "top": 503.1875,
+              "bottom": 523.1875
+            },
+            {
+              "left": 78,
+              "right": 352.421875,
+              "top": 527.1875,
+              "bottom": 547.1875
+            }
+          ],
+          "scrollWidth": 516,
+          "clientWidth": 516,
+          "scrollHeight": 64,
+          "clientHeight": 64,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 62,
+            "right": 578,
+            "top": 561.1875,
+            "bottom": 649.1875,
+            "width": 516,
+            "height": 88
+          },
+          "parent": {
+            "left": 62,
+            "right": 578,
+            "top": 561.1875,
+            "bottom": 649.1875,
+            "width": 516,
+            "height": 88
+          },
+          "text": "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+          "textRects": [
+            {
+              "left": 78,
+              "right": 96,
+              "top": 572.1875,
+              "bottom": 588.1875
+            },
+            {
+              "left": 78,
+              "right": 561.46875,
+              "top": 595.1875,
+              "bottom": 615.1875
+            },
+            {
+              "left": 78,
+              "right": 400.3125,
+              "top": 619.1875,
+              "bottom": 639.1875
+            }
+          ],
+          "scrollWidth": 516,
+          "clientWidth": 516,
+          "scrollHeight": 88,
+          "clientHeight": 88,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 62,
+            "right": 184.296875,
+            "top": 653.1875,
+            "bottom": 693.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 62,
+            "right": 184.296875,
+            "top": 653.1875,
+            "bottom": 693.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 78,
+              "right": 90,
+              "top": 664.1875,
+              "bottom": 680.1875
+            },
+            {
+              "left": 90,
+              "right": 168.296875,
+              "top": 663.1875,
+              "bottom": 683.1875
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 79,
+        "right": 155.640625,
+        "top": 727.40625,
+        "bottom": 756.96875,
+        "width": 76.640625,
+        "height": 29.5625
+      },
+      "rows": 4
+    },
+    {
+      "width": 1280,
+      "stress": false,
+      "method": "Customer normal; 640 CSS px is 200% equivalent of 1280 baseline",
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "clientWidth": 1280,
+      "identity": {
+        "box": {
+          "left": 82,
+          "right": 1198,
+          "top": 249.1875,
+          "bottom": 273.1875,
+          "width": 1116,
+          "height": 24
+        },
+        "parent": {
+          "left": 82,
+          "right": 1198,
+          "top": 249.1875,
+          "bottom": 321.1875,
+          "width": 1116,
+          "height": 72
+        },
+        "text": "Acme Coffee",
+        "textRects": [
+          {
+            "left": 82,
+            "right": 100,
+            "top": 252.1875,
+            "bottom": 268.1875
+          },
+          {
+            "left": 100,
+            "right": 193.328125,
+            "top": 251.1875,
+            "bottom": 271.1875
+          }
+        ],
+        "scrollWidth": 1116,
+        "clientWidth": 1116,
+        "scrollHeight": 24,
+        "clientHeight": 24,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 82,
+        "right": 1198,
+        "top": 281.1875,
+        "bottom": 321.1875,
+        "width": 1116,
+        "height": 40
+      },
+      "links": [
+        {
+          "box": {
+            "left": 82,
+            "right": 185.671875,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 82,
+            "right": 185.671875,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 98,
+              "right": 116,
+              "top": 292.1875,
+              "bottom": 308.1875
+            },
+            {
+              "left": 116,
+              "right": 169.671875,
+              "top": 291.1875,
+              "bottom": 311.1875
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 189.671875,
+            "right": 285.6875,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 96.015625,
+            "height": 40
+          },
+          "parent": {
+            "left": 189.671875,
+            "right": 285.6875,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 96.015625,
+            "height": 40
+          },
+          "text": "Notes",
+          "textRects": [
+            {
+              "left": 205.671875,
+              "right": 223.671875,
+              "top": 292.1875,
+              "bottom": 308.1875
+            },
+            {
+              "left": 223.671875,
+              "right": 269.6875,
+              "top": 291.1875,
+              "bottom": 311.1875
+            }
+          ],
+          "scrollWidth": 96,
+          "clientWidth": 96,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 289.6875,
+            "right": 390.8125,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 101.125,
+            "height": 40
+          },
+          "parent": {
+            "left": 289.6875,
+            "right": 390.8125,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 101.125,
+            "height": 40
+          },
+          "text": "Orders",
+          "textRects": [
+            {
+              "left": 305.6875,
+              "right": 323.6875,
+              "top": 292.1875,
+              "bottom": 308.1875
+            },
+            {
+              "left": 323.6875,
+              "right": 374.8125,
+              "top": 291.1875,
+              "bottom": 311.1875
+            }
+          ],
+          "scrollWidth": 101,
+          "clientWidth": 101,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 394.8125,
+            "right": 517.109375,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 394.8125,
+            "right": 517.109375,
+            "top": 281.1875,
+            "bottom": 321.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 410.8125,
+              "right": 422.8125,
+              "top": 292.1875,
+              "bottom": 308.1875
+            },
+            {
+              "left": 422.8125,
+              "right": 501.109375,
+              "top": 291.1875,
+              "bottom": 311.1875
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 99,
+        "right": 256.890625,
+        "top": 353.390625,
+        "bottom": 386.984375,
+        "width": 157.890625,
+        "height": 33.59375
+      },
+      "rows": 1
+    },
+    {
+      "width": 320,
+      "stress": false,
+      "method": "Customer normal; 640 CSS px is 200% equivalent of 1280 baseline",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "identity": {
+        "box": {
+          "left": 12,
+          "right": 308,
+          "top": 508.375,
+          "bottom": 532.375,
+          "width": 296,
+          "height": 24
+        },
+        "parent": {
+          "left": 12,
+          "right": 308,
+          "top": 508.375,
+          "bottom": 624.375,
+          "width": 296,
+          "height": 116
+        },
+        "text": "Acme Coffee",
+        "textRects": [
+          {
+            "left": 12,
+            "right": 30,
+            "top": 511.375,
+            "bottom": 527.375
+          },
+          {
+            "left": 30,
+            "right": 123.328125,
+            "top": 510.375,
+            "bottom": 530.375
+          }
+        ],
+        "scrollWidth": 296,
+        "clientWidth": 296,
+        "scrollHeight": 24,
+        "clientHeight": 24,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 12,
+        "right": 308,
+        "top": 540.375,
+        "bottom": 624.375,
+        "width": 296,
+        "height": 84
+      },
+      "links": [
+        {
+          "box": {
+            "left": 12,
+            "right": 115.671875,
+            "top": 540.375,
+            "bottom": 580.375,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 12,
+            "right": 115.671875,
+            "top": 540.375,
+            "bottom": 580.375,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 551.375,
+              "bottom": 567.375
+            },
+            {
+              "left": 46,
+              "right": 99.671875,
+              "top": 550.375,
+              "bottom": 570.375
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 119.671875,
+            "right": 215.6875,
+            "top": 540.375,
+            "bottom": 580.375,
+            "width": 96.015625,
+            "height": 40
+          },
+          "parent": {
+            "left": 119.671875,
+            "right": 215.6875,
+            "top": 540.375,
+            "bottom": 580.375,
+            "width": 96.015625,
+            "height": 40
+          },
+          "text": "Notes",
+          "textRects": [
+            {
+              "left": 135.671875,
+              "right": 153.671875,
+              "top": 551.375,
+              "bottom": 567.375
+            },
+            {
+              "left": 153.671875,
+              "right": 199.6875,
+              "top": 550.375,
+              "bottom": 570.375
+            }
+          ],
+          "scrollWidth": 96,
+          "clientWidth": 96,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 12,
+            "right": 113.125,
+            "top": 584.375,
+            "bottom": 624.375,
+            "width": 101.125,
+            "height": 40
+          },
+          "parent": {
+            "left": 12,
+            "right": 113.125,
+            "top": 584.375,
+            "bottom": 624.375,
+            "width": 101.125,
+            "height": 40
+          },
+          "text": "Orders",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 595.375,
+              "bottom": 611.375
+            },
+            {
+              "left": 46,
+              "right": 97.125,
+              "top": 594.375,
+              "bottom": 614.375
+            }
+          ],
+          "scrollWidth": 101,
+          "clientWidth": 101,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 117.125,
+            "right": 239.421875,
+            "top": 584.375,
+            "bottom": 624.375,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 117.125,
+            "right": 239.421875,
+            "top": 584.375,
+            "bottom": 624.375,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 133.125,
+              "right": 145.125,
+              "top": 595.375,
+              "bottom": 611.375
+            },
+            {
+              "left": 145.125,
+              "right": 223.421875,
+              "top": 594.375,
+              "bottom": 614.375
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 29,
+        "right": 157.109375,
+        "top": 649.375,
+        "bottom": 676.625,
+        "width": 128.109375,
+        "height": 27.25
+      },
+      "rows": 2
+    },
+    {
+      "width": 640,
+      "stress": false,
+      "method": "Customer normal; 640 CSS px is 200% equivalent of 1280 baseline",
+      "viewport": 640,
+      "scrollWidth": 640,
+      "clientWidth": 640,
+      "identity": {
+        "box": {
+          "left": 62,
+          "right": 578,
+          "top": 321.1875,
+          "bottom": 345.1875,
+          "width": 516,
+          "height": 24
+        },
+        "parent": {
+          "left": 62,
+          "right": 578,
+          "top": 321.1875,
+          "bottom": 393.1875,
+          "width": 516,
+          "height": 72
+        },
+        "text": "Acme Coffee",
+        "textRects": [
+          {
+            "left": 62,
+            "right": 80,
+            "top": 324.1875,
+            "bottom": 340.1875
+          },
+          {
+            "left": 80,
+            "right": 173.328125,
+            "top": 323.1875,
+            "bottom": 343.1875
+          }
+        ],
+        "scrollWidth": 516,
+        "clientWidth": 516,
+        "scrollHeight": 24,
+        "clientHeight": 24,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 62,
+        "right": 578,
+        "top": 353.1875,
+        "bottom": 393.1875,
+        "width": 516,
+        "height": 40
+      },
+      "links": [
+        {
+          "box": {
+            "left": 62,
+            "right": 165.671875,
+            "top": 353.1875,
+            "bottom": 393.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 62,
+            "right": 165.671875,
+            "top": 353.1875,
+            "bottom": 393.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 78,
+              "right": 96,
+              "top": 364.1875,
+              "bottom": 380.1875
+            },
+            {
+              "left": 96,
+              "right": 149.671875,
+              "top": 363.1875,
+              "bottom": 383.1875
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 169.671875,
+            "right": 265.6875,
+            "top": 353.1875,
+            "bottom": 393.1875,
+            "width": 96.015625,
+            "height": 40
+          },
+          "parent": {
+            "left": 169.671875,
+            "right": 265.6875,
+            "top": 353.1875,
+            "bottom": 393.1875,
+            "width": 96.015625,
+            "height": 40
+          },
+          "text": "Notes",
+          "textRects": [
+            {
+              "left": 185.671875,
+              "right": 203.671875,
+              "top": 364.1875,
+              "bottom": 380.1875
+            },
+            {
+              "left": 203.671875,
+              "right": 249.6875,
+              "top": 363.1875,
+              "bottom": 383.1875
+            }
+          ],
+          "scrollWidth": 96,
+          "clientWidth": 96,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 269.6875,
+            "right": 370.8125,
+            "top": 353.1875,
+            "bottom": 393.1875,
+            "width": 101.125,
+            "height": 40
+          },
+          "parent": {
+            "left": 269.6875,
+            "right": 370.8125,
+            "top": 353.1875,
+            "bottom": 393.1875,
+            "width": 101.125,
+            "height": 40
+          },
+          "text": "Orders",
+          "textRects": [
+            {
+              "left": 285.6875,
+              "right": 303.6875,
+              "top": 364.1875,
+              "bottom": 380.1875
+            },
+            {
+              "left": 303.6875,
+              "right": 354.8125,
+              "top": 363.1875,
+              "bottom": 383.1875
+            }
+          ],
+          "scrollWidth": 101,
+          "clientWidth": 101,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 374.8125,
+            "right": 497.109375,
+            "top": 353.1875,
+            "bottom": 393.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 374.8125,
+            "right": 497.109375,
+            "top": 353.1875,
+            "bottom": 393.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 390.8125,
+              "right": 402.8125,
+              "top": 364.1875,
+              "bottom": 380.1875
+            },
+            {
+              "left": 402.8125,
+              "right": 481.109375,
+              "top": 363.1875,
+              "bottom": 383.1875
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 79,
+        "right": 217.859375,
+        "top": 427.40625,
+        "bottom": 456.96875,
+        "width": 138.859375,
+        "height": 29.5625
+      },
+      "rows": 1
+    },
+    {
+      "width": 1280,
+      "stress": true,
+      "method": "Customer stress; 640 CSS px is 200% equivalent of 1280 baseline",
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "clientWidth": 1280,
+      "identity": {
+        "box": {
+          "left": 82,
+          "right": 1198,
+          "top": 249.1875,
+          "bottom": 297.1875,
+          "width": 1116,
+          "height": 48
+        },
+        "parent": {
+          "left": 82,
+          "right": 1198,
+          "top": 249.1875,
+          "bottom": 389.1875,
+          "width": 1116,
+          "height": 140
+        },
+        "text": "Long customer identity XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX with several descriptive words for complete wrapping",
+        "textRects": [
+          {
+            "left": 82,
+            "right": 100,
+            "top": 252.1875,
+            "bottom": 268.1875
+          },
+          {
+            "left": 100,
+            "right": 1127.40625,
+            "top": 251.1875,
+            "bottom": 271.1875
+          },
+          {
+            "left": 82,
+            "right": 362.53125,
+            "top": 275.1875,
+            "bottom": 295.1875
+          }
+        ],
+        "scrollWidth": 1116,
+        "clientWidth": 1116,
+        "scrollHeight": 48,
+        "clientHeight": 48,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 82,
+        "right": 1198,
+        "top": 305.1875,
+        "bottom": 389.1875,
+        "width": 1116,
+        "height": 84
+      },
+      "links": [
+        {
+          "box": {
+            "left": 82,
+            "right": 185.671875,
+            "top": 305.1875,
+            "bottom": 345.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 82,
+            "right": 185.671875,
+            "top": 305.1875,
+            "bottom": 345.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 98,
+              "right": 116,
+              "top": 316.1875,
+              "bottom": 332.1875
+            },
+            {
+              "left": 116,
+              "right": 169.671875,
+              "top": 315.1875,
+              "bottom": 335.1875
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 189.671875,
+            "right": 921.484375,
+            "top": 305.1875,
+            "bottom": 345.1875,
+            "width": 731.8125,
+            "height": 40
+          },
+          "parent": {
+            "left": 189.671875,
+            "right": 921.484375,
+            "top": 305.1875,
+            "bottom": 345.1875,
+            "width": 731.8125,
+            "height": 40
+          },
+          "text": "Long multiword section label describing customer delivery instructions and historical order activity",
+          "textRects": [
+            {
+              "left": 205.671875,
+              "right": 223.671875,
+              "top": 316.1875,
+              "bottom": 332.1875
+            },
+            {
+              "left": 223.671875,
+              "right": 905.484375,
+              "top": 315.1875,
+              "bottom": 335.1875
+            }
+          ],
+          "scrollWidth": 732,
+          "clientWidth": 732,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 82,
+            "right": 937.78125,
+            "top": 349.1875,
+            "bottom": 389.1875,
+            "width": 855.78125,
+            "height": 40
+          },
+          "parent": {
+            "left": 82,
+            "right": 937.78125,
+            "top": 349.1875,
+            "bottom": 389.1875,
+            "width": 855.78125,
+            "height": 40
+          },
+          "text": "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+          "textRects": [
+            {
+              "left": 98,
+              "right": 116,
+              "top": 360.1875,
+              "bottom": 376.1875
+            },
+            {
+              "left": 116,
+              "right": 921.78125,
+              "top": 359.1875,
+              "bottom": 379.1875
+            }
+          ],
+          "scrollWidth": 856,
+          "clientWidth": 856,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 941.78125,
+            "right": 1064.078125,
+            "top": 349.1875,
+            "bottom": 389.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 941.78125,
+            "right": 1064.078125,
+            "top": 349.1875,
+            "bottom": 389.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 957.78125,
+              "right": 969.78125,
+              "top": 360.1875,
+              "bottom": 376.1875
+            },
+            {
+              "left": 969.78125,
+              "right": 1048.078125,
+              "top": 359.1875,
+              "bottom": 379.1875
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 99,
+        "right": 256.890625,
+        "top": 421.390625,
+        "bottom": 454.984375,
+        "width": 157.890625,
+        "height": 33.59375
+      },
+      "rows": 2
+    },
+    {
+      "width": 320,
+      "stress": true,
+      "method": "Customer stress; 640 CSS px is 200% equivalent of 1280 baseline",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "identity": {
+        "box": {
+          "left": 12,
+          "right": 308,
+          "top": 508.375,
+          "bottom": 628.375,
+          "width": 296,
+          "height": 120
+        },
+        "parent": {
+          "left": 12,
+          "right": 308,
+          "top": 508.375,
+          "bottom": 976.375,
+          "width": 296,
+          "height": 468
+        },
+        "text": "Long customer identity XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX with several descriptive words for complete wrapping",
+        "textRects": [
+          {
+            "left": 12,
+            "right": 30,
+            "top": 511.375,
+            "bottom": 527.375
+          },
+          {
+            "left": 30,
+            "right": 188.5,
+            "top": 510.375,
+            "bottom": 530.375
+          },
+          {
+            "left": 12,
+            "right": 305.25,
+            "top": 534.375,
+            "bottom": 554.375
+          },
+          {
+            "left": 12,
+            "right": 305.25,
+            "top": 558.375,
+            "bottom": 578.375
+          },
+          {
+            "left": 12,
+            "right": 289.609375,
+            "top": 582.375,
+            "bottom": 602.375
+          },
+          {
+            "left": 12,
+            "right": 292.53125,
+            "top": 606.375,
+            "bottom": 626.375
+          }
+        ],
+        "scrollWidth": 296,
+        "clientWidth": 296,
+        "scrollHeight": 120,
+        "clientHeight": 120,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 12,
+        "right": 308,
+        "top": 636.375,
+        "bottom": 976.375,
+        "width": 296,
+        "height": 340
+      },
+      "links": [
+        {
+          "box": {
+            "left": 12,
+            "right": 115.671875,
+            "top": 636.375,
+            "bottom": 676.375,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 12,
+            "right": 115.671875,
+            "top": 636.375,
+            "bottom": 676.375,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 647.375,
+              "bottom": 663.375
+            },
+            {
+              "left": 46,
+              "right": 99.671875,
+              "top": 646.375,
+              "bottom": 666.375
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 12,
+            "right": 308,
+            "top": 680.375,
+            "bottom": 792.375,
+            "width": 296,
+            "height": 112
+          },
+          "parent": {
+            "left": 12,
+            "right": 308,
+            "top": 680.375,
+            "bottom": 792.375,
+            "width": 296,
+            "height": 112
+          },
+          "text": "Long multiword section label describing customer delivery instructions and historical order activity",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 691.375,
+              "bottom": 707.375
+            },
+            {
+              "left": 46,
+              "right": 245.375,
+              "top": 690.375,
+              "bottom": 710.375
+            },
+            {
+              "left": 28,
+              "right": 226.421875,
+              "top": 714.375,
+              "bottom": 734.375
+            },
+            {
+              "left": 28,
+              "right": 249.703125,
+              "top": 738.375,
+              "bottom": 758.375
+            },
+            {
+              "left": 28,
+              "right": 75.921875,
+              "top": 762.375,
+              "bottom": 782.375
+            }
+          ],
+          "scrollWidth": 296,
+          "clientWidth": 296,
+          "scrollHeight": 112,
+          "clientHeight": 112,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 12,
+            "right": 308,
+            "top": 796.375,
+            "bottom": 932.375,
+            "width": 296,
+            "height": 136
+          },
+          "parent": {
+            "left": 12,
+            "right": 308,
+            "top": 796.375,
+            "bottom": 932.375,
+            "width": 296,
+            "height": 136
+          },
+          "text": "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 46,
+              "top": 807.375,
+              "bottom": 823.375
+            },
+            {
+              "left": 28,
+              "right": 287.640625,
+              "top": 830.375,
+              "bottom": 850.375
+            },
+            {
+              "left": 28,
+              "right": 287.640625,
+              "top": 854.375,
+              "bottom": 874.375
+            },
+            {
+              "left": 28,
+              "right": 287.640625,
+              "top": 878.375,
+              "bottom": 898.375
+            },
+            {
+              "left": 28,
+              "right": 54.859375,
+              "top": 902.375,
+              "bottom": 922.375
+            }
+          ],
+          "scrollWidth": 296,
+          "clientWidth": 296,
+          "scrollHeight": 136,
+          "clientHeight": 136,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 12,
+            "right": 134.296875,
+            "top": 936.375,
+            "bottom": 976.375,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 12,
+            "right": 134.296875,
+            "top": 936.375,
+            "bottom": 976.375,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 28,
+              "right": 40,
+              "top": 947.375,
+              "bottom": 963.375
+            },
+            {
+              "left": 40,
+              "right": 118.296875,
+              "top": 946.375,
+              "bottom": 966.375
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 29,
+        "right": 157.109375,
+        "top": 1001.375,
+        "bottom": 1028.625,
+        "width": 128.109375,
+        "height": 27.25
+      },
+      "rows": 4
+    },
+    {
+      "width": 640,
+      "stress": true,
+      "method": "Customer stress; 640 CSS px is 200% equivalent of 1280 baseline",
+      "viewport": 640,
+      "scrollWidth": 640,
+      "clientWidth": 640,
+      "identity": {
+        "box": {
+          "left": 62,
+          "right": 578,
+          "top": 321.1875,
+          "bottom": 417.1875,
+          "width": 516,
+          "height": 96
+        },
+        "parent": {
+          "left": 62,
+          "right": 578,
+          "top": 321.1875,
+          "bottom": 669.1875,
+          "width": 516,
+          "height": 348
+        },
+        "text": "Long customer identity XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX with several descriptive words for complete wrapping",
+        "textRects": [
+          {
+            "left": 62,
+            "right": 80,
+            "top": 324.1875,
+            "bottom": 340.1875
+          },
+          {
+            "left": 80,
+            "right": 238.5,
+            "top": 323.1875,
+            "bottom": 343.1875
+          },
+          {
+            "left": 62,
+            "right": 570.875,
+            "top": 347.1875,
+            "bottom": 367.1875
+          },
+          {
+            "left": 62,
+            "right": 566.765625,
+            "top": 371.1875,
+            "bottom": 391.1875
+          },
+          {
+            "left": 62,
+            "right": 193,
+            "top": 395.1875,
+            "bottom": 415.1875
+          }
+        ],
+        "scrollWidth": 516,
+        "clientWidth": 516,
+        "scrollHeight": 96,
+        "clientHeight": 96,
+        "overflow": "visible",
+        "textOverflow": "clip",
+        "whiteSpace": "normal",
+        "display": "block",
+        "visibility": "visible",
+        "color": "rgb(33, 37, 41)",
+        "background": "rgba(0, 0, 0, 0)",
+        "fontSize": "16px"
+      },
+      "nav": {
+        "left": 62,
+        "right": 578,
+        "top": 425.1875,
+        "bottom": 669.1875,
+        "width": 516,
+        "height": 244
+      },
+      "links": [
+        {
+          "box": {
+            "left": 62,
+            "right": 165.671875,
+            "top": 425.1875,
+            "bottom": 465.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "parent": {
+            "left": 62,
+            "right": 165.671875,
+            "top": 425.1875,
+            "bottom": 465.1875,
+            "width": 103.671875,
+            "height": 40
+          },
+          "text": "Details",
+          "textRects": [
+            {
+              "left": 78,
+              "right": 96,
+              "top": 436.1875,
+              "bottom": 452.1875
+            },
+            {
+              "left": 96,
+              "right": 149.671875,
+              "top": 435.1875,
+              "bottom": 455.1875
+            }
+          ],
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(13, 110, 253)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 62,
+            "right": 578,
+            "top": 469.1875,
+            "bottom": 533.1875,
+            "width": 516,
+            "height": 64
+          },
+          "parent": {
+            "left": 62,
+            "right": 578,
+            "top": 469.1875,
+            "bottom": 533.1875,
+            "width": 516,
+            "height": 64
+          },
+          "text": "Long multiword section label describing customer delivery instructions and historical order activity",
+          "textRects": [
+            {
+              "left": 78,
+              "right": 96,
+              "top": 480.1875,
+              "bottom": 496.1875
+            },
+            {
+              "left": 96,
+              "right": 498.59375,
+              "top": 479.1875,
+              "bottom": 499.1875
+            },
+            {
+              "left": 78,
+              "right": 352.421875,
+              "top": 503.1875,
+              "bottom": 523.1875
+            }
+          ],
+          "scrollWidth": 516,
+          "clientWidth": 516,
+          "scrollHeight": 64,
+          "clientHeight": 64,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 62,
+            "right": 578,
+            "top": 537.1875,
+            "bottom": 625.1875,
+            "width": 516,
+            "height": 88
+          },
+          "parent": {
+            "left": 62,
+            "right": 578,
+            "top": 537.1875,
+            "bottom": 625.1875,
+            "width": 516,
+            "height": 88
+          },
+          "text": "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+          "textRects": [
+            {
+              "left": 78,
+              "right": 96,
+              "top": 548.1875,
+              "bottom": 564.1875
+            },
+            {
+              "left": 78,
+              "right": 561.46875,
+              "top": 571.1875,
+              "bottom": 591.1875
+            },
+            {
+              "left": 78,
+              "right": 400.3125,
+              "top": 595.1875,
+              "bottom": 615.1875
+            }
+          ],
+          "scrollWidth": 516,
+          "clientWidth": 516,
+          "scrollHeight": 88,
+          "clientHeight": 88,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        },
+        {
+          "box": {
+            "left": 62,
+            "right": 184.296875,
+            "top": 629.1875,
+            "bottom": 669.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "parent": {
+            "left": 62,
+            "right": 184.296875,
+            "top": 629.1875,
+            "bottom": 669.1875,
+            "width": 122.296875,
+            "height": 40
+          },
+          "text": "Addresses",
+          "textRects": [
+            {
+              "left": 78,
+              "right": 90,
+              "top": 640.1875,
+              "bottom": 656.1875
+            },
+            {
+              "left": 90,
+              "right": 168.296875,
+              "top": 639.1875,
+              "bottom": 659.1875
+            }
+          ],
+          "scrollWidth": 122,
+          "clientWidth": 122,
+          "scrollHeight": 40,
+          "clientHeight": 40,
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal",
+          "display": "block",
+          "visibility": "visible",
+          "color": "rgb(13, 110, 253)",
+          "background": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px"
+        }
+      ],
+      "header": {
+        "left": 79,
+        "right": 217.859375,
+        "top": 703.40625,
+        "bottom": 732.96875,
+        "width": 138.859375,
+        "height": 29.5625
+      },
+      "rows": 4
+    }
+  ],
+  "keyboard": [
+    {
+      "text": "Details",
+      "outline": "0px none rgb(13, 110, 253)",
+      "shadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px",
+      "visible": true
+    },
+    {
+      "text": "Notes",
+      "outline": "0px none rgb(13, 110, 253)",
+      "shadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px",
+      "visible": true
+    },
+    {
+      "text": "Orders",
+      "outline": "0px none rgb(255, 255, 255)",
+      "shadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px",
+      "visible": true
+    },
+    {
+      "text": "Addresses",
+      "outline": "0px none rgb(13, 110, 253)",
+      "shadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px",
+      "visible": true
+    }
+  ],
+  "assertions": [
+    "exact href: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+    "full document: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+    "ordered visible links: Details, Notes, Orders, Addresses",
+    "accessible landmark name",
+    "current section: Details",
+    "ordinary links without tabs",
+    "stable plain owner caption",
+    "320/false: no page horizontal overflow (320/320)",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320px links wrap into rows",
+    "layout B above original header",
+    "exact href: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/notes/",
+    "full document: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/notes/",
+    "ordered visible links: Details, Notes, Orders, Addresses",
+    "accessible landmark name",
+    "current section: Notes",
+    "ordinary links without tabs",
+    "stable plain owner caption",
+    "exact href: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/",
+    "full document: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/",
+    "ordered visible links: Details, Notes, Orders, Addresses",
+    "accessible landmark name",
+    "current section: Orders",
+    "ordinary links without tabs",
+    "stable plain owner caption",
+    "exact href: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/505/navbar_item/",
+    "full document: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/505/navbar_item/",
+    "exact href: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/505/navbar_item/707/detail/",
+    "full document: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/505/navbar_item/707/detail/",
+    "ordered visible links: Details, Notes, Orders, Addresses",
+    "accessible landmark name",
+    "current section: Orders",
+    "ordinary links without tabs",
+    "stable plain owner caption",
+    "Item uses identical Customer/Tenant section hrefs",
+    "1280/false: no page horizontal overflow (1280/1280)",
+    "1280/false: element inside parent",
+    "1280/false: text not clipped",
+    "1280/false: visible complete text",
+    "1280/false: text rects within box",
+    "1280/false: element inside parent",
+    "1280/false: text not clipped",
+    "1280/false: visible complete text",
+    "1280/false: text rects within box",
+    "1280/false: element inside parent",
+    "1280/false: text not clipped",
+    "1280/false: visible complete text",
+    "1280/false: text rects within box",
+    "1280/false: element inside parent",
+    "1280/false: text not clipped",
+    "1280/false: visible complete text",
+    "1280/false: text rects within box",
+    "1280/false: element inside parent",
+    "1280/false: text not clipped",
+    "1280/false: visible complete text",
+    "1280/false: text rects within box",
+    "layout B above original header",
+    "320/false: no page horizontal overflow (320/320)",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320px links wrap into rows",
+    "layout B above original header",
+    "640/false: no page horizontal overflow (640/640)",
+    "640/false: element inside parent",
+    "640/false: text not clipped",
+    "640/false: visible complete text",
+    "640/false: text rects within box",
+    "640/false: element inside parent",
+    "640/false: text not clipped",
+    "640/false: visible complete text",
+    "640/false: text rects within box",
+    "640/false: element inside parent",
+    "640/false: text not clipped",
+    "640/false: visible complete text",
+    "640/false: text rects within box",
+    "640/false: element inside parent",
+    "640/false: text not clipped",
+    "640/false: visible complete text",
+    "640/false: text rects within box",
+    "640/false: element inside parent",
+    "640/false: text not clipped",
+    "640/false: visible complete text",
+    "640/false: text rects within box",
+    "layout B above original header",
+    "Tab reaches Details",
+    "Tab reaches Notes",
+    "Tab reaches Orders",
+    "Tab reaches Addresses",
+    "Shift+Tab reaches Orders",
+    "Shift+Tab reaches Notes",
+    "Shift+Tab reaches Details",
+    "caption/icons add no focus stops",
+    "actual Bootstrap link text contrast >=4.5:1",
+    "1280/true: no page horizontal overflow (1280/1280)",
+    "1280/true: element inside parent",
+    "1280/true: text not clipped",
+    "1280/true: visible complete text",
+    "1280/true: text rects within box",
+    "1280/true: element inside parent",
+    "1280/true: text not clipped",
+    "1280/true: visible complete text",
+    "1280/true: text rects within box",
+    "1280/true: element inside parent",
+    "1280/true: text not clipped",
+    "1280/true: visible complete text",
+    "1280/true: text rects within box",
+    "1280/true: element inside parent",
+    "1280/true: text not clipped",
+    "1280/true: visible complete text",
+    "1280/true: text rects within box",
+    "1280/true: element inside parent",
+    "1280/true: text not clipped",
+    "1280/true: visible complete text",
+    "1280/true: text rects within box",
+    "320/true: no page horizontal overflow (320/320)",
+    "320/true: element inside parent",
+    "320/true: text not clipped",
+    "320/true: visible complete text",
+    "320/true: text rects within box",
+    "320/true: element inside parent",
+    "320/true: text not clipped",
+    "320/true: visible complete text",
+    "320/true: text rects within box",
+    "320/true: element inside parent",
+    "320/true: text not clipped",
+    "320/true: visible complete text",
+    "320/true: text rects within box",
+    "320/true: element inside parent",
+    "320/true: text not clipped",
+    "320/true: visible complete text",
+    "320/true: text rects within box",
+    "320/true: element inside parent",
+    "320/true: text not clipped",
+    "320/true: visible complete text",
+    "320/true: text rects within box",
+    "320px links wrap into rows",
+    "640/true: no page horizontal overflow (640/640)",
+    "640/true: element inside parent",
+    "640/true: text not clipped",
+    "640/true: visible complete text",
+    "640/true: text rects within box",
+    "640/true: element inside parent",
+    "640/true: text not clipped",
+    "640/true: visible complete text",
+    "640/true: text rects within box",
+    "640/true: element inside parent",
+    "640/true: text not clipped",
+    "640/true: visible complete text",
+    "640/true: text rects within box",
+    "640/true: element inside parent",
+    "640/true: text not clipped",
+    "640/true: visible complete text",
+    "640/true: text rects within box",
+    "640/true: element inside parent",
+    "640/true: text not clipped",
+    "640/true: visible complete text",
+    "640/true: text rects within box",
+    "visible keyboard focus on narrow wrapped link",
+    "Enter activates clickable current section with full document",
+    "exact href: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+    "full document: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+    "1280/false: no page horizontal overflow (1280/1280)",
+    "1280/false: element inside parent",
+    "1280/false: text not clipped",
+    "1280/false: visible complete text",
+    "1280/false: text rects within box",
+    "1280/false: element inside parent",
+    "1280/false: text not clipped",
+    "1280/false: visible complete text",
+    "1280/false: text rects within box",
+    "1280/false: element inside parent",
+    "1280/false: text not clipped",
+    "1280/false: visible complete text",
+    "1280/false: text rects within box",
+    "1280/false: element inside parent",
+    "1280/false: text not clipped",
+    "1280/false: visible complete text",
+    "1280/false: text rects within box",
+    "1280/false: element inside parent",
+    "1280/false: text not clipped",
+    "1280/false: visible complete text",
+    "1280/false: text rects within box",
+    "layout B above original header",
+    "320/false: no page horizontal overflow (320/320)",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320/false: element inside parent",
+    "320/false: text not clipped",
+    "320/false: visible complete text",
+    "320/false: text rects within box",
+    "320px links wrap into rows",
+    "layout B above original header",
+    "640/false: no page horizontal overflow (640/640)",
+    "640/false: element inside parent",
+    "640/false: text not clipped",
+    "640/false: visible complete text",
+    "640/false: text rects within box",
+    "640/false: element inside parent",
+    "640/false: text not clipped",
+    "640/false: visible complete text",
+    "640/false: text rects within box",
+    "640/false: element inside parent",
+    "640/false: text not clipped",
+    "640/false: visible complete text",
+    "640/false: text rects within box",
+    "640/false: element inside parent",
+    "640/false: text not clipped",
+    "640/false: visible complete text",
+    "640/false: text rects within box",
+    "640/false: element inside parent",
+    "640/false: text not clipped",
+    "640/false: visible complete text",
+    "640/false: text rects within box",
+    "layout B above original header",
+    "1280/true: no page horizontal overflow (1280/1280)",
+    "1280/true: element inside parent",
+    "1280/true: text not clipped",
+    "1280/true: visible complete text",
+    "1280/true: text rects within box",
+    "1280/true: element inside parent",
+    "1280/true: text not clipped",
+    "1280/true: visible complete text",
+    "1280/true: text rects within box",
+    "1280/true: element inside parent",
+    "1280/true: text not clipped",
+    "1280/true: visible complete text",
+    "1280/true: text rects within box",
+    "1280/true: element inside parent",
+    "1280/true: text not clipped",
+    "1280/true: visible complete text",
+    "1280/true: text rects within box",
+    "1280/true: element inside parent",
+    "1280/true: text not clipped",
+    "1280/true: visible complete text",
+    "1280/true: text rects within box",
+    "320/true: no page horizontal overflow (320/320)",
+    "320/true: element inside parent",
+    "320/true: text not clipped",
+    "320/true: visible complete text",
+    "320/true: text rects within box",
+    "320/true: element inside parent",
+    "320/true: text not clipped",
+    "320/true: visible complete text",
+    "320/true: text rects within box",
+    "320/true: element inside parent",
+    "320/true: text not clipped",
+    "320/true: visible complete text",
+    "320/true: text rects within box",
+    "320/true: element inside parent",
+    "320/true: text not clipped",
+    "320/true: visible complete text",
+    "320/true: text rects within box",
+    "320/true: element inside parent",
+    "320/true: text not clipped",
+    "320/true: visible complete text",
+    "320/true: text rects within box",
+    "320px links wrap into rows",
+    "640/true: no page horizontal overflow (640/640)",
+    "640/true: element inside parent",
+    "640/true: text not clipped",
+    "640/true: visible complete text",
+    "640/true: text rects within box",
+    "640/true: element inside parent",
+    "640/true: text not clipped",
+    "640/true: visible complete text",
+    "640/true: text rects within box",
+    "640/true: element inside parent",
+    "640/true: text not clipped",
+    "640/true: visible complete text",
+    "640/true: text rects within box",
+    "640/true: element inside parent",
+    "640/true: text not clipped",
+    "640/true: visible complete text",
+    "640/true: text rects within box",
+    "640/true: element inside parent",
+    "640/true: text not clipped",
+    "640/true: visible complete text",
+    "640/true: text rects within box",
+    "exact href: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+    "full document: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+    "ordered visible links: Details, Notes, Orders",
+    "accessible landmark name",
+    "current section: Details",
+    "ordinary links without tabs",
+    "stable plain owner caption",
+    "exact href: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/",
+    "full document: http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/",
+    "ordered visible links: Details, Notes, Orders",
+    "accessible landmark name",
+    "current section: Orders",
+    "ordinary links without tabs",
+    "stable plain owner caption",
+    "no fetch/XHR navbar navigation",
+    "all requested assets loaded"
+  ],
+  "failures": [],
+  "ownerHrefs": [
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/notes/",
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/",
+    "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_address/"
+  ],
+  "contrast": [
+    {
+      "text": "Details",
+      "color": "rgb(13, 110, 253)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundUsed": "rgb(255, 255, 255)",
+      "ratio": 4.500782787406787
+    },
+    {
+      "text": "Notes",
+      "color": "rgb(13, 110, 253)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundUsed": "rgb(255, 255, 255)",
+      "ratio": 4.500782787406787
+    },
+    {
+      "text": "Orders",
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(13, 110, 253)",
+      "backgroundUsed": "rgb(13, 110, 253)",
+      "ratio": 4.500782787406787
+    },
+    {
+      "text": "Addresses",
+      "color": "rgb(13, 110, 253)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundUsed": "rgb(255, 255, 255)",
+      "ratio": 4.500782787406787
+    }
+  ],
+  "stress": {
+    "caption": "Long customer identity XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX with several descriptive words for complete wrapping",
+    "label": "Long multiword section label describing customer delivery instructions and historical order activity",
+    "token": "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+  },
+  "narrowFocus": {
+    "visible": true,
+    "outline": "0px none rgb(13, 110, 253)",
+    "shadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px"
+  },
+  "requests": [
+    {
+      "url": "http://127.0.0.1:9000/login/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/login/",
+      "type": "document"
+    },
+    {
+      "url": "http://127.0.0.1:9000/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/object-navbar/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/navbar_demo/reflow.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/navbar_demo/reflow.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/notes/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/navbar_demo/reflow.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/navbar_demo/reflow.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/505/navbar_item/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/navbar_demo/reflow.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/505/navbar_item/707/detail/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/navbar_demo/reflow.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/navbar_demo/reflow.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/navbar_demo/reflow.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/login/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/login/",
+      "type": "document"
+    },
+    {
+      "url": "http://127.0.0.1:9000/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/object-navbar/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/navbar_demo/reflow.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/detail/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/navbar_demo/reflow.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    },
+    {
+      "url": "http://127.0.0.1:9000/object-navbar/navbar_tenant/101/navbar_customer/303/navbar_order/",
+      "type": "document"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "type": "script"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://code.jquery.com/jquery-3.7.1.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/property.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/table.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/formset.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/icons.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/css/manage.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/adapters.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/viewset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/formset.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/list.filter.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/modal.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/toggle.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/tooltip.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views/js/manage.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/crud_views_object_detail/js/tabs.js",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:9000/static/navbar_demo/reflow.css",
+      "type": "stylesheet"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-brands-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-regular-400.woff2",
+      "type": "font"
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "type": "font"
+    }
+  ],
+  "failedRequests": [],
+  "status": "passed",
+  "source_revision": "7ccee139b53dbf53e1f62cb2a247bf2736775efe",
+  "runtime": "Native mcp__playwright__browser_run_code_unsafe; cached Chromium1255 via temporary owned /opt/google/chrome/chrome wrapper, --no-sandbox required by host",
+  "lifecycle_orchestration": "functions.exec try/finally starts BROWSER-LIFECYCLE.py, waits for READY, invokes native browser tool, then closes stdin (or SIGINT for deliberate failure). Python finally terminates/awaits only its own server and removes only exclusively-created paths.",
+  "harness_notes": [
+    "Port8765 occupied; existing listener3729912 preserved. User requested9000; free listener probe before successful run.",
+    "Fresh isolated browser contexts per login avoid stale-context native-tool input timeouts; every attempted lifecycle cleaned its owned paths/process.",
+    "Before demo-only CSS fix, Customer and Item document scrollWidth410 at320; source filename accordion overflow397/294px and Customer header action right342px. Final measurements pass."
+  ],
+  "screenshots": [
+    "06.40-desktop.png",
+    "06.40-narrow-focus.png"
+  ],
+  "cleanup": {
+    "success": {
+      "run": "success",
+      "settings": "/home/alex/projects/alex/django-crud-views/.pytest_cache/navbar_browser_settings.py",
+      "pid": 779345,
+      "port": 9000,
+      "directory": "/tmp/cv08-browser-7x4d9649",
+      "server_exit": -15,
+      "port_released": true,
+      "settings_removed": true,
+      "database_removed": true,
+      "bytecode_absent": true
+    },
+    "deliberate-failure": {
+      "run": "deliberate-failure",
+      "settings": "/home/alex/projects/alex/django-crud-views/.pytest_cache/navbar_browser_settings.py",
+      "pid": 778821,
+      "port": 9000,
+      "directory": "/tmp/cv08-browser-hdke85pa",
+      "interruption_or_error": "KeyboardInterrupt('signal 2')",
+      "server_exit": -15,
+      "port_released": true,
+      "settings_removed": true,
+      "database_removed": true,
+      "bytecode_absent": true
+    }
+  },
+  "chrome_path_cleanup": "Owned wrapper, symlink and directories removed after closing native page; installed Chromium cache unchanged."
+}

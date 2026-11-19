@@ -1,0 +1,33 @@
+{
+  "review_cycle": 2,
+  "reviewed_head": "0ed46a400654bedb99b17f7bf112f1b3a1edc681",
+  "prompt_sha256": "4389d7ea94fd6915e1fa2c30deb291fc7de4f2d68f47137d24ca75bfa4fee742",
+  "prompt_bytes": 462327,
+  "selection": "Configured review.default_reviewers; no flags or substituted models",
+  "parallel": "review.parallel_lanes=true",
+  "runner": "review-lane invoke through configured instance adapter/model/as; installed runtime rejects documented --json flag, so native JSON default used",
+  "input_hashes": {
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md": "81d96508258f04b93263c4bb4b7ad063f22a342d525a61cf1994800432d08763",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-02-PLAN.md": "7b80908638636ef280ccce8fa07ef9a1f263fea617291ff19bf434d55305b1da",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-03-PLAN.md": "83923aa6fe5f67d40e4e8c7000e4008de5f822b897a8b3e862addaecddd8aa0f",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-04-PLAN.md": "60ba822f59753747eeb85a1234049eed9d078e847580fe2ecf65f342b8261cf1",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-05-PLAN.md": "20278c323b0ede991e8fddc8fedb07d5e3666689da7d55b400730dfa28ab3dbe",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-06-PLAN.md": "1212867dd3495d7b9d07311a3e6609215504ad193db2f07bd3b10cf8a946b500",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-07-PLAN.md": "b6222b948cb815c05c1496ef833551b990443c573285cc02ca73a3ae4f05585e",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-08-PLAN.md": "b052fb1b7b5f46fd40b94edf030048dd589b216b3b3fbbfa9e1aaff80bc6432e",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-CONTEXT.md": "070523410b10ea8ebcba24d03f36abbb0104235fc68c56047edcedd4fe8fd6fa",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-RESEARCH.md": "aba9999c449d6caf4274ba300cb6b2b7fd066dda511f934c0827ce3e6dc66528",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-UI-SPEC.md": "b76e6bb6c6bff6095352b68fc26541b2db27754d37f1ceb94db803259a50eabd",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-PATTERNS.md": "96815a88e18070a99c25b251c2353879acd4666c0a8fc476a07dcff5c4548cd5",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-VALIDATION.md": "85972379e2408463e93152953703f74be7814b73ecc72adff7c77f552b9bab83",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-COMPANION-GUIDANCE.md": "90ddb1b7f871d143a687decd6f404866d7862011fb1e92f63937b5ba08db8d8f",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-COVERAGE.md": "ba7c46701deda9afa835d5aa4652dad22330b7346721b53b1a81bbf0ac693a77",
+    ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-REVIEWS.md": "468266f6ffb3b6257ad77d66c8bd5b2d27626b5a7ba0ffc6bff28d81dffb3983",
+    "AGENTS.md": "59d2319a8e8aa20e878d6e6e6300976cc2dbb2a3cb24054b36483671810a4a70",
+    ".planning/PROJECT.md": "4867c6d218bf717cad580b0a053d3b96a77819dc656ae3a517b42f4ef345f4cd",
+    ".planning/ROADMAP.md": "5e309f2266617298344a222016d0ce3e1f6e738773152874b861c98deab83e3e",
+    ".planning/REQUIREMENTS.md": "4a0c18999e6a03c0450569ca2839fe6821e175e0215aa5509a13442ff1c183b4"
+  },
+  "prompt_erratum": "One auxiliary note incorrectly named django-crud-view-components when describing orchestrator sibling access. That unrelated path is not a source target, was not probed, and supplies no evidence. Canonical companion repository/path are exactly PLAN07 and COMPANION-GUIDANCE: jacob-consulting/skills at ../skills-navbar-06-40.",
+  "review_scope": "Source-grounded pre-execution plan review; no future implementation existence or tests pass asserted."
+}

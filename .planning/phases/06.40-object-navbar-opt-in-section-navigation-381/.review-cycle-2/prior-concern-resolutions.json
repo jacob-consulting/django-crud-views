@@ -1,0 +1,510 @@
+[
+  {
+    "id": "R1",
+    "severity": "HIGH",
+    "plans": [
+      "01",
+      "02"
+    ],
+    "required_property": "Owner default short-action labels and explicit caption/label values render as plain text without double escaping or preserving unsafe HTML.",
+    "description": "PLAN01:83,95 and PLAN02:97 require forced plain escaping while owner defaults come from cv_get_action_short_label. src/crud_views/lib/view/base.py:578-592,638-643 returns already rendered mark_safe text. The plans do not distinguish pre-escaped default output from raw override/owner strings.",
+    "fix_hint": "Define the normalization boundary and test ampersands/apostrophes/entities plus safe markup for both default and explicit labels; do not blindly adopt a particular escaping recipe.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+        "line": 83,
+        "quote": "  <action>Per D-01/D-03/D-05/D-07/D-09/D-11/D-13/D-14, create the single navbar module, its Pydantic NavItem(key: str | None = None, child: str | None = None, label=None, icon=None), NavBar(viewset: str, items: list[NavItem], template: str | None = None), and cooperative CrudViewNavBarMixin.cv_navbar=None. Keep declarations configuration-only and all resolution/building helpers private. Use Pydantic features available at 2.2.1; accept lazy translated labels without preserving HTML safety. Add one view-instance SimpleLazyObject in get_context_data without evaluating it, with None for modal requests (X-CV-Modal: true). Add the context-taking cv_navbar tag and guarded layout-B wrapper. Wire one real owner detail GET, declaration, lazy context, access then existing state helper, registered reverse and escaped identity/link HTML. Reuse the existing icon renderer. Addresses review concern R1: normalize only the already-rendered result of cv_get_action_short_label with one stdlib html.unescape pass, then remove SafeData by coercing to an exact built-in str (str.__str__(str(value))). This preserves its rendered ampersands/apostrophes without carrying HTML trust into navbar data. For raw str(owner), explicit NavItem.label, and child plural labels, remove SafeData the same way but never entity-decode them: literal entity-looking input must remain literal. Keep any markup characters as text, without stripping tags or adding an HTML parser/sanitizer. Ordinary Django autoescape then escapes the normalized text exactly once in text and attribute contexts; do not force-escape the rendered default a second time. Test default template literals and interpolated values, explicit labels and owner captions with ampersands, apostrophes, literal entity sequences, safe markup and lazy translations; assert both serialized escaping and parsed visible text, with no created markup. The tag selects bar.template or theme-path tags/navbar.html and returns exactly empty output with absent/None/falsy data. Keep base.py, router, ancestor policy and context-button implementation untouched. Addresses review concerns R7/R9: own the real-request harness inside test_navbar.py using a test-local locmem template loader prepended to normal loaders and cv_extends_template selecting that base. Derive the local base from the unchanged app/crud_views.html layout and insert the tag with whitespace-neutral delimiters immediately before its existing header/card; keep an otherwise identical tag-free base for paired comparisons. Do not edit the shared test base. Import tests.test1.project.urls before taking registry snapshots, matching isolated_routes in test_ancestor_authorization.py; reuse that context manager or preserve its ordering exactly. Restore registry and check_module._VOCAB_CACHE snapshots, temporary URLconf module, URL caches and ContentType cache in finally; snapshot/restore any existing ViewSet._default_permissions values touched by tests. First tests prove this real path, not only builder return dictionaries. Addresses review concern R13: viewset and child remain string names throughout declaration; no ViewSet object, callable resolver or registration-time lookup is accepted. Prove a declaration can precede registration of its owner and child, then renders after they register. Pydantic handles field-type errors at construction. Addresses review concern R11: items=[] is valid and renders nothing; NavItem() is structurally representable but an attached item with neither a nonempty owner key nor a nonempty child name is a named startup error. This keeps destination-shape diagnostics in the same cooperative check pipeline as A-04. Empty supplied names/keys are invalid selections, not aliases for an omitted key.</action>"
+      },
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-02-PLAN.md",
+        "line": 101,
+        "quote": "  <action>Implement D-07/D-10/D-11/D-12 and all template-level UI criteria. Identity remains ordinary escaped text, never a second heading or inferred anchor; owner icon is decorative via existing renderer, including supported host/element icon placement and empty-string suppression. Items partial owns a translated navigation landmark Sections for %(object)s using the plain owner caption; it works independently of the identity leaf. Use a list of anchors in declaration order, Bootstrap nav/nav-pills/flex-wrap, naturally sized links, mw-100 and text-break utilities on caption/list items/labels as needed. Retain full labels at small widths and scope every added class to navbar output. Adopt UI-SPEC's aria-current=\"true\" for the active section (refines A-05's page marker because Item pages still activate Orders). Active anchors remain focusable/clickable; other items have no current marker. Do not introduce dynamic-tab semantics, write actions or a navigation script. Existing Bootstrap text-break wrapping is the bounded initial CSS choice: it avoids a new global stylesheet/link changing nonparticipant HTML; live reflow in plan 08 must prove unbroken text wraps. If existing utilities cannot satisfy that evidence, use a navbar-scoped asset loaded only by opted-in rendering and extend split/no-output parity tests before acceptance. Test zero/one/many, hidden first/middle/matching items, missing icons, SafeString/ordinary markup-bearing captions and labels including accessible-name attribute escaping, configured label/icon overrides and unchanged header placement. Addresses review concerns R1/R15: consume the exact built-in-str data normalized by plan01; templates autoescape once and never apply force_escape to a pre-escaped short-action result. Assert parsed owner/anchor/aria-label text for ordinary ampersands/apostrophes, entity-looking raw overrides and SafeString markup, as well as absence of injected nodes. Add msgid Sections for %(object)s with German msgstr Abschnitte f\u00fcr %(object)s to the existing core django.po and compile the owned django.mo using the installed polib.pofile(...).save_as_mofile(...) under .nox/tests-3-12-django-5-2/bin/python, as existing locale plans do (msgfmt is absent). Preserve the interpolation key and existing entries; do not sweep unrelated catalogs. Under translation.override('de'), render the real items partial and assert its accessible name equals Abschnitte f\u00fcr plus the plain owner caption, including punctuation/markup-bearing captions; English remains correct. Compare against the literal German text so a missing catalog cannot pass via an English fallback.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R2",
+    "severity": "HIGH",
+    "plans": [
+      "04",
+      "05"
+    ],
+    "required_property": "Every prefixed example ParentViewSet maps to the actual child model FK.",
+    "description": "PLAN04:95 names navbar_tenant/navbar_customer; PLAN05:103 adds Order(customer), Item(order), Address(customer) with navbar_* ViewSets. ParentViewSet.get_attribute defaults to the parent ViewSet name (src/crud_views/lib/viewset/parentviewset.py:62-66), and ancestors.py:158-174 validates that model field. Explicit relationship attributes are not specified.",
+    "fix_hint": "Specify attribute=tenant/customer/order as appropriate and exercise every hierarchy edge.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-04-PLAN.md",
+        "line": 95,
+        "quote": "  <action>Per D-15 create an independent navbar_demo app and add it to INSTALLED_APPS. Own Tenant and Customer models (Customer has name, notes and Tenant FK) with explicit ordering/verbose names; imports never reach another example's business model. Keep app-local form/table classes in views.py following nested conventions, avoiding a needless module hierarchy. Register uniquely prefixed ViewSets navbar_tenant and navbar_customer to prevent global registry collisions. Tenant is GuardianViewSet with AncestorPolicy(provider=\"guardian\", accept_global_perms=False); protected Tenant list/detail views filter to object grants. Customer uses core ViewSet with ParentViewSet(name=\"navbar_tenant\", attribute=\"tenant\"), normal protected CRUD compositions and CreateViewParentMixin. Retain ancestor cascading. Add Customer detail and Notes detail with separate literal key/path, Notes displaying the Customer notes field, plus a project NavbarMixin pairing declaration and mixin on object views only. At this slice the declaration contains the existing Details/Notes destinations; plan 05 extends the same declaration with Orders/Addresses once their routes exist. Navbar attachment is never added to Customer list/create. Add tests with ordinary users and actual requests through a test-local URLconf built from these ViewSets, prove owned Tenant/Customer reads and cross-Tenant denial, and evaluate the view's navbar context using the existing tag harness. Initial unmigrated app can be synchronized by Django's test runner until Task 02 adds the normal migration. Do not add a new dependency or auth mechanism. Addresses review concern R2: the registry prefix is not a model field. Test the Tenant-to-Customer edge through system checks, queryset filtering, actual GETs and parent-bound creation using attribute=\"tenant\"; never infer the FK from navbar_tenant.</action>"
+      },
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-05-PLAN.md",
+        "line": 105,
+        "quote": "  <action>Finish D-15's hierarchy with app-owned Order(customer), Item(order) and Address(customer), ordinary core protected ViewSets named navbar_order/navbar_item/navbar_address and full business-model CRUD pages. Add their app-local forms/tables in views.py, parent creation mixins, URLs and a normal second migration. Customer's one bar becomes exactly Details, Notes, Orders, Addresses, in that order; labels are explicit where defaults differ. Attach NavbarMixin to selected Customer object, Order collection/object/create/update and Item object/update pages, leaving one intermediate Order view without it to demonstrate independent ancestry resolution. Keep existing cascading behavior enabled explicitly through the available AncestorPolicy setting. Test actual URLs for Customer Details/Notes, Order list/detail/create/update and Item editing with deliberately different PKs. Item links preserve Customer and Tenant and activate Orders. Add full CRUD success tests for account-manager test users and all denied direct Address GETs and business-model write POSTs for read-only test users. Assert no rows are created/changed/deleted after denied POST, not merely status. Test copied valid Item and Address URLs across Tenants in both directions and no per-record Guardian grants below Tenant. Addresses review concern R2: declare Order and Address parents as ParentViewSet(name=\"navbar_customer\", attribute=\"customer\") and Item's parent as ParentViewSet(name=\"navbar_order\", attribute=\"order\"). Retain Customer's explicit tenant mapping from plan04. System checks plus real list/object/create requests exercise every edge and its assigned parent, using unequal PKs. Add a call_command('makemigrations', 'navbar_demo', check=True, dry_run=True) regression after 0002 is written, so this expansion also cannot leave migration drift.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R3",
+    "severity": "HIGH",
+    "plans": [
+      "05",
+      "06"
+    ],
+    "required_property": "The new FEATURES entry preserves the existing exact feature-group test contract.",
+    "description": "PLAN05:127 adds navbar_demo to group ui, but no plan owns examples/bootstrap5/project/tests.py. Its FeatureGroupsTest.test_grouping_matches_spec at :457-477 asserts exact ordered membership without navbar_demo.",
+    "fix_hint": "Own the bounded shared-test update and run the shared example integration tests alongside new scenario tests.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "existence",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-05-PLAN.md",
+        "line": 129,
+        "quote": "  <action>Turn navbar-demo-home into the dedicated authenticated landing page using the new local template. Show the approved account explanation, empty-Orders explanation and a real Explore object navigation link into the logged-in user's allowed Tenant/Customer path; derive permitted choices through existing Guardian queryset access, never from a hard-coded username gate. Link to Object navbar reference using Feature.docs/DocRef, registered in plan 06 after the documentation exists. Register navbar_demo in FEATURES now that its seed exists; use ui group, unique landing name and app-local code pointer. Add the cv_navbar tag in an example-owned cv_navbar block immediately after breadcrumb and before the existing card; use whitespace-neutral delimiters so nonparticipant rendered bytes remain unchanged. Do not move the existing heading/icon/actions or auto-attach bars. Test index -> landing -> permitted Customer -> Notes/Orders/Item navigation, normal and Charlie bars, normal page header order and coexistence with context actions. Preserve cross-app independence. The landing remains useful with an empty permitted Tenant queryset without leaking other tenants, using ordinary existing empty-state copy. Load no new global styles/scripts. Addresses review concerns R3/R4/R6: use the existing project.views.BreadcrumbMixin with LoginRequiredMixin and TemplateView, implementing cv_breadcrumb_get with cv_breadcrumb_prefix plus the Object navigation item and exposing cv_breadcrumb in context as ThemeIndexView does. The home template extends project/base.html, loads crud_views/example_tags/i18n, renders example_about and cv_breadcrumb before its content, and snippet_panels afterward; it must return 200 with no seeded Tenant for an authenticated superuser. Render all three literal credentials alice/alice, bob/bob and charlie/charlie together in this example intro, with the approved Charlie explanation and an ordinary link to the existing login route for switching users; the index already provides discovery via Alice/Bob's existing notices. Add navbar_demo at the end of FEATURES' ui group, and update the matching ordered list in project/tests.py::FeatureGroupsTest.test_grouping_matches_spec. In that owned shared module add bounded new-landing assertions for credential text/login href, no-data response, standard panels/breadcrumb and index-to-permitted Customer traversal; the app's role/deep-link/write tests remain in navbar_demo/tests.py from Tasks01/02. The documentation panel's data is supplied by plan06's DocRef task; run all other shared feature contracts now, then the complete shared suite in plan06 once that dependency exists. Do not weaken an existing shared assertion.</action>"
+      },
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-06-PLAN.md",
+        "line": 131,
+        "quote": "  <action>Per D-15 and AC9 add navbar reference DocRef to navbar_demo's FEATURES entry, preserving its exact navbar-demo-home route. Limit additional DocRefs to pages that receive reciprocal Try it live URLs; related prose links alone need no DocRef. Update live-demo guidance for this scenario and Charlie's credentials without changing other examples' authorization descriptions. Existing test_doc_links.py already enumerates Feature.docs; extend only assertions genuinely needed for the new landing/anchor reciprocal contract. Run its actual tests with new example endpoint tests. Verify rendered landing contains the exact docs URL and reference admonition contains DEMO_BASE + reverse(feature.url_name), and links to heading anchors resolve in the built site. Addresses review concerns R3/R4/R6: after attaching the real navbar DocRef, run the entire project/tests.py shared feature suite as well as test_i18n.py and navbar_demo/tests.py, with no exclusion. Prove the standalone landing's snippet_panels now renders References to documentation and the real navbar URL, its standard about/Home breadcrumb survives, and the exact ui membership includes navbar_demo. State that all three scenario credentials are listed in the object-navbar introduction and here; do not promise Charlie appears in the unchanged shared translated login/home/banner notices. German landmark rendering/catalog delivery is owned and tested by plan02 (R15).</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R4",
+    "severity": "HIGH",
+    "plans": [
+      "05",
+      "06"
+    ],
+    "required_property": "The registered standalone landing satisfies all existing feature-page contracts.",
+    "description": "PLAN05:127 owns a new standalone home but does not wire its standard feature panels/breadcrumb. examples/bootstrap5/project/tests.py:75-81,238-247,278-284,394-403 requires unseeded-superuser 200, example-about, Home breadcrumb and documentation panel. theming/views.py:21-34 and theming/templates/theming/index.html:1-41 demonstrate the existing composition.",
+    "fix_hint": "Name the landing composition and shared integration verification; any implementation satisfying the contracts is sufficient.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-05-PLAN.md",
+        "line": 129,
+        "quote": "  <action>Turn navbar-demo-home into the dedicated authenticated landing page using the new local template. Show the approved account explanation, empty-Orders explanation and a real Explore object navigation link into the logged-in user's allowed Tenant/Customer path; derive permitted choices through existing Guardian queryset access, never from a hard-coded username gate. Link to Object navbar reference using Feature.docs/DocRef, registered in plan 06 after the documentation exists. Register navbar_demo in FEATURES now that its seed exists; use ui group, unique landing name and app-local code pointer. Add the cv_navbar tag in an example-owned cv_navbar block immediately after breadcrumb and before the existing card; use whitespace-neutral delimiters so nonparticipant rendered bytes remain unchanged. Do not move the existing heading/icon/actions or auto-attach bars. Test index -> landing -> permitted Customer -> Notes/Orders/Item navigation, normal and Charlie bars, normal page header order and coexistence with context actions. Preserve cross-app independence. The landing remains useful with an empty permitted Tenant queryset without leaking other tenants, using ordinary existing empty-state copy. Load no new global styles/scripts. Addresses review concerns R3/R4/R6: use the existing project.views.BreadcrumbMixin with LoginRequiredMixin and TemplateView, implementing cv_breadcrumb_get with cv_breadcrumb_prefix plus the Object navigation item and exposing cv_breadcrumb in context as ThemeIndexView does. The home template extends project/base.html, loads crud_views/example_tags/i18n, renders example_about and cv_breadcrumb before its content, and snippet_panels afterward; it must return 200 with no seeded Tenant for an authenticated superuser. Render all three literal credentials alice/alice, bob/bob and charlie/charlie together in this example intro, with the approved Charlie explanation and an ordinary link to the existing login route for switching users; the index already provides discovery via Alice/Bob's existing notices. Add navbar_demo at the end of FEATURES' ui group, and update the matching ordered list in project/tests.py::FeatureGroupsTest.test_grouping_matches_spec. In that owned shared module add bounded new-landing assertions for credential text/login href, no-data response, standard panels/breadcrumb and index-to-permitted Customer traversal; the app's role/deep-link/write tests remain in navbar_demo/tests.py from Tasks01/02. The documentation panel's data is supplied by plan06's DocRef task; run all other shared feature contracts now, then the complete shared suite in plan06 once that dependency exists. Do not weaken an existing shared assertion.</action>"
+      },
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-06-PLAN.md",
+        "line": 131,
+        "quote": "  <action>Per D-15 and AC9 add navbar reference DocRef to navbar_demo's FEATURES entry, preserving its exact navbar-demo-home route. Limit additional DocRefs to pages that receive reciprocal Try it live URLs; related prose links alone need no DocRef. Update live-demo guidance for this scenario and Charlie's credentials without changing other examples' authorization descriptions. Existing test_doc_links.py already enumerates Feature.docs; extend only assertions genuinely needed for the new landing/anchor reciprocal contract. Run its actual tests with new example endpoint tests. Verify rendered landing contains the exact docs URL and reference admonition contains DEMO_BASE + reverse(feature.url_name), and links to heading anchors resolve in the built site. Addresses review concerns R3/R4/R6: after attaching the real navbar DocRef, run the entire project/tests.py shared feature suite as well as test_i18n.py and navbar_demo/tests.py, with no exclusion. Prove the standalone landing's snippet_panels now renders References to documentation and the real navbar URL, its standard about/Home breadcrumb survives, and the exact ui membership includes navbar_demo. State that all three scenario credentials are listed in the object-navbar introduction and here; do not promise Charlie appears in the unchanged shared translated login/home/banner notices. German landmark rendering/catalog delivery is owned and tested by plan02 (R15).</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R5",
+    "severity": "HIGH",
+    "plans": [
+      "06"
+    ],
+    "required_property": "Navbar override documentation preserves the separate existing snippet-variable schema.",
+    "description": "PLAN06:120 adds documented context to templates.md without placing it relative to its final Snippet variables section. tests/test1/test_snippet_docs.py:27-36 parses that section through the next level-two heading and requires exactly eight named rows. Gemini identifies a conditional documentation regression, not an existing failing test; this undiscounted singleton judgment remains for explicit disposition.",
+    "fix_hint": "Place navbar data in its own documented section or explicitly preserve the snippet table; add the existing snippet-doc regression to focused verification.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-06-PLAN.md",
+        "line": 120,
+        "quote": "  <action>Per D-16 explicitly inventory NavBar, NavItem, CrudViewNavBarMixin, cv_navbar attachment, cv_navbar tag, three template paths and documented cv_navbar/item context fields as stable at 1.0 under the existing major-version/deprecation/migration policy. State private builders/resolvers/check carriers are internal. Add the template paths/contract to existing template/theme reference tables, with no new button-class keys or provisional exception. Add an Unreleased feature entry linked to navbar reference. The intended change is additive; if a real breaking change is discovered, treat it as a concrete scope finding and pair its Breaking entry with docs/migrating-1.0.md under repository policy. Add test_navbar_docs.py that imports the documented classes, constructs declarations using translated labels, compiles/renders documented tag/override examples against the real loaders, and checks that the inventoried templates/context expressions exist and match usable render data. Do not write brittle tests that merely count prose tokens. Include Pydantic-floor execution of these cases in plan 08. Addresses review concern R5 (conditional schema hazard): put navbar template-context documentation under a separate level-two Object navbar context heading before the existing Snippet variables heading, preserving that existing section's exact eight-row schema and prose. Navbar view-context fields do not become snippet variables. Include the existing test_snippet_docs.py in this task's focused command; keep its assertions unchanged.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R6",
+    "severity": "HIGH",
+    "plans": [
+      "05",
+      "06"
+    ],
+    "required_property": "Charlie credential discovery matches the promised rendered surfaces and retains existing translated account notices.",
+    "description": "PLAN05:115 claims adding DEMO_USERS makes shared login/home help discover Charlie. Account notices are hard-coded in registration/login.html:15-17, project/home.html:42-45 and project/base.html:51-53. These files/catalogs are unowned; examples/bootstrap5/test_i18n.py:185-200 also requires developer credentials last. Grok raises HIGH and Fable materially corroborates at MEDIUM.",
+    "fix_hint": "Own and test the promised surfaces/catalog changes, or explicitly correct the plan to an approved own-example discovery path that actually renders all three credentials; retain developer invariants.",
+    "reviewers": [
+      "grok-review",
+      "fable-review"
+    ],
+    "claim_class": "existence",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-05-PLAN.md",
+        "line": 117,
+        "quote": "  <action>Seed D-15 idempotently: Tenant A/B, separate customer/order/item/address data, noncolliding descendant PKs, a second Alice-owned Customer with zero Orders, and simple Customer notes. Use ensure_demo_users and grant_model_perms; add charlie/charlie to DEMO_USERS before developer and to printed seed help, preserving developer as the last listed account. Correct the DEMO_USERS comment to distinguish seeded accounts from the static shared notices. Addresses review concern R6: the approved discoverability path is this example's own introduction (Task03) and demo reference (plan06), not an assumed dynamic change to shared home/login/banner notices. Preserve those existing translated notices and their catalogs. Alice/Bob get ordinary view/add/change/delete permissions for Customer/Order/Item/Address and view/change object grants on only their Tenant as required by read/write ancestor policy. Charlie receives only Customer/Order/Item view permissions and view on Tenant A; no Address or write grants. Do not silently expand the developer account's explicit read list, grant cross-tenant access, or remove unrelated app/user grants. Seed only app-owned data. Tests call seed twice and assert stable rows/grants, usable passwords through the real login route, actual named-user access matrices, empty Orders link visible plus GET 200, and no Address/write permissions for Charlie. Run existing shared seed/developer/i18n tests to retain their exact notice and developer-last invariants; no speculative shared notice or catalog rewrite is required.</action>"
+      },
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-05-PLAN.md",
+        "line": 129,
+        "quote": "  <action>Turn navbar-demo-home into the dedicated authenticated landing page using the new local template. Show the approved account explanation, empty-Orders explanation and a real Explore object navigation link into the logged-in user's allowed Tenant/Customer path; derive permitted choices through existing Guardian queryset access, never from a hard-coded username gate. Link to Object navbar reference using Feature.docs/DocRef, registered in plan 06 after the documentation exists. Register navbar_demo in FEATURES now that its seed exists; use ui group, unique landing name and app-local code pointer. Add the cv_navbar tag in an example-owned cv_navbar block immediately after breadcrumb and before the existing card; use whitespace-neutral delimiters so nonparticipant rendered bytes remain unchanged. Do not move the existing heading/icon/actions or auto-attach bars. Test index -> landing -> permitted Customer -> Notes/Orders/Item navigation, normal and Charlie bars, normal page header order and coexistence with context actions. Preserve cross-app independence. The landing remains useful with an empty permitted Tenant queryset without leaking other tenants, using ordinary existing empty-state copy. Load no new global styles/scripts. Addresses review concerns R3/R4/R6: use the existing project.views.BreadcrumbMixin with LoginRequiredMixin and TemplateView, implementing cv_breadcrumb_get with cv_breadcrumb_prefix plus the Object navigation item and exposing cv_breadcrumb in context as ThemeIndexView does. The home template extends project/base.html, loads crud_views/example_tags/i18n, renders example_about and cv_breadcrumb before its content, and snippet_panels afterward; it must return 200 with no seeded Tenant for an authenticated superuser. Render all three literal credentials alice/alice, bob/bob and charlie/charlie together in this example intro, with the approved Charlie explanation and an ordinary link to the existing login route for switching users; the index already provides discovery via Alice/Bob's existing notices. Add navbar_demo at the end of FEATURES' ui group, and update the matching ordered list in project/tests.py::FeatureGroupsTest.test_grouping_matches_spec. In that owned shared module add bounded new-landing assertions for credential text/login href, no-data response, standard panels/breadcrumb and index-to-permitted Customer traversal; the app's role/deep-link/write tests remain in navbar_demo/tests.py from Tasks01/02. The documentation panel's data is supplied by plan06's DocRef task; run all other shared feature contracts now, then the complete shared suite in plan06 once that dependency exists. Do not weaken an existing shared assertion.</action>"
+      },
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-06-PLAN.md",
+        "line": 131,
+        "quote": "  <action>Per D-15 and AC9 add navbar reference DocRef to navbar_demo's FEATURES entry, preserving its exact navbar-demo-home route. Limit additional DocRefs to pages that receive reciprocal Try it live URLs; related prose links alone need no DocRef. Update live-demo guidance for this scenario and Charlie's credentials without changing other examples' authorization descriptions. Existing test_doc_links.py already enumerates Feature.docs; extend only assertions genuinely needed for the new landing/anchor reciprocal contract. Run its actual tests with new example endpoint tests. Verify rendered landing contains the exact docs URL and reference admonition contains DEMO_BASE + reverse(feature.url_name), and links to heading anchors resolve in the built site. Addresses review concerns R3/R4/R6: after attaching the real navbar DocRef, run the entire project/tests.py shared feature suite as well as test_i18n.py and navbar_demo/tests.py, with no exclusion. Prove the standalone landing's snippet_panels now renders References to documentation and the real navbar URL, its standard about/Home breadcrumb survives, and the exact ui membership includes navbar_demo. State that all three scenario credentials are listed in the object-navbar introduction and here; do not promise Charlie appears in the unchanged shared translated login/home/banner notices. German landmark rendering/catalog delivery is owned and tested by plan02 (R15).</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R7",
+    "severity": "MEDIUM",
+    "plans": [
+      "01",
+      "03"
+    ],
+    "required_property": "Real-request navbar and byte-preservation tests use an explicitly owned template harness that places the tag.",
+    "description": "PLAN01:83 promises real-GET header placement and PLAN03:91 paired whole-page byte evidence. tests/test1/app/templates/app/crud_views.html:1-40 has no navbar tag; neither plan names a local loader/base override or owns a shared base-template edit. Region goldens alone cannot prove whole-page preservation.",
+    "fix_hint": "Specify test-local cv_extends_template/loader placement and paired page comparison inside the owned test modules, or own a bounded template change.",
+    "reviewers": [
+      "fable-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+        "line": 83,
+        "quote": "  <action>Per D-01/D-03/D-05/D-07/D-09/D-11/D-13/D-14, create the single navbar module, its Pydantic NavItem(key: str | None = None, child: str | None = None, label=None, icon=None), NavBar(viewset: str, items: list[NavItem], template: str | None = None), and cooperative CrudViewNavBarMixin.cv_navbar=None. Keep declarations configuration-only and all resolution/building helpers private. Use Pydantic features available at 2.2.1; accept lazy translated labels without preserving HTML safety. Add one view-instance SimpleLazyObject in get_context_data without evaluating it, with None for modal requests (X-CV-Modal: true). Add the context-taking cv_navbar tag and guarded layout-B wrapper. Wire one real owner detail GET, declaration, lazy context, access then existing state helper, registered reverse and escaped identity/link HTML. Reuse the existing icon renderer. Addresses review concern R1: normalize only the already-rendered result of cv_get_action_short_label with one stdlib html.unescape pass, then remove SafeData by coercing to an exact built-in str (str.__str__(str(value))). This preserves its rendered ampersands/apostrophes without carrying HTML trust into navbar data. For raw str(owner), explicit NavItem.label, and child plural labels, remove SafeData the same way but never entity-decode them: literal entity-looking input must remain literal. Keep any markup characters as text, without stripping tags or adding an HTML parser/sanitizer. Ordinary Django autoescape then escapes the normalized text exactly once in text and attribute contexts; do not force-escape the rendered default a second time. Test default template literals and interpolated values, explicit labels and owner captions with ampersands, apostrophes, literal entity sequences, safe markup and lazy translations; assert both serialized escaping and parsed visible text, with no created markup. The tag selects bar.template or theme-path tags/navbar.html and returns exactly empty output with absent/None/falsy data. Keep base.py, router, ancestor policy and context-button implementation untouched. Addresses review concerns R7/R9: own the real-request harness inside test_navbar.py using a test-local locmem template loader prepended to normal loaders and cv_extends_template selecting that base. Derive the local base from the unchanged app/crud_views.html layout and insert the tag with whitespace-neutral delimiters immediately before its existing header/card; keep an otherwise identical tag-free base for paired comparisons. Do not edit the shared test base. Import tests.test1.project.urls before taking registry snapshots, matching isolated_routes in test_ancestor_authorization.py; reuse that context manager or preserve its ordering exactly. Restore registry and check_module._VOCAB_CACHE snapshots, temporary URLconf module, URL caches and ContentType cache in finally; snapshot/restore any existing ViewSet._default_permissions values touched by tests. First tests prove this real path, not only builder return dictionaries. Addresses review concern R13: viewset and child remain string names throughout declaration; no ViewSet object, callable resolver or registration-time lookup is accepted. Prove a declaration can precede registration of its owner and child, then renders after they register. Pydantic handles field-type errors at construction. Addresses review concern R11: items=[] is valid and renders nothing; NavItem() is structurally representable but an attached item with neither a nonempty owner key nor a nonempty child name is a named startup error. This keeps destination-shape diagnostics in the same cooperative check pipeline as A-04. Empty supplied names/keys are invalid selections, not aliases for an omitted key.</action>"
+      },
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-03-PLAN.md",
+        "line": 91,
+        "quote": "  <action>Per D-02/D-08/D-13/D-14 and A-07, add cost/preservation cases using isolated fixtures from plan 01 (reuse via explicit imports/pytest_plugins only where needed, without permanent registry edits). Measure builder, each admission hook, each permitted state hook, owner-row queries and total SQL separately for owner/deep-descendant, plain/Guardian/mixed bars, cold/warm vocabulary and actor permission caches, tag/split/repeated context, omitted consumers, modal and no-mixin/no-declaration controls. Compare equivalent requests and capture navbar-only work after ordinary request object loading; do not count unrelated breadcrumb work as navbar cost. No owner reload or collection probe is allowed. Record observed totals, environment and fixture composition in COST.md; do not promise all Guardian/custom checks are query-free. Assert untouched existing goldens byte-for-byte and pair equivalent nonparticipant pages before/after tag placement; preserve context buttons alone and alongside a bar, including their existing order/behavior. For shared page template placement later, use whitespace-neutral Django block delimiters so unconfigured pages remain byte-identical. Count only the navbar's isolated work, not duplicate context-button hooks on a coexistence page. Addresses review concerns R7/R9: reuse plan01's owned locmem/cv_extends_template harness for paired complete response.content comparisons with the tag-free and tag-present bases; freeze CSRF and other request-varying inputs identically or exclude them through the fixture configuration, never normalize away navbar/header output. Cover no-mixin and configured-mixin-with-None pages, not only component goldens. Preimport project URL registrations before snapshotting. A cold-vocabulary cell clears both check_module._VOCAB_CACHE and each participating ViewSet._default_permissions plus ContentType.objects.clear_cache(); a cold-actor cell uses a fresh actor or removes _perm_cache/_user_perm_cache/_group_perm_cache and any exercised Guardian checker cache. Warm cells explicitly prewarm only the named caches outside measurement. Snapshot and restore pre-existing ViewSet cache values in finally and record the exact cold/warm definitions in COST.md.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R8",
+    "severity": "MEDIUM",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Registry-dependent navbar startup errors operate on a completed registry.",
+    "description": "PLAN01:107 calls cooperative checks without a readiness rule. src/crud_views/checks.py:38-47 runs ViewSet checks directly; :172-212 deliberately imports URLconfs before completion-dependent ancestor diagnostics. Partial imports can otherwise appear as missing names/keys.",
+    "fix_hint": "Reuse the existing completion-readiness mechanism in a bounded way and test early/complete registry states.",
+    "reviewers": [
+      "fable-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+        "line": 107,
+        "quote": "  <action>Per D-04/D-12/D-13 and AC6 add cooperative mixin checks, only for participating configured views; super checks still run. Search current check IDs and allocate unused IDs in navbar.py, documenting them in tests; no global registry or forgotten-mixin check. Validate malformed configured declaration safely; unknown owner/child, nondirect child, absent explicit target key (including explicit list where only card exists), owner target lacking object, child target requiring object, duplicate owner keys, repeated child ViewSets even with distinct keys, every owner attachment with cv_object=False (list, card, create and custom no-object pages), and unrelated attachment. A target must both allow get in http_method_names and have a callable get method; include registered POST-only ActionView, GET-excluded and noncallable-get cases. Diagnostics name attachment class, navbar owner and item index/key; bar-level errors explicitly identify the bar rather than pretending an item exists. Check before render and do no database/access/state work. Tests invoke the actual Django/system-check pipeline with isolated registrations and verify zero queries and super-check retention. Addresses review concerns R8/R10/R11/R14: at the start of navbar-specific registry validation, locally import and call the existing crud_views.checks._url_configuration_loaded readiness barrier; do not cache a completion flag or register another global collector. If it returns false, defer owner/child/key/ancestry-dependent diagnostics only; preserve local declaration/attachment checks that do not require registry completeness, and re-evaluate on a later completed check. Test early import, failed/in-progress URLconf, forward declaration followed by full registration, and a truly missing name after completion through the existing system-check path; completed missing references must fail, early ones must not falsely fail. Validate nonempty configured NavBar.template using Django get_template and catch only TemplateDoesNotExist for a named startup diagnostic, following CheckTemplate semantics; None uses the default. Include valid custom template and missing-template cases. Pin NavItem() and empty supplied name/key as startup errors, empty items as a valid no-output bar, and card/custom owner no-object attachment failures. Wrong field types fail Pydantic construction; malformed cv_navbar attachment values fail safely at checks. No check performs database/access/state work.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R9",
+    "severity": "MEDIUM",
+    "plans": [
+      "01",
+      "03"
+    ],
+    "required_property": "Isolated fixtures preserve project registrations and reset every cache classified as cold.",
+    "description": "PLAN01:83 constructs isolated route fixtures; PLAN03:91 measures cold/warm caches. tests/test1/test_ancestor_authorization.py:38 preimports project URLs before :46-76 snapshots; src/crud_views/lib/viewset/__init__.py:489-490 also caches permission vocabulary per ViewSet. Neither ordering nor that reset is explicit in the new fixture contract.",
+    "fix_hint": "Reuse the proven fixture or record its import ordering and reset ViewSet/ContentType/actor caches around cold measurements.",
+    "reviewers": [
+      "fable-review",
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+        "line": 83,
+        "quote": "  <action>Per D-01/D-03/D-05/D-07/D-09/D-11/D-13/D-14, create the single navbar module, its Pydantic NavItem(key: str | None = None, child: str | None = None, label=None, icon=None), NavBar(viewset: str, items: list[NavItem], template: str | None = None), and cooperative CrudViewNavBarMixin.cv_navbar=None. Keep declarations configuration-only and all resolution/building helpers private. Use Pydantic features available at 2.2.1; accept lazy translated labels without preserving HTML safety. Add one view-instance SimpleLazyObject in get_context_data without evaluating it, with None for modal requests (X-CV-Modal: true). Add the context-taking cv_navbar tag and guarded layout-B wrapper. Wire one real owner detail GET, declaration, lazy context, access then existing state helper, registered reverse and escaped identity/link HTML. Reuse the existing icon renderer. Addresses review concern R1: normalize only the already-rendered result of cv_get_action_short_label with one stdlib html.unescape pass, then remove SafeData by coercing to an exact built-in str (str.__str__(str(value))). This preserves its rendered ampersands/apostrophes without carrying HTML trust into navbar data. For raw str(owner), explicit NavItem.label, and child plural labels, remove SafeData the same way but never entity-decode them: literal entity-looking input must remain literal. Keep any markup characters as text, without stripping tags or adding an HTML parser/sanitizer. Ordinary Django autoescape then escapes the normalized text exactly once in text and attribute contexts; do not force-escape the rendered default a second time. Test default template literals and interpolated values, explicit labels and owner captions with ampersands, apostrophes, literal entity sequences, safe markup and lazy translations; assert both serialized escaping and parsed visible text, with no created markup. The tag selects bar.template or theme-path tags/navbar.html and returns exactly empty output with absent/None/falsy data. Keep base.py, router, ancestor policy and context-button implementation untouched. Addresses review concerns R7/R9: own the real-request harness inside test_navbar.py using a test-local locmem template loader prepended to normal loaders and cv_extends_template selecting that base. Derive the local base from the unchanged app/crud_views.html layout and insert the tag with whitespace-neutral delimiters immediately before its existing header/card; keep an otherwise identical tag-free base for paired comparisons. Do not edit the shared test base. Import tests.test1.project.urls before taking registry snapshots, matching isolated_routes in test_ancestor_authorization.py; reuse that context manager or preserve its ordering exactly. Restore registry and check_module._VOCAB_CACHE snapshots, temporary URLconf module, URL caches and ContentType cache in finally; snapshot/restore any existing ViewSet._default_permissions values touched by tests. First tests prove this real path, not only builder return dictionaries. Addresses review concern R13: viewset and child remain string names throughout declaration; no ViewSet object, callable resolver or registration-time lookup is accepted. Prove a declaration can precede registration of its owner and child, then renders after they register. Pydantic handles field-type errors at construction. Addresses review concern R11: items=[] is valid and renders nothing; NavItem() is structurally representable but an attached item with neither a nonempty owner key nor a nonempty child name is a named startup error. This keeps destination-shape diagnostics in the same cooperative check pipeline as A-04. Empty supplied names/keys are invalid selections, not aliases for an omitted key.</action>"
+      },
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-03-PLAN.md",
+        "line": 91,
+        "quote": "  <action>Per D-02/D-08/D-13/D-14 and A-07, add cost/preservation cases using isolated fixtures from plan 01 (reuse via explicit imports/pytest_plugins only where needed, without permanent registry edits). Measure builder, each admission hook, each permitted state hook, owner-row queries and total SQL separately for owner/deep-descendant, plain/Guardian/mixed bars, cold/warm vocabulary and actor permission caches, tag/split/repeated context, omitted consumers, modal and no-mixin/no-declaration controls. Compare equivalent requests and capture navbar-only work after ordinary request object loading; do not count unrelated breadcrumb work as navbar cost. No owner reload or collection probe is allowed. Record observed totals, environment and fixture composition in COST.md; do not promise all Guardian/custom checks are query-free. Assert untouched existing goldens byte-for-byte and pair equivalent nonparticipant pages before/after tag placement; preserve context buttons alone and alongside a bar, including their existing order/behavior. For shared page template placement later, use whitespace-neutral Django block delimiters so unconfigured pages remain byte-identical. Count only the navbar's isolated work, not duplicate context-button hooks on a coexistence page. Addresses review concerns R7/R9: reuse plan01's owned locmem/cv_extends_template harness for paired complete response.content comparisons with the tag-free and tag-present bases; freeze CSRF and other request-varying inputs identically or exclude them through the fixture configuration, never normalize away navbar/header output. Cover no-mixin and configured-mixin-with-None pages, not only component goldens. Preimport project URL registrations before snapshotting. A cold-vocabulary cell clears both check_module._VOCAB_CACHE and each participating ViewSet._default_permissions plus ContentType.objects.clear_cache(); a cold-actor cell uses a fresh actor or removes _perm_cache/_user_perm_cache/_group_perm_cache and any exercised Guardian checker cache. Warm cells explicitly prewarm only the named caches outside measurement. Snapshot and restore pre-existing ViewSet cache values in finally and record the exact cold/warm definitions in COST.md.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R10",
+    "severity": "MEDIUM",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Configured nonexistent NavBar.template behavior is explicit and tested.",
+    "description": "PLAN01:107 enumerates target/attachment checks but not missing custom-wrapper behavior; src/crud_views/lib/check.py:232-253 supplies existing optional-template startup validation.",
+    "fix_hint": "Adopt that check pattern or explicitly document/test intentional render-time failure.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+        "line": 107,
+        "quote": "  <action>Per D-04/D-12/D-13 and AC6 add cooperative mixin checks, only for participating configured views; super checks still run. Search current check IDs and allocate unused IDs in navbar.py, documenting them in tests; no global registry or forgotten-mixin check. Validate malformed configured declaration safely; unknown owner/child, nondirect child, absent explicit target key (including explicit list where only card exists), owner target lacking object, child target requiring object, duplicate owner keys, repeated child ViewSets even with distinct keys, every owner attachment with cv_object=False (list, card, create and custom no-object pages), and unrelated attachment. A target must both allow get in http_method_names and have a callable get method; include registered POST-only ActionView, GET-excluded and noncallable-get cases. Diagnostics name attachment class, navbar owner and item index/key; bar-level errors explicitly identify the bar rather than pretending an item exists. Check before render and do no database/access/state work. Tests invoke the actual Django/system-check pipeline with isolated registrations and verify zero queries and super-check retention. Addresses review concerns R8/R10/R11/R14: at the start of navbar-specific registry validation, locally import and call the existing crud_views.checks._url_configuration_loaded readiness barrier; do not cache a completion flag or register another global collector. If it returns false, defer owner/child/key/ancestry-dependent diagnostics only; preserve local declaration/attachment checks that do not require registry completeness, and re-evaluate on a later completed check. Test early import, failed/in-progress URLconf, forward declaration followed by full registration, and a truly missing name after completion through the existing system-check path; completed missing references must fail, early ones must not falsely fail. Validate nonempty configured NavBar.template using Django get_template and catch only TemplateDoesNotExist for a named startup diagnostic, following CheckTemplate semantics; None uses the default. Include valid custom template and missing-template cases. Pin NavItem() and empty supplied name/key as startup errors, empty items as a valid no-output bar, and card/custom owner no-object attachment failures. Wrong field types fail Pydantic construction; malformed cv_navbar attachment values fail safely at checks. No check performs database/access/state work.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R11",
+    "severity": "MEDIUM",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Invalid destination shapes have an explicit construction-versus-startup validation contract.",
+    "description": "PLAN01:83 declares NavItem(key=None, child=None); PLAN01:107 does not state neither-selected-item or empty-items behavior and when malformed declarations fail. This affects whether invalid fixture construction reaches cooperative checks.",
+    "fix_hint": "State and test the accepted empty-bar case and the error boundary for an item with neither owner key nor child.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+        "line": 83,
+        "quote": "  <action>Per D-01/D-03/D-05/D-07/D-09/D-11/D-13/D-14, create the single navbar module, its Pydantic NavItem(key: str | None = None, child: str | None = None, label=None, icon=None), NavBar(viewset: str, items: list[NavItem], template: str | None = None), and cooperative CrudViewNavBarMixin.cv_navbar=None. Keep declarations configuration-only and all resolution/building helpers private. Use Pydantic features available at 2.2.1; accept lazy translated labels without preserving HTML safety. Add one view-instance SimpleLazyObject in get_context_data without evaluating it, with None for modal requests (X-CV-Modal: true). Add the context-taking cv_navbar tag and guarded layout-B wrapper. Wire one real owner detail GET, declaration, lazy context, access then existing state helper, registered reverse and escaped identity/link HTML. Reuse the existing icon renderer. Addresses review concern R1: normalize only the already-rendered result of cv_get_action_short_label with one stdlib html.unescape pass, then remove SafeData by coercing to an exact built-in str (str.__str__(str(value))). This preserves its rendered ampersands/apostrophes without carrying HTML trust into navbar data. For raw str(owner), explicit NavItem.label, and child plural labels, remove SafeData the same way but never entity-decode them: literal entity-looking input must remain literal. Keep any markup characters as text, without stripping tags or adding an HTML parser/sanitizer. Ordinary Django autoescape then escapes the normalized text exactly once in text and attribute contexts; do not force-escape the rendered default a second time. Test default template literals and interpolated values, explicit labels and owner captions with ampersands, apostrophes, literal entity sequences, safe markup and lazy translations; assert both serialized escaping and parsed visible text, with no created markup. The tag selects bar.template or theme-path tags/navbar.html and returns exactly empty output with absent/None/falsy data. Keep base.py, router, ancestor policy and context-button implementation untouched. Addresses review concerns R7/R9: own the real-request harness inside test_navbar.py using a test-local locmem template loader prepended to normal loaders and cv_extends_template selecting that base. Derive the local base from the unchanged app/crud_views.html layout and insert the tag with whitespace-neutral delimiters immediately before its existing header/card; keep an otherwise identical tag-free base for paired comparisons. Do not edit the shared test base. Import tests.test1.project.urls before taking registry snapshots, matching isolated_routes in test_ancestor_authorization.py; reuse that context manager or preserve its ordering exactly. Restore registry and check_module._VOCAB_CACHE snapshots, temporary URLconf module, URL caches and ContentType cache in finally; snapshot/restore any existing ViewSet._default_permissions values touched by tests. First tests prove this real path, not only builder return dictionaries. Addresses review concern R13: viewset and child remain string names throughout declaration; no ViewSet object, callable resolver or registration-time lookup is accepted. Prove a declaration can precede registration of its owner and child, then renders after they register. Pydantic handles field-type errors at construction. Addresses review concern R11: items=[] is valid and renders nothing; NavItem() is structurally representable but an attached item with neither a nonempty owner key nor a nonempty child name is a named startup error. This keeps destination-shape diagnostics in the same cooperative check pipeline as A-04. Empty supplied names/keys are invalid selections, not aliases for an omitted key.</action>"
+      },
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+        "line": 107,
+        "quote": "  <action>Per D-04/D-12/D-13 and AC6 add cooperative mixin checks, only for participating configured views; super checks still run. Search current check IDs and allocate unused IDs in navbar.py, documenting them in tests; no global registry or forgotten-mixin check. Validate malformed configured declaration safely; unknown owner/child, nondirect child, absent explicit target key (including explicit list where only card exists), owner target lacking object, child target requiring object, duplicate owner keys, repeated child ViewSets even with distinct keys, every owner attachment with cv_object=False (list, card, create and custom no-object pages), and unrelated attachment. A target must both allow get in http_method_names and have a callable get method; include registered POST-only ActionView, GET-excluded and noncallable-get cases. Diagnostics name attachment class, navbar owner and item index/key; bar-level errors explicitly identify the bar rather than pretending an item exists. Check before render and do no database/access/state work. Tests invoke the actual Django/system-check pipeline with isolated registrations and verify zero queries and super-check retention. Addresses review concerns R8/R10/R11/R14: at the start of navbar-specific registry validation, locally import and call the existing crud_views.checks._url_configuration_loaded readiness barrier; do not cache a completion flag or register another global collector. If it returns false, defer owner/child/key/ancestry-dependent diagnostics only; preserve local declaration/attachment checks that do not require registry completeness, and re-evaluate on a later completed check. Test early import, failed/in-progress URLconf, forward declaration followed by full registration, and a truly missing name after completion through the existing system-check path; completed missing references must fail, early ones must not falsely fail. Validate nonempty configured NavBar.template using Django get_template and catch only TemplateDoesNotExist for a named startup diagnostic, following CheckTemplate semantics; None uses the default. Include valid custom template and missing-template cases. Pin NavItem() and empty supplied name/key as startup errors, empty items as a valid no-output bar, and card/custom owner no-object attachment failures. Wrong field types fail Pydantic construction; malformed cv_navbar attachment values fail safely at checks. No check performs database/access/state work.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R12",
+    "severity": "MEDIUM",
+    "plans": [
+      "08"
+    ],
+    "required_property": "Browser verification releases its own background server and temporary settings/database on every exit path.",
+    "description": "PLAN08:89 starts runserver and writes an isolated SQLite/settings module but contains no cleanup step; repeat execution can retain port8765 or a stale fixture.",
+    "fix_hint": "Record process/path ownership and run cleanup in a finally block after evidence capture, including failures.",
+    "reviewers": [
+      "gemini-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-08-PLAN.md",
+        "line": 89,
+        "quote": "  <action>After the supported example Nox environment exists, create a transient navbar_browser_settings module under .pytest_cache that imports project.settings and replaces only DATABASES default NAME with an isolated temporary SQLite file; preserve auth, templates and static configuration. From examples/bootstrap5 run the .nox/examples-3-12-django-5-2/bin/python interpreter via ../../ path with PYTHONPATH=../../src:.:../../.pytest_cache, --settings=navbar_browser_settings: migrate, seed, then runserver 127.0.0.1:8765 --noreload. Do not mutate a developer/demo database. Write BROWSER-CHECK.js as the reusable body for the available Playwright browser_run_code tool (uses its page argument; no npm install). Assert and record on the real served example: login Alice, follow landing/Customer/Notes/Orders/Item links; repeat Charlie for hidden Addresses and correct three-link order; normal full bar has four ordered links. At 1280px and 320px and a real 200% zoom/reflow-equivalent CSS viewport, measure document.scrollWidth <= document.clientWidth + 1 and every link bounding box within its parent. Record exact viewport/zoom method rather than claiming deviceScaleFactor is zoom. Exercise normal copy plus a >=120-character caption with an unbroken >=80-character token and a long multiword label, changing text in the isolated fixture/DOM without changing navbar classes and recording stress setup. Confirm at least two item rows in narrow stress state, no clipped/ellipsized text, hidden links or horizontal strip. Tab/Shift+Tab reaches visible links in order, including active; Enter follows exact href, and caption/icons are not extra focus stops. Verify accessible landmark name/current marker, absent tab roles, visible focus and normal-text contrast against actual Bootstrap styles. Capture desktop layout and narrow focused wrapped state; write JSON with source revision, browser/runtime, assertions, URLs, dimensions and screenshots. Test browser-native full document navigation with no navbar fetch/spinner/retry machinery. If CSS utilities fail reflow, fix only navbar templates/styles through the owning plan and rerun its no-output/nonparticipant tests before continuing. Browser inability remains an unmet human-check item; HTML snapshots cannot close it. Addresses review concern R12: the orchestration that creates the temporary settings/database and starts runserver must own a try/finally cleanup across setup, browser success, assertion failure and interruption. Reserve the settings path only if absent (do not overwrite another run's file), allocate the SQLite database in a unique temporary directory, record exact created paths and the launched process/session PID, and fail on an occupied port rather than stopping an existing process. In finally, stop and await only this run's server, remove only its settings file/bytecode and temporary database directory, and retain JSON/screenshots and failure evidence. Record cleanup results in BROWSER.json. The browser JS routine is executed inside this outer lifecycle; merely adding a JS finally cannot clean up a separately launched server. Exercise a deliberate failing assertion once, then verify server exit, released owned port and deleted owned transient paths before the successful run.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R13",
+    "severity": "MEDIUM",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Declared owner and child references remain late-bound string names.",
+    "description": "PLAN01:83 omits field types from NavBar(viewset, items, template=None) and NavItem(child=None). Its A-01 adoption relies on construction before registration (issue381:328-332); Grok incorrectly calls A-01 locked, but the adopted design still needs an explicit executable type contract.",
+    "fix_hint": "Pin viewset:str and child:str|None and test declaration before registry population, or document a bounded alternative preserving late binding.",
+    "reviewers": [
+      "grok-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+        "line": 83,
+        "quote": "  <action>Per D-01/D-03/D-05/D-07/D-09/D-11/D-13/D-14, create the single navbar module, its Pydantic NavItem(key: str | None = None, child: str | None = None, label=None, icon=None), NavBar(viewset: str, items: list[NavItem], template: str | None = None), and cooperative CrudViewNavBarMixin.cv_navbar=None. Keep declarations configuration-only and all resolution/building helpers private. Use Pydantic features available at 2.2.1; accept lazy translated labels without preserving HTML safety. Add one view-instance SimpleLazyObject in get_context_data without evaluating it, with None for modal requests (X-CV-Modal: true). Add the context-taking cv_navbar tag and guarded layout-B wrapper. Wire one real owner detail GET, declaration, lazy context, access then existing state helper, registered reverse and escaped identity/link HTML. Reuse the existing icon renderer. Addresses review concern R1: normalize only the already-rendered result of cv_get_action_short_label with one stdlib html.unescape pass, then remove SafeData by coercing to an exact built-in str (str.__str__(str(value))). This preserves its rendered ampersands/apostrophes without carrying HTML trust into navbar data. For raw str(owner), explicit NavItem.label, and child plural labels, remove SafeData the same way but never entity-decode them: literal entity-looking input must remain literal. Keep any markup characters as text, without stripping tags or adding an HTML parser/sanitizer. Ordinary Django autoescape then escapes the normalized text exactly once in text and attribute contexts; do not force-escape the rendered default a second time. Test default template literals and interpolated values, explicit labels and owner captions with ampersands, apostrophes, literal entity sequences, safe markup and lazy translations; assert both serialized escaping and parsed visible text, with no created markup. The tag selects bar.template or theme-path tags/navbar.html and returns exactly empty output with absent/None/falsy data. Keep base.py, router, ancestor policy and context-button implementation untouched. Addresses review concerns R7/R9: own the real-request harness inside test_navbar.py using a test-local locmem template loader prepended to normal loaders and cv_extends_template selecting that base. Derive the local base from the unchanged app/crud_views.html layout and insert the tag with whitespace-neutral delimiters immediately before its existing header/card; keep an otherwise identical tag-free base for paired comparisons. Do not edit the shared test base. Import tests.test1.project.urls before taking registry snapshots, matching isolated_routes in test_ancestor_authorization.py; reuse that context manager or preserve its ordering exactly. Restore registry and check_module._VOCAB_CACHE snapshots, temporary URLconf module, URL caches and ContentType cache in finally; snapshot/restore any existing ViewSet._default_permissions values touched by tests. First tests prove this real path, not only builder return dictionaries. Addresses review concern R13: viewset and child remain string names throughout declaration; no ViewSet object, callable resolver or registration-time lookup is accepted. Prove a declaration can precede registration of its owner and child, then renders after they register. Pydantic handles field-type errors at construction. Addresses review concern R11: items=[] is valid and renders nothing; NavItem() is structurally representable but an attached item with neither a nonempty owner key nor a nonempty child name is a named startup error. This keeps destination-shape diagnostics in the same cooperative check pipeline as A-04. Empty supplied names/keys are invalid selections, not aliases for an omitted key.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R14",
+    "severity": "LOW",
+    "plans": [
+      "01"
+    ],
+    "required_property": "Every owner attachment lacking an object is rejected, including card and custom collection pages.",
+    "description": "PLAN01:107 explicitly names owner list/create attachment checks. CardListView and custom no-object owner pages share cv_object=False and cannot supply self.object; the invariant is broader than two key names.",
+    "fix_hint": "Specify the check using object capability and test card/custom owner collections.",
+    "reviewers": [
+      "grok-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-01-PLAN.md",
+        "line": 107,
+        "quote": "  <action>Per D-04/D-12/D-13 and AC6 add cooperative mixin checks, only for participating configured views; super checks still run. Search current check IDs and allocate unused IDs in navbar.py, documenting them in tests; no global registry or forgotten-mixin check. Validate malformed configured declaration safely; unknown owner/child, nondirect child, absent explicit target key (including explicit list where only card exists), owner target lacking object, child target requiring object, duplicate owner keys, repeated child ViewSets even with distinct keys, every owner attachment with cv_object=False (list, card, create and custom no-object pages), and unrelated attachment. A target must both allow get in http_method_names and have a callable get method; include registered POST-only ActionView, GET-excluded and noncallable-get cases. Diagnostics name attachment class, navbar owner and item index/key; bar-level errors explicitly identify the bar rather than pretending an item exists. Check before render and do no database/access/state work. Tests invoke the actual Django/system-check pipeline with isolated registrations and verify zero queries and super-check retention. Addresses review concerns R8/R10/R11/R14: at the start of navbar-specific registry validation, locally import and call the existing crud_views.checks._url_configuration_loaded readiness barrier; do not cache a completion flag or register another global collector. If it returns false, defer owner/child/key/ancestry-dependent diagnostics only; preserve local declaration/attachment checks that do not require registry completeness, and re-evaluate on a later completed check. Test early import, failed/in-progress URLconf, forward declaration followed by full registration, and a truly missing name after completion through the existing system-check path; completed missing references must fail, early ones must not falsely fail. Validate nonempty configured NavBar.template using Django get_template and catch only TemplateDoesNotExist for a named startup diagnostic, following CheckTemplate semantics; None uses the default. Include valid custom template and missing-template cases. Pin NavItem() and empty supplied name/key as startup errors, empty items as a valid no-output bar, and card/custom owner no-object attachment failures. Wrong field types fail Pydantic construction; malformed cv_navbar attachment values fail safely at checks. No check performs database/access/state work.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R15",
+    "severity": "MEDIUM",
+    "plans": [
+      "02",
+      "06"
+    ],
+    "required_property": "The new translated public navigation landmark ships with German catalog coverage.",
+    "description": "PLAN02:97 adds translated Sections for %(object)s, but no plan owns src/crud_views/locale/de/LC_MESSAGES/django.po or its compiled catalog. Existing tests/test1/test_i18n.py:65-73 only validates entries already present.",
+    "fix_hint": "Own catalog extraction/translation/compilation and a rendered German accessible-name assertion.",
+    "reviewers": [
+      "grok-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-02-PLAN.md",
+        "line": 101,
+        "quote": "  <action>Implement D-07/D-10/D-11/D-12 and all template-level UI criteria. Identity remains ordinary escaped text, never a second heading or inferred anchor; owner icon is decorative via existing renderer, including supported host/element icon placement and empty-string suppression. Items partial owns a translated navigation landmark Sections for %(object)s using the plain owner caption; it works independently of the identity leaf. Use a list of anchors in declaration order, Bootstrap nav/nav-pills/flex-wrap, naturally sized links, mw-100 and text-break utilities on caption/list items/labels as needed. Retain full labels at small widths and scope every added class to navbar output. Adopt UI-SPEC's aria-current=\"true\" for the active section (refines A-05's page marker because Item pages still activate Orders). Active anchors remain focusable/clickable; other items have no current marker. Do not introduce dynamic-tab semantics, write actions or a navigation script. Existing Bootstrap text-break wrapping is the bounded initial CSS choice: it avoids a new global stylesheet/link changing nonparticipant HTML; live reflow in plan 08 must prove unbroken text wraps. If existing utilities cannot satisfy that evidence, use a navbar-scoped asset loaded only by opted-in rendering and extend split/no-output parity tests before acceptance. Test zero/one/many, hidden first/middle/matching items, missing icons, SafeString/ordinary markup-bearing captions and labels including accessible-name attribute escaping, configured label/icon overrides and unchanged header placement. Addresses review concerns R1/R15: consume the exact built-in-str data normalized by plan01; templates autoescape once and never apply force_escape to a pre-escaped short-action result. Assert parsed owner/anchor/aria-label text for ordinary ampersands/apostrophes, entity-looking raw overrides and SafeString markup, as well as absence of injected nodes. Add msgid Sections for %(object)s with German msgstr Abschnitte f\u00fcr %(object)s to the existing core django.po and compile the owned django.mo using the installed polib.pofile(...).save_as_mofile(...) under .nox/tests-3-12-django-5-2/bin/python, as existing locale plans do (msgfmt is absent). Preserve the interpolation key and existing entries; do not sweep unrelated catalogs. Under translation.override('de'), render the real items partial and assert its accessible name equals Abschnitte f\u00fcr plus the plain owner caption, including punctuation/markup-bearing captions; English remains correct. Compare against the literal German text so a missing catalog cannot pass via an English fallback.</action>"
+      },
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-06-PLAN.md",
+        "line": 131,
+        "quote": "  <action>Per D-15 and AC9 add navbar reference DocRef to navbar_demo's FEATURES entry, preserving its exact navbar-demo-home route. Limit additional DocRefs to pages that receive reciprocal Try it live URLs; related prose links alone need no DocRef. Update live-demo guidance for this scenario and Charlie's credentials without changing other examples' authorization descriptions. Existing test_doc_links.py already enumerates Feature.docs; extend only assertions genuinely needed for the new landing/anchor reciprocal contract. Run its actual tests with new example endpoint tests. Verify rendered landing contains the exact docs URL and reference admonition contains DEMO_BASE + reverse(feature.url_name), and links to heading anchors resolve in the built site. Addresses review concerns R3/R4/R6: after attaching the real navbar DocRef, run the entire project/tests.py shared feature suite as well as test_i18n.py and navbar_demo/tests.py, with no exclusion. Prove the standalone landing's snippet_panels now renders References to documentation and the real navbar URL, its standard about/Home breadcrumb survives, and the exact ui membership includes navbar_demo. State that all three scenario credentials are listed in the object-navbar introduction and here; do not promise Charlie appears in the unchanged shared translated login/home/banner notices. German landmark rendering/catalog delivery is owned and tested by plan02 (R15).</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  },
+  {
+    "id": "R16",
+    "severity": "MEDIUM",
+    "plans": [
+      "04"
+    ],
+    "required_property": "The required no-migration-drift outcome is decided by an executable failing verification.",
+    "description": "PLAN04:108 requires makemigrations --check --dry-run, but task02 automated verification at :109 invokes only navbar_demo/tests.py and its actions do not establish a test running the migration check.",
+    "fix_hint": "Add the explicit migration command in the supported example cwd/environment or a meaningful test that executes the same drift gate.",
+    "reviewers": [
+      "grok-review"
+    ],
+    "claim_class": "judgment",
+    "status": "reviewer-signoff-planning-obligation-addressed",
+    "resolution_evidence": [
+      {
+        "path": ".planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-04-PLAN.md",
+        "line": 107,
+        "quote": "  <action>Wire app-local urlpatterns into project.urls under /object-navbar/ and give the landing route the name navbar-demo-home. Its view in views.py initially uses the authenticated Tenant entry flow and is extended with the final explanatory page in plan 05; no selected Tenant PK is accepted from an untrusted shortcut. Include both ViewSet URL sets. Generate 0001_initial for this app using the supported example environment and include migrations/__init__.py; its business dependencies are app-local. Extend actual project-URL tests to reverse and GET all declared links with noncolliding PKs and to verify inherited create/update/delete permissions and tenant-bound parent assignment. Do not add FEATURES until the seed module exists in plan 05. Use the exact Nox example session to provision dependencies (the cached core runner lacks whitenoise); Nox handles package install using existing declared dependencies. After provisioning, migration generation/checks use the interpreter under .nox/examples-3-12-django-5-2/bin/python from examples/bootstrap5, with PYTHONPATH=../../src:. for source work. Preserve this cwd distinction in the summary. Addresses review concern R16: run the explicit makemigrations navbar_demo --check --dry-run gate below after provisioning and after writing 0001_initial; require zero exit status. Record its exit separately from pytest, so a passing endpoint suite cannot mask migration drift.</action>"
+      }
+    ],
+    "verification_scope": "Static inspection confirms the required PLAN changes now appear in executable actions, files and verifications. This is planning review closure, not an assertion implementation/tests have run.",
+    "external_signoff": [
+      "fable-review",
+      "grok-review",
+      "gemini-review"
+    ]
+  }
+]

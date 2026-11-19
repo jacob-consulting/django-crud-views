@@ -1,0 +1,7 @@
+{
+  "status": "superseded",
+  "fable-review": "refused prompt cap; did not run",
+  "grok-review": "cancelled during review to rerun common corrected prompt",
+  "gemini-review": "cancelled during review to rerun common corrected prompt",
+  "counted_as_reviews": false
+}

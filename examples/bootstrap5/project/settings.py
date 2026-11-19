@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "library",
     "card_view",
     "nested",
+    "navbar_demo",
     "formsets",
     "workflow",
     "polymorphic_demo",

@@ -1,0 +1,38 @@
+{% extends "project/base.html" %}
+
+{% load crud_views example_tags i18n static %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'navbar_demo/reflow.css' %}">
+
+    {% example_about %}
+
+    {% cv_breadcrumb %}
+
+    <div class="card">
+        <div class="card-header">
+            <h1 class="h3 mb-0">{% translate "ViewSet Navigation" %}</h1>
+        </div>
+        <div class="card-body">
+            <p>{% translate "Alice and Bob manage customers, orders, items and addresses in separate tenants." %}</p>
+            <p>{% translate "Charlie can read customers, orders and items in Alice's tenant. Addresses and write actions are unavailable." %}</p>
+            <p><code>alice/alice</code>, <code>bob/bob</code>, <code>charlie/charlie</code> — <a href="{% url 'login' %}">{% translate "Sign in" %}</a></p>
+            <p>{% translate "Open Notes, Orders or Addresses, then follow an Order to an Item. The identity and section links still belong to the Customer." %}</p>
+            <p>{% translate "This customer has no orders yet. Orders stays available because you can open the section." %} {% translate "Try New customer to see this empty section." %}</p>
+            <p>{% translate "A visible section link does not guarantee access. The destination checks its permissions when you open it." %}</p>
+            <ul class="list-unstyled mb-0">
+                {% for customer in customers %}
+                    <li class="mb-3">
+                        <span>{{ customer.tenant }} — {{ customer }}</span>
+                        <a class="btn btn-primary" href="{% url 'navbar_customer-detail' navbar_tenant_pk=customer.tenant_id pk=customer.pk %}">{% translate "Explore ViewSet Navigation" %}</a>
+                    </li>
+                {% empty %}
+                    <li>{% translate "No items found." %}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {% snippet_panels %}
+
+{% endblock content %}

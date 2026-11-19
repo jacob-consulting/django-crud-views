@@ -1,25 +1,24 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.41"
+current_phase_name: Current-page bulk selection and action forms for table and card views
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.40.1 complete, ready to plan Phase 7
-last_updated: "2026-11-19T13:24:43.811Z"
+stopped_at: Phase 06.41 context gathered
+last_updated: "2026-11-19T17:39:36.386Z"
 last_activity: 2026-11-19
-last_activity_desc: "Phase 06.40.1 shipped as PR #386"
-state_head: 3676829908a93fbd2f383d45e38a558591b7a3a2
+last_activity_desc: "Inserted Phase 06.41 from approved issue #387 handover and its code-examples comment"
+state_head: 82804e744cba955b60d58b0d645bf837f9698ca7
 progress:
-  total_phases: 47
+  total_phases: 48
   completed_phases: 46
   total_plans: 257
   completed_plans: 257
-  percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 47
+Total Phases: 48
 Completed Phases: 46
 
 # Project State
@@ -29,17 +28,17 @@ Completed Phases: 46
 See: .planning/PROJECT.md (updated 2026-11-19)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.41 — Current-page bulk selection and action forms for table and card views (#387)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.41 — Current-page bulk selection and action forms for table and card views (#387)
 Current Plan: Not started
-Total Plans in Phase: TBD
+Total Plans in Phase: Not yet planned
 Status: Ready to plan
-Last activity: 2026-11-19 -- Phase 06.40.1 shipped as PR #386
+Last activity: 2026-11-19 -- Inserted Phase 06.41 from approved issue #387 handover and its code-examples comment
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.41
 
 ### Phase 06.40.1 completion — 2026-11-19
 
@@ -2083,6 +2082,7 @@ None yet.
 - Phase 06.39 inserted after Phase 06.37: Immediate-parent permission checks for child links (#380), ahead of the object navbar (#381) (URGENT)
 - Phase 06.40 inserted after Phase 06.39: Object navbar: opt-in section navigation (#381) (URGENT)
 - Phase 06.40.1 inserted after Phase 06.40: ViewSet Navigation: theme class keys and owner-heading layouts (#384); findings 36 and 38, Guardian finding 37 separate (URGENT)
+- Phase 06.41 inserted after Phase 06.40: Current-page bulk selection and action forms for table and card views (#387); approved D-01–D-10 with the code-examples comment captured as planning proposals; replaces the unmerged phase 06.38 (#378) approach (URGENT)
 
 ## Deferred Items
 
@@ -2092,6 +2092,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-19T13:15:37.896966+00:00
-Stopped at: Phase 06.40.1 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-19T17:39:29.679Z
+Stopped at: Phase 06.41 context gathered
+Resume file: .planning/phases/06.41-current-page-bulk-selection-and-action-forms-for-table-and-c/06.41-CONTEXT.md

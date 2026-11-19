@@ -2167,7 +2167,8 @@ view actions, accessibility and the existing lazy runtime paths.
 Carry approved D-01–D-07 and acceptance criteria into planning. The issue and design include pinned Tabler
 examples as implementation evidence; adapt reusable recipes into upstream documentation.
 **Scope:** Downstream findings 36 and 38. Finding 37 (Guardian checker reuse) is a separate issue, not a dependency.
-**Requirements**: None; the approved issue contract supplies phase acceptance criteria.
+**Requirements**: None
+**Approved contract:** Issue #384 D-01–D-07 and its acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the new navbar class keys and owner-heading theme contract.
 **Plans:** 0 plans

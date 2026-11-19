@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 54c18a1b65f038e5fcdb5dc0038782133f93ffb8
-last_mapped_at: 2026-11-17
+last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
+last_mapped_at: 2026-11-19
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-17
+**Analysis Date:** 2026-11-19
 
 Paths were verified to exist at mapping time. Items marked *(inferred)* were not read in detail.
 
@@ -15,7 +15,7 @@ django-crud-views/
 ├── src/
 │   ├── crud_views/                     # Core app (Bootstrap 5 theme)
 │   │   ├── apps.py, checks.py          # AppConfig; Django system checks
-│   │   ├── lib/                        # Runtime library (see below)
+│   │   ├── lib/                        # Runtime library (see below; navbar.py owns opt-in object navigation)
 │   │   ├── management/commands/        # cv_access, cv_manage_view, cv_manage_group, cv_assets, crud_views_show
 │   │   ├── templatetags/               # crud_views.py, crud_views_formsets.py
 │   │   ├── templates/crud_views/       # view_*.html, snippets/, tags/, formsets/, modal/, includes/ ...
@@ -33,7 +33,7 @@ django-crud-views/
 │   ├── lib/helper/                     # shared Python helpers
 │   ├── conftest.py
 │   └── check_manage_schema.py          # standalone validator of cv_manage_view exports
-├── examples/bootstrap5/                # demo project + feature apps
+├── examples/bootstrap5/                # demo project + feature apps, including independent navbar_demo
 ├── docs/                               # MkDocs source (reference/, getting_started/, development/)
 ├── scripts/                            # check_dist.py, generate_screenshots.py, wait_for_server.py
 ├── superpowers/                        # design notes, plans, specs, archives (committed)
@@ -64,6 +64,7 @@ lib/
 ├── access_trace.py     AccessTrace/AccessStep/AccessRecorder, get_recorder, recording, trace_access
 ├── access_trace_runner.py  synthetic-request runner, _run_trace
 ├── access_trace_export.py  Pydantic v1 wire models, validate_export, export_schema
+├── navbar.py             NavBar/NavItem declarations, checks, request-local lazy builder and visibility
 ├── manage_report.py    Pydantic wire models for cv_manage_view, adapt_section, report_schema
 ├── settings.py         CrudViewsSettings + crud_views_settings singleton
 ├── check.py            Check classes used by CrudView.checks()/ViewSet.checks()
@@ -84,6 +85,12 @@ lib/
 - Purpose: behavior shared by every view (metaclass, base contract, action/button projection, label modes, cancel).
 - Key files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/meta.py`.
 
+**`src/crud_views/lib/navbar.py`:**
+- Purpose: opt-in object-section navigation declaration and builder; mixin attaches lazy data to participating view contexts.
+- Contains: `NavBar`, `NavItem`, `CrudViewNavBarMixin`, metadata-only `Check` integration and `_build()` destination/admission logic.
+- Rendering is separate: three public tags are in `src/crud_views/templatetags/crud_views.py`; default theme wrapper and leaves are `src/crud_views/templates/crud_views/tags/navbar.html`, `navbar_identity.html`, and `navbar_items.html`.
+- Add navigation behavior here; keep reusable presentation in theme templates and avoid adding navigation work to `CrudView` globally.
+
 **`src/crud_views/lib/views/`:**
 - Purpose: one module per operation type; each combines `CrudView` with a Django generic view and has a `*PermissionRequired` variant.
 - Key files: `src/crud_views/lib/views/list.py`, `src/crud_views/lib/views/create.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/lib/views/mixins.py`.
@@ -99,6 +106,7 @@ lib/
 **`src/crud_views/management/commands/`:**
 - `cv_access.py` (trace CLI), `cv_manage_view.py` (configuration CLI), `cv_manage_group.py` (ensures `CRUD_VIEWS_MANAGE_GROUP` exists), `cv_assets.py` (asset delivery table/JSON), `crud_views_show.py` (no-op placeholder).
 - Keep argument parsing, rendering and exit codes here; delegate to `lib/`.
+- Runtime wire contracts stay separate: `cv_manage_view` uses `src/crud_views/lib/manage_report.py`; `cv_access` uses `src/crud_views/lib/access_trace_export.py`. Keep contract changes with their own validators, schemas and tests.
 
 **`src/crud_views/templates/crud_views/` and `static/crud_views/`:**
 - Templates: top-level `view_<op>.html` plus `.content.html` (modal/body), `snippets/{action,action_short,header,paragraph,message,alert,delete}/<key>.html` (per-view text templates referenced by `cv_*_template`), `tags/` (template-tag partials), `columns/`, `crispy/`, `formsets/`, `conditional/`, `modal/`, `shared/` (`css.html`, `js.html`), `table/`.
@@ -117,9 +125,9 @@ lib/
 
 **`tests/browser/`, `tests/js/`, `tests/js-integration/`:** Node harnesses (`*.cjs`, `*.test.cjs`) paired with Python fixture servers (`*_server.py`), e.g. `tests/browser/access-trace.test.cjs` with `tests/browser/access_trace_server.py`.
 
-**`examples/bootstrap5/`:** `project/` (settings, URLs, base templates, `features.py` catalog, `seeding.py`, `management/commands/seed.py`), plus one app per feature (`library`, `nested`, `resources`, `guardian_demo`, `workflow`, `polymorphic_demo`, `object_detail`, `formsets`, `conditional`, `action_menus`, `label_modes`, `breadcrumbs`, `theming`, ...). Each has `views.py`, `urls.py`, `seed.py`, `tests.py`. Doc-sync tests: `examples/bootstrap5/test_docs_sync.py`, `test_doc_links.py`, `test_i18n.py`.
+**`examples/bootstrap5/`:** `project/` (settings, URLs, base templates, `features.py` catalog, `seeding.py`, `management/commands/seed.py`), plus one app per feature (`library`, `nested`, `resources`, `navbar_demo`, `guardian_demo`, `workflow`, `polymorphic_demo`, `object_detail`, `formsets`, `conditional`, `action_menus`, `label_modes`, `breadcrumbs`, `theming`, ...). `navbar_demo` is an independent opt-in consumer: declarations/views in `examples/bootstrap5/navbar_demo/views.py`, routes in `urls.py`, wrapper in `templates/navbar_demo/crud_base.html`, app-local models/seed/static/tests, mounted at `/object-navbar/` in `examples/bootstrap5/project/urls.py`. It demonstrates the package API and does not define package runtime behavior. Doc-sync tests: `examples/bootstrap5/test_docs_sync.py`, `test_doc_links.py`, `test_i18n.py`.
 
-**`docs/`:** `docs/reference/*.md` (one page per feature, including `manage.md`, `resources.md`, `nested.md`, `guardian.md`), `docs/getting_started/`, `docs/development/` (`i18n.md`, `stability.md`), `docs/migrating-1.0.md`, `docs/reference/cv_manage_view.schema.json`. Navigation: `mkdocs.yml`.
+**`docs/`:** `docs/reference/*.md` (one page per feature, including `navbar.md`, `manage.md`, `resources.md`, `nested.md`, `guardian.md`), `docs/getting_started/`, `docs/development/` (`i18n.md`, `stability.md`), `docs/migrating-1.0.md`, `docs/reference/cv_manage_view.schema.json`. Navigation: `mkdocs.yml`.
 
 **`.planning/`:** `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, `STATE.md`, `state.json`, `config.json`, `codebase/`, `phases/`, `quick/`, `research/`, `notes/`, `intel/`, `debug/`, `ui-reviews/`. Phase artifacts stay in `.planning/phases/<phase>/`.
 
@@ -169,6 +177,12 @@ lib/
 - Validation: add `Check` objects in the view's `checks()` (`src/crud_views/lib/check.py`) or a Django check in `src/crud_views/checks.py`.
 - Tests: `tests/test1/test_<feature>.py`.
 
+**Object navbar change:**
+- Declaration, request-local lazy builder, destination validation and admission: `src/crud_views/lib/navbar.py`.
+- Rendering tag changes: `src/crud_views/templatetags/crud_views.py`; theme wrapper/identity/items: `src/crud_views/templates/crud_views/tags/navbar*.html`.
+- Consumer composition: `examples/bootstrap5/navbar_demo/views.py` and `templates/navbar_demo/crud_base.html`; package contract reference: `docs/reference/navbar.md`.
+- Focused checks: `tests/test1/test_navbar.py`, `test_navbar_checks.py`, `test_navbar_templates.py`, `test_navbar_permissions.py`, and `test_navbar_costs.py`.
+
 **New ViewSet option:**
 - Field on `ViewSet` in `src/crud_views/lib/viewset/__init__.py` (add a validator if constrained), consider a global default in `src/crud_views/lib/settings.py`, expose in manage (`get_manage_facts`/`get_manage_presentation` in `src/crud_views/lib/views/manage.py`) and, if it appears in the report, in `src/crud_views/lib/manage_report.py` plus the committed schema.
 
@@ -201,4 +215,4 @@ lib/
 
 ---
 
-*Structure analysis: 2026-11-17*
+*Structure analysis: 2026-11-19*

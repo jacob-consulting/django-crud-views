@@ -1,11 +1,11 @@
 ---
-last_mapped_commit: 54c18a1b65f038e5fcdb5dc0038782133f93ffb8
-last_mapped_at: 2026-11-17
+last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
+last_mapped_at: 2026-11-19
 ---
 <!-- refreshed: 2026-11-17 -->
 # Architecture
 
-**Analysis Date:** 2026-11-17
+**Analysis Date:** 2026-11-19
 
 Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, access trace, the cv_manage_view report contract, settings and checks. Items marked *(inferred)* were not read line by line (extension-app internals, templates, JS).
 
@@ -59,6 +59,7 @@ Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, acce
 | Action/button projection | Buttons, button data, action menus, label modes, visibility, cancel target | `src/crud_views/lib/view/buttons.py`, `button_data.py`, `action_menu.py`, `label_mode.py`, `visibility.py`, `cancel.py` |
 | Ancestor engine | Walk/validate parent chain, authorize ancestors per request, scope child queryset | `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_policy.py`, `src/crud_views/lib/ancestor_db.py` |
 | `Resource` / `ResourceViewMixin` | Non-ORM rows via `cv_get_items`/`cv_get_item`; `_meta` duck type (`ResourceOptions`) | `src/crud_views/lib/resource.py` |
+| Object section navigation | Opt-in `NavBar`/`NavItem` declarations, lazy per-view projection, visibility and active-section calculation | `src/crud_views/lib/navbar.py` |
 | `ManageView` | Developer page; nine `get_manage_*` section builders; `manage_export()` context for complete machine metadata | `src/crud_views/lib/views/manage.py` |
 | Manage report contract | Pydantic wire models, `adapt_section`, `Report` TypeAdapter, `report_schema()` | `src/crud_views/lib/manage_report.py` |
 | `cv_manage_view` command | Catalogue/inspection of registered ViewSets, text or JSON, schema mode | `src/crud_views/management/commands/cv_manage_view.py` |
@@ -118,6 +119,11 @@ Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, acce
 - Purpose: forms, tables, formsets, conditional fields, action rendering, assets.
 - Location: `src/crud_views/lib/{crispy,table,formsets,conditional}/`, `src/crud_views/lib/{breadcrumb,icons,messages,session,deletion,ordered}.py`, `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/`.
 
+**Object navigation:**
+- Purpose: opt-in identity plus links to owner object views and direct child ViewSets.
+- Location: declarations and checks in `src/crud_views/lib/navbar.py`; the three context-preserving rendering tags in `src/crud_views/templatetags/crud_views.py`; theme leaves in `src/crud_views/templates/crud_views/tags/navbar.html`, `navbar_identity.html`, and `navbar_items.html`.
+- Depends on: the completed request's view object, `_cv_ancestor_state` for descendant owner resolution, existing access/action admission helpers, and registered ViewSet routes. It does not create routes or query child collections.
+
 **Extension apps:**
 - Location: `src/crud_views_guardian/`, `src/crud_views_object_detail/`, `src/crud_views_workflow/`, `src/crud_views_polymorphic/`.
 - Each has its own `apps.py`; workflow and guardian register checks in `checks.py` and workflow owns `models.py` + `migrations/`.
@@ -143,6 +149,16 @@ Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, acce
 2. `urlpatterns` validates ancestor structure without relations (`_validate_ancestor_structure(self, relations=False)`); the request guard validates relations before lookup (`src/crud_views/lib/ancestors.py:124-149`).
 3. `_authorize_ancestors` selects gates (`_selected_gates`), resolves each ancestor (`_resolve_ancestor`), applies provider-specific checks (model: `user.has_perm`; guardian: `_guardian_ancestor_has_permission`) and stores `_AncestorState`.
 4. Child querysets are scoped (`_scope_child_queryset`) and objects verified (`_validate_child_parent`); `CreateViewParentMixin` sets the parent FK.
+
+### Object Navbar Path
+
+1. A consumer declares `NavBar(viewset=..., items=[NavItem(...)])` and mixes `CrudViewNavBarMixin` into only the views that should render it (`src/crud_views/lib/navbar.py`). The owner attachment must require an object; descendant attachments may be collection or object views.
+2. `get_context_data()` places a request-view-owned `SimpleLazyObject` in `cv_navbar`; modal requests and views without a declaration get `None`. The navbar does no work until a rendering tag evaluates that value.
+3. `_build()` resolves the owner from `view.object` on an owner page or `_resolved_ancestor(view, owner_name)` after the normal nested request guard has populated `_cv_ancestor_state` (`src/crud_views/lib/ancestors.py`). The same owner object supplies identity, access checks, state checks, and URL coordinates.
+4. Each owner item targets a registered GET object view. Each child item targets a registered direct child collection view. Existing `cv_has_access` or `_cv_child_link_has_access` admission runs before `_cv_action_enabled_for_rendering`; denied or disabled items are omitted. Child-link admission only applies the existing destination/immediate-parent visibility policy; the destination request still runs the full ancestor guard and queryset scoping. URLs are reversed from ViewSet router names with current ancestor kwargs.
+5. `{% cv_navbar %}` renders the configured wrapper or the active theme wrapper; `{% cv_navbar_identity %}` and `{% cv_navbar_items %}` render the shared lazy data through separate theme leaves. Modal requests and empty item lists emit no navbar markup. The default leaf templates provide plain identity and accessible section links (`aria-label`, `aria-current`).
+
+The default theme contract is split into wrapper/identity/items leaves under `src/crud_views/templates/crud_views/tags/`. Theme selection comes from `CrudViewsSettings.theme_path` (`src/crud_views/lib/settings.py`); a custom wrapper can compose the two public leaf tags. A consumer template opts in by loading `crud_views` and placing `{% cv_navbar %}` in its chosen block (the independent demo uses `examples/bootstrap5/navbar_demo/templates/navbar_demo/crud_base.html`).
 
 ### Resource Request Path
 
@@ -201,10 +217,16 @@ Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, acce
 - Purpose: developer-only page and data source for diagnostics.
 - Pattern: gated by `_cv_manage_allowed` (authenticated, active, `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` mode, membership in `CRUD_VIEWS_MANAGE_GROUP`), reporting `manage_gate` steps. Builders return display values by default and complete typed metadata (`_export`, `SourceRecord`) when `manage_export()` is active.
 
+**NavBar / NavItem:**
+- Purpose: declarative, opt-in object navigation attached through `CrudViewNavBarMixin`.
+- Pattern: `NavBar` names an owner ViewSet and ordered destinations; each `NavItem` targets one owner object-view key or a direct child collection ViewSet. `_build()` validates destinations, resolves the request's owner, applies existing admission/state checks, reverses registered router names, then determines the active direct-child section (`src/crud_views/lib/navbar.py`).
+- Constraint: context carries a request-instance `SimpleLazyObject`; the first theme tag evaluates it. Do not eagerly build navigation in `get_context_data()` or cache it on the declaration/ViewSet.
+
 ## Entry Points
 
 **App initialization:** `src/crud_views/apps.py` (`ready()` imports `crud_views.checks`); extension `apps.py` files.
 **URL generation:** `ViewSet.urlpatterns` in `src/crud_views/lib/viewset/__init__.py`.
+**Object navigation:** `CrudViewNavBarMixin` in `src/crud_views/lib/navbar.py`; render through `{% cv_navbar %}`, `{% cv_navbar_identity %}`, `{% cv_navbar_items %}` in `src/crud_views/templatetags/crud_views.py`.
 **Management commands:** `cv_access`, `cv_manage_view`, `cv_manage_group`, `cv_assets`, `crud_views_show` (placeholder, prints nothing) in `src/crud_views/management/commands/`.
 **Manage page:** auto-registered `AutoManageView` per ViewSet; trace form via `ManageView.get_manage_access_trace`.
 **Template tags:** `{% load crud_views %}` in `src/crud_views/templatetags/crud_views.py`.
@@ -265,8 +287,9 @@ Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, acce
 **Settings:** `crud_views_settings` singleton (`src/crud_views/lib/settings.py`): manage mode/group/show-users/access-trace/view-class, theme (`theme_path`, templates under `crud_views/`), session key, origin param (`cv_from`), CSP nonce attr, asset bundling, inaccessible actions (`hide|disable`), inline/label-mode action settings, ancestor cascade/read/write defaults, breadcrumb prefix, filter persistence/pinned, per-view default action lists, delete preview limit.
 **Assets:** `register_assets(key, js, css, emit)` stores `AssetBundle`s (`src/crud_views/lib/assets.py`); `cv_css`/`cv_js` render them with optional CSP nonce and SRI; `cv_sources` (`src/crud_views/lib/pipeline.py`) bundles them for django-pipeline; `cv_assets` command lists delivery.
 **Authentication:** Django auth locally; ancestors via `ancestors.py`; per-object via Guardian.
+**Runtime CLI contracts:** `cv_manage_view` and `cv_access` are independent management-command interfaces. Their versioned Pydantic output boundaries live in `src/crud_views/lib/manage_report.py` and `src/crud_views/lib/access_trace_export.py`; command parsing/rendering/exit codes stay in `src/crud_views/management/commands/`.
 **i18n:** gettext in package code, locale `de` under each `locale/` directory (`src/crud_views/locale/de/LC_MESSAGES/django.po`).
 
 ---
 
-*Architecture analysis: 2026-11-17*
+*Architecture analysis: 2026-11-19*

@@ -1,211 +1,170 @@
 ---
-last_mapped_commit: 54c18a1b65f038e5fcdb5dc0038782133f93ffb8
-last_mapped_at: 2026-11-17
+last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
+last_mapped_at: 2026-11-19
 ---
 <!-- refreshed: 2026-11-17 -->
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-17
+**Analysis Date:** 2026-11-19
 
 ## Tech Debt
 
 **Startup-captured settings and template registration:**
-- Issue: `CrudViewsSettings` defaults read Django settings during model definition, while template-tag registration captures the theme path. `override_settings()` cannot refresh those captured values after import; label-mode defaults are among settings read at call time.
+- Issue: `CrudViewsSettings` class defaults and template-tag registration capture some Django settings at import/startup. `override_settings()` does not refresh those values after import; selected label defaults are intentionally read at call time.
 - Files: `src/crud_views/lib/settings.py`, `src/crud_views/templatetags/crud_views.py`
-- Impact: runtime changes to startup-captured configuration are not reflected in settings instances or registered template paths.
-- Fix approach: keep startup-only settings explicit; add lazy evaluation or `setting_changed` handling only for a demonstrated runtime reconfiguration need.
+- Impact: changing startup-captured configuration during a process does not reconfigure the package.
+- Fix approach: treat these as startup configuration. Add lazy evaluation or `setting_changed` handling only for a demonstrated supported runtime-reconfiguration use case.
 
 **Placeholder public management command:**
-- Issue: `crud_views_show` is registered with help text but `handle()` is a no-op.
+- Issue: `crud_views_show` advertises a command but its `handle()` is a no-op.
 - Files: `src/crud_views/management/commands/crud_views_show.py`
-- Impact: invoking an advertised command produces no useful output.
-- Fix approach: implement a bounded ViewSet/URL report or remove the command from the public command surface.
+- Impact: invoking the command produces no report.
+- Fix approach: implement a bounded ViewSet/URL report or remove the command from the advertised surface.
 
 **Large central modules:**
-- Issue: shared behavior is concentrated in large modules: `base.py` (1,330 lines), manage views (1,125), ancestors (686), template tags (667), Guardian views (666), checks (644), buttons (599), Guardian mixins (560), formsets (556), ViewSet registration (540), manage reporting (516), and icon handling (495).
-- Files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/views.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/checks.py`, `src/crud_views/lib/view/buttons.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/manage_report.py`, `src/crud_views/lib/icons.py`
-- Impact: shared changes have broad regression surfaces and require navigating several responsibilities in large files.
-- Fix approach: preserve public APIs and extract cohesive subsystems only when a concrete maintenance need justifies the added abstraction. Project decisions are constrained by developer maintainability; see `AGENTS.md` and `superpowers/notes/2026-11-04-opt-in-url-helper-decision.md`.
+- Issue: shared behavior remains concentrated in modules including `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/views.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/checks.py`, `src/crud_views/lib/view/buttons.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/manage_report.py`, and `src/crud_views/lib/icons.py`.
+- Impact: edits to shared pathways have broad regression surfaces and require navigating multiple responsibilities.
+- Fix approach: preserve public APIs and extract cohesive subsystems only for demonstrated maintenance needs. Apply the developer-maintainability constraint in `AGENTS.md` and `superpowers/notes/2026-11-04-opt-in-url-helper-decision.md`.
 
 **Ancestor authorization crosses runtime layers:**
-- Issue: ancestor policy and resolution span query helpers, ViewSet hooks, breadcrumbs, resource loading, deletion/manage views, and Guardian integration; policy can also be shaped by multiple settings maps.
+- Issue: policy and resolution span query helpers, ViewSet hooks, breadcrumbs, resources, deletion/manage views, and Guardian integration; settings and ViewSet policy can select different bounded behaviors.
 - Files: `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_db.py`, `src/crud_views/lib/ancestor_policy.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views_guardian/lib/ancestors.py`
-- Impact: changes can affect request ordering, database routing, visibility, permission decisions, and query count across endpoint types.
-- Fix approach: retain the opt-in bounded policy model and use focused `tests/test1/test_ancestor_*.py` coverage for query budgets, routing, Guardian, migration, and redirects when changing it.
+- Impact: changes can alter request ordering, database routing, visibility, permission decisions, or query counts across endpoint types.
+- Fix approach: preserve the opt-in bounded policy model and run the focused `tests/test1/test_ancestor_*.py` suites for query budgets, routing, Guardian, migration, and redirects.
 
-**Access-trace instrumentation spans authorization owners and a synthetic dispatcher:**
-- Issue: access tracing observes outcomes computed by core, ancestor, Resource, manage, and Guardian paths, then uses synthetic GET dispatch and a handler stub to report them. Ordinary request recording is opt-in; the command and manage form invoke tracing explicitly.
+**Access tracing spans authorization owners and a synthetic dispatcher:**
+- Issue: traces collect decisions from core, ancestor, Resource, manage, and Guardian paths, then dispatch a synthetic GET with a handler stub. The real request handler is not run.
 - Files: `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_runner.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/resource.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/ancestors.py`, `src/crud_views_guardian/lib/mixins.py`
-- Impact: adding or changing a gate can leave diagnostics incomplete if its actual decision is not recorded. Traces intentionally do not run the real handler and do not model arbitrary project middleware effects, external side effects, additional database routing, or host/header/body/method-specific rules; these are documented bounds, not defects.
-- Fix approach: keep reports tied to already-computed authorization results, preserve default-off behavior, and update `tests/test1/test_access_trace*.py` plus `tests/test1/test_access_trace_grid.py` for each supported owner. Expand simulation only for a concrete application need.
+- Impact: a new gate can be absent from diagnostics unless its decision is recorded at the owning path. Arbitrary middleware effects, external side effects, extra database routing, host/header/body/method rules, and hidden custom super-call frames are outside the documented simulation contract; these are limitations, not confirmed defects.
+- Fix approach: keep tracing default-off and tied to computed authorization results. Update `tests/test1/test_access_trace*.py` and `tests/test1/test_access_trace_grid.py` when supported decision owners change.
 
-**Access-trace contract, CLI and report models (Phases 06.36 and 06.37):**
-- Issue: the structured outputs of `cv_manage_view` and `cv_access` are versioned Pydantic wire models with a published `--schema` and a validation gate. Contract, runner, export and command all carry behavior that tests pin byte-for-byte.
-- Files: `src/crud_views/lib/access_trace.py` (130 lines), `src/crud_views/lib/access_trace_export.py` (129), `src/crud_views/lib/access_trace_runner.py` (463), `src/crud_views/lib/manage_report.py` (516), `src/crud_views/management/commands/cv_access.py` (239), `src/crud_views/management/commands/cv_manage_view.py` (284)
-- Impact: field, literal (`StepResult`, kind, provider) or `extra` changes alter the published schema and the compatibility rule in `docs/reference/manage.md`; Pydantic-version-dependent schema text and gate strictness were fixed in 06.37 by regenerating on upgrade, not by byte comparison.
-- Fix approach: change the models together with `docs/reference/manage.md`, `CHANGELOG.md` and `tests/test1/test_access_trace_contract.py`, `tests/test1/test_access_trace_docs.py`, `tests/test1/test_manage_command_docs.py`; run the Pydantic floor session by hand because it is not in CI.
+**Published access-trace and manage-report contracts:**
+- Issue: command output and the `--schema` contract are Pydantic models whose field names, literals, and extra-field behavior are public compatibility surface.
+- Files: `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/access_trace_export.py`, `src/crud_views/lib/access_trace_runner.py`, `src/crud_views/lib/manage_report.py`, `src/crud_views/management/commands/cv_access.py`, `src/crud_views/management/commands/cv_manage_view.py`, `docs/reference/manage.md`
+- Impact: model or literal changes can break consumers that validate or parse the documented JSON.
+- Fix approach: update the models, docs, changelog, and `tests/test1/test_access_trace_contract.py`, `tests/test1/test_access_trace_docs.py`, and `tests/test1/test_manage_command_docs.py` together. Counts remain shape-validated integers by the accepted contract; adding numeric bounds requires an intentional schema change.
 
-**Pydantic floor session not in CI and Resource import at the floor:**
-- Issue: `pyproject.toml` declares `pydantic (>=2.2.1)`. `.planning/phases/06.36-viewset-configuration-cli-and-versioned-json-contract-371/deferred-items.md` (status open) records that, at Pydantic 2.2.1, five modules fail collection (20 xdist errors) through a `Resource` subclass import path in `src/crud_views/lib/resource.py` (`__pydantic_init_subclass__`, `cls.model_fields` at line 99), so the command corpus cannot be emitted at the floor. Phase 06.37 added only a manual floor gate (`06.37-VERIFICATION.md`).
-- Files: `src/crud_views/lib/resource.py`, `pyproject.toml`, `noxfile.py`
-- Impact: the declared floor is not demonstrably supported for Resource and the CLI corpus.
-- Fix approach: either raise the Pydantic floor to a version the suite passes on (with `CHANGELOG.md` and `docs/migrating-1.0.md`) or add the floor session to `noxfile.py`/CI; re-verify the recorded failure first since the line reference in the deferred item has moved.
-
-**Unbounded count integers in contract models (deferred IN-03):**
-- Issue: one-based indexes and counts in the access-trace/report models and the schema are unconstrained integers; the gate is shape-only by decision.
-- Files: `src/crud_views/lib/access_trace.py`, `src/crud_views/lib/manage_report.py`, `.planning/phases/06.37-cv-access-pydantic-json-contract-validation-and-schema-375/06.37-REVIEW-DISPOSITION.md`
-- Impact: out-of-range values would validate; nothing emits them today.
-- Fix approach: add bounds only with a deliberate schema change (it alters the published bytes).
-
-**Unresolved actor text output (skipped WR-01):**
-- Issue: text mode reports an unresolved actor as "None (pk None, inactive)".
+**Unresolved actor text output:**
+- Issue: text output formats an unresolved non-anonymous actor as `None (pk None, inactive)` rather than identifying it as unresolved; JSON shape is unaffected.
 - Files: `src/crud_views/management/commands/cv_access.py`, `src/crud_views/lib/access_trace_export.py`
-- Impact: misleading diagnostic wording; JSON output is unaffected.
-- Fix approach: render an explicit "unresolved" label if touched.
+- Impact: the human-readable diagnostic can mislead when actor resolution fails.
+- Fix approach: render an explicit unresolved label when touching this output path.
 
-**Assertions used for caller/configuration contracts:**
-- Issue: assertions enforce some public or configuration preconditions and disappear under optimized Python. Examples (18 `assert` statements under `src/`) include permission-map lookup and workflow/Guardian configuration checks.
+**Assertions enforce some caller/configuration preconditions:**
+- Issue: assertions in public-adjacent configuration paths disappear under optimized Python.
 - Files: `src/crud_views/lib/view/base.py`, `src/crud_views_workflow/lib/mixins.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views_guardian/lib/views.py`, `src/crud_views_polymorphic/lib/utils.py`, `src/crud_views/lib/formsets/formsets.py`
 - Impact: invalid configuration may fail later or less clearly under `python -O`; current evidence does not establish an authorization bypass.
-- Fix approach: use explicit exceptions or Django system checks for caller/configuration contracts, retaining assertions for internal invariants.
+- Fix approach: use explicit exceptions or Django system checks for caller/configuration contracts while retaining assertions for internal invariants.
 
 ## Known Bugs
 
 **Polymorphic create with invalid or unconfigured content type:**
-- Symptoms: an unknown content-type id lets `ContentType.DoesNotExist` escape; a valid but unconfigured subtype raises `ValueError`, whose message refers to `self.object.__class__` and can report `NoneType` during create-form selection.
+- Symptoms: an unknown content-type id propagates `ContentType.DoesNotExist`; a valid but unconfigured subtype raises `ValueError` with a message based on `self.object.__class__`, which can say `NoneType` during create-form selection.
 - Files: `src/crud_views_polymorphic/lib/utils.py`, `src/crud_views_polymorphic/lib/create.py`, `src/crud_views_polymorphic/lib/create_select.py`
 - Trigger: directly request a polymorphic-create URL with a nonexistent content-type id or a model missing from `polymorphic_forms`.
-- Workaround: expose only selector-provided types. A targeted fix could turn invalid/unconfigured types into a deliberate 404 or form error and report the resolved model.
+- Workaround: link only to selector-provided types. A targeted fix can convert invalid/unconfigured types to a deliberate 404 or form error and name the resolved model.
 
 ## Security Considerations
 
-No distinct security defect is confirmed by current evidence. Permission and ancestor paths are cross-cutting and should be changed with request-level regressions, including `tests/test1/test_ancestor_*.py`, `tests/test1/test_guardian.py`, and `tests/test1/test_authorization_matrix.py`.
+No distinct security defect is confirmed by current evidence. Keep navbar rendering and endpoint authorization separate: a navbar item is admitted for display using destination access/state checks, but a rendered link is not an authorization grant. The destination request still applies its own permission, ancestor, and queryset restrictions; a reachable nested host can display a child link whose destination returns 403/404. Relevant implementation and regressions are `src/crud_views/lib/navbar.py`, `src/crud_views/lib/viewset/__init__.py`, `tests/test1/test_navbar_permissions.py`, and `tests/test1/test_authorization_matrix.py`.
 
 ## Performance Bottlenecks
 
-**Delete preview limit does not bound cascade inspection:**
-- Problem: `cv_delete_preview_limit` limits displayed entries after cascade inspection and permission filtering have completed.
+**Delete preview limit is a display cap, not an inspection cap:**
+- Problem: `cv_delete_preview_limit` limits displayed rows after cascade inspection and permission filtering.
 - Files: `src/crud_views/lib/views/delete.py`, `src/crud_views/lib/deletion.py`, `tests/test1/test_delete_preview_limit.py`
 - Cause: `_cv_inspect_deletion()` runs before `_cv_select_delete_preview()` applies the display limit.
-- Improvement path: treat the setting as a display cap; profile real cascades before adding a separately bounded inspection contract.
+- Improvement path: document the display-only behavior; profile real cascades before designing a separately bounded inspection contract.
 
 **Guardian object-action checks can repeat:**
-- Problem: rendered objects and actions may each trigger permission checks; request-scoped caching exists for ancestor checks but regular object-action paths instantiate their own checkers.
+- Problem: list/card objects and their actions may each perform permission checks. Ancestor checks have request-scoped caching, but ordinary object-action checks can construct separate checkers.
 - Files: `src/crud_views_guardian/lib/mixins.py`, `src/crud_views_guardian/lib/views.py`, `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/views/card.py`
-- Cause: permission checks are reached during construction of visible actions for objects.
-- Improvement path: profile large list/card pages and consider request-scoped checker reuse only if query counts are material; `tests/test1/test_ancestor_costs.py` pins current ancestor query budgets.
+- Cause: permissions are consulted while visible actions are assembled for objects.
+- Improvement path: profile large pages before considering checker reuse; preserve the query budgets in `tests/test1/test_ancestor_costs.py`.
 
-**Resource list/detail manage-action admission check:**
-- Problem: Resource list/detail views that inherit context actions may project the `manage` action. With manage mode enabled, its access check runs nested authorization and a developer-group membership query for each authenticated active actor, even when the default hide policy keeps the action invisible; access-recorder mode also records a `manage_gate` event.
+**Navbar SQL is bounded only by the published fixture contract:**
+- Problem: navbar admission may execute permission and ContentType reads; Guardian object-permission work remains visible. It is not a universal whole-page query budget or a guarantee for custom authorization hooks/backends.
+- Files: `src/crud_views/lib/navbar.py`, `tests/test1/test_navbar_costs.py`, `docs/reference/navbar.md`
+- Cause: admission invokes owner/destination access hooks; vocabulary and actor permission caches change the fixture's counts.
+- Improvement path: preserve the isolated navbar-only measurements and exact per-cell expectations in the test/docs; the current parametrized test spans 120 combinations (composition, depth, placement, permission-vocabulary cache, and actor-cache state). Profile real application hooks before making broader claims. Existing request/object/ancestor queries are excluded by design.
+
+**Resource manage-action admission check:**
+- Problem: Resource list/detail views that inherit context actions may project the `manage` action. With manage mode enabled, its access check runs nested authorization and a developer-group membership query for each authenticated active actor, even when the default hide policy keeps it invisible; access-recorder mode can also record a `manage_gate` event.
 - Files: `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/lib/settings.py`, `docs/reference/resources.md`
-- Cause: Resource views use the same manage action and gate as model ViewSets to preserve action parity.
-- Improvement path: retain parity and profile real Resource list/detail pages before considering a cached gate or altered action projection. Model and Guardian manage-page query baselines remain unchanged (9 and 21 statements); phase 06.35 records this Resource-path delta.
+- Cause: Resource views share the manage action and gate with model ViewSets to preserve action parity.
+- Improvement path: retain parity and profile real Resource list/detail pages before considering a cached gate or altered projection. Phase 06.35's model and Guardian manage-page baselines (9 and 21 statements) do not establish this separate Resource-path cost.
 
 ## Fragile Areas
 
 **ViewSet registration, URL routing, and metaclass integration:**
 - Files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/viewset/path_regs.py`, `src/crud_views/checks.py`
-- Why fragile: views register during class construction and URL behavior depends on shared registries, parent chains, PK shape, and startup checks.
-- Safe modification: preserve the import-safety boundary in `src/crud_views/lib/resource.py`; cover nested URLs and startup checks for affected combinations.
-- Test coverage: broad request and system-check coverage is in `tests/test1/`.
+- Why fragile: views register during class construction; URLs depend on shared registries, parent chains, primary-key shape, and startup checks.
+- Safe modification: preserve import-safety boundaries in `src/crud_views/lib/resource.py`; cover nested URLs and startup checks for affected combinations.
+- Test coverage: request and system-check suites under `tests/test1/`.
 
 **Templates, themes, and header-icon compatibility:**
 - Files: `src/crud_views/lib/button_classes.py`, `src/crud_views/lib/view/button_data.py`, `src/crud_views/lib/icons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/js/`
-- Why fragile: themes consume class keys, button context, icons, template variables, and JavaScript adapters as a connected contract. An empty `cv_icon_header` explicitly suppresses inheritance; consumers that previously used it to inherit must use `None` or `Icon.VIEWSET_DEFAULT`, while `Icon.NONE` expresses suppression.
-- Safe modification: preserve custom header content independently of icon choice and update migration guidance in `CHANGELOG.md` and `docs/migrating-1.0.md` when changing the contract.
-- Test coverage: built-in templates and the example theme are exercised; installed third-party themes are not certified (`docs/development/stability.md`). Empty-default `conditional:legend` and `formset:legend` hooks are independently configured through the existing registry; precedence, escaping and fragment ownership are covered in `tests/test1/test_conditional_layout.py` and `tests/test1/test_formsets_compact.py`.
+- Why fragile: themes consume class keys, button context, icons, template variables, and JavaScript adapters as a connected contract. Empty `cv_icon_header` suppresses inheritance; consumers that need inherited icons use `None` or `Icon.VIEWSET_DEFAULT`, and `Icon.NONE` suppresses explicitly.
+- Safe modification: preserve custom header content independently of icon choice and update `CHANGELOG.md` and `docs/migrating-1.0.md` for contract changes.
+- Test coverage: built-in and example themes are exercised; arbitrary installed third-party themes are not certified (`docs/development/stability.md`). Conditional/formset empty-default hooks and fragment ownership have coverage in `tests/test1/test_conditional_layout.py` and `tests/test1/test_formsets_compact.py`.
 
-**Nested formset rendering and persistence:**
-- Files: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`, `src/crud_views/lib/formsets/inline_formset.py`
-- Why fragile: management forms, indexes, save order, and validation errors must stay aligned across server rendering and JavaScript cloning.
-- Safe modification: cover GET, invalid POST, deletion, nested indexes, and transaction behavior.
-- Test coverage: `tests/test1/test_formsets*.py` and `tests/test1/test_fragment_authorization.py`.
+**Nested and compact formset rendering/persistence:**
+- Files: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`, `src/crud_views/lib/formsets/inline_formset.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/templates/crud_views/formsets/compact_headings.html`, `src/crud_views/static/crud_views/css/formset.css`, `src/crud_views/static/crud_views/js/formset.js`
+- Why fragile: management forms, indexes, save order, hidden/control feedback, dynamic cloning, and validation errors must stay aligned across nested server rendering and JavaScript.
+- Safe modification: cover GET, invalid POST, deletion, nested indexes, transaction behavior, fragment lifecycle, and nested compact/classic combinations. Compact metadata must stay query-free and index-independent; changing columns in `add_fields()` is unsupported.
+- Test coverage: `tests/test1/test_formsets*.py`, `tests/test1/test_fragment_authorization.py`, `tests/test1/test_formsets_compact.py`, `tests/js/formset.test.js`, `tests/js-integration/formset.test.js`, and `tests/browser/compact-checkboxes.cjs`. Compact custom widgets/templates outside the documented stock set, password inputs, textareas, and compact polymorphic forms are explicit product boundaries, not defects (`docs/reference/formsets.md`).
 
-**Opt-in compact formset projection:**
-- Files: `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/templates/crud_views/formsets/compact_headings.html`, `src/crud_views/static/crud_views/css/formset.css`, `src/crud_views/static/crud_views/js/formset.js`
-- Why fragile: compact layout derives shared schema from request-time form metadata, projects hidden/control feedback to row owners, and shares geometry rules with nested rendering and dynamic cloning. The mode is opt-in; classic helper dispatch remains separate.
-- Safe modification: keep metadata query-free and index-independent, preserve visible-field/schema validation and hidden-error ownership, and check fragment lifecycle plus nested compact/classic combinations. Compact support extends to exact stock `CheckboxInput` controls; custom widgets/templates retain their documented theme responsibility.
-- Test coverage: `tests/test1/test_formsets_compact.py`, `tests/js/formset.test.js`, `tests/js-integration/formset.test.js`, and `tests/browser/compact-checkboxes.cjs`; see `.planning/phases/06.26-issue-351/06.26-VERIFICATION.md`.
+**Conditional group and queryset contracts:**
+- Files: `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/formset.py`, `src/crud_views/lib/conditional/queryset.py`, `src/crud_views/static/crud_views/js/toggle.js`, `docs/reference/conditional.md`
+- Why fragile: cleaned choices govern server-side activation/clearing while browser state preserves unsaved inputs; offered-option coverage and POST selected-object validation are distinct bounded checks.
+- Safe modification: preserve cleaned-data authority, native choice validation, exact value matching, and query-free metadata. Supported value-driven controls are single `Select` and same-name `RadioSelect`; custom sources/widgets and overlapping or whole-formset activation remain outside the documented contract.
+- Test coverage: `tests/test1/test_conditional_*.py`, `tests/test1/test_conditional_queryset*.py`, `tests/js/toggle.test.js`, `tests/js/formset.test.js`, `tests/browser/conditional-formsets-evidence.test.cjs`, `tests/browser/queryset-conditional.cjs`, and `examples/bootstrap5/conditional/tests.py`.
 
-**Compact formset support boundary:**
-- Issue: compact metadata requires constructors and `get_form_kwargs(None)` to be query-free and independent of a live row index; changing compact columns in `add_fields()` is unsupported. Compact polymorphic declarations reject explicitly. Password inputs, textareas, and custom widgets/templates beyond the documented stock set are unsupported.
-- Files: `src/crud_views/lib/formsets/compact.py`, `docs/reference/formsets.md`, `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-COMPATIBILITY.md`
-- Impact: these patterns cannot opt into compact mode; classic rendering remains available. This is a documented product boundary, not a defect.
-- Fix approach: keep the bounded contract explicit and expand only for a demonstrated consumer need with a query-safe metadata design.
-
-**Choice-driven conditional groups (new feature boundary):**
-- Files: `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/toggle.py`, `src/crud_views/lib/conditional/formset.py`, `src/crud_views/static/crud_views/js/toggle.js`, `src/crud_views/static/crud_views/js/formset.js`, `docs/reference/conditional.md`
-- Why fragile: server-cleaned choice values govern group activation and clearing, while browser state preserves unsaved inputs across selection changes. The supported native controls are single `Select` and same-name `RadioSelect`; value-driven groups control fields within a form (including a formset row), cannot activate a whole ConditionalFormSet, cannot overlap, and cannot clear their controller. Explicit empty values and bounded model-choice inference control persisted clearing.
-- Safe modification: preserve cleaned-data authority, exact HTML token matching (including zero), native validation, and checkbox-group behavior; keep JavaScript lifecycle ownership aligned to the owning form and confirm persistence as well as browser state.
-- Test coverage: `tests/test1/test_conditional_*.py`, `tests/js/toggle.test.js`, `tests/js/formset.test.js`, `tests/browser/conditional-formsets-evidence.test.cjs`, and the actual Customer example in `examples/bootstrap5/conditional/tests.py`.
-
-**Queryset-driven conditional fields:**
-- Files: `src/crud_views/lib/conditional/queryset.py`, `src/crud_views/lib/conditional/formset.py`, `src/crud_views/lib/conditional/group.py`, `docs/reference/conditional.md`
-- Why fragile: conditional categories come from a declared source over a model-choice queryset, while Django's native choice validation and cleaned selection remain authoritative. Coverage inspection checks offered options during rendering; selected-object validation is a separate bounded check. Source/field ownership conflicts are rejected, and metadata inspection is deliberately query-free.
-- Safe modification: preserve the separation between render-time offered coverage and POST-time selected-object validation; do not inspect `field.choices` or raw POST to discover authority. Keep source inference explicit and query-free, and update the contract before admitting custom sources or widgets.
-- Test coverage: `tests/test1/test_conditional_queryset*.py`, `tests/test1/test_conditional_group.py`, `tests/test1/test_conditional_formset.py`, and `tests/browser/queryset-conditional.cjs`. Phase 06.30 verification passed 54/54 must-haves; its review disposition records zero active findings. The documented restrictions on native model-choice fields, scalar keys, and explicit category sources are product bounds, not unresolved defects.
-
-**Manage diagnostics and group command:**
+**Manage authorization and setup command:**
 - Files: `src/crud_views/lib/views/manage.py`, `src/crud_views/management/commands/cv_manage_group.py`, `src/crud_views/lib/settings.py`, `src/crud_views_guardian/lib/views.py`
-- Why fragile: manage-page access and action visibility share a policy involving mode, active authentication, group membership, and nested ancestor checks. The group setup command creates only the configured group; it intentionally does not grant permissions or change memberships. Staff and superusers still require group membership when group-gated mode is active.
-- Safe modification: preserve the distinction between page access, manage-action visibility, and Django permissions. Keep `cv_manage_group` idempotent and group-only, and test top-level and nested requests plus mode changes when changing the policy.
-- Test coverage: `tests/test1/test_manage.py`, `tests/test1/test_manage_group.py`, `tests/test1/test_ancestor_manage.py`, `tests/test1/test_guardian.py`, `tests/test1/test_authorization_matrix.py`, and `tests/test1/test_resource_manage*.py`. Phase 06.35 passed 5/5 verification truths with zero active deep-review findings; it preserves the model/Guardian query baselines and explicitly documents the additional Resource toolbar gate. The documented setup boundary is intentional.
-
-**Manage-page inherited mobile polish:**
-- Files: `src/crud_views/templates/crud_views/view_manage.html`, `src/crud_views/static/crud_views/css/manage.css`
-- Why fragile: the shared page can show very tall holder rows for long names, local configuration tables have a weak horizontal-scroll cue, and child-opening guidance appears on childless Resource leaves.
-- Safe modification: if adjusting the shared layout, preserve full holder identity, keyboard access and scrollable labeled regions; render child guidance only when children exist. These are nonblocking inherited UI recommendations, not Resource authorization or data defects.
-- Test coverage: stock Bootstrap browser evidence is retained in `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-UI-REVIEW.md`; downstream themes and assistive-technology behavior are outside that evidence.
-
-**Workflow transition button presentation:**
-- Files: `src/crud_views_workflow/lib/forms.py`, `src/crud_views_workflow/lib/widgets.py`, `src/crud_views_workflow/apps.py`, `src/crud_views_workflow/templates/crud_views_workflow/widgets/transitions.html`
-- Why fragile: workflow actions pass transition metadata through the existing theme class and icon registries, while retaining native submit names, values, labels, disabled states, and refresh behavior. Presentation metadata is copied and resolved during rendering; it must not alter transition availability or execution.
-- Safe modification: preserve fallback behavior when the workflow app/metadata or icon library is absent, retain visible labels and native submit controls, and exercise invalid-form refresh and denied-transition paths alongside visual variants.
-- Test coverage: `tests/test1/test_workflow_buttons.py`, `tests/test1/test_workflow.py`, `tests/test1/test_workflow_execution.py`, `tests/test1/test_workflow_permissions.py`, and `tests/test1/test_button_classes.py`. Phase 06.32 verification passed 7/7 must-haves with no active review findings. Registered icon libraries and application-loaded assets remain documented prerequisites, not defects.
+- Why fragile: page access and action visibility combine mode, active authentication, group membership, and nested ancestor checks. The setup command creates only the configured group; it does not grant permissions or change memberships. Staff/superusers still need group membership when group-gated mode is active.
+- Safe modification: keep page access, action visibility, and Django permissions distinct; preserve idempotent group-only setup and cover top-level/nested mode changes.
+- Test coverage: `tests/test1/test_manage.py`, `tests/test1/test_manage_group.py`, `tests/test1/test_ancestor_manage.py`, `tests/test1/test_guardian.py`, `tests/test1/test_authorization_matrix.py`, and `tests/test1/test_resource_manage*.py`.
 
 **Workflow permission and transition helper boundaries:**
 - Files: `src/crud_views_workflow/lib/execution.py`, `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `docs/reference/workflow_view.md`
-- Why fragile: `run_transition()` requires a persisted actor/object on the selected write alias; direct django-fsm calls bypass helper validation/history, and `workflow_check_transition()` is business validation rather than authorization. Page access and transition permissions are separate.
+- Why fragile: `run_transition()` requires a persisted actor/object on the selected write alias; direct django-fsm calls bypass helper validation/history, and `workflow_check_transition()` is business validation rather than authorization. Page and transition permissions are separate.
 - Safe modification: route transitions through the documented helper and preserve independent page and transition permission checks.
-- Test coverage: `tests/test1/test_workflow_permissions.py` and `tests/test1/test_workflow_execution.py`; concurrency and Guardian/nested-object combinations are not certified.
+- Test coverage: `tests/test1/test_workflow_permissions.py`, `tests/test1/test_workflow_execution.py`; concurrency and Guardian/nested combinations are not certified.
 
-**Snippet parent resolution:**
+**Lazy snippet parent resolution:**
 - Files: `src/crud_views/lib/view/base.py`, `docs/reference/templates.md`, `tests/test1/test_snippet_context.py`, `tests/test1/test_snippet_docs.py`
-- Why fragile: `parent_object` resolves lazily through Django template evaluation, whose variable-resolution handling can suppress exceptions inside operators such as `{% if parent_object %}`. `cv_assert_parent()` also uses assertions and is invoked redundantly from `cv_get_parent_object()`.
-- Safe modification: document/test direct access separately from operator expressions; consolidate the duplicate guard if touching this path.
+- Why fragile: `parent_object` resolves lazily through Django template evaluation, where missing-variable behavior inside operators such as `{% if parent_object %}` can suppress exceptions. `cv_assert_parent()` is also called redundantly through `cv_get_parent_object()`.
+- Safe modification: distinguish direct access from template-operator use in tests/docs and consolidate the duplicate guard only when touching this path.
 - Test coverage: direct lazy resolution, missing-parent 404, and filter-header context are covered; operator-expression behavior is not.
-
-**Object-detail template migration:**
-- Files: `src/crud_views_object_detail/lib/conf.py`, `src/crud_views_object_detail/lib/resolvers.py`, `src/crud_views_object_detail/templatetags/crud_views_object_detail.py`, `docs/migrating-1.0.md`
-- Why fragile: model-derived help defaults off and scalar choices display labels; copied value templates keep their own behavior until migrated.
-- Safe modification: use documented help restoration or `choices_display=False` where needed; treat cached settings as startup configuration.
-- Test coverage: built-in configuration and rendering paths are exercised in `tests/test1/od/`; third-party copied templates are not.
 
 ## Scaling Limits
 
 **Resource lookup and list materialization:**
 - Current capacity: `Resource.cv_get_items()` returns a plain list and default `cv_get_item()` scans it linearly.
 - Limit: large remote datasets require full-read memory and O(n) lookup.
-- Scaling path: override item lookup for sources with direct key access; add pagination or source-native lookup only if large remote collections become supported.
+- Scaling path: override lookup for sources with direct key access; add pagination or source-native lookup only if large remote collections become supported.
 
 ## Dependencies at Risk
 
 **Django 4.2 support floor:**
-- Risk: Django 4.2 remains the declared package floor and is included in the supported-version test matrix.
+- Risk: Django 4.2 remains the declared package floor and is included in the supported-version matrix.
 - Impact: the oldest compatibility line increases maintenance and release-verification work.
 - Migration plan: decide whether 1.0 retains this floor and update `pyproject.toml`, `noxfile.py`, and migration guidance together if it changes.
 
 ## Documentation Accuracy
 
-**Login redirect described as a `denied` step (open WR-06):**
-- Problem: `docs/reference/manage.md` (lines ~515-516) states a login redirect is a `denied` step with the `login_redirect` outcome. When project code overrides `has_permission()` and converts a recorded 404 into the redirect, the deciding step is `not_found` and the trace has no `denied` step (reproduced in `.planning/phases/06.37-cv-access-pydantic-json-contract-validation-and-schema-375/06.37-VERIFICATION.md`). The command and models are correct; the sentence overstates.
-- Fix: qualify the sentence to the stock-view case and bind it with a test beyond the single stock view in `tests/test1/test_access_trace_docs.py`.
-- Priority: Medium (warning)
+**Access-trace login redirect wording:**
+- Problem: `docs/reference/manage.md` describes a login redirect as a `denied` step with `login_redirect`; project overrides of `has_permission()` may convert a recorded 404 into a redirect, leaving `not_found` as the recorded decision.
+- Files: `docs/reference/manage.md`, `src/crud_views/lib/access_trace_runner.py`, `.planning/phases/06.37-cv-access-pydantic-json-contract-validation-and-schema-375/06.37-VERIFICATION.md`
+- Impact: readers may misinterpret the trace decision for custom views.
+- Fix approach: qualify docs to the stock-view case and bind the custom case with an additional test in `tests/test1/test_access_trace_docs.py`.
 
-**Wrong-invocation exit code and `(ValidationError)` token (open IN-09, IN-10, IN-11):**
-- Problem: `docs/reference/manage.md` (about lines 439, 442-443, 552-553) says a wrong invocation exits 2, but Django's own option errors exit 1; the untranslated `(ValidationError)` token the docs tell scripts to search also appears in stderr lines that echo caller input; four changed statements remain without tests (`tests/test1/test_access_trace_docs.py`).
-- Fix: qualify the exit-code wording and the detection rule; or accept as is (the review marks these info-level).
-- Priority: Low
+**CLI validation-error exit/text documentation:**
+- Problem: `docs/reference/manage.md` documents exit code 2 for output validation failures and advises detecting the untranslated `(ValidationError)` token. Django command-line option errors may exit 1, and stderr can echo caller input containing that token.
+- Files: `docs/reference/manage.md`, `src/crud_views/management/commands/cv_access.py`, `src/crud_views/lib/access_trace_export.py`, `tests/test1/test_access_trace_docs.py`
+- Impact: scripts may classify unrelated errors as validation failures or expect the wrong exit code.
+- Fix approach: qualify the exit-code wording and document a robust detection rule if the CLI contract is revised.
 
 ## Missing Critical Features
 
@@ -216,60 +175,61 @@ None independently confirmed.
 **Invalid polymorphic content-type URLs:**
 - What's not tested: direct create with nonexistent content-type ids or existing but unconfigured subtype ids.
 - Files: `src/crud_views_polymorphic/lib/utils.py`, `src/crud_views_polymorphic/lib/create.py`, `tests/test1/test_polymorphic.py`
-- Risk: uncaught lookup/form-selection exceptions can return server errors instead of a controlled response.
-- Priority: High
+- Risk: lookup/form-selection exceptions can surface as server errors instead of a controlled response.
+- Priority: Medium.
 
-**Custom user model without `username` in legacy manage holder path:**
-- What's not tested: `CRUD_VIEWS_MANAGE_SHOW_USERS=True` with an email-only user model through `get_permission_holders()`; this legacy method still names `username` directly in `values_list()` and `order_by()`. The structured manage matrix uses `user_model.USERNAME_FIELD`, but the legacy holder path remains present.
+**Custom user model without `username` in legacy permission-holder path:**
+- What's not tested: `CRUD_VIEWS_MANAGE_SHOW_USERS=True` on an email-only user model through `get_permission_holders()`.
 - Files: `src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/views.py`, `tests/test1/test_manage.py`, `tests/test1/test_guardian.py`
-- Risk: Django raises `FieldError` if this path is used with a configured user model lacking a `username` field.
-- Priority: Medium
+- Risk: the legacy path uses `username` directly in `values_list()` and `order_by()`, which can raise `FieldError`; the structured matrix's `USERNAME_FIELD` support does not cover this separate path.
+- Priority: Medium.
 
-**Third-party theme contract:**
-- What's not tested: consumer overrides across template variables, class keys, icons, and JavaScript adapters; built-in and example theme coverage does not certify installed external themes.
+**Third-party theme integration:**
+- What's not tested: arbitrary consumer overrides across template variables, class keys, icons, and JavaScript adapters.
 - Files: `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/js/`, `docs/development/stability.md`
-- Risk: extension breakage may escape the built-in template suite.
-- Priority: Medium
+- Risk: compatibility issues in installed downstream themes may escape built-in and example-theme tests.
+- Priority: Low; this is an extension certification boundary.
 
-**Cross-environment and browser scope:**
-- What's not tested: phase 06.35 release evidence covers Python 3.12 with Django 4.2/5.2/6.0; seven supported runtime pairs lack prepared environments: Python 3.13 × Django 4.2/5.2/6.0, Python 3.14 × Django 5.2/6.0, and Python 3.15 × Django 5.2/6.0. Phase 06.35's retained manage-presentation browser evidence covers cached Chromium only; Firefox, WebKit, older engines, installed downstream themes, and assistive-technology behavior are not certified. Python 3.14/3.15 with Django 4.2 are unsupported pairs, not missing runs.
-- Files: `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-VERIFICATION.md`, `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-REGRESSION.md`, `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-UI-REVIEW.md`, `tests/browser/manage-presentation.cjs`
-- Risk: behavior outside recorded runtime/browser environments remains unestablished; this is a verification boundary, not a confirmed defect. Phase 06.35 passed all 5 verification truths. Its UI review's three recommendations are inherited, nonblocking polish observations; no new human approval requirement is identified.
-- Priority: Low
+**Navbar interaction recapture after component-tag composition:**
+- What's not tested: a fresh keyboard/focus/Enter and long-text interaction run against the final component-tag composition. Historical interaction receipts in `.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-BROWSER.json` are bound to product revision `7ccee139`; the later plan09 UI review states interaction capture was off and explicitly treats historical evidence as supplemental. The identity/items leaves are unchanged, and focused current source/tests cover their semantics and composition.
+- Files: `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/navbar.html`, `src/crud_views/templates/crud_views/tags/navbar_items.html`, `tests/test1/test_navbar_templates.py`, `.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-UI-REVIEW.md`, `.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-BROWSER.json`
+- Risk: interaction behavior after wrapper composition is supported by unchanged leaf/source and earlier receipt, but was not freshly captured at the final revision. This is a provenance boundary, not a confirmed defect or an unpassed release criterion.
+- Priority: Low.
 
-**Historical external Tabler fixture unavailable:**
-- What's not tested: four unchanged theme-adoption configuration checks could not run because their recorded external interpreter at `/home/alex/projects/alex/tabler-test/.venv` lacks `pytest-xdist`; the test harness intentionally removes runtime overrides, so substituting a different interpreter would not validate the recorded fixture.
-- Files: `tests/browser/theme-adoption-config.test.cjs`, `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-REGRESSION.md`
-- Risk: those historical external-theme checks remain unverified. The failure is environmental and does not demonstrate a product regression or blocker.
-- Priority: Low
+**Navbar visual verification scope:**
+- What's not tested: arbitrary downstream themes, Firefox/WebKit/older engines, real browser zoom, and universal assistive-technology behavior. Phase 06.40's fresh static audit covered six viewport widths and the pinned example theme; 640px is a 200%-reflow equivalent, not actual zoom. Historical browser interaction evidence supplements this scope and is separately revision-bound.
+- Files: `examples/bootstrap5/navbar_demo/`, `tests/browser/`, `.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-UI-REVIEW.md`, `.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/08-UI-REVIEW-historical.md`
+- Risk: downstream rendering and browser/AT behavior remain unestablished; no navbar defect is inferred.
+- Priority: Low.
 
-**Access-trace project-specific dispatch behavior:**
-- What's not tested: arbitrary external middleware/service side effects, additional databases, host/header/body/method-specific rules, and behavior hidden inside custom super-call frames. The trace reports an observed custom-method boundary when it can identify one and marks inner ownership unknown.
-- Files: `src/crud_views/lib/access_trace_runner.py`, `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-VERIFICATION.md`, `docs/reference/manage.md`
-- Risk: consumers may overread a diagnostic as a universal prediction if these explicit simulation limits are omitted from downstream documentation.
-- Priority: Low; retain the documented exclusions.
+**Navbar example supporting-copy typography advisory:**
+- What's not tested/fixed: whether the design should retain the measured 16px supporting paragraphs or apply the proposed 14px style. The current UI audit records this as minor warning UI-01, not a completion defect.
+- Files: `examples/bootstrap5/navbar_demo/templates/navbar_demo/home.html`, `.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-UI-REVIEW.md`, `.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/09-ui-static-audit.json`
+- Risk: minor hierarchy difference from the approved proposed default; it does not affect navigation or page behavior.
+- Priority: Low/advisory.
 
 **Compact formset consumer extension hooks:**
-- What's not tested: arbitrary third-party widgets/templates, compact-column mutation in `add_fields()`, query-issuing constructors/`get_form_kwargs(None)`, and compact polymorphic forms are outside the documented support contract.
+- What's not tested: arbitrary third-party widgets/templates, compact-column mutation in `add_fields()`, query-issuing constructors/`get_form_kwargs(None)`, and compact polymorphic forms; these are outside the documented compact-mode contract.
 - Files: `docs/reference/formsets.md`, `src/crud_views/lib/formsets/compact.py`, `.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/06.24-COMPATIBILITY.md`
-- Risk: an application opting into compact mode with unsupported hooks may receive validation errors or behavior outside the contract.
-- Priority: Low; documentation and explicit validation define the boundary.
+- Risk: unsupported hooks may fail validation or behave outside contract if a consumer opts into compact mode.
+- Priority: Low; documented support boundary.
 
 ## Resolved Findings
 
-Phase 06.27's two review findings are closed and should not be treated as open concerns: inherited cleaners returning `None` are normalized in `src/crud_views/lib/conditional/group.py`, and the browser evidence checker now rejects contradictory choice observations in `tests/browser/conditional-formsets.cjs`. The independent review is clean; details and regression evidence are in `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-REVIEW-DISPOSITION.md` and `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-FIXES.md`.
+Phase 06.27's inherited-cleaner and contradictory-browser-observation findings are closed in `src/crud_views/lib/conditional/group.py` and `tests/browser/conditional-formsets.cjs`; evidence is in `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-REVIEW-DISPOSITION.md` and `06.27-FIXES.md`.
 
-Phase 06.29's critical review finding is also closed: lazy caller classes are coerced when the numbered column helper is constructed, preserving construction-time language and avoiding a render-time crash in `src/crud_views/lib/crispy/table.py`. Regression coverage is in `tests/test1/test_crispy_columns.py`; disposition and independent re-review are recorded in `.planning/phases/06.29-themeable-column-helpers-356/06.29-REVIEW-DISPOSITION.md`. The phase review and verification report record no remaining findings. Per-column registry/template resolution remains an intentional, uncached render-time cost; the phase accepts this bounded overhead and does not claim a measured performance guarantee.
+Phase 06.29's lazy caller-class rendering failure is closed in `src/crud_views/lib/crispy/table.py`, with regression coverage in `tests/test1/test_crispy_columns.py` and disposition in `.planning/phases/06.29-themeable-column-helpers-356/06.29-REVIEW-DISPOSITION.md`.
 
-Phase 06.30 is verified at 54/54 must-haves in `.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md`; its final review disposition records zero active findings. Earlier defects and failed release attempts retained in the phase reports are historical and have documented fixes/fresh passing acceptance. They are not current concerns. Qualitative UI recommendations and verification scope boundaries in the phase reports describe residual uncertainty, not confirmed implementation defects.
+Phase 06.30 passed 54/54 must-haves with zero active review findings; earlier defects in that phase are historical, not open concerns (`.planning/phases/06.30-queryset-driven-conditional-fields-360/06.30-VERIFICATION.md`). Phase 06.31's seed command rollback issue is fixed transactionally; phase 06.32's workflow icon integration passed 7/7 (`.planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-REVIEW-DISPOSITION.md`, `.planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-VERIFICATION.md`).
 
-Phase 06.31's seeded example command had a critical rollback defect during review; the final implementation wraps user/group/permission setup and feature seeding in a transaction, and `.planning/phases/06.31-developer-only-manage-diagnostics-361/06.31-REVIEW-DISPOSITION.md` records the finding fixed with zero open findings. The incident is closed, not a current vulnerability. Phase 06.32's workflow variant/icon integration is verified at 7/7 must-haves in `.planning/phases/06.32-workflow-transition-variant-and-icon-metadata-362/06.32-VERIFICATION.md`; its declared registry and asset prerequisites are intentional.
+Phase 06.34 access tracing passed 36/36 and its UAT is complete. Phase 06.35 Resource manage parity passed 5/5, deep review found zero issues, and the security audit closed all 14 threats. Its old seven-runtime and four Tabler-fixture gaps are not current matrix gaps: phase 06.40 provides a fresh full supported matrix. The external Tabler fixture limitation remains a historical, environment-specific check and is not a package blocker (`.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-VERIFICATION.md`, `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-VERIFICATION.md`, `.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-ACCEPTANCE.md`).
 
-Phase 06.34's access trace is verified at 36/36 in `.planning/phases/06.34-access-trace-cv-access-command-and-manage-page-form-370/06.34-VERIFICATION.md`; its current UAT record is complete with the human visual check passed. Phase 06.35 is verified at 5/5 in `.planning/phases/06.35-resource-manage-pages-with-cv-access-parity-372/06.35-VERIFICATION.md`; its deep review records zero findings and its security audit closes all 14 threats. Seven unavailable runtime pairs and four historical external Tabler checks remain explicit verification boundaries, with no product blocker inferred. The inherited UI review recommendations are nonblocking polish. Earlier phase-report failures and fixed review findings are historical, not current defects.
+The Pydantic 2.2.1 concern that had been recorded from phases 06.36–06.37 is not retained as an open floor failure: phase 06.40's floor run passed 792 tests, including all navbar modules, on Pydantic 2.2.1/Django 5.2.19. This is targeted floor evidence, not a claim that every suite has been run at that floor (`.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-ACCEPTANCE.md`).
 
-Phase 06.36 and 06.37 findings now closed (see `.planning/phases/06.37-cv-access-pydantic-json-contract-validation-and-schema-375/06.37-REVIEW-DISPOSITION.md`): WR-02 (partial/null-flag `TraceUser` accepted) is fixed by strict models and schema; WR-03 and WR-04 (`isolated_routes` leaking an emptied ViewSet registry and order-dependent `test_published_command_examples` under xdist) are fixed in `tests/test1/test_ancestor_authorization.py` by importing `tests.test1.project.urls` at module level before the snapshot; WR-05, IN-01, IN-02, IN-04 through IN-08 are fixed (reserved step results documented, schema regeneration on Pydantic upgrade, real `CommandError` detection line). The 06.37 review disposition records 17 findings: 11 fixed, 1 skipped (WR-01), 1 deferred (IN-03), 4 open (WR-06, IN-09, IN-10, IN-11, listed above).
+Phase 06.37 strict TraceUser validation, schema regeneration guidance, registry isolation, and command error-line findings are closed. Remaining WR-01, WR-06, IN-03, and IN-09–11 are represented above only where current source/docs still support them; earlier review failures and fixed items are historical (`.planning/phases/06.37-cv-access-pydantic-json-contract-validation-and-schema-375/06.37-REVIEW-DISPOSITION.md`).
 
+Phase 06.40 passed all ten supported Python/Django runtime cells in installed normal and request-recorder modes, all ten example cells, both crispy floors, the Pydantic floor, distribution, and required tooling. Python 3.14/3.15 with Django 4.2 are explicit unsupported skips. Its source-bound receipts retain failed attempts and distinguish final-revision full runs from earlier full runs plus affected-file reruns after the test-helper-only change; no earlier run is relabeled as a run of the later test revision. Fresh static UI evidence covers six widths, while the prior 345-assertion browser receipt and keyboard interactions remain bound to their recorded earlier product revision. These are evidence boundaries, not product defects (`.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-MATRIX.json`, `06.40-INPUTS.json`, `06.40-ACCEPTANCE.md`, `06.40-UI-REVIEW.md`, `06.40-BROWSER.json`).
 
 ---
 
-*Concerns audit: 2026-11-17*
+*Concerns audit: 2026-11-19*

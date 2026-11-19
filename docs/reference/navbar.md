@@ -295,8 +295,9 @@ Create that template with the same context contract:
 </aside>{% endif %}
 ```
 
-All override paths use the normal [theme loader order](theme.md#how-resolution-works). No new button-class keys
-are introduced. Include the normal [assets](assets.md) for the stock wrapping styles.
+All override paths use the normal [theme loader order](theme.md#how-resolution-works). For class-only changes,
+use the [six navbar keys](buttons.md#the-class-table) and [registration recipe](theme.md#navbar-class-registration);
+use template overrides for structural changes. Include the normal [assets](assets.md) for the stock wrapping styles.
 
 ## Validation and supported scope
 

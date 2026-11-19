@@ -58,7 +58,7 @@ def test_navbar_class_registration_recipe_renders_with_project_precedence(navbar
     classes = {
         **NAVBAR_CLASSES,
         "navbar:nav": "nav nav-tabs flex-wrap gap-1",
-        "navbar:link": "nav-link mw-100 text-break gap-2",
+        "navbar:link": "nav-link d-flex flex-wrap align-items-center mw-100 text-break gap-2",
         "navbar:link-active": "active",
     }
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={}):

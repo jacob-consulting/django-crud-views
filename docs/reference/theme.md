@@ -859,14 +859,14 @@ def ready(self):
     register_button_classes(
         {
             "navbar:nav": "nav nav-tabs flex-wrap gap-1",
-            "navbar:link": "nav-link mw-100 text-break gap-2",
+            "navbar:link": "nav-link d-flex flex-wrap align-items-center mw-100 text-break gap-2",
             "navbar:link-active": "active",
         }
     )
 ```
 
-`navbar:nav` styles the `ul` within the navigation landmark. This recipe selects tabs and spacing;
-the links remain ordinary page links, with clickable active anchors and `aria-current="true"` independent
+`navbar:nav` styles the `ul` within the navigation landmark. This recipe selects tabs and spacing; `d-flex` makes the link gap effective, and `flex-wrap` allows its contents to wrap.
+The links remain ordinary page links, with clickable active anchors and `aria-current="true"` independent
 of classes. `navbar:wrapper`, `navbar:identity` and `navbar:item` retain their defaults unless separately
 overridden. Wrapper/identity keys apply only when those stock leaves render, not to a theme's custom owner
 heading markup. All six keys are ordinary registry entries without label-mode variants.
@@ -1219,7 +1219,7 @@ All twenty keys are inventoried with exact defaults in [Buttons](buttons.md#the-
 Project `CRUD_VIEWS_BUTTON_CLASSES` entries override theme registrations per key; `""` or `None` clears classes.
 `manage:badge-resource` defaults to `badge bg-info text-dark`. It labels explicitly mapped Django permissions
 across Resource actor/group/user/overflow cells, never per-item grants. Empty class overrides retain the label;
-model/Guardian badges and trace provider names remain unchanged. The totals are 122 core keys and 140 with workflow.
+model/Guardian badges and trace provider names remain unchanged. See the [canonical class inventory](buttons.md#the-class-table) for the current core and workflow totals.
 Replacing the default-row class also replaces its CSS muting without affecting the switch's data markers.
 
 Retain the [external manage assets](javascript.md#manage-defaults) through the existing asset loader.

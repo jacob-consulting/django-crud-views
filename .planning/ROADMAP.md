@@ -65,7 +65,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.36: ViewSet configuration CLI and versioned JSON contract (#371) (INSERTED)** - approved diagnostic command, catalogue and validated text/JSON output. (completed 2026-11-16)
 - [x] **Phase 06.37: cv_access Pydantic JSON contract validation and schema (#375) (INSERTED)** - validate the existing version-1 trace with Pydantic output models and add `cv_access --schema`. (completed 2026-11-16)
 - [x] **Phase 06.39: Immediate-parent permission checks for child links (#380) (INSERTED)** (completed 2026-11-18)
-- [ ] **Phase 06.40: Object navbar: opt-in section navigation (#381) (INSERTED)** - original eight plans complete; reopened 2026-11-19 for independent navbar component tags (plan 09).
+- [x] **Phase 06.40: Object navbar: opt-in section navigation (#381) (INSERTED)** - all nine plans complete, including independent navbar component tags (plan 09). (completed 2026-11-19)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2127,7 +2127,7 @@ Follow-up D-17 (2026-11-19) adds independent navbar component tags, wrapper comp
 **Requirements**: None
 **Approved contract:** D-01–D-16 and AC1–AC9 are mapped in 06.40-COVERAGE.md.
 **Depends on:** Phase 06.39
-**Plans:** 9/9 plans executed; plan 09 ready to execute.
+**Plans:** 9/9 plans complete; independent verification 38/38 passed.
 
 Original plans 01–08 converged in four external review cycles and are complete. Plan 09 has an independent
 plan check with no blockers and a documented ten-file sizing advisory; D-17 is covered by all three new tasks.
@@ -2284,5 +2284,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.32. Workflow transition variant and icon metadata (#362) | 1/1 | Complete | 2026-11-13 |
 | 06.33. Structured manage page (#366) | 10/10 | Awaiting verification | - |
 | 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
-| 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Verifying | - |
+| 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Complete | 2026-11-19 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

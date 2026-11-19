@@ -18,7 +18,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
-- ✓ Opt-in object navbar declarations, owner-stable descendant links, destination permission/state admission, lazy overridable accessible templates, protected tenant example and companion guidance — Phase 06.40; verification33/33, security20/20, deep review clean. Full supported matrix and native browser evidence pass; minor landing-copy typography advisory remains.
+- ✓ Opt-in object navbar declarations, owner-stable descendant links, destination permission/state admission, lazy overridable accessible templates, protected tenant example and companion guidance — Phase 06.40; verification38/38, security22/22, clean deep incremental review. Independent component tags and executable recipes complete D-17. Fresh six-width static UI audit23/24; minor landing-copy typography advisory remains. Full matrix/interaction receipts retain their historical source revisions.
 
 - ✓ Immediate-parent permission checks run once for child context/card links, honoring hide/disable, protected-parent actor admission and Guardian provider policy; measured costs, Breaking/migration guidance and navbar handoff delivered — Phase 06.39; verification11/11, review clean, security8/8.
 
@@ -167,8 +167,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Keep object-navbar behavior opt-in in one module and app-owned template placement | Reuse resolved ancestry and destination hooks once, preserving established context-button and request paths | Validated (Phase 06.40; 33/33) |
-| Stabilize navbar declarations, tag, three templates and documented context at 1.0 | Executable recipes and separately committed companion guidance make the public surface traceable | Validated (Phase 06.40; companion cab8a85a) |
+| Keep object-navbar behavior opt-in in one module and app-owned template placement | Reuse resolved ancestry and destination hooks once, preserving established context-button and request paths | Validated (Phase 06.40; 38/38) |
+| Stabilize navbar declarations, full/component tags, three templates and documented context at 1.0 | Executable recipes and separately committed companion guidance make the public surface traceable | Validated (Phase 06.40; companion cab8a85a) |
 | Require active configured-group membership for manage diagnostics, including staff/superusers | One shared request/action policy preserves independent CRUD and ancestor authorization | Validated (Phase 06.31) |
 | Roll back the entire single-database demo seed on privilege conflicts | Prevent rejected provisioning from exposing a public credential or new privileged membership; preserve existing operator grants | Validated (Phase 06.31; CR-01 fixed and independently re-reviewed) |
 | Wrap the factory tooltip initializer for placement-only documentation customization | Preserve existing lifecycle safeguards, explicit placement and library defaults without changing runtime or API | Validated (Phase 06.28; 6/6, executable recipe) |
@@ -258,4 +258,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-19 after Phase 06.40 verification refresh*
+*Last updated: 2026-11-19 after Phase 06.40 component-tag completion*

@@ -1,20 +1,21 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.40"
-current_phase_name: "Object navbar: opt-in section navigation (#381)"
-current_plan: 09
-status: verifying
-stopped_at: Phase 06.40 plan 09 executed; independent verification pending
-last_updated: "2026-11-19T08:41:38.013Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.40 complete, ready to plan Phase 7
+last_updated: "2026-11-19T09:47:38.492Z"
 last_activity: 2026-11-19
-last_activity_desc: Executed plan 06.40-09; 275 focused tests, strict docs and scoped quality checks pass
-state_head: 38049a122bae24ec93c56b02b107061feb2fa482
+last_activity_desc: Phase 06.40 complete, transitioned to Phase 7
+state_head: 28c12135a0d88f43dfb1ee32cfbb30eaaddbc0cb
 progress:
   total_phases: 46
-  completed_phases: 44
+  completed_phases: 45
   total_plans: 255
   completed_plans: 255
+  percent: 98
 milestone_name: milestone
 ---
 
@@ -27,17 +28,25 @@ Total Phases: 46
 See: .planning/PROJECT.md (updated 2026-11-19)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.40 — Independent navbar component tags (plan 09)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — VERIFYING
-Current Plan: 09 (all 9 plans executed)
-Total Plans in Phase: 9
-Status: Phase complete — ready for verification
-Last activity: 2026-11-19 -- Plan 06.40-09 implemented and summarized; independent verification pending
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: Not yet planned
+Status: Ready to plan
+Last activity: 2026-11-19 — Phase 06.40 complete, transitioned to Phase 7
 
-Next: Await UI-review choice (retain existing or fresh audit), then independent goal verification and completion
+Next: $gsd-discuss-phase 7
+
+### Phase 06.40 component-tag completion — 2026-11-19
+
+- All9plans/22tasks complete. Independent goal verifier passed38/38,233cases and17/17decisions; owner verification.status passed with CLI fingerprint over1186inputs. Code review10files/0findings; security22/22closed and Nyquist22/22tasks covered.
+- User authorized fresh UI audit:23/24, six authenticated static widths with no overflow; existing minor16px/14px landing-copy advisory remains nonblocking. Owned server/settings/database cleaned. Historical UI review preserved; no fresh interaction or full-matrix claim.
+- Fresh implementation evidence remains275focused,495Python regressions,457JS, strict docs and scoped Ruff/format. Product6e843439; original01–08receipts remain revision-bound. No source changes during audits.
+- phase.complete recorded9/9 and advanced to7. Reconciled stale dotted progress-table row and45/46completed checkbox count. SDK command-as-path warnings remain false positives; actual scoped artifacts verified. state.json derived rewrite restored byte-identically.
+- No requirement IDs, pending parent UAT gap, resolves_phase todo or learning promotion. Global learnings disabled; no LEARNINGS files. Unrelated untracked work preserved. No ship/push/PR/merge; codebase-map refresh follows a future gsd-ship.
 
 ### Phase 06.40 plan 09 execution — 2026-11-19
 
@@ -1386,7 +1395,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 245
+- Total plans completed: 246
 
 - Total plans completed: 186
 - Average duration: -
@@ -1437,7 +1446,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.35 | 7 | - | - |
 | 06.36 | 8 | - | - |
 | 06.37 | 4 | - | - |
-| 06.40 | 8 | - | - |
+| 06.40 | 9 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2061,6 +2070,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-19T08:41:29.934Z
-Stopped at: Phase 06.40 plan 09 executed; independent verification pending
+Last session: 2026-11-19T09:48:27Z
+Stopped at: Phase 06.40 complete, ready to plan Phase 7
 Resume file: None

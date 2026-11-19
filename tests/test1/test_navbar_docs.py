@@ -8,10 +8,11 @@ import pytest
 from django.template import Context, Template
 from django.template.loader import get_template
 from django.test import Client, override_settings
-from django.urls import reverse
+from django.urls import resolve, reverse
 from lxml import html
 
 from crud_views.lib import navbar
+from crud_views.lib.breadcrumb import Breadcrumb, BreadcrumbItem
 from crud_views.lib.navbar import CrudViewNavBarMixin, NavBar, NavItem
 from crud_views.lib.view import ChildContextButton
 from tests.test1.app.models import Publisher
@@ -37,18 +38,38 @@ def owner_heading_recipe():
 @pytest.mark.parametrize("state", ["present", "missing", "unconfigured", "hidden", "modal"])
 def test_owner_heading_recipe_preserves_header_actions_and_fallback(header_level, state):
     source = owner_heading_recipe()
-    with navbar_routes(lambda sfx: owner_routes(sfx, configured=state != "unconfigured")) as ns:
+
+    def routes(sfx):
+        ns, viewsets = owner_routes(sfx, configured=state != "unconfigured")
+        if state == "hidden":
+            type(
+                "HiddenSection",
+                (ns.view,),
+                {
+                    "cv_viewset": ns.owner,
+                    "cv_key": "hidden",
+                    "cv_path": "hidden",
+                    "cv_has_access": classmethod(lambda cls, *args: False),
+                },
+            )
+            ns.bar.items = [NavItem(key="hidden")]
+        return ns, viewsets
+
+    with navbar_routes(routes) as ns:
         ns.view.cv_context_actions = ["detail"]
         ns.view.cv_paragraph_template = None
         ns.view.cv_paragraph_template_code = "View subtitle"
-        if state == "hidden":
-            # Hide the sole navbar item without denying the independent detail action.
-            ns.bar.items = [NavItem(key="detail", label="Hidden section")]
-            ns.view.cv_is_active = classmethod(lambda cls, request, obj=None: False)
-        _, data = view_context(ns, name='Owner <img src=x onerror="bad">', modal=state == "modal")
+        ns.owner.icon_header = "host:building"
+        view, data = view_context(ns, name='Owner <img src=x onerror="bad">', modal=state == "modal")
+        view.request.resolver_match = resolve(reverse(ns.owner.get_router_name("detail"), kwargs={"pk": 1}))
+        data["request"] = view.request
         if state == "missing":
             data.pop("cv_navbar")
-        with override_settings(CRUD_VIEWS_HEADER_LEVEL=header_level), navbar_templates({"owner.html": source}):
+        libraries = {"host": {"renderer": "font", "class": "host-{name}"}}
+        with (
+            override_settings(CRUD_VIEWS_HEADER_LEVEL=header_level, CRUD_VIEWS_ICON_LIBRARIES=libraries),
+            navbar_templates({"owner.html": source}),
+        ):
             output = Template('{% extends "owner.html" %}{% block cv_content %}Page body{% endblock %}').render(
                 Context(data)
             )
@@ -66,6 +87,8 @@ def test_owner_heading_recipe_preserves_header_actions_and_fallback(header_level
         assert len(navs) == (state == "present")
         if state == "present":
             assert headings[0].text_content().strip() == 'Owner <img src=x onerror="bad">'
+            icon = headings[0].xpath(".//i")[0]
+            assert "host-building" in icon.classes and icon.get("aria-hidden") == "true"
             link = navs[0].xpath(".//a")[0]
             assert link.get("aria-current") == "true"
             assert link.get("href") == actions[0].get("href")
@@ -77,7 +100,9 @@ def test_owner_heading_recipe_retains_equal_titles_and_inherited_blocks(present)
     blocks = ["cv_breadcrumb", "cv_header", "cv_context", "cv_paragraph", "cv_filter", "cv_content"]
     assert re.findall(r"{% block (\w+) %}", source) == blocks
     with navbar_routes(lambda sfx: owner_routes(sfx, configured=present)) as ns:
-        _, data = view_context(ns, name="Unchanged page header")
+        view, data = view_context(ns, name="Unchanged page header")
+        view.request.resolver_match = resolve(reverse(ns.owner.get_router_name("detail"), kwargs={"pk": 1}))
+        data["request"] = view.request
         with navbar_templates({"owner.html": source}):
             plain = html.fragment_fromstring(Template(source).render(Context(data)), create_parent="div")
             assert [h.text_content().strip() for h in plain.xpath(".//h1 | .//h2")] == ["Unchanged page header"] * (
@@ -101,6 +126,7 @@ def test_owner_heading_recipe_orders_real_actions_after_navigation(django_user_m
         ns.host.cv_context_buttons = [ChildContextButton(key="children", child_name=ns.child.name, label_mode="label")]
         ns.host.cv_context_actions = ["children", "detail"]
         ns.host.cv_extends_template = "owner.html"
+        ns.host.extra_context = {"cv_breadcrumb": Breadcrumb(items=[BreadcrumbItem(title="Owner heading")])}
         client = Client()
         client.force_login(actor)
         with navbar_templates({"owner.html": source}):
@@ -110,7 +136,7 @@ def test_owner_heading_recipe_orders_real_actions_after_navigation(django_user_m
         actions = tree.xpath("//a[@cv-key]")
         assert [a.get("cv-key") for a in actions] == ["list", "detail"]
         assert [a.get("href") for a in actions] == [
-            reverse(ns.child.get_router_name("list"), kwargs={"publisher_pk": owner.pk}),
+            reverse(ns.child.get_router_name("list"), kwargs={ns.child.parent.get_pk_name(): owner.pk}),
             reverse(ns.owner.get_router_name("detail"), kwargs={"pk": owner.pk}),
         ]
         assert all(a.text_content().strip() for a in actions)

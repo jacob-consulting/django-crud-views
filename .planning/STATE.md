@@ -1,21 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
-current_plan: Not started
-status: planning
-stopped_at: Phase 06.40 complete, ready to plan Phase 7
-last_updated: "2026-11-19T08:03:43.386Z"
+current_phase: "06.40"
+current_phase_name: "Object navbar: opt-in section navigation (#381)"
+current_plan: "09"
+status: planned
+stopped_at: Phase 06.40 plan 09 ready to execute; plans 01–08 remain complete
+last_updated: "2026-11-19T08:19:05.976Z"
 last_activity: 2026-11-19
-last_activity_desc: Phase 06.40 verification refreshed after ViewSet Navigation naming; 33/33 passed
-state_head: 6955fccf139b7f5424a9c0e4f99e9751ee96a386
+last_activity_desc: Added plan 06.40-09 for independent navbar component tags; planning checked, implementation pending
+state_head: 1c22a2e6d0b0ddbc3d6a193fe948b44047459415
 progress:
   total_phases: 46
-  completed_phases: 45
-  total_plans: 254
+  completed_phases: 44
+  total_plans: 255
   completed_plans: 254
-  percent: 98
 milestone_name: milestone
 ---
 
@@ -28,17 +27,26 @@ Total Phases: 46
 See: .planning/PROJECT.md (updated 2026-11-19)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.40 — Independent navbar component tags (plan 09)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
-Current Plan: Not started
-Total Plans in Phase: 0
-Status: Ready to plan
-Last activity: 2026-11-19 -- Phase 06.40 verification refreshed after ViewSet Navigation naming; 33/33 passed
+Phase: 06.40 (Object navbar: opt-in section navigation (#381)) — READY TO EXECUTE
+Current Plan: 09 (plans 01–08 complete)
+Total Plans in Phase: 9
+Status: Ready to execute
+Last activity: 2026-11-19 -- Plan 06.40-09 checked; component tags, wrapper composition and documentation ready to execute
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-execute-phase 06.40
+
+### Phase 06.40 follow-up planning — 2026-11-19
+
+- User reopened with --force and approved D-17: cv_navbar_identity/cv_navbar_items, default wrapper composition and documentation.
+- Added plan 09, wave 7, depending on completed plan 08: three tasks; 8/9 plans completed. Historical plans and execution receipts retained.
+- Independent plan check: no functional blockers; ten-file sizing advisory retained with bounded-task rationale. Decision coverage and post-planning gap analysis: 17/17 covered.
+- Product code/tests/docs unchanged; no implementation tests run. New validation tasks remain pending, and previous passed verification applies to the original completed scope only.
+- Existing codebase maps are stale; current source was inspected. Map refresh remains scheduled after gsd-ship.
+- state.planned-phase updated STATE.md; its unrelated stale state.json rewrite was restored byte-identically. Phase 7 follows completion of plan 09.
 
 ### Phase 06.40 verification refresh — 2026-11-19
 

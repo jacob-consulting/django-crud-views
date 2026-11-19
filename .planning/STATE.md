@@ -6,10 +6,10 @@ current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
 stopped_at: Phase 06.40 complete, ready to plan Phase 7
-last_updated: "2026-11-18T20:42:37.828439Z"
-last_activity: 2026-11-18
-last_activity_desc: Phase 06.40 complete, transitioned to Phase 7
-state_head: ba7b158eb299ef35538dc580c99edd3866d3e064
+last_updated: "2026-11-19T07:44:46.980Z"
+last_activity: 2026-11-19
+last_activity_desc: Completed quick task 261119-ap2 — ViewSet Navigation naming on the phase 06.40 branch
+state_head: 39821bca80267e06773c98b566a4e313fe39c220
 progress:
   total_phases: 46
   completed_phases: 45
@@ -36,7 +36,7 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-18 — Phase 06.40 complete, transitioned to Phase 7
+Last activity: 2026-11-19 — Completed quick task 261119-ap2: ViewSet Navigation naming on the phase 06.40 branch
 
 Next: $gsd-discuss-phase 7
 
@@ -1982,6 +1982,7 @@ None yet.
 | 261109-9rw | Update examples app for 06.18 ancestor authorization (nested Guardian example + core nested grants) | 2026-11-09 | 0cb0cb47 | [261109-9rw-update-examples-app-for-06-18-ancestor-a](./quick/261109-9rw-update-examples-app-for-06-18-ancestor-a/) |
 | 261109-bf5 | Fix core ViewSet.default_permissions vocabulary N+1 (one ContentType read per permission row) | 2026-11-09 | 741830cf | [261109-bf5-fix-core-viewset-default-permissions-voc](./quick/261109-bf5-fix-core-viewset-default-permissions-voc/) |
 | 261109-bvq | Refresh 06.18-COSTS.md from post-fix evidence (plain cold vocabulary + Guardian guard/rest split after WR-01) | 2026-11-09 | a39efcc7 | [261109-bvq-refresh-06-18-costs-md-from-post-fix-evi](./quick/261109-bvq-refresh-06-18-costs-md-from-post-fix-evi/) |
+| 261119-ap2 | Rename the feature to ViewSet Navigation in the example app and documentation (phase 06.40 branch) | 2026-11-19 | 39821bca | [261119-ap2-rename-the-feature-to-viewset-navigation](./quick/261119-ap2-rename-the-feature-to-viewset-navigation/) |
 
 ### Roadmap Evolution
 

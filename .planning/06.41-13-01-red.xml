@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.168" timestamp="2026-11-20T14:48:22.975305+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_guide_synchronizes_live_example_recipes" time="0.002"><failure message="assert 0 &gt;= 2&#10; +  where 0 = &lt;built-in method count of str object at 0x26694aa0&gt;('&lt;!-- cv-sync: bulk_selection/views.py --&gt;')&#10; +    where &lt;built-in method count of str object at 0x26694aa0&gt; = '# Bulk actions\n\n!!! example &quot;Try it live&quot;\n    The [Bulk selection example](https://django-crud-views-demo.onrender...database aliases. The existing signed origin\nquery state is navigation transport, not a signed selection or review.\n'.count">def test_bulk_guide_synchronizes_live_example_recipes():
+        text = guide()
+&gt;       assert text.count("&lt;!-- cv-sync: bulk_selection/views.py --&gt;") &gt;= 2
+E       assert 0 &gt;= 2
+E        +  where 0 = &lt;built-in method count of str object at 0x26694aa0&gt;('&lt;!-- cv-sync: bulk_selection/views.py --&gt;')
+E        +    where &lt;built-in method count of str object at 0x26694aa0&gt; = '# Bulk actions\n\n!!! example "Try it live"\n    The [Bulk selection example](https://django-crud-views-demo.onrender...database aliases. The existing signed origin\nquery state is navigation transport, not a signed selection or review.\n'.count
+
+tests/test1/test_bulk_docs.py:106: AssertionError</failure></testcase></testsuite></testsuites>

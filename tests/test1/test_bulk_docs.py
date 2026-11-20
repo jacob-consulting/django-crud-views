@@ -101,6 +101,16 @@ def test_bulk_guide_structure_and_live_link():
         assert name not in text, name
 
 
+def test_bulk_guide_synchronizes_live_example_recipes():
+    text = guide()
+    assert text.count("<!-- cv-sync: bulk_selection/views.py -->") >= 2
+    demo_base = "https://django-crud-views-demo.onrender.com"
+    links = re.findall(r"\]\((https?://[^)]+)\)", text.split("\n## ", 1)[0])
+    assert demo_base + "/bulk-selection/document/" in links
+    assert "belongs to the example project and is not needed for bulk actions" in text
+    assert "cv-sync:" not in section(text, "Basic usage")
+
+
 def test_bulk_basic_recipe_and_mixin_placement():
     basic = section(guide(), "Basic usage")
     assert "DocumentListView(BulkSelectionMixin, ListViewTableMixin, ListViewPermissionRequired)" in basic
@@ -254,6 +264,9 @@ def test_bulk_delete_shares_rule_and_keeps_inspection_step_separate():
     leaf = next(block for block in blocks if "cv_check_delete_protection" in block)
     assert leaf.count("return document_delete_errors(") == 2
     assert "inspect_deletion" not in leaf
+    unsynchronized = re.sub(r"<!--\s*cv-sync:.*?-->\s*```python\n.*?\n```", "", delete, flags=re.S)
+    for name in ("inspect_deletion", "related.protected", "complete"):
+        assert name in unsynchronized
     for name in (
         "inspect_deletion",
         "related.protected",

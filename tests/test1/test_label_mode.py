@@ -79,6 +79,17 @@ def test_default_label_mode_absent_setting(no_setting):
     assert _resolved() == PACKAGE
 
 
+def test_bulk_label_mode_floor_and_precedence(no_setting):
+    assert default_label_mode("bulk") == "both"
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"bulk": "icon"}):
+        assert default_label_mode("bulk") == "icon"
+    label_mode.register_label_mode_defaults({"bulk": "label"})
+    assert default_label_mode("bulk") == "label"
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"bulk": "icon"}):
+        assert default_label_mode("bulk") == "icon"
+    assert default_label_mode("bulk") == "label"
+
+
 @pytest.mark.parametrize(
     "configured,expected",
     [

@@ -100,6 +100,11 @@ def test_card_location_raises():
         AuthorDetailView.cv_get_action_label_mode("card", "detail")
 
 
+def test_bulk_location_raises():
+    with pytest.raises(ValueError):
+        AuthorDetailView.cv_get_action_label_mode("bulk", "archive")
+
+
 # CRUD_VIEWS_LABEL_MODE_DEFAULTS["list"]: the floor for keys the selected whole-layer map does not name
 
 LIST_LABEL = {"list": "label"}

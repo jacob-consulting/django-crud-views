@@ -560,6 +560,11 @@ def form_ctx(key="submit", **kw):
     return ctx
 
 
+def test_bulk_location_rejects_action_leaf():
+    with pytest.raises(ValueError, match="form leaf"):
+        cv_button_data({}, "bulk")
+
+
 def test_form_location_contract_constants():
     from crud_views.lib.button_classes import FORM_KINDS, VARIANT_LOCATIONS
     from crud_views.lib.view.button_data import LOCATIONS

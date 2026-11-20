@@ -1,0 +1,85 @@
+{
+  "browser": "Chromium 159.0.8154.6",
+  "playwright": "1.64.1",
+  "results": [
+    {
+      "name": "07-no-js-and-enter",
+      "detail": "Enhancement hidden, all three actions enabled; Enter on a row checkbox produces no POST or navigation.",
+      "status": "passed"
+    },
+    {
+      "name": "07-js-and-enter",
+      "detail": "English selected through navbar; 0 selected, disabled actions; Enter causes no POST/navigation.",
+      "status": "passed"
+    },
+    {
+      "name": "13-step-1",
+      "detail": "Document 01 and 02 reviewed and deleted by native action and Confirm clicks.",
+      "status": "passed"
+    },
+    {
+      "name": "13-step-2",
+      "detail": "Document 04 and 06 archive immediately with counted success.",
+      "status": "passed"
+    },
+    {
+      "name": "13-step-3",
+      "detail": "Locked Document 03 appears above two eligible drafts; Confirm archives only 07 and 08.",
+      "status": "passed"
+    },
+    {
+      "name": "13-step-4",
+      "detail": "Owner form preserves 10/11, validates empty owner and assigns bob.",
+      "status": "passed"
+    },
+    {
+      "name": "13-step-5",
+      "detail": "Cancel restores table page 2 with title sort; Document 13 remains.",
+      "status": "passed"
+    },
+    {
+      "name": "07-card-paint",
+      "detail": "Six top-left checkboxes hit-test above cards; click 12/13 changes count to 2; select-page toggles 6/0.",
+      "status": "passed"
+    },
+    {
+      "name": "13-step-6",
+      "detail": "Card Archive processes 12 and 13 immediately and returns to cards.",
+      "status": "passed"
+    },
+    {
+      "name": "13-step-7",
+      "detail": "Blocked Document 09 shown; Cancel restores card page 2 title ascending.",
+      "status": "passed"
+    },
+    {
+      "name": "13-step-8-no-js",
+      "detail": "Native table empty Archive warns; page-2 Delete reviews and deletes 15/16 without JavaScript.",
+      "status": "passed"
+    },
+    {
+      "name": "13-step-9-no-js",
+      "detail": "Native card review blocks published 17, archives 18/19, returns to cards; empty Assign owner warns.",
+      "status": "passed"
+    }
+  ],
+  "errors": [],
+  "source_revision": "6b236cd2e6e8670005712e0bb79caedd85d22bad",
+  "command": "node /tmp/cv-0641-13-browser.eld75M/acceptance.cjs",
+  "database": "/tmp/cv-0641-13-browser.eld75M/db.sqlite3",
+  "setup": "Fresh temporary SQLite database; manage.py migrate --noinput then manage.py seed; English selected in navbar",
+  "seed_documents": 24,
+  "final_documents": 20,
+  "django": "5.2.19",
+  "python": "3.12.3",
+  "viewport": {
+    "width": 1280,
+    "height": 1000
+  },
+  "screenshots_visually_inspected": [
+    "06.41-13-card.png",
+    "06.41-13-no-js-review.png"
+  ],
+  "human_signoff": "Pending independent end-of-phase review; these are real-browser automated observations, not human approval.",
+  "cleanup": "Closed owned browser contexts; stopped own 127.0.0.1:8841 server; deleted only /tmp/cv-0641-13-browser.eld75M (settings, SQLite DB, auth state and logs). Existing demo servers/database untouched."
+}

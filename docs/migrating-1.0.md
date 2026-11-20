@@ -571,7 +571,7 @@ project that uses none of them never sees them: `crud_views.E351`, `E354`, `E355
 reuse `crud_views.E106`, `viewset.E210`, `E211`, `W291` and `W292` ([Form checks](reference/action_menus.md#form-checks)).
 
 `crud_views.E108` reports a `CRUD_VIEWS_LABEL_MODE_DEFAULTS` that is not a dict, a key that is not a button location
-(`"context"`, `"list"`, `"card"`, `"form"`) and a mode that is not exactly `"label"`, `"icon"` or `"both"`. At render an
+(`"context"`, `"list"`, `"card"`, `"form"`, `"bulk"`) and a mode that is not exactly `"label"`, `"icon"` or `"both"`. At render an
 unknown key is ignored. An invalid mode raises `ValueError` in strict mode (`CRUD_VIEWS_STRICT`, which defaults to
 `DEBUG`); otherwise it logs one warning and the location falls back to its theme registration, then its package floor.
 

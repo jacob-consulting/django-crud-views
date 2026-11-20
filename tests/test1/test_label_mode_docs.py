@@ -518,7 +518,10 @@ def test_label_mode_defaults_document_every_location():
         assert f'`"{location}"`' in config_row[3], location
         assert f'"{location}": "{label_mode.LABEL_MODE_DEFAULTS[location]}"' in config_row[1], location
     flat = " ".join(_section(text, "### Label-mode configuration").split())
-    assert '.default_label_mode(location)` returns the floor of `"context"`, `"list"`, `"card"` or `"form"`' in flat
+    assert (
+        '.default_label_mode(location)` returns the floor of `"context"`, `"list"`, `"card"`, `"form"` or `"bulk"`'
+        in flat
+    )
 
 
 # --- Phase 6: the form location, its whole-map resolution and its diagnostics (06-08) ---
@@ -802,8 +805,8 @@ def test_migration_e108_location_inventory():
     # paragraph-scoped: a form mention elsewhere (the Form buttons section, the reference tables) cannot satisfy it
     assert "## Form buttons" in text
     for broken in (
-        text.replace('`"card"`, `"form"`) and a mode', '`"card"`) and a mode'),
-        text.replace('`"card"`, `"form"`) and a mode', '`"card"`, `"form"`, `"menu"`) and a mode'),
+        text.replace('`"card"`, `"form"`, `"bulk"`) and a mode', '`"card"`, `"bulk"`) and a mode'),
+        text.replace('`"form"`, `"bulk"`) and a mode', '`"form"`, `"bulk"`, `"menu"`) and a mode'),
     ):
         assert broken != text
         assert _e108_locations(_migration_e108_paragraph(broken)) != set(LOCATIONS)

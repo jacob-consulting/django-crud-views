@@ -281,7 +281,7 @@ def test_w291_never_for_viewset_or_setting(monkeypatch):
 
 # E108: CRUD_VIEWS_LABEL_MODE_DEFAULTS, the per-location floor (read raw, at check time)
 
-E108_LOCATIONS = "['card', 'context', 'form', 'list']"
+E108_LOCATIONS = "['bulk', 'card', 'context', 'form', 'list']"
 E108_MODES = "['both', 'icon', 'label']"
 
 
@@ -306,6 +306,7 @@ def _key_msg(key, allowed, value) -> str:
         {},
         {"context": "both"},
         {"card": "label"},
+        {"bulk": "icon"},
         {"context": "label", "list": "both", "card": "icon"},
         # the form location (Phase 6) arrives through LOCATIONS
         {"form": "both"},

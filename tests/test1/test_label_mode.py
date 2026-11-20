@@ -14,7 +14,7 @@ from crud_views.lib.view.label_mode import (
 )
 
 LOGGER = "crud_views.lib.view.label_mode"
-PACKAGE = {"context": "icon", "list": "icon", "card": "both", "form": "label"}
+PACKAGE = {"context": "icon", "list": "icon", "card": "both", "form": "label", "bulk": "both"}
 # the process-lifetime register as seen at collection, before any test-scoped isolation
 PROCESS_WARNED = label_mode._warned
 
@@ -170,7 +170,7 @@ def test_default_label_mode_invalid_setting_whole(configured, caplog):
         default_label_mode("context")
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured, CRUD_VIEWS_STRICT=False):
         assert _resolved() == PACKAGE
-    assert len(_records(caplog)) == len(LOCATIONS) == 4  # one per location queried
+    assert len(_records(caplog)) == len(LOCATIONS) == 5  # one per location queried
 
 
 @pytest.mark.parametrize("value", PER_LOCATION_INVALID, ids=repr)

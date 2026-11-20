@@ -16,7 +16,7 @@ from .label_mode import LABEL_MODES, _invalid_label_mode, default_label_mode, is
 
 logger = logging.getLogger(__name__)
 
-LOCATIONS = frozenset({"context", "list", "card", "form"})
+LOCATIONS = frozenset({"context", "list", "card", "form", "bulk"})
 
 KINDS = frozenset({"action", "menu-item"})
 
@@ -117,6 +117,11 @@ def cv_button_data(ctx: dict, location: str, kind: str = "action") -> dict:
         raise ValueError(f"location must be one of {sorted(LOCATIONS)}, got {location!r}")
     if kind not in KINDS:
         raise ValueError(f"kind must be one of {sorted(KINDS)}, got {kind!r}")
+    if location == "bulk":
+        raise ValueError(
+            "location 'bulk' has no action leaf; bulk toolbar buttons render through the form leaf with "
+            'cv_button_data(raw, "form") and the bulk label-mode floor'
+        )
     if location == "form":
         # the third argument is the rendering category: a form button is always an "action"; its semantic kind
         # is ctx["cv_key"], never this argument

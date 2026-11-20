@@ -570,7 +570,7 @@ def test_form_location_contract_constants():
     from crud_views.lib.view.button_data import LOCATIONS
 
     assert set(FORM_TYPES) == FORM_KINDS
-    assert VARIANT_LOCATIONS | {"form"} == LOCATIONS
+    assert VARIANT_LOCATIONS | {"form", "bulk"} == LOCATIONS
     assert set(ACTION_LOCATIONS) == VARIANT_LOCATIONS
     assert {
         "cv_location",

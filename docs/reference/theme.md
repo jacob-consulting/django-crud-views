@@ -200,7 +200,7 @@ or guarantee its visual layout.
 ## Theme label defaults
 
 Themes may set per-location label floors without a project setting. Effective defaults merge **package → theme →
-project**, per key. Package values remain context/list `"icon"`, card `"both"`, form `"label"`.
+project**, per key. Package values remain context/list `"icon"`, card `"both"`, form `"label"`, bulk `"both"`.
 Explicit button/view modes and selected owner maps still take precedence over this floor; owner maps are selected
 whole, not merged. See the existing [resolution steps](action_menus.md#label-mode).
 
@@ -229,7 +229,7 @@ Supply CSS for the example notice classes. Later registration calls win per key;
 input and validates the entire dict before changing anything: unknown locations or modes, non-string entries,
 or a non-dict raise `ValueError` in every mode, without partial registration.
 
-`register_label_mode_defaults()` accepts only `context`, `list`, `card`, `form` and the modes `label`, `icon`, `both`.
+`register_label_mode_defaults()` accepts only `context`, `list`, `card`, `form`, `bulk` and the modes `label`, `icon`, `both`.
 `default_label_mode(location)` reads project settings on every call: `override_settings` and restoration work
 without resetting a cache. Invalid project values raise `ValueError` in strict mode; otherwise they log once per
 location/value and fall back to the theme, then the package. E108 still reports malformed project configuration.

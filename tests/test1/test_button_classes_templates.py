@@ -405,7 +405,7 @@ def test_button_chain_renders_only_table_classes(monkeypatch):
         styled[name] = len(_styled(doc))
 
     # the action and menu leaves serve the variant locations; the form location has its own leaf, checked below
-    assert LOCATIONS - {"form"} == VARIANT_LOCATIONS
+    assert LOCATIONS - {"form", "bulk"} == VARIANT_LOCATIONS
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES=SENTINEL_CLASSES):
         for location in sorted(VARIANT_LOCATIONS):
             for mode in sorted(LABEL_MODES):

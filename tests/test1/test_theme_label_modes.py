@@ -17,7 +17,7 @@ from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import ContextButton, label_mode
 from tests.test1.app.views import AuthorCreateView, AuthorDetailView, AuthorUpdateView, cv_author
 
-PACKAGE = {"context": "icon", "list": "icon", "card": "both", "form": "label"}
+PACKAGE = {"context": "icon", "list": "icon", "card": "both", "form": "label", "bulk": "both"}
 
 
 @pytest.fixture(autouse=True)
@@ -73,6 +73,7 @@ def test_registration_merge_copy_and_snapshot():
         "list": "label",
         "card": "both",
         "form": "label",
+        "bulk": "both",
     }
 
 
@@ -104,13 +105,13 @@ def test_registration_atomicity(strict, invalid):
 
 
 def test_registration_concurrent_merges_keep_all_keys():
-    barrier = Barrier(4)
+    barrier = Barrier(len(PACKAGE))
 
     def add(location):
         barrier.wait(timeout=5)
         register({location: "label"})
 
-    with ThreadPoolExecutor(max_workers=4) as pool:
+    with ThreadPoolExecutor(max_workers=len(PACKAGE)) as pool:
         list(pool.map(add, PACKAGE))
     assert {key: label_mode.default_label_mode(key) for key in PACKAGE} == dict.fromkeys(PACKAGE, "label")
 

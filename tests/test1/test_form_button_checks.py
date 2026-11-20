@@ -336,7 +336,7 @@ def test_malformed_form_floor_is_e108_and_lazy(floor, value):
 def test_form_floor_typo_is_e108_unknown_location():
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"from": "both"}):
         (message,) = _e108()
-    assert "key 'from' must be one of ['card', 'context', 'form', 'list']" in message
+    assert "key 'from' must be one of ['bulk', 'card', 'context', 'form', 'list']" in message
 
 
 @pytest.mark.parametrize("strict", [True, False])

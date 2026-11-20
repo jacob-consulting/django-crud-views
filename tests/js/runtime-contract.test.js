@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 
 const harness = "tests/js/runtime-contract.test.js";
 const requiredFiles = [
-    "adapters", "formset", "harness", "list.filter", "modal", "object-detail-tabs", "toggle", "tooltip", "viewset",
+    "adapters", "formset", "harness", "list.filter", "modal", "object-detail-tabs", "toggle", "tooltip", "viewset", "bulk",
 ].map(name => `tests/js/${name}.test.js`);
 
 describe("test runtime boundary", () => {

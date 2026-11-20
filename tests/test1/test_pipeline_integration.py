@@ -14,6 +14,7 @@ CORE_JS = [
     "crud_views/js/toggle.js",
     "crud_views/js/tooltip.js",
     "crud_views/js/manage.js",
+    "crud_views/js/bulk.js",
 ]
 CORE_CSS = [
     "crud_views/css/property.css",

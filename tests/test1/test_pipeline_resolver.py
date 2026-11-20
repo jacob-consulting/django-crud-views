@@ -11,6 +11,7 @@ CORE_JS = [
     "crud_views/js/toggle.js",
     "crud_views/js/tooltip.js",
     "crud_views/js/manage.js",
+    "crud_views/js/bulk.js",
 ]
 CORE_CSS = [
     "crud_views/css/property.css",
@@ -129,9 +130,9 @@ def test_rows_order_js_then_css(asset_registry):
 
     rows = asset_rows({})
     kinds = [r.kind for r in rows]
-    assert kinds == ["js"] * 8 + ["css"] * 5
-    assert [r.path for r in rows[:8]] == CORE_JS
-    assert [r.path for r in rows[8:]] == CORE_CSS
+    assert kinds == ["js"] * 9 + ["css"] * 5
+    assert [r.path for r in rows[:9]] == CORE_JS
+    assert [r.path for r in rows[9:]] == CORE_CSS
 
 
 @pytest.mark.parametrize(

@@ -249,6 +249,8 @@ Theme registrations override defaults and `CRUD_VIEWS_BUTTON_CLASSES` overrides 
 `""` removes the class contribution. The toolbar's action buttons are ordinary form submit buttons styled by
 `form:submit`; their label mode comes from the `bulk` location floor of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`.
 
+See [Bulk actions](bulk_actions.md#toolbar-buttons) for toolbar labels, selection and review templates.
+
 ### Manage diagnostic classes
 
 The twenty `manage:*` entries above are complete utility class strings, without label-mode variants.

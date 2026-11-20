@@ -141,6 +141,12 @@ class SiteFeedbackView(CrispyViewMixin, CustomFormNoObjectViewPermissionRequired
         pass
 ```
 
+## Bulk action forms
+
+A bulk destination is a permission-required non-object custom form view with its own base class,
+`BulkFormViewPermissionRequired`. It receives the source's selected IDs, resolves and checks them, then
+passes fresh eligible objects to the application's `cv_form_valid`; see [Bulk actions](bulk_actions.md).
+
 ## A permission of its own
 
 A view outside the standard CRUD operations, such as a contact form or an approval, can require a permission of

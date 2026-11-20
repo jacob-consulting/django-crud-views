@@ -62,6 +62,8 @@ nothing on a page without a bulk form. **Without JavaScript**, the toolbar stays
 buttons and submits natively; the server answers an empty submission with a warning. If the page-selection
 checkbox or count element is missing, the script leaves that plain toolbar in place.
 
+See [Bulk actions](bulk_actions.md) for opting in and implementing the registered action forms.
+
 ## `cv.adapters`
 
 `adapters.js` defines `cv.adapters`. Core calls adapters only through `cv.adapters.<name>`, looked up at call time, so an

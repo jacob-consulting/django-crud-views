@@ -41,6 +41,13 @@ Actions are rendered to match their target view automatically, exactly as table-
 
 You do not configure this on `CardAction`; the method and modal behaviour derive from the target view.
 
+## Bulk selection
+
+Opt a card view into current-page selection with `BulkSelectionMixin` before the card view base and
+set `cv_bulk_actions` to its registered action-form keys. The grid wrapper adds the checkbox using
+`bulk:card-cell` and `bulk:card-select`, so custom card templates need no selection markup.
+See [Bulk actions](bulk_actions.md) for destination permissions and confirmation.
+
 ## Cards first with a secondary table
 
 Register the card presentation as `list` at the ViewSet root, and a second table presentation as `table`.

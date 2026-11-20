@@ -925,6 +925,59 @@ def client_user_bulk_code_change(client, user_bulk_code_change):
     return client
 
 
+@pytest.fixture
+def cv_bulk_book():
+    from tests.test1.app.views_bulk import cv_bulk_book as ret
+
+    return ret
+
+
+@pytest.fixture
+def cv_bulk_tenant():
+    from tests.test1.app.views_bulk import cv_bulk_tenant as ret
+
+    return ret
+
+
+@pytest.fixture
+def user_bulk_book_without_parent(cv_bulk_book):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_bulk_book_change", password="password")
+    for permission in ("view", "change"):
+        user_viewset_permission(user, cv_bulk_book, permission)
+    return user
+
+
+@pytest.fixture
+def user_bulk_book_change(user_bulk_book_without_parent, cv_bulk_publisher):
+    for permission in ("view", "change"):
+        user_viewset_permission(user_bulk_book_without_parent, cv_bulk_publisher, permission)
+    return user_bulk_book_without_parent
+
+
+@pytest.fixture
+def client_user_bulk_book_change(client, user_bulk_book_change):
+    client.force_login(user_bulk_book_change)
+    return client
+
+
+@pytest.fixture
+def user_bulk_tenant_change(cv_bulk_tenant):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_bulk_tenant_change", password="password")
+    for permission in ("view", "change"):
+        user_viewset_permission(user, cv_bulk_tenant, permission)
+    return user
+
+
+@pytest.fixture
+def client_user_bulk_tenant_change(client, user_bulk_tenant_change):
+    client.force_login(user_bulk_tenant_change)
+    return client
+
+
 # --- S3File (resource) fixtures ---
 
 

@@ -8,8 +8,8 @@ from crud_views.lib.crispy import CrispyForm
 from crud_views.lib.deletion import inspect_deletion
 from crud_views.lib.table import Table
 from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin
-from crud_views.lib.viewset import ViewSet
-from tests.test1.app.models import Author, BulkCode, Publisher
+from crud_views.lib.viewset import ParentViewSet, ViewSet
+from tests.test1.app.models import Author, Book, BulkCode, Publisher
 
 cv_bulk_publisher = ViewSet(model=Publisher, name="bulk_publisher", prefix="bulk-publisher")
 cv_bulk_author = ViewSet(model=Author, name="bulk_author", prefix="bulk-author")
@@ -72,6 +72,103 @@ class BulkCodeMarkView(BulkFormViewPermissionRequired):
 
 class BulkPublisherTable(Table):
     name = tables.Column()
+
+
+cv_bulk_book = ViewSet(
+    model=Book, name="bulk_book", prefix="bulk-book", parent=ParentViewSet(name="bulk_publisher", attribute="publisher")
+)
+
+
+class BulkBookTable(Table):
+    title = tables.Column()
+
+
+class BulkBookListView(BulkSelectionMixin, ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_bulk_book
+    table_class = BulkBookTable
+    cv_bulk_actions = ("mark",)
+    cv_list_actions = []
+    cv_context_actions = ["home"]
+
+
+class BulkBookMarkView(BulkFormViewPermissionRequired):
+    cv_viewset = cv_bulk_book
+    cv_key = "mark"
+    cv_path = "mark"
+    cv_permission = "change"
+    cv_action_label_template_code = "Mark selected"
+    cv_action_short_label_template_code = "Mark"
+    cv_success_key = "list"
+
+    def get_queryset(self):
+        return Book.objects.all()
+
+    def cv_form_valid(self, context):
+        for obj in self.cv_bulk_objects:
+            obj.title += " (marked)"
+            obj.save(using=self.cv_get_db_alias())
+
+
+class BulkTenantViewSet(ViewSet):
+    def get_queryset(self, view):
+        return super().get_queryset(view).exclude(name__startswith="Foreign")
+
+
+cv_bulk_tenant = BulkTenantViewSet(model=Publisher, name="bulk_tenant", prefix="bulk-tenant")
+
+
+class BulkTenantListView(BulkSelectionMixin, ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_bulk_tenant
+    table_class = BulkPublisherTable
+    cv_bulk_actions = ("mark",)
+    cv_list_actions = []
+    cv_context_actions = ["home"]
+
+    def get_queryset(self):
+        return super().get_queryset().exclude(name__startswith="Unlisted")
+
+
+class BulkTenantMarkView(BulkFormViewPermissionRequired):
+    cv_viewset = cv_bulk_tenant
+    cv_key = "mark"
+    cv_path = "mark"
+    cv_permission = "change"
+    cv_action_label_template_code = "Mark selected"
+    cv_action_short_label_template_code = "Mark"
+    cv_success_key = "list"
+
+    def get_queryset(self):
+        return Publisher.objects.all()
+
+    def cv_bulk_has_permission(self, obj):
+        return not obj.name.startswith("Private")
+
+    def cv_bulk_check(self, obj):
+        return ["Locked publishers cannot be marked."] if obj.name.startswith("Locked") else []
+
+    def cv_form_valid(self, context):
+        for obj in self.cv_bulk_objects:
+            obj.name += " (marked)"
+            obj.save(using=self.cv_get_db_alias())
+
+
+class BulkTenantNarrowView(BulkFormViewPermissionRequired):
+    cv_viewset = cv_bulk_tenant
+    cv_key = "narrow"
+    cv_path = "narrow"
+    cv_permission = "change"
+    cv_action_label_template_code = "Mark visible"
+    cv_action_short_label_template_code = "Mark visible"
+    cv_success_key = "list"
+    cv_bulk_confirm = False
+
+    def get_queryset(self):
+        return super().get_queryset().exclude(name__startswith="Hidden")
+
+    def cv_form_valid(self, context):
+        for obj in self.cv_bulk_objects:
+            obj.name += " (marked)"
+            obj.save(using=self.cv_get_db_alias())
 
 
 class BulkPublisherListView(BulkSelectionMixin, ListViewTableMixin, ListViewPermissionRequired):

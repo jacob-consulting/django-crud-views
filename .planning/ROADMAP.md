@@ -2198,14 +2198,14 @@ Starts from the list, card and custom-form views on `main`; the phase 06.38 impl
 **Requirements**: None; the approved issue contract supplies phase acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the bulk classes, attributes, POST field names and class keys.
-**Plans:** 1/13 plans executed
+**Plans:** 2/13 plans executed
 
 Plans:
 **Wave 1**
 - [x] 06.41-01-PLAN.md — Tracer: table selection through review and confirmation to execution; selection mistakes return to the source (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.41-02-PLAN.md — Confirmation outcomes (skip, mixed, input form, all blocked) and execution guarantees (wave 2)
+- [x] 06.41-02-PLAN.md — Confirmation outcomes (skip, mixed, input form, all blocked) and execution guarantees (wave 2)
 - [ ] 06.41-03-PLAN.md — Register the `bulk` label-mode location with its floor (wave 2)
 - [ ] 06.41-04-PLAN.md — Toolbar script `bulk.js` with its unit test and script inventories (wave 2)
 

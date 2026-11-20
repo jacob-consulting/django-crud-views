@@ -304,9 +304,8 @@ def test_table_review_execute_flow(client_user_publisher_view, user_publisher_vi
     assert button.get("value") == "review"
     assert button.get("formaction").startswith("/bulk-publisher/archive/?")
     from crud_views.lib.button_classes import get_button_class
-    from crud_views.lib.view.label_mode import default_label_mode
 
-    assert button.get("class") == get_button_class("form", "submit", default_label_mode("form"))
+    assert button.get("class") == get_button_class("form", "submit", "label")
     checkboxes = page.cssselect('input[name="cv_bulk_ids"]')
     assert [box.get("value") for box in checkboxes] == [str(obj.pk) for obj in records]
     assert all(box.get("form") == "cv-bulk-selection" for box in checkboxes)

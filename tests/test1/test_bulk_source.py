@@ -46,8 +46,10 @@ def test_table_toolbar_controls(client_user_bulk_publisher_view, bulk_publishers
         assert button.get("formaction")
         assert "disabled" not in button.attrib
         key = button.get("data-cv-bulk-action")
-        destination = cv_bulk_publisher.get_view_class(key)
-        assert button.text_content().strip() == destination.cv_get_action_short_label({})
+        assert (
+            button.text_content().strip()
+            == {"archive": "Archive", "archive_now": "Archive now", "rename": "Archive", "bulk_delete": "Delete"}[key]
+        )
     assert not form.cssselect("select")
     assert "Continue" not in form.text_content()
     attributes = {name for element in page.iter() for name in element.attrib if name.startswith("data-cv-bulk")}

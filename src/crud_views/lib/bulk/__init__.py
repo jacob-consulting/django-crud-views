@@ -17,7 +17,9 @@ from django.utils.translation import gettext_lazy
 from crud_views.lib.ancestors import _scope_child_queryset
 from crud_views.lib.crispy import CrispyForm, CrispyViewMixin
 from crud_views.lib.crispy.buttons import FORM_LEAF_TEMPLATE
+from crud_views.lib.icons import _icon_available
 from crud_views.lib.view.button_data import cv_button_data
+from crud_views.lib.view.label_mode import default_label_mode
 from crud_views.lib.views.form import CustomFormNoObjectViewPermissionRequired
 from crud_views.lib.views.mixins import MessageMixin
 
@@ -35,6 +37,7 @@ class BulkSelectionMixin:
 
     @property
     def cv_bulk_buttons(self):
+        mode = default_label_mode("bulk")
         context = self.cv_get_view_context()
         buttons = []
         for key in self.cv_bulk_actions:
@@ -47,6 +50,7 @@ class BulkSelectionMixin:
                 "cv_label": destination.cv_get_action_short_label(context),
                 "cv_id": f"cv-bulk-{key}",
                 "cv_icon": destination.cv_icon_action,
+                "cv_label_mode": mode if _icon_available(destination.cv_icon_action) else "label",
                 "cv_attrs": {"formaction": self.cv_get_link_url(destination, key), "data-cv-bulk-action": key},
             }
             buttons.append(render_to_string(FORM_LEAF_TEMPLATE, cv_button_data(raw, "form")))

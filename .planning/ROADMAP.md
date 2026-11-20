@@ -2362,5 +2362,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
 | 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Complete | 2026-11-19 |
 | 06.40.1. ViewSet Navigation: theme class keys and owner-heading layouts (#384) | 2/2 | Complete | 2026-11-19 |
-| 06.41. Current-page bulk selection and action forms for table and card views (#387) | 13/13 | Verifying | - |
+| 06.41. Current-page bulk selection and action forms for table and card views (#387) | 13/13 | Human verification | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

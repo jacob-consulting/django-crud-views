@@ -157,6 +157,31 @@ def test_numbered_column_defaults(width):
     assert get_button_class("form", f"column-{width}") == f"col-md-{width}"
 
 
+@pytest.mark.parametrize(
+    "slot,default",
+    [
+        ("toolbar", "mb-3"),
+        ("controls", "d-flex align-items-center gap-3 mb-2"),
+        ("select-all", "form-check mb-0"),
+        ("checkbox", "form-check-input"),
+        ("actions", "d-flex flex-wrap gap-2"),
+        ("card-cell", "position-relative"),
+        ("card-select", "form-check-input position-absolute top-0 start-0 translate-middle z-1"),
+    ],
+)
+def test_bulk_class_defaults_and_override_precedence(slot, default):
+    assert get_button_class("bulk", slot) == default
+    key = f"bulk:{slot}"
+    register_button_classes({key: "theme-bulk"})
+    assert get_button_class("bulk", slot) == "theme-bulk"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "project-bulk"}):
+        assert get_button_class("bulk", slot) == "project-bulk"
+    for empty in (None, ""):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: empty}):
+            assert get_button_class("bulk", slot) == ""
+    assert get_button_class("bulk", slot) == "theme-bulk"
+
+
 def test_manage_registry_defaults_and_overrides():
     defaults = {
         "badge-model": "badge bg-secondary",

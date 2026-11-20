@@ -47,6 +47,23 @@ def test_navbar_typos_and_mode_suffixes_warn(source, key):
 
 
 @pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize(
+    "slot", ["toolbar", "controls", "select-all", "checkbox", "actions", "card-cell", "card-select"]
+)
+@pytest.mark.parametrize("value", ["theme-bulk", "", None, 42])
+def test_bulk_ordinary_keys_accept_classes_and_clear_invalid_values(source, slot, value):
+    assert ids(messages_for({f"bulk:{slot}": value}, source)) == (["crud_views.E361"] if value == 42 else [])
+    assert "bulk" not in bc.VARIANT_LOCATIONS
+    assert {"submit", "cancel", "delete", "filter-submit", "filter-reset"} == bc.FORM_KINDS
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize("key", ["bulk:toolbarr", "bulk:checkbox:icon"])
+def test_bulk_typos_and_mode_suffixes_warn(source, key):
+    assert ids(messages_for({key: "theme-bulk"}, source)) == ["crud_views.W362"]
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
 @pytest.mark.parametrize("width", range(1, 13))
 @pytest.mark.parametrize("value", ["span-6", "", None, 42])
 def test_column_utility_checks(source, width, value):

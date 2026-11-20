@@ -347,6 +347,7 @@ class CrudViewsSettings(BaseModel):
                 "toggle": self.get_js("toggle.js"),
                 "tooltip": self.get_js("tooltip.js"),
                 "manage": self.get_js("manage.js"),
+                "bulk": self.get_js("bulk.js"),
             }
         )
 

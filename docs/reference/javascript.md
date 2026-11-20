@@ -18,6 +18,7 @@ The scripts render in this order from `{% cv_js %}` (and `cv_sources("js")` for 
 | `toggle.js` | nothing | nothing |
 | `tooltip.js` | nothing | `cv.adapters.tooltip` (does nothing without it) |
 | `manage.js` | nothing | nothing |
+| `bulk.js` | nothing | nothing |
 | object-detail `tabs.js` (extension) | nothing | `cv.adapters.tab`, at initialization/disposal; absent entry is a no-op |
 
 The namespace is resolved when an adapter is called, not when the script loads. Bootstrap's bundle and selected-theme
@@ -43,6 +44,23 @@ The companion external `crud_views/css/manage.css` scopes layout, responsive tab
 registered default styling to the manage page. **Without JavaScript**, all values remain visible after opening
 native disclosures and the nonfunctional switch stays hidden. No inline script, handler or style is required.
 See [manage behavior](manage.md#views) and [theme contracts](theme.md#structured-manage-contracts).
+
+## Bulk selection toolbar
+
+The external `crud_views/js/bulk.js` script enhances the toolbar of a list or card view that offers bulk actions.
+It reveals the translated "Select this page" control and selected count rendered hidden by the server, keeps
+the count current, and disables the action buttons while nothing is selected. The same toolbar control selects
+all current-page record checkboxes for either layout; native submit buttons remain the submission mechanism.
+
+The script reads `data-cv-bulk`, `data-cv-bulk-item`, `data-cv-bulk-all`, `data-cv-bulk-count`,
+`data-cv-bulk-action` and `data-cv-bulk-enhanced`. Record checkboxes belong to the toolbar through their native
+`form` attribute. Initialization runs at `DOMContentLoaded` and immediately when the document is already ready;
+each form is initialized once. A `pageshow` event recomputes the controls from restored checked values.
+
+It has **no persistence**, sends no request and has no third-party dependency. It creates no label text and does
+nothing on a page without a bulk form. **Without JavaScript**, the toolbar stays visible with enabled action
+buttons and submits natively; the server answers an empty submission with a warning. If the page-selection
+checkbox or count element is missing, the script leaves that plain toolbar in place.
 
 ## `cv.adapters`
 

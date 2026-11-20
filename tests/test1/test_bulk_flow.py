@@ -37,6 +37,37 @@ def destination_from_source(client, key="archive"):
     return page.cssselect(f'button[data-cv-bulk-action="{key}"]')[0].get("formaction")
 
 
+@pytest.mark.parametrize(
+    "header_level, classes, expected_tag, expected_class",
+    [
+        (None, {}, "h3", None),
+        (4, {}, "h5", "h3"),
+        (4, {"heading:size-3": "theme-size-three"}, "h5", "theme-size-three"),
+    ],
+)
+def test_review_heading_follows_theme(
+    client_user_bulk_publisher_change,
+    bulk_publishers,
+    monkeypatch,
+    settings,
+    header_level,
+    classes,
+    expected_tag,
+    expected_class,
+):
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "header_level", header_level)
+    settings.CRUD_VIEWS_BUTTON_CLASSES = classes
+    response = client_user_bulk_publisher_change.post(
+        "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": [bulk_publishers[0].pk]}
+    )
+    assert response.status_code == 200
+    heading = soup(response).xpath('//*[text()="To process: 1"]')[0]
+    assert heading.tag == expected_tag
+    assert heading.get("class") == expected_class
+
+
 def test_skip_confirmation_executes(client_user_bulk_publisher_change, bulk_publishers, monkeypatch):
     from tests.test1.app.views_bulk import BulkPublisherArchiveView
 

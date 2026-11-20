@@ -337,3 +337,80 @@ def test_bulk_python_recipes_parse():
     assert blocks
     for block in blocks:
         ast.parse(block)
+
+
+def test_bulk_stability_inventory():
+    text = (ROOT / "docs/development/stability.md").read_text()
+    assert "**Bulk actions**" in text
+    bulk = text.split("**Bulk actions**", 1)[1].split("\n\n**", 1)[0]
+    for name in STABLE_NAMES:
+        assert name in bulk, name
+    for name in INTERNAL_NAMES:
+        assert name not in text
+    assert "stable at 1.0" in bulk
+    assert "no bulk-specific provisional exception" in bulk
+    assert "../reference/bulk_actions.md" in bulk
+
+
+def test_bulk_hook_exception_beside_stability_hook_inventory():
+    text = (ROOT / "docs/development/stability.md").read_text()
+    paragraph = normalized(next(part for part in text.split("\n\n") if "**Declared attributes and hooks**" in part))
+    for name in (
+        "does not call `cv_form_valid_process`",
+        "BulkFormViewPermissionRequired",
+        "cv_form_valid",
+        "cv_form_valid_hook",
+        "cv_get_atomic()",
+        "has no effect",
+        "../reference/bulk_actions.md#how-a-submission-is-handled",
+    ):
+        assert name in paragraph
+
+
+def test_bulk_lifecycle_note_preserves_existing_post_advice():
+    text = (ROOT / "docs/reference/request_lifecycle.md").read_text()
+    paragraph = normalized(next(part for part in text.split("\n\n") if "own the transaction" in part))
+    for name in (
+        "call them instead of",
+        "does not call `cv_form_valid_process`",
+        "BulkFormViewPermissionRequired",
+        "has no effect",
+        "bulk_actions.md#how-a-submission-is-handled",
+        "eligibility inside the transaction",
+    ):
+        assert name in paragraph
+    assert paragraph.index("bound invalid responses.") < paragraph.index("BulkFormViewPermissionRequired")
+
+
+def test_bulk_guardian_warning_location_and_item_policy():
+    text = (ROOT / "docs/reference/guardian.md").read_text()
+    assert "## Bulk actions" in text
+    bulk = normalized(section(text, "Bulk actions"))
+    for name in (
+        "cv_bulk_has_permission",
+        "True",
+        "crud_views_guardian.W002",
+        "has_perm",
+        "obj",
+        "SILENCED_SYSTEM_CHECKS",
+        "get_queryset()",
+        "bulk_actions.md",
+        "Django",
+        "system checks",
+        "manage.py check",
+        "runserver",
+        "migrate",
+    ):
+        assert name in bulk
+    assert "manage page of a Guardian ViewSet does not list" in bulk
+
+
+def test_bulk_message_reference_and_added_changelog():
+    messages = (ROOT / "docs/reference/messages.md").read_text()
+    assert "crud_views/snippets/message/bulk.html" in messages
+    assert "bulk_actions.md#result-message-and-return" in messages
+    text = section((ROOT / "CHANGELOG.md").read_text(), "Unreleased")
+    added = text.split("### Added\n", 1)[1].split("\n### ", 1)[0]
+    for name in ("(#387)", "BulkSelectionMixin", "BulkFormViewPermissionRequired", "docs/reference/bulk_actions.md"):
+        assert name in added
+    assert "#387" not in text.split("### Breaking\n", 1)[1].split("\n### ", 1)[0]

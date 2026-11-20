@@ -138,6 +138,37 @@ The review is a full page; modal review is unsupported. `cv_modal = True` fails 
 `viewset.E251` check: the custom form views listed as supported in that check's message are the stock
 custom form views, not bulk destinations.
 
+The live example uses a `Document.Status` enum instead of the introductory recipe's `is_archived` field.
+Its `cv_document` is the example's ViewSet, and `_` is Django's `gettext_lazy`.
+`BreadcrumbMixin` belongs to the example project and is not needed for bulk actions.
+This destination runs immediately for eligible drafts and asks for confirmation when any selected record is blocked:
+
+<!-- cv-sync: bulk_selection/views.py -->
+```python
+class ArchiveDocumentsView(BreadcrumbMixin, BulkFormViewPermissionRequired):
+    cv_viewset = cv_document
+    cv_key = "archive"
+    cv_path = "archive"
+    cv_permission = "change"
+    cv_icon_action = "fas:box-archive"
+    cv_action_label_template_code = _("Archive selected documents")
+    cv_action_short_label_template_code = _("Archive")
+    cv_bulk_confirm = False
+    cv_success_key = "list"
+    cv_success_keys = ["list", "card"]
+    cv_message_template_code = _("{{ view.cv_bulk_objects|length }} documents archived.")
+
+    def cv_bulk_check(self, obj):
+        if obj.is_locked:
+            return [_("Locked documents cannot be archived.")]
+        return [] if obj.status == Document.Status.DRAFT else [_("Only drafts can be archived.")]
+
+    def cv_form_valid(self, context):
+        for document in self.cv_bulk_objects:
+            document.status = Document.Status.ARCHIVED
+            document.save(using=self.cv_get_db_alias(), update_fields=["status"])
+```
+
 ## Eligible and blocked records
 
 `cv_bulk_has_permission(obj)` returns a boolean; its default is `True`. `cv_bulk_check(obj)` returns a list
@@ -223,33 +254,33 @@ checked boxes.
 Offer bulk delete only when the application can explain what deleting each selected root means. A leaf
 model with no dependent records and ordinary Django deletion is a simple starting point; the absence of
 child ViewSets alone does not make a model a leaf. Share a module-level protection rule with single-record
-deletion, while each endpoint retains its own admission and item permission policy:
+deletion, while each endpoint retains its own admission and item permission policy. The live example imports
+`CrispyDeleteForm`, `CrispyViewMixin` and `MessageMixin` for its single-record delete view:
 
+<!-- cv-sync: bulk_selection/views.py -->
 ```python
-from crud_views.lib.views import DeleteViewPermissionRequired
-
-
 def document_delete_errors(document):
-    return ["Locked documents cannot be deleted."] if document.is_locked else []
+    return [_("Locked documents cannot be deleted.")] if document.is_locked else []
 
 
-class DocumentDeleteView(DeleteViewPermissionRequired):
-    cv_viewset = document_viewset
+class DocumentDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    cv_viewset = cv_document
+    form_class = CrispyDeleteForm
 
     def cv_check_delete_protection(self):
         return document_delete_errors(self.object)
 
 
-class DeleteDocumentsView(BulkFormViewPermissionRequired):
-    cv_viewset = document_viewset
+class DeleteDocumentsView(BreadcrumbMixin, BulkFormViewPermissionRequired):
+    cv_viewset = cv_document
     cv_key = "bulk_delete"
     cv_path = "bulk-delete"
     cv_permission = "delete"
-    cv_action_label_template_code = "Delete selected documents"
-    cv_action_short_label_template_code = "Delete"
     cv_icon_action = "delete"
+    cv_action_label_template_code = _("Delete selected documents")
+    cv_action_short_label_template_code = _("Delete")
     cv_success_key = "list"
-    cv_atomic = True
+    cv_message_template_code = _("{{ view.cv_bulk_objects|length }} documents deleted.")
 
     def cv_bulk_check(self, obj):
         return document_delete_errors(obj)

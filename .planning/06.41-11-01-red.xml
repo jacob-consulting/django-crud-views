@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.066" timestamp="2026-11-20T14:37:11.454129+00:00" hostname="weaver-dev"><testcase classname="bulk_selection.tests.BulkSelectionLandingTest" name="test_table_landing_offers_three_bulk_actions" time="0.954"><failure message="AssertionError: 404 != 200">self = &lt;tests.BulkSelectionLandingTest testMethod=test_table_landing_offers_three_bulk_actions&gt;
+
+    def test_table_landing_offers_three_bulk_actions(self):
+        user = get_user_model().objects.create_superuser(username="admin", password="pw")
+        self.client.force_login(user)
+        response = self.client.get("/bulk-selection/document/")
+&gt;       self.assertEqual(response.status_code, 200)
+E       AssertionError: 404 != 200
+
+examples/bootstrap5/bulk_selection/tests.py:14: AssertionError</failure></testcase></testsuite></testsuites>

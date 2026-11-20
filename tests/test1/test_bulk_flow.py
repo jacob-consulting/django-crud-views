@@ -246,3 +246,220 @@ def test_review_hidden_ids_ignore_number_localization(client_user_bulk_publisher
     assert response.status_code == 302
     assert Publisher.objects.get(pk=12345).name == "Alpha (archived)"
     assert Publisher.objects.get(pk=12346).name == "Locked Beta"
+
+
+def publisher_names():
+    return list(Publisher.objects.order_by("pk").values_list("name", flat=True))
+
+
+def forbid_resolution(monkeypatch):
+    from unittest.mock import Mock
+
+    from tests.test1.app.views_bulk import BulkPublisherArchiveView
+
+    hooks = []
+    for name in ("_review_selection", "cv_bulk_has_permission", "cv_bulk_check"):
+        hook = Mock(side_effect=AssertionError(f"{name} must not run"))
+        monkeypatch.setattr(BulkPublisherArchiveView, name, hook)
+        hooks.append(hook)
+    return hooks
+
+
+@pytest.mark.parametrize("stage", ["review", "execute"])
+@pytest.mark.parametrize("selection", ["empty", "oversized", "mixed"])
+def test_selection_mistakes_warn_before_loading(
+    client_user_bulk_publisher_change, bulk_publishers, monkeypatch, stage, selection
+):
+    from django.contrib.messages import WARNING
+
+    data = {"cv_bulk_stage": stage}
+    if selection == "oversized":
+        data["cv_bulk_ids"] = list(range(1, 102))
+    elif selection == "mixed":
+        data["cv_bulk_ids"] = list(range(1, 61))
+        data["cv_bulk_blocked_ids"] = list(range(61, 102))
+    hooks = forbid_resolution(monkeypatch)
+    before = publisher_names()
+    response = client_user_bulk_publisher_change.post("/bulk-publisher/archive/", data)
+    assert response.status_code == 302
+    assert response.url == "/bulk-publisher/"
+    expected = "Select at least one record." if selection == "empty" else "Select at most 100 records."
+    assert [(message.level, str(message)) for message in get_messages(response.wsgi_request)] == [(WARNING, expected)]
+    assert publisher_names() == before
+    for hook in hooks:
+        hook.assert_not_called()
+
+
+@pytest.mark.parametrize("count,limit", [(100, 100), (120, 150)])
+def test_selection_within_destination_limit_is_reviewed(client_user_bulk_publisher_change, monkeypatch, count, limit):
+    from tests.test1.app.views_bulk import BulkPublisherArchiveView
+
+    records = Publisher.objects.bulk_create([Publisher(name=f"Publisher {index}") for index in range(count)])
+    if limit != 100:
+        monkeypatch.setattr(BulkPublisherArchiveView, "cv_bulk_max", limit)
+    response = client_user_bulk_publisher_change.post(
+        "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": [obj.pk for obj in records]}
+    )
+    assert response.status_code == 200
+    assert len(response.context["bulk_review"].objects) == count
+    assert not response.context["form"].is_bound
+    assert publisher_names() == [obj.name for obj in records]
+    assert not list(get_messages(response.wsgi_request))
+
+
+def test_warning_returns_to_signed_source_query(client_user_bulk_publisher_change, bulk_publishers):
+    from urllib.parse import parse_qs, urlsplit
+
+    client = client_user_bulk_publisher_change
+    page = soup(client.get("/bulk-publisher/?sort=name&page=1"))
+    destination = page.cssselect('button[data-cv-bulk-action="archive"]')[0].get("formaction")
+    response = client.post(destination, {"cv_bulk_stage": "review"})
+    assert response.status_code == 302
+    assert urlsplit(response.url).path == "/bulk-publisher/"
+    assert parse_qs(urlsplit(response.url).query) == {"sort": ["name"], "page": ["1"], "cv_from_restore": ["1"]}
+    assert [str(message) for message in get_messages(response.wsgi_request)] == ["Select at least one record."]
+    assert publisher_names() == ["Alpha", "Beta", "Locked Gamma"]
+
+
+def test_plain_get_redirects_silently(client_user_bulk_publisher_change, bulk_publishers):
+    client = client_user_bulk_publisher_change
+    page = soup(client.get("/bulk-publisher/?sort=name&page=1"))
+    destination = page.cssselect('button[data-cv-bulk-action="archive"]')[0].get("formaction")
+    response = client.get(destination)
+    assert response.status_code == 302
+    assert response.url == "/bulk-publisher/?sort=name&page=1&cv_from_restore=1"
+    assert not list(get_messages(response.wsgi_request))
+    response = client.get("/bulk-publisher/archive/")
+    assert response.status_code == 302
+    assert response.url == "/bulk-publisher/"
+    assert not list(get_messages(response.wsgi_request))
+    assert publisher_names() == ["Alpha", "Beta", "Locked Gamma"]
+
+
+@pytest.mark.parametrize("stage", [None, ["review", "execute"], "other"])
+def test_invalid_stage_is_bad_request(client_user_bulk_publisher_change, bulk_publishers, stage):
+    data = {"cv_bulk_ids": [bulk_publishers[0].pk]}
+    if stage is not None:
+        data["cv_bulk_stage"] = stage
+    response = client_user_bulk_publisher_change.post("/bulk-publisher/archive/", data)
+    assert response.status_code == 400
+    assert publisher_names() == ["Alpha", "Beta", "Locked Gamma"]
+    assert not list(get_messages(response.wsgi_request))
+
+
+@pytest.mark.parametrize("value", ["abc", "", "1.0", "99999999999999999999999"])
+@pytest.mark.parametrize("stage", ["review", "execute"])
+def test_invalid_id_is_bad_request(client_user_bulk_publisher_change, bulk_publishers, value, stage):
+    response = client_user_bulk_publisher_change.post(
+        "/bulk-publisher/archive/", {"cv_bulk_stage": stage, "cv_bulk_ids": [value]}
+    )
+    assert response.status_code == 400
+    assert publisher_names() == ["Alpha", "Beta", "Locked Gamma"]
+    assert not list(get_messages(response.wsgi_request))
+
+
+def test_overlapping_ids_are_bad_request(client_user_bulk_publisher_change, bulk_publishers):
+    pk = bulk_publishers[0].pk
+    response = client_user_bulk_publisher_change.post(
+        "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": [pk], "cv_bulk_blocked_ids": [pk]}
+    )
+    assert response.status_code == 400
+    assert publisher_names() == ["Alpha", "Beta", "Locked Gamma"]
+    assert not list(get_messages(response.wsgi_request))
+
+
+def test_normalized_ids_deduplicate_before_review_and_execute(client_user_bulk_publisher_change):
+    Publisher.objects.create(pk=1, name="Alpha")
+    client = client_user_bulk_publisher_change
+    data = {"cv_bulk_stage": "review", "cv_bulk_ids": ["01", " 1", "1"]}
+    response = client.post("/bulk-publisher/archive/", data)
+    assert response.status_code == 200
+    assert response.context["bulk_review"].ids == ("1",)
+    assert publisher_names() == ["Alpha"]
+    data["cv_bulk_stage"] = "execute"
+    response = client.post("/bulk-publisher/archive/", data)
+    assert response.status_code == 302
+    assert publisher_names() == ["Alpha (archived)"]
+    assert [str(message) for message in get_messages(response.wsgi_request)] == ["1 record processed."]
+
+
+def _database_rejected_id(client, monkeypatch, records, stage):
+    from unittest.mock import Mock
+
+    from django.db import DataError
+    from django.db.models import QuerySet
+
+    from tests.test1.app.views_bulk import BulkPublisherArchiveView
+
+    class DatabaseRejectedQuerySet(QuerySet):
+        def _fetch_all(self):
+            raise DataError("simulated database rejection")
+
+    monkeypatch.setattr(
+        BulkPublisherArchiveView, "_selection_queryset", lambda self: DatabaseRejectedQuerySet(Publisher)
+    )
+    permission = Mock(side_effect=AssertionError("permission hook must not run"))
+    check = Mock(side_effect=AssertionError("business hook must not run"))
+    monkeypatch.setattr(BulkPublisherArchiveView, "cv_bulk_has_permission", permission)
+    monkeypatch.setattr(BulkPublisherArchiveView, "cv_bulk_check", check)
+    response = client.post("/bulk-publisher/archive/", {"cv_bulk_stage": stage, "cv_bulk_ids": [records[0].pk]})
+    assert response.status_code == 400
+    assert publisher_names() == ["Alpha", "Beta", "Locked Gamma"]
+    assert not list(get_messages(response.wsgi_request))
+    permission.assert_not_called()
+    check.assert_not_called()
+
+
+def test_database_rejected_id_is_bad_request_on_review(client_user_bulk_publisher_change, bulk_publishers, monkeypatch):
+    _database_rejected_id(client_user_bulk_publisher_change, monkeypatch, bulk_publishers, "review")
+
+
+def test_database_rejected_id_is_bad_request_on_execute(
+    client_user_bulk_publisher_change, bulk_publishers, monkeypatch
+):
+    _database_rejected_id(client_user_bulk_publisher_change, monkeypatch, bulk_publishers, "execute")
+
+
+def test_read_ids_rejects_nul_character_in_selected_ids():
+    from django.core.exceptions import BadRequest
+    from django.db.models import CharField
+    from django.http import QueryDict
+
+    from crud_views.lib.bulk import _read_ids
+
+    post = QueryDict("", mutable=True)
+    post.setlist("cv_bulk_ids", ["A\x001"])
+    with pytest.raises(BadRequest, match="Invalid selected object IDs."):
+        _read_ids(post, CharField(max_length=20, primary_key=True))
+
+
+def test_read_ids_rejects_nul_character_in_excluded_ids():
+    from django.core.exceptions import BadRequest
+    from django.db.models import CharField
+    from django.http import QueryDict
+
+    from crud_views.lib.bulk import _read_ids
+
+    post = QueryDict("", mutable=True)
+    post.setlist("cv_bulk_ids", ["valid"])
+    post.setlist("cv_bulk_blocked_ids", ["A\x001"])
+    with pytest.raises(BadRequest, match="Invalid selected object IDs."):
+        _read_ids(post, CharField(max_length=20, primary_key=True))
+
+
+def _nul_character_id(client, monkeypatch, stage):
+    hooks = forbid_resolution(monkeypatch)
+    response = client.post("/bulk-publisher/archive/", {"cv_bulk_stage": stage, "cv_bulk_ids": ["1\x00"]})
+    assert response.status_code == 400
+    assert publisher_names() == ["Alpha", "Beta", "Locked Gamma"]
+    assert not list(get_messages(response.wsgi_request))
+    for hook in hooks:
+        hook.assert_not_called()
+
+
+def test_nul_character_id_is_bad_request_on_review(client_user_bulk_publisher_change, bulk_publishers, monkeypatch):
+    _nul_character_id(client_user_bulk_publisher_change, monkeypatch, "review")
+
+
+def test_nul_character_id_is_bad_request_on_execute(client_user_bulk_publisher_change, bulk_publishers, monkeypatch):
+    _nul_character_id(client_user_bulk_publisher_change, monkeypatch, "execute")

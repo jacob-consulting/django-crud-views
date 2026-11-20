@@ -879,6 +879,52 @@ def client_user_publisher_modal_protected_delete(client, user_publisher_modal_pr
     return client
 
 
+@pytest.fixture
+def cv_bulk_author():
+    from tests.test1.app.views_bulk import cv_bulk_author as ret
+
+    return ret
+
+
+@pytest.fixture
+def cv_bulk_code():
+    from tests.test1.app.views_bulk import cv_bulk_code as ret
+
+    return ret
+
+
+@pytest.fixture
+def user_bulk_author_change(cv_bulk_author):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_bulk_author_change", password="password")
+    for permission in ("view", "change"):
+        user_viewset_permission(user, cv_bulk_author, permission)
+    return user
+
+
+@pytest.fixture
+def client_user_bulk_author_change(client, user_bulk_author_change):
+    client.force_login(user_bulk_author_change)
+    return client
+
+
+@pytest.fixture
+def user_bulk_code_change(cv_bulk_code):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_bulk_code_change", password="password")
+    for permission in ("view", "change"):
+        user_viewset_permission(user, cv_bulk_code, permission)
+    return user
+
+
+@pytest.fixture
+def client_user_bulk_code_change(client, user_bulk_code_change):
+    client.force_login(user_bulk_code_change)
+    return client
+
+
 # --- S3File (resource) fixtures ---
 
 

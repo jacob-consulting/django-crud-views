@@ -72,6 +72,8 @@ VALID_FORMS = {
     "workflowrequest": "WorkflowRequestWorkflowView",
 }
 COLLECTED_VALID = {
+    "bulk_author": "BulkAuthorMarkView",
+    "bulk_code": "BulkCodeMarkView",
     "bulk_publisher": "BulkPublisherArchiveView BulkPublisherArchiveNowView BulkPublisherRenameView "
     "BulkPublisherDeleteView BulkPublisherLockedArchiveView",
     "s3file": "S3FileDeleteView",

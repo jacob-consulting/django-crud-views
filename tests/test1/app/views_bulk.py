@@ -7,7 +7,7 @@ from crud_views.lib.bulk import BulkFormViewPermissionRequired, BulkSelectionMix
 from crud_views.lib.crispy import CrispyForm
 from crud_views.lib.deletion import inspect_deletion
 from crud_views.lib.table import Table
-from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin
+from crud_views.lib.views import CardListViewPermissionRequired, ListViewPermissionRequired, ListViewTableMixin
 from crud_views.lib.viewset import ParentViewSet, ViewSet
 from tests.test1.app.models import Author, Book, BulkCode, Publisher
 
@@ -176,6 +176,14 @@ class BulkPublisherListView(BulkSelectionMixin, ListViewTableMixin, ListViewPerm
     table_class = BulkPublisherTable
     cv_bulk_actions = ("archive", "archive_now", "rename", "bulk_delete")
     cv_list_actions = []
+    cv_context_actions = ["home"]
+
+
+class BulkPublisherCardView(BulkSelectionMixin, CardListViewPermissionRequired):
+    cv_viewset = cv_bulk_publisher
+    cv_bulk_actions = ("archive", "archive_now")
+    paginate_by = 2
+    cv_order_fields = ["name"]
     cv_context_actions = ["home"]
 
 

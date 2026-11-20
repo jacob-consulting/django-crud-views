@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.41"
 current_phase_name: "Current-page bulk selection and action forms for table and card views (#387)"
-current_plan: 12
+current_plan: 13
 status: executing
 stopped_at: context exhaustion at 75% (2026-11-20)
-last_updated: "2026-11-20T14:41:07.291Z"
+last_updated: "2026-11-20T14:47:16.077Z"
 last_activity: 2026-11-20
 last_activity_desc: Phase 06.41 execution started
-state_head: 06f3bd6add892ff29540e16f26743a117709ddf4
+state_head: 912309aba6be388e2a1eccf47695327fc3258def
 progress:
   total_phases: 48
   completed_phases: 46
   total_plans: 270
-  completed_plans: 268
+  completed_plans: 269
 milestone_name: milestone
 ---
 
@@ -33,12 +33,17 @@ See: .planning/PROJECT.md (updated 2026-11-19)
 ## Current Position
 
 Phase: 06.41 (Current-page bulk selection and action forms for table and card views (#387)) — EXECUTING
-Current Plan: 12
+Current Plan: 13
 Total Plans in Phase: 13
 Status: Ready to execute
 Last activity: 2026-11-20 — Phase 06.41 execution started
 
 Next: $gsd-execute-phase 06.41
+
+### Phase 06.41 plan 12 execution — 2026-11-20
+
+- Example feature registration, developer permissions and German catalog delivered in f6cdd292 after REDaa0d2cc2; summary912309ab. Tests506/287subtests and focused105/115subtests, both German tests, checks and scoped Ruff/format pass.
+- Wave8 complete,12/13 executed; final plan13 next for guide synchronization, browser, supported Django/floor/recorder and wheel acceptance. Phase verification remains pending.
 
 ### Phase 06.41 plan 11 execution — 2026-11-20
 

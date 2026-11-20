@@ -2198,7 +2198,7 @@ Starts from the list, card and custom-form views on `main`; the phase 06.38 impl
 **Requirements**: None; the approved issue contract supplies phase acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the bulk classes, attributes, POST field names and class keys.
-**Plans:** 11/13 plans executed
+**Plans:** 12/13 plans executed
 
 Plans:
 **Wave 1**
@@ -2227,7 +2227,7 @@ Plans:
 - [x] 06.41-11-PLAN.md — Bootstrap example app `bulk_selection` with table and card selection and three bulk actions (wave 7)
 
 **Wave 8** *(blocked on Wave 7 completion)*
-- [ ] 06.41-12-PLAN.md — Example registered in the project: feature entry, inventories, developer account, German catalog (wave 8)
+- [x] 06.41-12-PLAN.md — Example registered in the project: feature entry, inventories, developer account, German catalog (wave 8)
 
 **Wave 9** *(blocked on Wave 8 completion)*
 - [ ] 06.41-13-PLAN.md — Guide and example synchronized; full gates on Django 4.2, 5.2 and 6.0 (wave 9)

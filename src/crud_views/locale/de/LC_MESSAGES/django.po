@@ -1588,3 +1588,72 @@ msgstr "Unbekannter Benutzer: %(name)s"
 #, python-format
 msgid "Sections for %(object)s"
 msgstr "Abschnitte für %(object)s"
+
+#: lib/bulk/__init__.py
+msgid "Confirm"
+msgstr "Bestätigen"
+
+#: lib/bulk/__init__.py
+msgid "Select"
+msgstr "Auswählen"
+
+#: templates/crud_views/columns/bulk_select.html templates/crud_views/view_card.content.html
+#, python-format
+msgid "Select %(name)s"
+msgstr "%(name)s auswählen"
+
+#: templates/crud_views/snippets/bulk_toolbar.html
+msgid "Select this page"
+msgstr "Diese Seite auswählen"
+
+#: templates/crud_views/snippets/bulk_toolbar.html
+msgid "selected"
+msgstr "ausgewählt"
+
+#: lib/bulk/__init__.py
+msgid "This item is unavailable for this action."
+msgstr "Dieser Eintrag ist für diese Aktion nicht verfügbar."
+
+#: lib/bulk/__init__.py
+msgid "Excluded from this confirmation; select it again from the list."
+msgstr "Von dieser Bestätigung ausgeschlossen; in der Liste erneut auswählen."
+
+#: lib/bulk/__init__.py
+msgid "The eligible selection changed. Review it and confirm again."
+msgstr "Die Auswahl der zulässigen Einträge hat sich geändert. Bitte prüfen und erneut bestätigen."
+
+#: lib/bulk/__init__.py
+msgid "Select at least one record."
+msgstr "Mindestens einen Eintrag auswählen."
+
+#: lib/bulk/__init__.py
+#, python-format
+msgid "Select at most %(max)d records."
+msgstr "Höchstens %(max)d Einträge auswählen."
+
+#: templates/crud_views/snippets/bulk/eligible.html
+#, python-format
+msgid "To process: %(count)s"
+msgstr "Zu verarbeiten: %(count)s"
+
+#: templates/crud_views/snippets/paragraph/bulk.html
+msgid "Review the selected records before continuing."
+msgstr "Die ausgewählten Einträge vor dem Fortfahren prüfen."
+
+#: templates/crud_views/snippets/bulk/eligible.html
+msgid "None of the selected records can be processed."
+msgstr "Keiner der ausgewählten Einträge kann verarbeitet werden."
+
+#: templates/crud_views/snippets/message/bulk.html
+#, python-format
+msgid "%(counter)s record processed."
+msgid_plural "%(counter)s records processed."
+msgstr[0] "%(counter)s Eintrag verarbeitet."
+msgstr[1] "%(counter)s Einträge verarbeitet."
+
+#: templates/crud_views/snippets/bulk/blocked.html
+#, python-format
+msgid "%(counter)s record will be skipped"
+msgid_plural "%(counter)s records will be skipped"
+msgstr[0] "%(counter)s Eintrag wird übersprungen"
+msgstr[1] "%(counter)s Einträge werden übersprungen"

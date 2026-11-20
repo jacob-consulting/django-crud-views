@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.41"
 current_phase_name: "Current-page bulk selection and action forms for table and card views (#387)"
 current_plan: 13
-status: executing
-stopped_at: context exhaustion at 75% (2026-11-20)
-last_updated: "2026-11-20T14:47:16.077Z"
+status: verifying
+stopped_at: Phase 06.41 implementation and reviews complete; final goal verification pending
+last_updated: "2026-11-20T15:59:17.558846+00:00"
 last_activity: 2026-11-20
-last_activity_desc: Phase 06.41 execution started
-state_head: 912309aba6be388e2a1eccf47695327fc3258def
+last_activity_desc: Phase 06.41 all 13 plans executed; final verification in progress
+state_head: 7b291e9eadecbbd932c5fba110704ab5a5a01d1b
 progress:
   total_phases: 48
   completed_phases: 46
   total_plans: 270
-  completed_plans: 269
+  completed_plans: 270
 milestone_name: milestone
 ---
 
@@ -32,13 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-19)
 
 ## Current Position
 
-Phase: 06.41 (Current-page bulk selection and action forms for table and card views (#387)) — EXECUTING
+Phase: 06.41 (Current-page bulk selection and action forms for table and card views (#387)) — VERIFYING
 Current Plan: 13
 Total Plans in Phase: 13
-Status: Ready to execute
-Last activity: 2026-11-20 — Phase 06.41 execution started
+Status: Final goal verification pending
+Last activity: 2026-11-20 — All 13 plans executed; security and review gates resolved
 
-Next: $gsd-execute-phase 06.41
+Next: Finish goal verification; human browser acceptance remains pending
+
+### Phase 06.41 execution and review closeout — 2026-11-20
+
+- All 13 plans / 23 tasks executed. Plan 13 acceptance records supported Django 4.2/5.2/6.0 core and example suites, JavaScript, recorder, crispy floor, strict docs and wheel checks. Browser automation passed six groups; six independent human approvals remain pending.
+- Nyquist coverage validated; security register has zero open threats. Deep review found two bounded presentation defects, fixed in 9ffedc6b/c180246e and independently rechecked (102 tests). UI advisories and accepted limitations are recorded explicitly.
+- Installed-distribution/full-recorder CI and PostgreSQL locking measurements are not claimed. Final regression passed: 16,951 core tests, 622 example tests / 278 subtests, and 473 JavaScript tests. Goal verification pending; phase is not complete.
 
 ### Phase 06.41 plan 12 execution — 2026-11-20
 

@@ -2198,7 +2198,7 @@ Starts from the list, card and custom-form views on `main`; the phase 06.38 impl
 **Requirements**: None; the approved issue contract supplies phase acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the bulk classes, attributes, POST field names and class keys.
-**Plans:** 12/13 plans executed
+**Plans:** 13/13 plans executed
 
 Plans:
 **Wave 1**
@@ -2230,7 +2230,7 @@ Plans:
 - [x] 06.41-12-PLAN.md — Example registered in the project: feature entry, inventories, developer account, German catalog (wave 8)
 
 **Wave 9** *(blocked on Wave 8 completion)*
-- [ ] 06.41-13-PLAN.md — Guide and example synchronized; full gates on Django 4.2, 5.2 and 6.0 (wave 9)
+- [x] 06.41-13-PLAN.md — Guide and example synchronized; full gates on Django 4.2, 5.2 and 6.0 (wave 9)
 
 ### Phase 7: Theme-surface stability policy
 
@@ -2362,5 +2362,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
 | 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Complete | 2026-11-19 |
 | 06.40.1. ViewSet Navigation: theme class keys and owner-heading layouts (#384) | 2/2 | Complete | 2026-11-19 |
-| 06.41. Current-page bulk selection and action forms for table and card views (#387) | 0/TBD | Not started | - |
+| 06.41. Current-page bulk selection and action forms for table and card views (#387) | 13/13 | Verifying | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

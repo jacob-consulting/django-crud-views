@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="11" skipped="0" tests="11" time="1.073" timestamp="2026-11-20T14:26:37.117628+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_delete_shares_rule_and_keeps_inspection_step_separate" time="0.002"><failure message="AssertionError: The bulk reference guide must exist&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file">def test_bulk_delete_shares_rule_and_keeps_inspection_step_separate():
+&gt;       delete = section(guide(), "Bulk delete")
+                         ^^^^^^^
+
+tests/test1/test_bulk_docs.py:174: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def guide():
+&gt;       assert GUIDE.is_file(), "The bulk reference guide must exist"
+E       AssertionError: The bulk reference guide must exist
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file
+
+tests/test1/test_bulk_docs.py:76: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_guide_structure_and_live_link" time="0.002"><failure message="AssertionError: The bulk reference guide must exist&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file">def test_bulk_guide_structure_and_live_link():
+&gt;       text = guide()
+               ^^^^^^^
+
+tests/test1/test_bulk_docs.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def guide():
+&gt;       assert GUIDE.is_file(), "The bulk reference guide must exist"
+E       AssertionError: The bulk reference guide must exist
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file
+
+tests/test1/test_bulk_docs.py:76: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_submission_and_confirmation_contract" time="0.002"><failure message="AssertionError: The bulk reference guide must exist&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file">def test_bulk_submission_and_confirmation_contract():
+&gt;       submission = normalized(section(guide(), "How a submission is handled"))
+                                        ^^^^^^^
+
+tests/test1/test_bulk_docs.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def guide():
+&gt;       assert GUIDE.is_file(), "The bulk reference guide must exist"
+E       AssertionError: The bulk reference guide must exist
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file
+
+tests/test1/test_bulk_docs.py:76: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_limits_describe_actual_database_guards" time="0.002"><failure message="AssertionError: The bulk reference guide must exist&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file">def test_bulk_limits_describe_actual_database_guards():
+&gt;       limits = normalized(section(guide(), "Limits"))
+                                    ^^^^^^^
+
+tests/test1/test_bulk_docs.py:149: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def guide():
+&gt;       assert GUIDE.is_file(), "The bulk reference guide must exist"
+E       AssertionError: The bulk reference guide must exist
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file
+
+tests/test1/test_bulk_docs.py:76: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_return_and_message_limits" time="0.001"><failure message="AssertionError: The bulk reference guide must exist&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file">def test_bulk_return_and_message_limits():
+&gt;       result = normalized(section(guide(), "Result message and return"))
+                                    ^^^^^^^
+
+tests/test1/test_bulk_docs.py:161: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def guide():
+&gt;       assert GUIDE.is_file(), "The bulk reference guide must exist"
+E       AssertionError: The bulk reference guide must exist
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file
+
+tests/test1/test_bulk_docs.py:76: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_basic_recipe_and_mixin_placement" time="0.001"><failure message="AssertionError: The bulk reference guide must exist&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file">def test_bulk_basic_recipe_and_mixin_placement():
+&gt;       basic = section(guide(), "Basic usage")
+                        ^^^^^^^
+
+tests/test1/test_bulk_docs.py:105: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def guide():
+&gt;       assert GUIDE.is_file(), "The bulk reference guide must exist"
+E       AssertionError: The bulk reference guide must exist
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file
+
+tests/test1/test_bulk_docs.py:76: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_locking_recipe_rejects_missing_and_changed_records_before_write" time="0.002"><failure message="AssertionError: The bulk reference guide must exist&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file">def test_bulk_locking_recipe_rejects_missing_and_changed_records_before_write():
+&gt;       locking = section(guide(), "Row locking")
+                          ^^^^^^^
+
+tests/test1/test_bulk_docs.py:185: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def guide():
+&gt;       assert GUIDE.is_file(), "The bulk reference guide must exist"
+E       AssertionError: The bulk reference guide must exist
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file
+
+tests/test1/test_bulk_docs.py:76: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_review_and_toolbar_public_contract" time="0.001"><failure message="AssertionError: The bulk reference guide must exist&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file">def test_bulk_review_and_toolbar_public_contract():
+&gt;       review = section(guide(), "Review templates")
+                         ^^^^^^^
+
+tests/test1/test_bulk_docs.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def guide():
+&gt;       assert GUIDE.is_file(), "The bulk reference guide must exist"
+E       AssertionError: The bulk reference guide must exist
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file
+
+tests/test1/test_bulk_docs.py:76: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_check_table_matches_implementation" time="0.001"><failure message="AssertionError: The bulk reference guide must exist&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file">def test_bulk_check_table_matches_implementation():
+&gt;       checks = section(guide(), "System checks")
+                         ^^^^^^^
+
+tests/test1/test_bulk_docs.py:217: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def guide():
+&gt;       assert GUIDE.is_file(), "The bulk reference guide must exist"
+E       AssertionError: The bulk reference guide must exist
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file
+
+tests/test1/test_bulk_docs.py:76: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_python_recipes_parse" time="0.002"><failure message="AssertionError: The bulk reference guide must exist&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file">def test_bulk_python_recipes_parse():
+&gt;       blocks = python_blocks(guide())
+                               ^^^^^^^
+
+tests/test1/test_bulk_docs.py:230: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def guide():
+&gt;       assert GUIDE.is_file(), "The bulk reference guide must exist"
+E       AssertionError: The bulk reference guide must exist
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file
+
+tests/test1/test_bulk_docs.py:76: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_scope_and_eligibility_are_not_source_filters" time="0.001"><failure message="AssertionError: The bulk reference guide must exist&#10;assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file">def test_bulk_scope_and_eligibility_are_not_source_filters():
+&gt;       scope = normalized(section(guide(), "Scope and permissions"))
+                                   ^^^^^^^
+
+tests/test1/test_bulk_docs.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def guide():
+&gt;       assert GUIDE.is_file(), "The bulk reference guide must exist"
+E       AssertionError: The bulk reference guide must exist
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/alex/projects/alex/django-crud-views/docs/reference/bulk_actions.md').is_file
+
+tests/test1/test_bulk_docs.py:76: AssertionError</failure></testcase></testsuite></testsuites>

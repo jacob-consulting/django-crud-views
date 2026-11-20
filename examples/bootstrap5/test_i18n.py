@@ -77,6 +77,7 @@ EXAMPLE_APPS = [
     "formsets_conditional",
     "delete_demo",
     "custom_form",
+    "bulk_selection",
     "label_modes",
     "flash_messages",
     "disabled_actions",
@@ -140,6 +141,85 @@ def test_demo_pages_render_german(client, django_user_model):
     # catalog wins over crud_views' and renders "Sichern"
     html = client.get("/library/author/create/", HTTP_ACCEPT_LANGUAGE="de").content.decode()
     assert 'value="Sichern"' in html
+
+
+def test_bulk_selection_msgids_are_translated():
+    import polib
+
+    msgids = [
+        "document",
+        "documents",
+        "title",
+        "status",
+        "locked",
+        "owner",
+        "Owner",
+        "Draft",
+        "Published",
+        "Archived",
+        "Delete selected documents",
+        "Delete",
+        "Archive selected documents",
+        "Archive",
+        "Assign owner to selected documents",
+        "Assign owner",
+        "Assign",
+        "Locked documents cannot be deleted.",
+        "Locked documents cannot be archived.",
+        "Only drafts can be archived.",
+        "Locked documents cannot be reassigned.",
+        "{{ view.cv_bulk_objects|length }} documents deleted.",
+        "{{ view.cv_bulk_objects|length }} documents archived.",
+        "Owner assigned to {{ view.cv_bulk_objects|length }} documents.",
+    ]
+    catalog = polib.pofile(str(LOCALE_DIR / "de" / "LC_MESSAGES" / "django.po"))
+    for msgid in msgids:
+        entry = catalog.find(msgid)
+        assert entry is not None, f"missing German entry: {msgid}"
+        assert entry.translated() and "fuzzy" not in entry.flags, msgid
+        if "{{ view.cv_bulk_objects|length }}" in msgid:
+            assert "{{ view.cv_bulk_objects|length }}" in entry.msgstr, msgid
+
+
+@pytest.mark.django_db
+def test_bulk_selection_pages_render_german(client, django_user_model):
+    from bulk_selection.models import Document
+    from django.urls import reverse
+    from lxml import html
+
+    first = Document.objects.create(title="First draft")
+    second = Document.objects.create(title="Second draft")
+    locked = Document.objects.create(title="Locked draft", is_locked=True)
+    client.force_login(django_user_model.objects.create_superuser("bulk-admin-de", password="p"))
+
+    response = client.get(reverse("bulk_document-list"), HTTP_ACCEPT_LANGUAGE="de")
+    assert response.status_code == 200
+    tree = html.fromstring(response.content)
+    destinations = {}
+    for key, label in (("bulk_delete", "Löschen"), ("archive", "Archivieren"), ("assign_owner", "Eigentümer zuweisen")):
+        button = tree.xpath(f'//*[@data-cv-bulk-action="{key}"]')[0]
+        assert button.text_content().strip() == label
+        destinations[key] = button.attrib["formaction"]
+
+    response = client.post(
+        destinations["archive"],
+        {"cv_bulk_stage": "review", "cv_bulk_ids": [first.pk, locked.pk]},
+        HTTP_ACCEPT_LANGUAGE="de",
+    )
+    assert response.status_code == 200
+    assert "Gesperrte Dokumente können nicht archiviert werden." in response.content.decode()
+    assert Document.objects.filter(status="draft").count() == 3
+
+    response = client.post(
+        destinations["archive"],
+        {"cv_bulk_stage": "review", "cv_bulk_ids": [first.pk, second.pk]},
+        follow=True,
+        HTTP_ACCEPT_LANGUAGE="de",
+    )
+    assert response.status_code == 200
+    assert response.redirect_chain
+    assert "2 Dokumente archiviert." in response.content.decode()
+    assert Document.objects.filter(status="archived").count() == 2
 
 
 def test_example_table_columns_mark_headers_for_translation():

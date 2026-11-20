@@ -40,12 +40,32 @@ class DeveloperSeedTest(TestCase):
             conditional.view_session conditional.view_speaker conditional.view_customer
             formsets_conditional.view_conference formsets_conditional.view_session formsets_conditional.view_speaker
             custom_form.view_contact context_buttons.view_ticket action_menus.view_chore action_menus.view_step
+            bulk_selection.view_document
             label_modes.view_gadget flash_messages.view_notice disabled_actions.view_ticket
             delete_demo.view_project delete_demo.view_task delete_demo.view_milestone resources.view_s3file
         """
         self.assertEqual(perms, set(expected.split()))
         self.assertTrue(all(perm.split(".")[1].startswith("view_") for perm in perms))
         self.assertIn("resources.view_s3file", perms)
+
+    def test_developer_cannot_run_bulk_actions(self):
+        from bulk_selection.models import Document
+        from lxml import html
+
+        call_command("seed", stdout=StringIO())
+        self.client.force_login(get_user_model().objects.get(username="developer"))
+        response = self.client.get(reverse("bulk_document-list"))
+        self.assertEqual(response.status_code, 200)
+        tree = html.fromstring(response.content)
+        document = Document.objects.first()
+        self.assertIsNotNone(document)
+        before = list(Document.objects.values())
+        for key in ("bulk_delete", "archive", "assign_owner"):
+            with self.subTest(action=key):
+                destination = tree.xpath(f'//*[@data-cv-bulk-action="{key}"]/@formaction')[0]
+                response = self.client.post(destination, {"cv_bulk_stage": "review", "cv_bulk_ids": [document.pk]})
+                self.assertEqual(response.status_code, 403)
+        self.assertEqual(list(Document.objects.values()), before)
 
     def test_custom_group_preserves_members_and_legitimate_reads(self):
         group = Group.objects.create(name="Example developers")

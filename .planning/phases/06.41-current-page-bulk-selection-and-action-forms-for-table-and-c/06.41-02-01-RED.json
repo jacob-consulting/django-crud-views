@@ -7,7 +7,7 @@
   "expected": "HTTP 302 and archived record",
   "actual": "HTTP 200 review",
   "reportPath": "/tmp/06.41-02-01-red.xml",
-  "runStartedAt": "2026-11-20T12:21:22Z",
+  "runStartedAt": "2026-11-20T12:23:03.045717+00:00",
   "reportModifiedAt": "2026-11-20T12:23:03.926151+00:00",
   "semanticAssessment": "Target executed and failed on the planned status assertion: skip confirmation still returns the review."
 }

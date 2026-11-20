@@ -7,7 +7,7 @@
   "expected": "HTTP 302 and eligible publishers deleted",
   "actual": "HTTP 404; application recipe not registered",
   "reportPath": "/tmp/06.41-02-02-red.xml",
-  "runStartedAt": "2026-11-20T12:21:22Z",
+  "runStartedAt": "2026-11-20T12:26:12.432050+00:00",
   "reportModifiedAt": "2026-11-20T12:26:13.253673+00:00",
   "semanticAssessment": "Target executed and failed on the expected HTTP response because the application deletion destination is not implemented."
 }

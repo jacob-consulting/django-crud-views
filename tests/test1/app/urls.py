@@ -31,9 +31,11 @@ from tests.test1.app.views import (
     cv_vehicle,
     cv_workflowrequest,
 )
+from tests.test1.app.views_bulk import cv_bulk_publisher
 from tests.test1.app.views_formset import cv_publisher_formset
 
 urlpatterns = []
+urlpatterns += cv_bulk_publisher.urlpatterns
 urlpatterns += cv_author.urlpatterns
 urlpatterns += cv_author_wide_card.urlpatterns
 urlpatterns += cv_author_custom_detail.urlpatterns

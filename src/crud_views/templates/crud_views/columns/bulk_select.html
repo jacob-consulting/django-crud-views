@@ -1,0 +1,1 @@
+{% load l10n i18n %}<input type="checkbox" name="cv_bulk_ids" value="{{ record.pk|unlocalize }}" form="{{ table.view.cv_bulk_form_id }}" data-cv-bulk-item aria-label="{% blocktranslate with name=record %}Select {{ name }}{% endblocktranslate %}">

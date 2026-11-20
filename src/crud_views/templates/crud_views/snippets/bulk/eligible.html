@@ -1,0 +1,5 @@
+{% load i18n %}
+<h3>{% blocktranslate with count=bulk_review.objects|length %}To process: {{ count }}{% endblocktranslate %}</h3>
+<ul>
+    {% for object in bulk_review.objects %}<li>{{ object }}</li>{% endfor %}
+</ul>

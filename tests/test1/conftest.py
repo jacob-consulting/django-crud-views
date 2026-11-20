@@ -281,6 +281,51 @@ def author_terry_pratchett():
 
 
 @pytest.fixture
+def cv_bulk_publisher():
+    from tests.test1.app.views_bulk import cv_bulk_publisher as ret
+
+    return ret
+
+
+@pytest.fixture
+def bulk_publishers():
+    from tests.test1.app.models import Publisher
+
+    return [Publisher.objects.create(name=name) for name in ("Alpha", "Beta", "Locked Gamma")]
+
+
+@pytest.fixture
+def user_bulk_publisher_change(cv_bulk_publisher):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_bulk_publisher_change", password="password")
+    user_viewset_permission(user, cv_bulk_publisher, "view")
+    user_viewset_permission(user, cv_bulk_publisher, "change")
+    return user
+
+
+@pytest.fixture
+def user_bulk_publisher_view(cv_bulk_publisher):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_bulk_publisher_view", password="password")
+    user_viewset_permission(user, cv_bulk_publisher, "view")
+    return user
+
+
+@pytest.fixture
+def client_user_bulk_publisher_change(client, user_bulk_publisher_change):
+    client.force_login(user_bulk_publisher_change)
+    return client
+
+
+@pytest.fixture
+def client_user_bulk_publisher_view(client, user_bulk_publisher_view):
+    client.force_login(user_bulk_publisher_view)
+    return client
+
+
+@pytest.fixture
 def cv_publisher():
     from tests.test1.app.views import cv_publisher as ret
 

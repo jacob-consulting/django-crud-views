@@ -1,0 +1,4 @@
+<form id="{{ view.cv_bulk_form_id }}" method="post" data-cv-bulk>
+    {% csrf_token %}
+    {% for button in view.cv_bulk_buttons %}{{ button }}{% endfor %}
+</form>

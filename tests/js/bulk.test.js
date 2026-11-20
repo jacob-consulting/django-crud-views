@@ -8,7 +8,7 @@ let dom;
 
 function fixture({ ready = "complete", size = 3, missing = null } = {}) {
     dom = new JSDOM(`<form id="cv-bulk-selection" data-cv-bulk method="post">
-        <button type="submit" hidden disabled></button>
+        <button type="submit" hidden formmethod="dialog"></button>
         <label data-cv-bulk-enhanced hidden><input type="checkbox" data-cv-bulk-all>Select this page</label>
         <span data-cv-bulk-enhanced hidden><span data-cv-bulk-count>0</span> selected</span>
         <button type="submit" data-cv-bulk-action formaction="/archive/">Archive</button>
@@ -100,14 +100,15 @@ describe("bulk selection toolbar", () => {
         expect(actions.every(button => button.disabled)).toBe(true);
     });
 
-    it("preserves native submission buttons and the hidden disabled default", () => {
+    it("preserves native submission buttons and the hidden no-navigation default", () => {
         const { form, all, actions, load, change } = fixture();
         const buttons = [...form.querySelectorAll("button")];
         const destinations = actions.map(button => button.getAttribute("formaction"));
         load(); change(all, true);
         expect([...form.querySelectorAll("button")]).toEqual(buttons);
         expect(buttons[0].hidden).toBe(true);
-        expect(buttons[0].disabled).toBe(true);
+        expect(buttons[0].disabled).toBe(false);
+        expect(buttons[0].getAttribute("formmethod")).toBe("dialog");
         expect(actions.map(button => button.getAttribute("formaction"))).toEqual(destinations);
     });
 

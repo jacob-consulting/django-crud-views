@@ -46,7 +46,8 @@ def test_table_toolbar_controls(client_user_bulk_publisher_view, bulk_publishers
     assert form.get("class") == get_button_class("bulk", "toolbar")
     assert form.cssselect('input[name="csrfmiddlewaretoken"]')
     first = form.cssselect('button[type="submit"]')[0]
-    assert set(first.attrib) == {"type", "disabled", "hidden"}
+    assert set(first.attrib) == {"type", "formmethod", "hidden"}
+    assert first.get("formmethod") == "dialog"
     enhanced = form.cssselect("[data-cv-bulk-enhanced]")
     assert len(enhanced) == 1
     assert "hidden" in enhanced[0].attrib

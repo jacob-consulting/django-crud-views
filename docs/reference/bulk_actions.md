@@ -401,6 +401,8 @@ There is no per-action map and no variant. The seven structural class keys are `
 ## JavaScript
 
 Without JavaScript, checkboxes and each action's submit button still post the selected IDs directly.
+The toolbar's hidden default button uses `formmethod="dialog"` to make Enter on a checkbox a no-op;
+real action buttons retain POST. Use the source on a full page, outside a native `<dialog>` element.
 The enhancement adds select-this-page, a count and empty-selection button disabling, scoped to the current
 toolbar through `data-cv-bulk`, `data-cv-bulk-item`, `data-cv-bulk-all`, `data-cv-bulk-count`,
 `data-cv-bulk-action` and `data-cv-bulk-enhanced`.

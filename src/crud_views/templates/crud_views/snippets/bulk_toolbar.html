@@ -1,7 +1,8 @@
 {% load i18n crud_views %}
 <form id="{{ view.cv_bulk_form_id }}" method="post" data-cv-bulk class="{% cv_button_class 'bulk' 'toolbar' %}">
     {% csrf_token %}
-    <button type="submit" disabled hidden></button>
+    {# Enter must not pick a real action. The dialog method does nothing outside a dialog. #}
+    <button type="submit" formmethod="dialog" hidden></button>
     <div data-cv-bulk-enhanced hidden>
         <div class="{% cv_button_class 'bulk' 'controls' %}">
             <label class="{% cv_button_class 'bulk' 'select-all' %}">

@@ -191,11 +191,12 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `manage:trace-not-reached` | `badge bg-secondary` |
 | `manage:trace-not-evaluated` | `badge bg-warning text-dark` |
 
-The default table has 128 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 135 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
 Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
 keys and two dismissal utilities; the two form-group utilities each contribute one key, numbered columns contribute
-twelve width keys, ViewSet Navigation contributes six keys, and manage diagnostics contribute twenty keys. Manage values replace complete class strings;
+twelve width keys, ViewSet Navigation contributes six keys, bulk selection contributes seven keys, and manage
+diagnostics contribute twenty keys. Manage values replace complete class strings;
 theme registrations override defaults and project settings override the theme. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
@@ -225,6 +226,29 @@ project settings override the theme. An explicit `None` or `""` removes that key
 without restoring default classes. Clearing or replacing the active classes preserves current-link semantics.
 See [ViewSet Navigation](navbar.md) for the full wrapper and independent component templates.
 
+### Bulk selection classes
+
+These seven utility keys replace complete class strings and take no label-mode suffix.
+
+| Key | Complete default classes |
+|---|---|
+| `bulk:toolbar` | `mb-3` |
+| `bulk:controls` | `d-flex align-items-center gap-3 mb-2` |
+| `bulk:select-all` | `form-check mb-0` |
+| `bulk:checkbox` | `form-check-input` |
+| `bulk:actions` | `d-flex flex-wrap gap-2` |
+| `bulk:card-cell` | `position-relative` |
+| `bulk:card-select` | `form-check-input position-absolute top-0 start-0 translate-middle z-1` |
+
+`bulk:toolbar` styles the toolbar form; `bulk:controls` styles the row containing "Select this page" and the count.
+`bulk:select-all` styles the label around the page checkbox, while `bulk:checkbox` styles that checkbox and each
+table row checkbox. `bulk:actions` styles the row of action buttons. `bulk:card-cell` provides the positioning
+context around one card; `bulk:card-select` styles the checkbox at the card's top-left corner.
+
+Theme registrations override defaults and `CRUD_VIEWS_BUTTON_CLASSES` overrides the theme per key; `None` or
+`""` removes the class contribution. The toolbar's action buttons are ordinary form submit buttons styled by
+`form:submit`; their label mode comes from the `bulk` location floor of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`.
+
 ### Manage diagnostic classes
 
 The twenty `manage:*` entries above are complete utility class strings, without label-mode variants.
@@ -246,7 +270,7 @@ registry strings lets a theme own their appearance; the default-state JS uses da
 Keep textual labels and focus/help behavior when restyling. The one Show defaults switch hides default rows in
 Views and Presentation only after successful JS setup; without JavaScript all rows are readable. See the
 [theme registration recipe](theme.md#manage-class-registration) and [external asset contract](javascript.md#manage-defaults).
-The exact inventories are 128 core / 146 with workflow, including all twenty manage keys.
+The exact inventories are 135 core / 153 with workflow, including all twenty manage keys.
 
 ### Numbered column classes
 
@@ -270,8 +294,8 @@ an alternate framework's grid.
 
 ### Optional workflow defaults
 
-The 128-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
-for 146 effective default keys with only that contribution. Other installed extensions may add more.
+The 135-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
+for 153 effective default keys with only that contribution. Other installed extensions may add more.
 
 | Key | Complete default classes |
 |---|---|

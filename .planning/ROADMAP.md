@@ -2198,7 +2198,7 @@ Starts from the list, card and custom-form views on `main`; the phase 06.38 impl
 **Requirements**: None; the approved issue contract supplies phase acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the bulk classes, attributes, POST field names and class keys.
-**Plans:** 5/13 plans executed
+**Plans:** 6/13 plans executed
 
 Plans:
 **Wave 1**
@@ -2211,7 +2211,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 06.41-05-PLAN.md — Key types, default database, parent and tenant scope, admission order (wave 3)
-- [ ] 06.41-06-PLAN.md — Register the seven `bulk:*` class keys (wave 3)
+- [x] 06.41-06-PLAN.md — Register the seven `bulk:*` class keys (wave 3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 06.41-07-PLAN.md — Source rendering: toolbar with label modes and card selection (wave 4)

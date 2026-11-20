@@ -4,6 +4,8 @@ import ast
 import re
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 GUIDE = ROOT / "docs/reference/bulk_actions.md"
 SECTIONS = (
@@ -414,3 +416,55 @@ def test_bulk_message_reference_and_added_changelog():
     for name in ("(#387)", "BulkSelectionMixin", "BulkFormViewPermissionRequired", "docs/reference/bulk_actions.md"):
         assert name in added
     assert "#387" not in text.split("### Breaking\n", 1)[1].split("\n### ", 1)[0]
+
+
+@pytest.mark.parametrize(
+    "page",
+    [
+        "list_view.md",
+        "card-list-view.md",
+        "custom_form_view.md",
+        "guardian.md",
+        "buttons.md",
+        "javascript.md",
+        "messages.md",
+    ],
+)
+def test_bulk_seven_reference_links(page):
+    text = (ROOT / "docs/reference" / page).read_text()
+    assert re.search(r"\]\(bulk_actions\.md(?:#[\w-]+)?\)", text), page
+
+
+def test_bulk_index_link_follows_action_view():
+    text = (ROOT / "docs/reference/index.md").read_text()
+    assert text.count("bulk_actions.md") == 1
+    lines = section(text, "Actions & navigation").splitlines()
+    action = next(i for i, line in enumerate(lines) if "[ActionView]" in line)
+    assert lines[action + 1].startswith("- [Bulk actions](bulk_actions.md)")
+    assert "current-page" in lines[action + 1]
+
+
+def test_bulk_source_reference_composition_guidance():
+    table = normalized(section((ROOT / "docs/reference/list_view.md").read_text(), "Bulk selection"))
+    assert "`BulkSelectionMixin` before `ListViewTableMixin`" in table
+    assert "cv_bulk_actions" in table
+    card = normalized(section((ROOT / "docs/reference/card-list-view.md").read_text(), "Bulk selection"))
+    for name in (
+        "BulkSelectionMixin",
+        "before the card view base",
+        "cv_bulk_actions",
+        "bulk:card-cell",
+        "bulk:card-select",
+    ):
+        assert name in card
+    form = normalized(section((ROOT / "docs/reference/custom_form_view.md").read_text(), "Bulk action forms"))
+    for name in ("BulkFormViewPermissionRequired", "permission-required", "non-object", "own base class"):
+        assert name in form
+
+
+def test_bulk_theme_and_script_links_are_in_bulk_sections():
+    buttons = (ROOT / "docs/reference/buttons.md").read_text()
+    bulk = buttons.split("### Bulk selection classes\n", 1)[1].split("\n### ", 1)[0]
+    assert "bulk_actions.md" in bulk
+    script = section((ROOT / "docs/reference/javascript.md").read_text(), "Bulk selection toolbar")
+    assert "bulk_actions.md" in script

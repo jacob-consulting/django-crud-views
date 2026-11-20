@@ -429,7 +429,7 @@ def test_read_ids_rejects_nul_character_in_selected_ids():
 
     post = QueryDict("", mutable=True)
     post.setlist("cv_bulk_ids", ["A\x001"])
-    with pytest.raises(BadRequest, match="Invalid selected object IDs."):
+    with pytest.raises(BadRequest, match=r"Invalid selected object IDs\."):
         _read_ids(post, CharField(max_length=20, primary_key=True))
 
 
@@ -443,7 +443,7 @@ def test_read_ids_rejects_nul_character_in_excluded_ids():
     post = QueryDict("", mutable=True)
     post.setlist("cv_bulk_ids", ["valid"])
     post.setlist("cv_bulk_blocked_ids", ["A\x001"])
-    with pytest.raises(BadRequest, match="Invalid selected object IDs."):
+    with pytest.raises(BadRequest, match=r"Invalid selected object IDs\."):
         _read_ids(post, CharField(max_length=20, primary_key=True))
 
 

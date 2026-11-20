@@ -5,9 +5,11 @@ from functools import partial
 from typing import ClassVar
 
 import django_tables2 as tables
+from django.contrib import messages
 from django.core.exceptions import BadRequest, ImproperlyConfigured, ValidationError
-from django.db import DEFAULT_DB_ALIAS, router, transaction
+from django.db import DEFAULT_DB_ALIAS, DataError, router, transaction
 from django.db.models import QuerySet, Subquery
+from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
@@ -97,7 +99,7 @@ def _read_ids(post, field):
 
     def canonical(values):
         try:
-            if any(not isinstance(value, str) or not value for value in values):
+            if any(not isinstance(value, str) or not value or "\x00" in value for value in values):
                 raise ValueError
             return tuple(dict.fromkeys(str(field.to_python(value)) for value in values))
         except (ValidationError, ValueError, TypeError, OverflowError) as error:
@@ -163,7 +165,10 @@ class BulkFormViewPermissionRequired(MessageMixin, CrispyViewMixin, CustomFormNo
             raise ImproperlyConfigured("This bulk form supports the default database only.")
         ids = (*candidates, *excluded)
         queryset = self._selection_queryset().filter(pk__in=ids).order_by()
-        objects = {str(obj.pk): obj for obj in queryset}
+        try:
+            objects = {str(obj.pk): obj for obj in queryset}
+        except (OverflowError, DataError) as error:
+            raise BadRequest("Invalid selected object IDs.") from error
         eligible, blocked = [], []
         excluded_set = set(excluded)
         unavailable_reason = (_("This item is unavailable for this action."),)
@@ -190,6 +195,20 @@ class BulkFormViewPermissionRequired(MessageMixin, CrispyViewMixin, CustomFormNo
                 eligible.append(obj)
         return _Review(tuple(eligible), tuple(blocked))
 
+    def _bulk_back_url(self):
+        """Deliberately fall back to success when no cancel target is accessible (D-34).
+
+        Both URLs are built by reverse(), never from request data.
+        """
+        return self.cv_get_cancel_url() or self.get_success_url()
+
+    def _bulk_back(self, message):
+        messages.warning(self.request, message)
+        return HttpResponseRedirect(self._bulk_back_url())
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect(self._bulk_back_url())
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         if self._bulk_stage == "review":
@@ -204,6 +223,11 @@ class BulkFormViewPermissionRequired(MessageMixin, CrispyViewMixin, CustomFormNo
         self.object = None
         if request.POST.getlist("cv_bulk_stage") not in (["review"], ["execute"]):
             raise BadRequest("Invalid bulk stage.")
+        count = len(request.POST.getlist("cv_bulk_ids")) + len(request.POST.getlist("cv_bulk_blocked_ids"))
+        if count == 0:
+            return self._bulk_back(_("Select at least one record."))
+        if count > self.cv_bulk_max:
+            return self._bulk_back(_("Select at most %(max)d records.") % {"max": self.cv_bulk_max})
         candidates, excluded = _read_ids(request.POST, self.cv_viewset.model._meta.pk)
         self._bulk_stage = request.POST["cv_bulk_stage"]
         if self._bulk_stage == "review":

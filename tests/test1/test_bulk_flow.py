@@ -1,5 +1,7 @@
 """The table selection, review and execution contract for bulk actions."""
 
+import re
+
 import pytest
 from django.contrib.auth.models import Permission
 from django.contrib.messages import get_messages
@@ -12,6 +14,277 @@ pytestmark = pytest.mark.django_db
 
 def soup(response):
     return html.fromstring(response.content)
+
+
+def max_form_depth(markup):
+    depth = maximum = 0
+    for tag in re.finditer(r"<\s*(/?)form\b[^>]*>", markup, re.IGNORECASE):
+        depth += -1 if tag.group(1) else 1
+        maximum = max(maximum, depth)
+    return maximum
+
+
+def review_data(response):
+    form = soup(response).cssselect("form.cv-form")[0]
+    return {
+        name: [field.get("value") for field in form.cssselect(f'input[name="{name}"]')]
+        for name in ("cv_bulk_stage", "cv_bulk_ids", "cv_bulk_blocked_ids")
+    }
+
+
+def destination_from_source(client, key="archive"):
+    page = soup(client.get("/bulk-publisher/?sort=name&page=1"))
+    return page.cssselect(f'button[data-cv-bulk-action="{key}"]')[0].get("formaction")
+
+
+def test_skip_confirmation_executes(client_user_bulk_publisher_change, bulk_publishers, monkeypatch):
+    from tests.test1.app.views_bulk import BulkPublisherArchiveView
+
+    monkeypatch.setattr(BulkPublisherArchiveView, "cv_bulk_confirm", False)
+    response = client_user_bulk_publisher_change.post(
+        "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": [bulk_publishers[0].pk]}
+    )
+    assert response.status_code == 302
+    bulk_publishers[0].refresh_from_db()
+    assert bulk_publishers[0].name == "Alpha (archived)"
+    assert [str(message) for message in get_messages(response.wsgi_request)] == ["1 record processed."]
+
+
+def test_mixed_selection_overrides_skip(client_user_bulk_publisher_change):
+    records = [Publisher.objects.create(name=f"Publisher {i}") for i in range(8)]
+    blocked = [Publisher.objects.create(name=f"Locked {i}") for i in range(2)]
+    client = client_user_bulk_publisher_change
+    response = client.post(
+        "/bulk-publisher/archive-now/",
+        {"cv_bulk_stage": "review", "cv_bulk_ids": [obj.pk for obj in records + blocked]},
+    )
+    assert response.status_code == 200
+    assert not response.context["form"].is_bound
+    assert not Publisher.objects.filter(name__endswith="(archived)").exists()
+    alert = soup(response).cssselect('[role="alert"]')[0]
+    assert "2 records will be skipped" in alert.text_content()
+    for obj in blocked:
+        assert obj.name in alert.text_content()
+    assert "Locked publishers cannot be archived." in alert.text_content()
+    from crud_views.lib.button_classes import get_button_class
+
+    assert alert.get("class") == get_button_class("alert", "warning")
+    data = review_data(response)
+    assert data["cv_bulk_ids"] == [str(obj.pk) for obj in records]
+    assert data["cv_bulk_blocked_ids"] == [str(obj.pk) for obj in blocked]
+    response = client.post("/bulk-publisher/archive-now/", data)
+    assert response.status_code == 302
+    assert Publisher.objects.filter(name__endswith="(archived)").count() == 8
+    assert Publisher.objects.filter(name__startswith="Locked").count() == 2
+
+
+def test_input_form_reviews_then_executes(client_user_bulk_publisher_change, bulk_publishers):
+    client = client_user_bulk_publisher_change
+    destination = destination_from_source(client, "rename")
+    response = client.post(destination, {"cv_bulk_stage": "review", "cv_bulk_ids": [bulk_publishers[0].pk]})
+    assert response.status_code == 200
+    assert not response.context["form"].is_bound
+    form = soup(response).cssselect("form.cv-form")[0]
+    assert form.cssselect('input[name="suffix"]')
+    assert form.cssselect('button[type="submit"]')[0].text_content().strip() == "Rename"
+    assert form.cssselect("[data-cv-cancel-url]")[0].get("data-cv-cancel-url") == (
+        "/bulk-publisher/?sort=name&page=1&cv_from_restore=1"
+    )
+    assert publisher_names() == ["Alpha", "Beta", "Locked Gamma"]
+    response = client.post(destination, {**review_data(response), "suffix": " renamed"})
+    assert response.status_code == 302
+    assert publisher_names() == ["Alpharenamed", "Beta", "Locked Gamma"]
+    assert [str(message) for message in get_messages(response.wsgi_request)] == ["1 publishers renamed."]
+
+
+def test_invalid_input_keeps_both_groups(client_user_bulk_publisher_change, bulk_publishers):
+    response = client_user_bulk_publisher_change.post(
+        "/bulk-publisher/rename/",
+        {
+            "cv_bulk_stage": "execute",
+            "cv_bulk_ids": [bulk_publishers[0].pk],
+            "cv_bulk_blocked_ids": [bulk_publishers[2].pk],
+        },
+    )
+    assert response.status_code == 200
+    assert response.context["form"].errors["suffix"] == ["This field is required."]
+    assert "This field is required." in soup(response).text_content()
+    assert "Alpha" in soup(response).cssselect("form.cv-form > ul")[0].text_content()
+    assert "Locked Gamma" in soup(response).cssselect('[role="alert"]')[0].text_content()
+    assert publisher_names() == ["Alpha", "Beta", "Locked Gamma"]
+    assert not list(get_messages(response.wsgi_request))
+
+
+@pytest.mark.parametrize("stage", ["review", "execute"])
+def test_all_blocked_page_is_cancel_only(client_user_bulk_publisher_change, bulk_publishers, stage):
+    client = client_user_bulk_publisher_change
+    response = client.post(
+        destination_from_source(client), {"cv_bulk_stage": stage, "cv_bulk_ids": [bulk_publishers[2].pk]}
+    )
+    assert response.status_code == 200
+    assert not response.context["form"].is_bound
+    form = soup(response).cssselect("form.cv-form")[0]
+    assert not form.cssselect('button[type="submit"]')
+    controls = form.cssselect("[data-cv-cancel-url]")
+    assert len(controls) == 1
+    assert controls[0].get("data-cv-cancel-url") == "/bulk-publisher/?sort=name&page=1&cv_from_restore=1"
+    assert "Locked Gamma" in form.cssselect('[role="alert"]')[0].text_content()
+    assert "Locked publishers cannot be archived." in form.text_content()
+    assert "None of the selected records can be processed." in form.text_content()
+    assert "The eligible selection changed." not in form.text_content()
+    assert publisher_names() == ["Alpha", "Beta", "Locked Gamma"]
+
+
+def test_all_blocked_page_keeps_cancel_without_cancel_target(
+    client_user_bulk_publisher_change, bulk_publishers, monkeypatch
+):
+    from crud_views.lib.button_classes import get_button_class
+    from tests.test1.app.views_bulk import BulkPublisherListView
+
+    client = client_user_bulk_publisher_change
+    destination = destination_from_source(client)
+    monkeypatch.setattr(BulkPublisherListView, "cv_has_access", classmethod(lambda cls, user, obj=None: False))
+    response = client.post(destination, {"cv_bulk_stage": "review", "cv_bulk_ids": [bulk_publishers[2].pk]})
+    assert response.status_code == 200
+    form = soup(response).cssselect("form.cv-form")[0]
+    controls = form.cssselect("[data-cv-cancel-url]")
+    assert len(controls) == 1
+    button = controls[0]
+    assert button.tag == "button" and button.get("type") == "button"
+    assert button.text_content().strip() == "Cancel"
+    assert button.get("class") == get_button_class("form", "cancel")
+    assert button.get("data-cv-cancel-url") == response.context["view"].get_success_url()
+    assert not form.cssselect('button[type="submit"]')
+    response = client.post(destination, {"cv_bulk_stage": "review", "cv_bulk_ids": [bulk_publishers[0].pk]})
+    form = soup(response).cssselect("form.cv-form")[0]
+    assert form.cssselect('button[type="submit"]')[0].text_content().strip() == "Confirm"
+    assert not form.cssselect("[data-cv-cancel-url]")
+
+
+def test_eligibility_loss_requires_new_confirmation(client_user_bulk_publisher_change, bulk_publishers):
+    client = client_user_bulk_publisher_change
+    response = client.post(
+        "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": [obj.pk for obj in bulk_publishers[:2]]}
+    )
+    Publisher.objects.filter(pk=bulk_publishers[1].pk).update(name="Locked Beta")
+    response = client.post("/bulk-publisher/archive/", review_data(response))
+    assert response.status_code == 200
+    assert "The eligible selection changed. Review it and confirm again." in soup(response).text_content()
+    assert publisher_names() == ["Alpha", "Locked Beta", "Locked Gamma"]
+    data = review_data(response)
+    assert data["cv_bulk_ids"] == [str(bulk_publishers[0].pk)]
+    assert data["cv_bulk_blocked_ids"] == [str(bulk_publishers[1].pk)]
+    response = client.post("/bulk-publisher/archive/", data)
+    assert response.status_code == 302
+    assert publisher_names() == ["Alpha (archived)", "Locked Beta", "Locked Gamma"]
+
+
+def test_excluded_record_stays_excluded(client_user_bulk_publisher_change, bulk_publishers):
+    client = client_user_bulk_publisher_change
+    data = {
+        "cv_bulk_stage": "review",
+        "cv_bulk_ids": [bulk_publishers[0].pk],
+        "cv_bulk_blocked_ids": [bulk_publishers[1].pk],
+    }
+    response = client.post("/bulk-publisher/archive/", data)
+    assert response.status_code == 200
+    assert "Excluded from this confirmation; select it again from the list." in soup(response).text_content()
+    assert review_data(response)["cv_bulk_blocked_ids"] == [str(bulk_publishers[1].pk)]
+    data["cv_bulk_stage"] = "execute"
+    assert client.post("/bulk-publisher/archive/", data).status_code == 302
+    assert publisher_names() == ["Alpha (archived)", "Beta", "Locked Gamma"]
+
+
+def test_now_eligible_candidate_can_execute_directly(client_user_bulk_publisher_change, bulk_publishers):
+    client = client_user_bulk_publisher_change
+    data = {"cv_bulk_stage": "review", "cv_bulk_ids": [bulk_publishers[2].pk]}
+    response = client.post("/bulk-publisher/archive/", data)
+    assert response.context["bulk_review"].blocked
+    Publisher.objects.filter(pk=bulk_publishers[2].pk).update(name="Gamma")
+    data["cv_bulk_stage"] = "execute"
+    assert client.post("/bulk-publisher/archive/", data).status_code == 302
+    assert publisher_names() == ["Alpha", "Beta", "Gamma (archived)"]
+
+
+def test_unavailable_record_has_no_visible_label_or_id(client_user_bulk_publisher_change, bulk_publishers):
+    response = client_user_bulk_publisher_change.post(
+        "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": [987654321, bulk_publishers[2].pk]}
+    )
+    rows = soup(response).cssselect('[role="alert"] li')
+    assert rows[0].text_content().strip() == "This item is unavailable for this action."
+    assert "987654321" not in soup(response).text_content()
+    assert "Locked Gamma" in rows[1].text_content()
+    assert "Locked publishers cannot be archived." in rows[1].text_content()
+
+
+def test_review_layout_lists_every_record(client_user_bulk_publisher_change):
+    records = [Publisher.objects.create(name=f"Publisher {i}") for i in range(30)]
+    client = client_user_bulk_publisher_change
+    data = {"cv_bulk_stage": "review", "cv_bulk_ids": [obj.pk for obj in records]}
+    response = client.post("/bulk-publisher/archive/", data)
+    page = soup(response)
+    assert not page.cssselect('[role="alert"]')
+    assert len(page.cssselect("form.cv-form > ul > li")) == 30
+    assert "To process: 30" in page.text_content()
+    data["cv_bulk_ids"].append(Publisher.objects.create(name="Locked Extra").pk)
+    response = client.post("/bulk-publisher/archive/", data)
+    form = soup(response).cssselect("form.cv-form")[0]
+    assert not form.cssselect("ul a, [role=alert] a")
+    markup = response.content.decode()
+    assert markup.index('role="alert"') < markup.index("To process: 30") < markup.index('type="submit"')
+
+
+def test_review_escapes_names_and_reasons_and_holds_one_form(client_user_bulk_publisher_change, monkeypatch):
+    from django.utils.html import escape
+    from tests.test1.app.views_bulk import BulkPublisherArchiveView
+
+    names = ['<b>Bold</b> & "quoted"', "Locked <i>Italic</i>"]
+    reason = "<em>policy</em> &"
+    records = [Publisher.objects.create(name=name) for name in names]
+    monkeypatch.setattr(
+        BulkPublisherArchiveView, "cv_bulk_check", lambda self, obj: [reason] if obj.pk == records[1].pk else []
+    )
+    response = client_user_bulk_publisher_change.post(
+        "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": [obj.pk for obj in records]}
+    )
+    markup = response.content.decode()
+    for value in (*names, reason):
+        assert str(escape(value)) in markup
+        assert value not in markup
+    page = soup(response)
+    assert not page.cssselect("form.cv-form b, form.cv-form i, form.cv-form em")
+    assert names[0] in page.cssselect("form.cv-form > ul > li")[0].text_content()
+    blocked = page.cssselect('[role="alert"] li')[0].text_content()
+    assert names[1] in blocked and reason in blocked
+    assert len(page.cssselect("form.cv-form")) == 1
+    assert max_form_depth(markup) == 1
+    start = re.search(r'<form\b[^>]*class="cv-form"[^>]*>', markup).end()
+    form_markup = markup[start : markup.index("</form>", start)]
+    for name in ("cv_bulk_stage", "cv_bulk_ids", "cv_bulk_blocked_ids"):
+        assert f'name="{name}"' in form_markup
+    assert "Confirm" in form_markup
+
+
+def test_review_snippet_overrides_keep_transport(client_user_bulk_publisher_change, bulk_publishers):
+    from tests.test1.test_form_frame import _theme_templates
+
+    with _theme_templates(
+        {
+            "crud_views/snippets/bulk/eligible.html": "<p>Eligible override {{ bulk_review.objects|length }}</p>",
+            "crud_views/snippets/bulk/blocked.html": "<p>Blocked override {{ bulk_review.blocked|length }}</p>",
+        }
+    ):
+        response = client_user_bulk_publisher_change.post(
+            "/bulk-publisher/archive/",
+            {"cv_bulk_stage": "review", "cv_bulk_ids": [bulk_publishers[0].pk, bulk_publishers[2].pk]},
+        )
+    assert "Eligible override 1" in soup(response).text_content()
+    assert "Blocked override 1" in soup(response).text_content()
+    assert review_data(response) == {
+        "cv_bulk_stage": ["execute"],
+        "cv_bulk_ids": [str(bulk_publishers[0].pk)],
+        "cv_bulk_blocked_ids": [str(bulk_publishers[2].pk)],
+    }
 
 
 def test_table_review_execute_flow(client_user_publisher_view, user_publisher_view):

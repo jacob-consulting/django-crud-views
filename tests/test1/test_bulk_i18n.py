@@ -30,7 +30,6 @@ MODULE_MSGIDS = (
     "Excluded from this confirmation; select it again from the list.",
     "The eligible selection changed. Review it and confirm again.",
     "Select at least one record.",
-    "Select at most %(max)d records.",
 )
 
 
@@ -64,6 +63,7 @@ def test_bulk_module_catalog_completeness():
     catalog = polib.pofile(str(CORE / "locale/de/LC_MESSAGES/django.po"))
     for msgid in MODULE_MSGIDS:
         assert_translated(catalog, msgid)
+    assert_translated(catalog, "Select at most %(max)d record.", "Select at most %(max)d records.")
 
 
 @pytest.fixture
@@ -107,6 +107,28 @@ def test_bulk_selection_warnings_german(german, client_user_bulk_publisher_chang
     response = client_user_bulk_publisher_change.post(
         "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": list(range(1, count + 1))}
     )
+    assert response.status_code == 302
+    assert [str(message) for message in get_messages(response.wsgi_request)] == [expected]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "language, maximum, expected",
+    [
+        ("en", 1, "Select at most 1 record."),
+        ("en", 2, "Select at most 2 records."),
+        ("de", 1, "Höchstens 1 Eintrag auswählen."),
+        ("de", 2, "Höchstens 2 Einträge auswählen."),
+    ],
+)
+def test_bulk_limit_warning_pluralizes(client_user_bulk_publisher_change, monkeypatch, language, maximum, expected):
+    from tests.test1.app.views_bulk import BulkPublisherArchiveView
+
+    monkeypatch.setattr(BulkPublisherArchiveView, "cv_bulk_max", maximum)
+    with override(language):
+        response = client_user_bulk_publisher_change.post(
+            "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": list(range(1, maximum + 2))}
+        )
     assert response.status_code == 302
     assert [str(message) for message in get_messages(response.wsgi_request)] == [expected]
 

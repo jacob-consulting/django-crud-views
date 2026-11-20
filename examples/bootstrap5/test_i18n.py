@@ -168,17 +168,22 @@ def test_bulk_selection_msgids_are_translated():
         "Locked documents cannot be archived.",
         "Only drafts can be archived.",
         "Locked documents cannot be reassigned.",
-        "{{ view.cv_bulk_objects|length }} documents deleted.",
-        "{{ view.cv_bulk_objects|length }} documents archived.",
-        "Owner assigned to {{ view.cv_bulk_objects|length }} documents.",
     ]
     catalog = polib.pofile(str(LOCALE_DIR / "de" / "LC_MESSAGES" / "django.po"))
     for msgid in msgids:
         entry = catalog.find(msgid)
         assert entry is not None, f"missing German entry: {msgid}"
         assert entry.translated() and "fuzzy" not in entry.flags, msgid
-        if "{{ view.cv_bulk_objects|length }}" in msgid:
-            assert "{{ view.cv_bulk_objects|length }}" in entry.msgstr, msgid
+    for singular, plural in (
+        ("%(count)s document deleted.", "%(count)s documents deleted."),
+        ("%(count)s document archived.", "%(count)s documents archived."),
+        ("Owner assigned to %(count)s document.", "Owner assigned to %(count)s documents."),
+    ):
+        entry = catalog.find(singular)
+        assert entry is not None and entry.msgid_plural == plural
+        assert entry.translated() and "fuzzy" not in entry.flags
+        assert set(entry.msgstr_plural) == {0, 1}
+        assert all("%(count)s" in message for message in entry.msgstr_plural.values())
 
 
 @pytest.mark.django_db
@@ -220,6 +225,62 @@ def test_bulk_selection_pages_render_german(client, django_user_model):
     assert response.redirect_chain
     assert "2 Dokumente archiviert." in response.content.decode()
     assert Document.objects.filter(status="archived").count() == 2
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("language", ["en", "de"])
+@pytest.mark.parametrize("count", [1, 2])
+@pytest.mark.parametrize(
+    "action, english, german",
+    [
+        (
+            "bulk_delete",
+            ("1 document deleted.", "2 documents deleted."),
+            ("1 Dokument gelöscht.", "2 Dokumente gelöscht."),
+        ),
+        (
+            "archive",
+            ("1 document archived.", "2 documents archived."),
+            ("1 Dokument archiviert.", "2 Dokumente archiviert."),
+        ),
+        (
+            "assign_owner",
+            ("Owner assigned to 1 document.", "Owner assigned to 2 documents."),
+            ("Eigentümer 1 Dokument zugewiesen.", "Eigentümer 2 Dokumenten zugewiesen."),
+        ),
+    ],
+)
+def test_bulk_success_counts_only_eligible_documents(
+    client, django_user_model, language, count, action, english, german
+):
+    from bulk_selection.models import Document
+    from django.contrib.messages import get_messages
+    from django.urls import reverse
+    from lxml import html
+
+    client.force_login(django_user_model.objects.create_superuser("bulk-admin", password="p"))
+    owner = django_user_model.objects.create_user("owner")
+    selected = [Document.objects.create(title=f"Draft {index}").pk for index in range(count)]
+    locked = Document.objects.create(title="Locked draft", is_locked=True)
+    destination = reverse(f"bulk_document-{action}")
+    review = client.post(
+        destination,
+        {"cv_bulk_stage": "review", "cv_bulk_ids": [*selected, locked.pk]},
+        HTTP_ACCEPT_LANGUAGE=language,
+    )
+    assert review.status_code == 200
+    assert not list(get_messages(review.wsgi_request))
+    tree = html.fromstring(review.content)
+    data = {
+        name: tree.xpath(f'//form//input[@name="{name}"]/@value')
+        for name in ("cv_bulk_stage", "cv_bulk_ids", "cv_bulk_blocked_ids")
+    }
+    response = client.post(destination, {**data, "owner": owner.pk}, HTTP_ACCEPT_LANGUAGE=language)
+    assert response.status_code == 302
+    expected = (german if language == "de" else english)[count - 1]
+    assert [str(message) for message in get_messages(response.wsgi_request)] == [expected]
+    locked.refresh_from_db()
+    assert locked.status == "draft" and locked.owner is None
 
 
 def test_example_table_columns_mark_headers_for_translation():

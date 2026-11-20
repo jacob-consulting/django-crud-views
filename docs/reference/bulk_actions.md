@@ -156,7 +156,11 @@ class ArchiveDocumentsView(BreadcrumbMixin, BulkFormViewPermissionRequired):
     cv_bulk_confirm = False
     cv_success_key = "list"
     cv_success_keys = ["list", "card"]
-    cv_message_template_code = _("{{ view.cv_bulk_objects|length }} documents archived.")
+    cv_message_template_code = (
+        "{% load i18n %}{% blocktranslate count count=view.cv_bulk_objects|length %}"
+        "{{ count }} document archived.{% plural %}{{ count }} documents archived."
+        "{% endblocktranslate %}"
+    )
 
     def cv_bulk_check(self, obj):
         if obj.is_locked:
@@ -229,6 +233,10 @@ processed." and "N records processed."), while text set through `cv_message_temp
 own and owns its wording and plural forms. Per-record results, such as sent versus failed, need application
 messages.
 
+The example's template codes use `blocktranslate count` to select the singular or plural form from
+`view.cv_bulk_objects|length`, excluding blocked records. Their inline template translations are maintained
+in the example catalog and covered by its translation tests.
+
 The success message is queued inside the transaction, so if a later hook raises, writes roll back while the
 message may still be shown; see the [hook reference limit](request_lifecycle.md#hook-reference).
 
@@ -280,7 +288,11 @@ class DeleteDocumentsView(BreadcrumbMixin, BulkFormViewPermissionRequired):
     cv_action_label_template_code = _("Delete selected documents")
     cv_action_short_label_template_code = _("Delete")
     cv_success_key = "list"
-    cv_message_template_code = _("{{ view.cv_bulk_objects|length }} documents deleted.")
+    cv_message_template_code = (
+        "{% load i18n %}{% blocktranslate count count=view.cv_bulk_objects|length %}"
+        "{{ count }} document deleted.{% plural %}{{ count }} documents deleted."
+        "{% endblocktranslate %}"
+    )
 
     def cv_bulk_check(self, obj):
         return document_delete_errors(obj)

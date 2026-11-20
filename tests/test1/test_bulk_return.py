@@ -237,7 +237,7 @@ def test_back_url_falls_back_to_success_url_without_cancel_target(
     assert client.get(target, follow=True).status_code == 200
     monkeypatch.setattr(BulkFilterMarkView, "cv_bulk_max", 1)
     oversized = client.post(action, {"cv_bulk_stage": "review", "cv_bulk_ids": [selected, return_publishers[0].pk]})
-    assert_warning(oversized, "Select at most 1 records.")
+    assert_warning(oversized, "Select at most 1 record.")
     assert oversized["Location"] == target
 
 

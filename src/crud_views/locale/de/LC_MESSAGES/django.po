@@ -1628,8 +1628,10 @@ msgstr "Mindestens einen Eintrag auswählen."
 
 #: lib/bulk/__init__.py
 #, python-format
-msgid "Select at most %(max)d records."
-msgstr "Höchstens %(max)d Einträge auswählen."
+msgid "Select at most %(max)d record."
+msgid_plural "Select at most %(max)d records."
+msgstr[0] "Höchstens %(max)d Eintrag auswählen."
+msgstr[1] "Höchstens %(max)d Einträge auswählen."
 
 #: templates/crud_views/snippets/bulk/eligible.html
 #, python-format

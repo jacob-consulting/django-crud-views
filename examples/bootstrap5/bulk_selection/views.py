@@ -66,7 +66,11 @@ class DeleteDocumentsView(BreadcrumbMixin, BulkFormViewPermissionRequired):
     cv_action_label_template_code = _("Delete selected documents")
     cv_action_short_label_template_code = _("Delete")
     cv_success_key = "list"
-    cv_message_template_code = _("{{ view.cv_bulk_objects|length }} documents deleted.")
+    cv_message_template_code = (
+        "{% load i18n %}{% blocktranslate count count=view.cv_bulk_objects|length %}"
+        "{{ count }} document deleted.{% plural %}{{ count }} documents deleted."
+        "{% endblocktranslate %}"
+    )
 
     def cv_bulk_check(self, obj):
         return document_delete_errors(obj)
@@ -87,7 +91,11 @@ class ArchiveDocumentsView(BreadcrumbMixin, BulkFormViewPermissionRequired):
     cv_bulk_confirm = False
     cv_success_key = "list"
     cv_success_keys = ["list", "card"]
-    cv_message_template_code = _("{{ view.cv_bulk_objects|length }} documents archived.")
+    cv_message_template_code = (
+        "{% load i18n %}{% blocktranslate count count=view.cv_bulk_objects|length %}"
+        "{{ count }} document archived.{% plural %}{{ count }} documents archived."
+        "{% endblocktranslate %}"
+    )
 
     def cv_bulk_check(self, obj):
         if obj.is_locked:
@@ -119,7 +127,11 @@ class AssignOwnerView(BreadcrumbMixin, BulkFormViewPermissionRequired):
     form_class = AssignOwnerForm
     cv_success_key = "list"
     cv_success_keys = ["list", "card"]
-    cv_message_template_code = _("Owner assigned to {{ view.cv_bulk_objects|length }} documents.")
+    cv_message_template_code = (
+        "{% load i18n %}{% blocktranslate count count=view.cv_bulk_objects|length %}"
+        "Owner assigned to {{ count }} document.{% plural %}Owner assigned to {{ count }} documents."
+        "{% endblocktranslate %}"
+    )
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

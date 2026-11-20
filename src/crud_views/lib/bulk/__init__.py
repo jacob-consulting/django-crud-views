@@ -12,7 +12,7 @@ from django.db.models import QuerySet, Subquery
 from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy
+from django.utils.translation import gettext_lazy, ngettext
 
 from crud_views.lib.ancestors import _scope_child_queryset
 from crud_views.lib.check import CheckExpression, CheckWarningExpression
@@ -346,7 +346,10 @@ class BulkFormViewPermissionRequired(MessageMixin, CrispyViewMixin, CustomFormNo
         if count == 0:
             return self._bulk_back(_("Select at least one record."))
         if count > self.cv_bulk_max:
-            return self._bulk_back(_("Select at most %(max)d records.") % {"max": self.cv_bulk_max})
+            return self._bulk_back(
+                ngettext("Select at most %(max)d record.", "Select at most %(max)d records.", self.cv_bulk_max)
+                % {"max": self.cv_bulk_max}
+            )
         candidates, excluded = _read_ids(request.POST, self.cv_viewset.model._meta.pk)
         stage = request.POST["cv_bulk_stage"]
         skipped = stage == "review" and not self.cv_bulk_confirm and not self.get_form_class().base_fields

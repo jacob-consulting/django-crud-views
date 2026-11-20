@@ -61,6 +61,7 @@ def ensure_developer_read_access(user) -> None:
         "conditional": ("Registration", "Event", "Session", "Speaker", "Customer"),
         "formsets_conditional": ("Conference", "Session", "Speaker"),
         "custom_form": ("Contact",),
+        "bulk_selection": ("Document",),
         "context_buttons": ("Ticket",),
         "action_menus": ("Chore", "Step"),
         "label_modes": ("Gadget",),

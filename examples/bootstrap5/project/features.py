@@ -516,6 +516,32 @@ FEATURES: list[Feature] = [
         ),
     ),
     Feature(
+        app="bulk_selection",
+        group="forms",
+        title="Bulk Actions",
+        description="Select documents on the current table or card page to delete, archive or assign an owner.",
+        about=(
+            "Select documents on the current page and apply Delete, Archive or Assign owner. A locked document "
+            "cannot be changed or deleted. Archive runs immediately when every selected document is an unlocked "
+            "draft; a mixed selection opens a review of eligible and blocked documents before confirmation. "
+            "Assign owner opens a form whose choices are active, non-superuser accounts. The card view offers "
+            "Archive and Assign owner; Delete is offered from the table only. Delete requires Document delete "
+            "permission; Archive and Assign owner require Document change permission. Alice and Bob have these "
+            "permissions; the developer account may only read documents and inspect diagnostics."
+        ),
+        look_at=(
+            "DocumentListView and DocumentCardView in views.py declare cv_bulk_actions. DeleteDocumentsView, "
+            "ArchiveDocumentsView and AssignOwnerView check each document and apply the selected action in "
+            "cv_form_valid; AssignOwnerView also scopes the owner form choices."
+        ),
+        url_name="bulk_document-list",
+        icon="fa-solid fa-list-check",
+        docs=(
+            DocRef(page="reference/bulk_actions.md", label="Bulk actions", anchor="basic-usage"),
+            DocRef(page="reference/bulk_actions.md", label="Bulk delete", anchor="bulk-delete"),
+        ),
+    ),
+    Feature(
         app="context_buttons",
         group="ui",
         title="Context Buttons",

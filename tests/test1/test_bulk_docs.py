@@ -481,3 +481,44 @@ def test_bulk_theme_and_script_links_are_in_bulk_sections():
     assert "bulk_actions.md" in bulk
     script = section((ROOT / "docs/reference/javascript.md").read_text(), "Bulk selection toolbar")
     assert "bulk_actions.md" in script
+
+
+def test_bulk_section_78_deliverables():
+    assert GUIDE.is_file()
+    for page in (
+        "list_view.md",
+        "card-list-view.md",
+        "custom_form_view.md",
+        "guardian.md",
+        "buttons.md",
+        "javascript.md",
+        "messages.md",
+    ):
+        assert "bulk_actions.md" in (ROOT / "docs/reference" / page).read_text()
+    added = section((ROOT / "CHANGELOG.md").read_text(), "Unreleased").split("### Added\n", 1)[1]
+    assert "(#387)" in added.split("\n### ", 1)[0]
+    assert 'msgid "Select this page"' in (ROOT / "src/crud_views/locale/de/LC_MESSAGES/django.po").read_text()
+    assert "cv_bulk_has_permission" in (ROOT / "src/crud_views_guardian/locale/de/LC_MESSAGES/django.po").read_text()
+    assert (ROOT / "tests/js/bulk.test.js").is_file()
+    checks = section(guide(), "System checks")
+    for check in ("E271", "E272", "E273", "W274", "W275", "E276", "E277", "E278", "E279"):
+        assert f"viewset.{check}" in checks
+    assert "crud_views_guardian.W002" in checks
+    assert "**Bulk actions**" in (ROOT / "docs/development/stability.md").read_text()
+    app = ROOT / "examples/bootstrap5/bulk_selection"
+    assert app.is_dir()
+    assert 'name = "bulk_selection"' in (app / "apps.py").read_text()
+
+
+def test_bulk_modules_remain_in_maintained_crispy_floor_selection():
+    tree = ast.parse((ROOT / "noxfile.py").read_text())
+    assignment = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "CRISPY_FLOOR_TESTS" for target in node.targets)
+    )
+    assert isinstance(assignment.value, ast.List)
+    assert {f"tests/test1/test_bulk_{name}.py" for name in ("flow", "execution", "source", "scope", "return")} <= set(
+        ast.literal_eval(assignment.value)
+    )

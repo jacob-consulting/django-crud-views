@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.183" timestamp="2026-11-20T14:49:35.720261+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_modules_remain_in_maintained_crispy_floor_selection" time="0.002"><failure message="AssertionError: assert {'tests/test1...lk_source.py'} &lt;= {'tests/test1...data.py', ...}&#10;  &#10;  Extra items in the left set:&#10;  'tests/test1/test_bulk_scope.py'&#10;  'tests/test1/test_bulk_return.py'&#10;  'tests/test1/test_bulk_source.py'&#10;  'tests/test1/test_bulk_flow.py'&#10;  'tests/test1/test_bulk_execution.py'">def test_bulk_modules_remain_in_maintained_crispy_floor_selection():
+        tree = ast.parse((ROOT / "noxfile.py").read_text())
+        assignment = next(
+            node
+            for node in tree.body
+            if isinstance(node, ast.Assign)
+            and any(isinstance(target, ast.Name) and target.id == "CRISPY_FLOOR_TESTS" for target in node.targets)
+        )
+        assert isinstance(assignment.value, ast.List)
+&gt;       assert {f"tests/test1/test_bulk_{name}.py" for name in ("flow", "execution", "source", "scope", "return")} &lt;= set(
+            ast.literal_eval(assignment.value)
+        )
+E       AssertionError: assert {'tests/test1...lk_source.py'} &lt;= {'tests/test1...data.py', ...}
+E         
+E         Extra items in the left set:
+E         'tests/test1/test_bulk_scope.py'
+E         'tests/test1/test_bulk_return.py'
+E         'tests/test1/test_bulk_source.py'
+E         'tests/test1/test_bulk_flow.py'
+E         'tests/test1/test_bulk_execution.py'
+
+tests/test1/test_bulk_docs.py:522: AssertionError</failure></testcase></testsuite></testsuites>

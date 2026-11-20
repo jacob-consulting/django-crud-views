@@ -49,7 +49,7 @@ def bulk_registry():
 
 
 def configured_views(*, source_base=None, source_key="list", viewset_class=ViewSet, model=Publisher):
-    viewset = viewset_class(model=model, name="bulk_check_test")
+    viewset = viewset_class(model=model, name=f"bulk_check_{viewset_class.__name__.lower()}")
     bases = (
         (BulkSelectionMixin, ListViewTableMixin, ListView) if source_base is None else (BulkSelectionMixin, source_base)
     )

@@ -1,8 +1,10 @@
 """Publisher bulk selection fixtures for test_bulk_flow and later bulk scope/lifecycle tests."""
 
 import django_tables2 as tables
+from django import forms
 
 from crud_views.lib.bulk import BulkFormViewPermissionRequired, BulkSelectionMixin
+from crud_views.lib.crispy import CrispyForm
 from crud_views.lib.table import Table
 from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin
 from crud_views.lib.viewset import ViewSet
@@ -18,7 +20,7 @@ class BulkPublisherTable(Table):
 class BulkPublisherListView(BulkSelectionMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_bulk_publisher
     table_class = BulkPublisherTable
-    cv_bulk_actions = ("archive",)
+    cv_bulk_actions = ("archive", "archive_now", "rename")
     cv_list_actions = []
     cv_context_actions = ["home"]
 
@@ -38,4 +40,34 @@ class BulkPublisherArchiveView(BulkFormViewPermissionRequired):
     def cv_form_valid(self, context):
         for obj in self.cv_bulk_objects:
             obj.name += " (archived)"
+            obj.save(using=self.cv_get_db_alias())
+
+
+class BulkPublisherArchiveNowView(BulkPublisherArchiveView):
+    cv_viewset = cv_bulk_publisher
+    cv_key = "archive_now"
+    cv_path = "archive-now"
+    cv_bulk_confirm = False
+    cv_action_short_label_template_code = "Archive now"
+
+
+class BulkRenameForm(CrispyForm):
+    suffix = forms.CharField()
+    submit_label = "Rename"
+
+    def get_layout_fields(self):
+        return ["suffix"]
+
+
+class BulkPublisherRenameView(BulkPublisherArchiveView):
+    cv_viewset = cv_bulk_publisher
+    cv_key = "rename"
+    cv_path = "rename"
+    cv_bulk_confirm = False
+    form_class = BulkRenameForm
+    cv_message_template_code = "{{ view.cv_bulk_objects|length }} publishers renamed."
+
+    def cv_form_valid(self, context):
+        for obj in self.cv_bulk_objects:
+            obj.name += context["form"].cleaned_data["suffix"]
             obj.save(using=self.cv_get_db_alias())

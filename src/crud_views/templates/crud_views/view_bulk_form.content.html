@@ -7,6 +7,7 @@
     <input type="hidden" name="cv_bulk_stage" value="execute">
     {% for object in bulk_review.objects %}<input type="hidden" name="cv_bulk_ids" value="{{ object.pk|unlocalize }}">{% endfor %}
     {% for item in bulk_review.blocked %}<input type="hidden" name="cv_bulk_blocked_ids" value="{{ item.pk|unlocalize }}">{% endfor %}
+    {% if bulk_review.blocked %}{% include "crud_views/snippets/bulk/blocked.html" %}{% endif %}
     {% include "crud_views/snippets/bulk/eligible.html" %}
     {% cv_render_form %}
 </form>

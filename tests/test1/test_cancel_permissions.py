@@ -72,7 +72,7 @@ VALID_FORMS = {
     "workflowrequest": "WorkflowRequestWorkflowView",
 }
 COLLECTED_VALID = {
-    "bulk_publisher": "BulkPublisherArchiveView",
+    "bulk_publisher": "BulkPublisherArchiveView BulkPublisherArchiveNowView BulkPublisherRenameView",
     "s3file": "S3FileDeleteView",
     "publisher_formset": "PublisherFormSetCreateView PublisherFormSetUpdateView",
     "readme": "ReadmeAuthorCreate ReadmeAuthorUpdate ReadmeAuthorDelete",

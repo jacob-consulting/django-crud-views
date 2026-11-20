@@ -1,0 +1,5 @@
+<ul class="mb-0 mt-2">
+    {% for item in bulk_review.blocked %}
+        <li>{% if item.label %}{{ item.label }}: {% endif %}{% for reason in item.reasons %}{{ reason }}{% if not forloop.last %} {% endif %}{% endfor %}</li>
+    {% endfor %}
+</ul>

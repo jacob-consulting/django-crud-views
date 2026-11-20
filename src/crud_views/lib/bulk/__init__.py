@@ -77,6 +77,21 @@ class BulkConfirmForm(CrispyForm):
         return []
 
 
+class _CancelOnlyForm(CrispyForm):
+    def get_layout_fields(self):
+        return []
+
+    def get_submit_button(self):
+        return None
+
+    def _cv_get_cancel_button_context(self):
+        """D-36: keep Cancel through the origin, cancel-key target, then success URL."""
+        context = super()._cv_get_cancel_button_context()
+        if context["cv_url"] is None:
+            return {**context, "cv_url": self.cv_view._bulk_back_url()}
+        return context
+
+
 @dataclass(frozen=True)
 class _BlockedItem:
     pk: str
@@ -199,6 +214,7 @@ class BulkFormViewPermissionRequired(MessageMixin, CrispyViewMixin, CustomFormNo
         """Deliberately fall back to success when no cancel target is accessible (D-34).
 
         Both URLs are built by reverse(), never from request data.
+        The Cancel button of the all-blocked page reads this helper as well.
         """
         return self.cv_get_cancel_url() or self.get_success_url()
 
@@ -217,7 +233,8 @@ class BulkFormViewPermissionRequired(MessageMixin, CrispyViewMixin, CustomFormNo
         return kwargs
 
     def _bulk_context(self, review):
-        return self.get_context_data(form=self.get_form(), bulk_review=review)
+        form = self.get_form() if review.objects else _CancelOnlyForm(cv_view=self)
+        return self.get_context_data(form=form, bulk_review=review)
 
     def post(self, request, *args, **kwargs):
         self.object = None
@@ -229,14 +246,16 @@ class BulkFormViewPermissionRequired(MessageMixin, CrispyViewMixin, CustomFormNo
         if count > self.cv_bulk_max:
             return self._bulk_back(_("Select at most %(max)d records.") % {"max": self.cv_bulk_max})
         candidates, excluded = _read_ids(request.POST, self.cv_viewset.model._meta.pk)
-        self._bulk_stage = request.POST["cv_bulk_stage"]
-        if self._bulk_stage == "review":
+        stage = request.POST["cv_bulk_stage"]
+        skipped = stage == "review" and not self.cv_bulk_confirm and not self.get_form_class().base_fields
+        self._bulk_stage = "execute" if skipped else stage
+        if stage == "review" and not skipped:
             review = self._review_selection(candidates, excluded)
             self.cv_bulk_objects = review.objects
             return self.render_to_response(self._bulk_context(review))
-        return self._bulk_execute(candidates, excluded)
+        return self._bulk_execute(candidates, excluded, skipped=skipped)
 
-    def _bulk_execute(self, candidates, excluded):
+    def _bulk_execute(self, candidates, excluded, *, skipped):
         """An override of cv_form_valid_process does not run on a bulk destination.
 
         Applications override cv_form_valid (the write) or cv_form_valid_hook, inside the transaction
@@ -247,6 +266,9 @@ class BulkFormViewPermissionRequired(MessageMixin, CrispyViewMixin, CustomFormNo
             review = self._review_selection(candidates, excluded)
             self.cv_bulk_objects = review.objects
             unchanged = bool(review.objects) and review.ids == candidates
+            if not review.objects or (skipped and not unchanged):
+                self._bulk_stage = "review"
+                return self.render_to_response(self._bulk_context(review))
             context = self._bulk_context(review)
             self._cv_check_nested_write(context)
             self.cv_post_hook(context)

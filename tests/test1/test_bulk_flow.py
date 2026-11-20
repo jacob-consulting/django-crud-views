@@ -236,6 +236,7 @@ def test_review_layout_lists_every_record(client_user_bulk_publisher_change):
 
 def test_review_escapes_names_and_reasons_and_holds_one_form(client_user_bulk_publisher_change, monkeypatch):
     from django.utils.html import escape
+
     from tests.test1.app.views_bulk import BulkPublisherArchiveView
 
     names = ['<b>Bold</b> & "quoted"', "Locked <i>Italic</i>"]
@@ -252,7 +253,7 @@ def test_review_escapes_names_and_reasons_and_holds_one_form(client_user_bulk_pu
         assert str(escape(value)) in markup
         assert value not in markup
     page = soup(response)
-    assert not page.cssselect("form.cv-form b, form.cv-form i, form.cv-form em")
+    assert not page.cssselect("form.cv-form li b, form.cv-form li i, form.cv-form li em")
     assert names[0] in page.cssselect("form.cv-form > ul > li")[0].text_content()
     blocked = page.cssselect('[role="alert"] li')[0].text_content()
     assert names[1] in blocked and reason in blocked

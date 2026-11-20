@@ -1,0 +1,3 @@
+{% load i18n crud_views %}
+{% blocktranslate count counter=bulk_review.blocked|length asvar heading %}{{ counter }} record will be skipped{% plural %}{{ counter }} records will be skipped{% endblocktranslate %}
+{% cv_alert "warning" heading=heading body_template="crud_views/snippets/bulk/blocked_items.html" %}

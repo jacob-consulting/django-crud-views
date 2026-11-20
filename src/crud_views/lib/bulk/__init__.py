@@ -15,13 +15,16 @@ from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
 
 from crud_views.lib.ancestors import _scope_child_queryset
+from crud_views.lib.check import CheckExpression, CheckWarningExpression
 from crud_views.lib.crispy import CrispyForm, CrispyViewMixin
 from crud_views.lib.crispy.buttons import FORM_LEAF_TEMPLATE
 from crud_views.lib.icons import _icon_available
 from crud_views.lib.view.button_data import cv_button_data
+from crud_views.lib.view.cancel import effective_cancel_keys
 from crud_views.lib.view.label_mode import default_label_mode
-from crud_views.lib.views.form import CustomFormNoObjectViewPermissionRequired
-from crud_views.lib.views.mixins import MessageMixin
+from crud_views.lib.views.card import CardListView
+from crud_views.lib.views.form import CustomFormNoObjectView, CustomFormNoObjectViewPermissionRequired
+from crud_views.lib.views.mixins import ListViewTableMixin, MessageMixin
 
 __all__ = ["BulkConfirmForm", "BulkFormViewPermissionRequired", "BulkSelectionMixin"]
 
@@ -34,6 +37,70 @@ class BulkSelectionMixin:
 
     cv_bulk_actions: ClassVar[tuple[str, ...]] = ()
     cv_bulk_form_id = "cv-bulk-selection"
+
+    @classmethod
+    def checks(cls):
+        yield from super().checks()
+        actions = cls.cv_bulk_actions
+        valid_actions = (
+            isinstance(actions, tuple)
+            and all(isinstance(key, str) and key for key in actions)
+            and len(set(actions)) == len(actions)
+        )
+        yield CheckExpression(
+            context=cls,
+            id="E271",
+            expression=valid_actions,
+            msg="cv_bulk_actions must be a tuple of unique, non-empty strings",
+        )
+        viewset = cls.cv_viewset
+        if viewset is None or not valid_actions:
+            return
+        yield CheckExpression(
+            context=cls,
+            id="E273",
+            expression=issubclass(cls, (ListViewTableMixin, CardListView)) and not viewset.is_resource,
+            msg="Bulk selection requires a table list or card view on an ORM ViewSet",
+        )
+        pagination = getattr(cls, "table_pagination", None)
+        page_size = getattr(cls, "paginate_by", None)
+        if pagination is False:
+            page_size = None
+        elif isinstance(pagination, dict) and "per_page" in pagination:
+            page_size = pagination["per_page"]
+        for key in actions:
+            destination = viewset.get_view_class(key) if viewset.is_view_registered(key) else None
+            valid_destination = destination is not None and issubclass(destination, BulkFormViewPermissionRequired)
+            yield CheckExpression(
+                context=cls,
+                id="E272",
+                expression=valid_destination,
+                msg=f"Bulk action {key!r} must name a registered BulkFormViewPermissionRequired in the same ViewSet",
+            )
+            if not valid_destination:
+                continue
+            limit = destination.cv_bulk_max
+            if type(page_size) is int and type(limit) is int and limit > 0:
+                yield CheckWarningExpression(
+                    context=cls,
+                    id="W274",
+                    expression=page_size <= limit,
+                    msg=f"Page size {page_size} exceeds cv_bulk_max {limit} of bulk action {key!r}",
+                )
+            if destination.cv_cancel_keys == "auto" or destination.cv_origin_keys_registered(
+                destination.cv_cancel_keys
+            ):
+                origins = effective_cancel_keys(destination)
+                accepted = cls.cv_key in origins or (
+                    cls.cv_key == "card" and "list" in origins and not viewset.is_view_registered("list")
+                )
+                yield CheckWarningExpression(
+                    context=cls,
+                    id="W275",
+                    expression=accepted,
+                    msg=f"Bulk action {key!r} does not accept origin {cls.cv_key!r}; "
+                    "Cancel and the warning redirect fall back to cv_cancel_key",
+                )
 
     @property
     def cv_bulk_buttons(self):
@@ -152,6 +219,37 @@ class BulkFormViewPermissionRequired(MessageMixin, CrispyViewMixin, CustomFormNo
     cv_header_template_code = "{{ view.cv_bulk_header }}"
     _cv_ancestor_operation = "write"
     _bulk_stage = "review"
+
+    @classmethod
+    def checks(cls):
+        yield from super().checks()
+        if cls.cv_viewset is not None:
+            yield CheckExpression(
+                context=cls,
+                id="E276",
+                expression=not cls.cv_viewset.is_resource
+                and len(getattr(cls.cv_viewset.model._meta, "pk_fields", ())) <= 1,
+                msg="Bulk destinations require an ORM model with a single scalar primary key",
+            )
+        yield CheckExpression(
+            context=cls,
+            id="E277",
+            expression=type(cls.cv_bulk_max) is int and cls.cv_bulk_max > 0,
+            msg="cv_bulk_max must be a positive integer (not bool)",
+        )
+        yield CheckExpression(
+            context=cls,
+            id="E278",
+            expression=isinstance(cls.form_class, type) and issubclass(cls.form_class, CrispyForm),
+            msg="Bulk destinations require form_class to be a CrispyForm subclass",
+        )
+        yield CheckExpression(
+            context=cls,
+            id="E279",
+            expression=cls.cv_form_valid is not CustomFormNoObjectView.cv_form_valid and cls.cv_object is False,
+            msg="A bulk action must write in cv_form_valid (the inherited method does nothing) "
+            "and set cv_object to False",
+        )
 
     @property
     def cv_bulk_header(self):

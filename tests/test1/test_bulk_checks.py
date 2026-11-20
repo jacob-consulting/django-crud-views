@@ -10,10 +10,10 @@ from crud_views.checks import check_viewsets
 from crud_views.lib import check as check_module
 from crud_views.lib import viewset as registry
 from crud_views.lib.bulk import BulkFormViewPermissionRequired, BulkSelectionMixin
-from crud_views.lib.viewset import ViewSet
 from crud_views.lib.views import CardListView, ListView
 from crud_views.lib.views.form import CustomFormNoObjectView, CustomFormNoObjectViewPermissionRequired
 from crud_views.lib.views.mixins import ListViewTableMixin
+from crud_views.lib.viewset import ViewSet
 from tests.test1.app.models import Publisher
 
 BULK_IDS = {

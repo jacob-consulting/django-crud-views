@@ -582,6 +582,43 @@ def test_selection_within_destination_limit_is_reviewed(client_user_bulk_publish
     assert not list(get_messages(response.wsgi_request))
 
 
+@pytest.mark.parametrize("count,limit", [(100, 100), (150, 150)])
+def test_selection_at_destination_limit_executes(client_user_bulk_publisher_change, monkeypatch, count, limit):
+    from tests.test1.app.views_bulk import BulkPublisherArchiveView
+
+    records = Publisher.objects.bulk_create([Publisher(name=f"Publisher {index:03}") for index in range(count)])
+    monkeypatch.setattr(BulkPublisherArchiveView, "cv_bulk_max", limit)
+    response = client_user_bulk_publisher_change.post(
+        "/bulk-publisher/archive/", {"cv_bulk_stage": "execute", "cv_bulk_ids": [obj.pk for obj in records]}
+    )
+    assert response.status_code == 302
+    assert publisher_names() == [f"{obj.name} (archived)" for obj in records]
+    assert [str(message) for message in get_messages(response.wsgi_request)] == [f"{count} records processed."]
+
+
+@pytest.mark.parametrize("stage", ["review", "execute"])
+@pytest.mark.parametrize("malformed_field", ["cv_bulk_ids", "cv_bulk_blocked_ids"])
+def test_oversized_raw_selection_warns_before_normalization(
+    client_user_bulk_publisher_change, bulk_publishers, monkeypatch, stage, malformed_field
+):
+    from django.contrib.messages import WARNING
+
+    # Only one distinct valid ID, but 101 raw entries, one of which cannot be normalized.
+    data = {"cv_bulk_stage": stage, "cv_bulk_ids": [str(bulk_publishers[0].pk)] * 100}
+    data.setdefault(malformed_field, []).append("invalid\x00id")
+    hooks = forbid_resolution(monkeypatch)
+    before = publisher_names()
+    response = client_user_bulk_publisher_change.post("/bulk-publisher/archive/", data)
+    assert response.status_code == 302
+    assert response.url == "/bulk-publisher/"
+    assert [(message.level, str(message)) for message in get_messages(response.wsgi_request)] == [
+        (WARNING, "Select at most 100 records.")
+    ]
+    assert publisher_names() == before
+    for hook in hooks:
+        hook.assert_not_called()
+
+
 def test_warning_returns_to_signed_source_query(client_user_bulk_publisher_change, bulk_publishers):
     from urllib.parse import parse_qs, urlsplit
 

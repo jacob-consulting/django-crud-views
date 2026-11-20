@@ -1,0 +1,37 @@
+TAP version 13
+# Subtest: Enter on a bulk checkbox never submits with JavaScript disabled
+not ok 1 - Enter on a bulk checkbox never submits with JavaScript disabled
+  ---
+  duration_ms: 975.437004
+  type: 'test'
+  location: '/home/alex/projects/alex/django-crud-views/.planning/phases/06.41-current-page-bulk-selection-and-action-forms-for-table-and-c/06.41-13-enter.test.cjs:6:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Enter must not submit the first configured action
+    + actual - expected
+    
+    + [
+    +   'http://127.0.0.1:8841/bulk-selection/document/bulk-delete/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfZG9jdW1lbnQiXSwicGFyZW50cyI6e319%3AnzMOV0npHCSlQ5fxXnREnnFRe2L7nxh4RxSxkio0cps'
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0: 'http://127.0.0.1:8841/bulk-selection/document/bulk-delete/?cv_from=list&cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfZG9jdW1lbnQiXSwicGFyZW50cyI6e319%3AnzMOV0npHCSlQ5fxXnREnnFRe2L7nxh4RxSxkio0cps'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/alex/projects/alex/django-crud-views/.planning/phases/06.41-current-page-bulk-selection-and-action-forms-for-table-and-c/06.41-13-enter.test.cjs:22:16)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1307.232391

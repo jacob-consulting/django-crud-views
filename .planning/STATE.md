@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.41"
 current_phase_name: "Current-page bulk selection and action forms for table and card views (#387)"
-current_plan: 4
+current_plan: 5
 status: executing
 stopped_at: context exhaustion at 75% (2026-11-20)
-last_updated: "2026-11-20T12:51:04.542Z"
+last_updated: "2026-11-20T13:05:58.237Z"
 last_activity: 2026-11-20
 last_activity_desc: Phase 06.41 execution started
-state_head: 1607b5f8b63403928abc847d7eed3541f645a462
+state_head: c7ff36d7b8fe4b51813e6a68d574cc8df2e9f9a4
 progress:
   total_phases: 48
   completed_phases: 46
   total_plans: 270
-  completed_plans: 260
+  completed_plans: 261
 milestone_name: milestone
 ---
 
@@ -33,12 +33,18 @@ See: .planning/PROJECT.md (updated 2026-11-19)
 ## Current Position
 
 Phase: 06.41 (Current-page bulk selection and action forms for table and card views (#387)) — EXECUTING
-Current Plan: 4
+Current Plan: 5
 Total Plans in Phase: 13
 Status: Ready to execute
 Last activity: 2026-11-20 — Phase 06.41 execution started
 
 Next: $gsd-execute-phase 06.41
+
+### Phase 06.41 plan 04 execution — 2026-11-20
+
+- Two tasks/four commits through dbd3c490, summary c7ff36d7. External bulk script and asset inventories delivered; final toolbar integration belongs to plan 07.
+- Full core: 16,677 passed/one existing skip; JS 473 passed; focused Python 98 passed/one skip, JS 29 passed, strict docs/Ruff and wave package build pass. Existing Vite warning retained.
+- Wave 2 complete, 4/13 plans executed; schema/UI gates nonblocking, UI scope remains degraded by summary parsing. Plan 05 next; phase acceptance pending.
 
 ### Phase 06.41 plan 03 execution — 2026-11-20
 

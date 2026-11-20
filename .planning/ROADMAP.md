@@ -2198,7 +2198,7 @@ Starts from the list, card and custom-form views on `main`; the phase 06.38 impl
 **Requirements**: None; the approved issue contract supplies phase acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the bulk classes, attributes, POST field names and class keys.
-**Plans:** 10/13 plans executed
+**Plans:** 11/13 plans executed
 
 Plans:
 **Wave 1**
@@ -2224,7 +2224,7 @@ Plans:
 
 **Wave 7** *(blocked on Wave 6 completion)*
 - [x] 06.41-10-PLAN.md — Reference guide, stability listing, cross-links and changelog (wave 7)
-- [ ] 06.41-11-PLAN.md — Bootstrap example app `bulk_selection` with table and card selection and three bulk actions (wave 7)
+- [x] 06.41-11-PLAN.md — Bootstrap example app `bulk_selection` with table and card selection and three bulk actions (wave 7)
 
 **Wave 8** *(blocked on Wave 7 completion)*
 - [ ] 06.41-12-PLAN.md — Example registered in the project: feature entry, inventories, developer account, German catalog (wave 8)

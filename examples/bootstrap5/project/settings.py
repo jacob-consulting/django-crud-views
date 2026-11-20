@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "action_menus",
     "delete_demo",
     "custom_form",
+    "bulk_selection",
     "label_modes",
     "flash_messages",
     "disabled_actions",

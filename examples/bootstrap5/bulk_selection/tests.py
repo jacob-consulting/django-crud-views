@@ -122,7 +122,7 @@ class ArchiveTest(BulkSelectionTestCase):
             with self.subTest(source=source):
                 self.Document.objects.filter(pk__in=[self.first.pk, self.second.pk]).update(status="draft")
                 response = self.review(self.destination("archive", source), [self.first, self.second])
-                self.assertRedirects(response, reverse(f"bulk_document-{source}"))
+                self.assertRedirects(response, reverse(f"bulk_document-{source}"), fetch_redirect_response=False)
                 page = self.client.get(response.url)
                 self.assertEqual([str(m) for m in page.context["messages"]], ["2 documents archived."])
                 self.assertEqual(self.Document.objects.filter(status="archived").count(), 2)

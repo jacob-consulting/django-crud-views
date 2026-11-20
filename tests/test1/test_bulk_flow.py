@@ -370,6 +370,8 @@ def test_execute_changed_selection_writes_nothing(client_user_bulk_publisher_cha
     message = "The eligible selection changed. Review it and confirm again."
     assert response.context["form"].non_field_errors() == [message]
     assert message in soup(response).text_content()
+    assert "Alpha" in soup(response).cssselect("form.cv-form > ul")[0].text_content()
+    assert "Locked Gamma" in soup(response).cssselect('[role="alert"]')[0].text_content()
     assert list(Publisher.objects.order_by("pk").values_list("name", flat=True)) == ["Alpha", "Beta", "Locked Gamma"]
     assert not list(get_messages(response.wsgi_request))
 

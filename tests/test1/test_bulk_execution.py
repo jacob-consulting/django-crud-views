@@ -267,7 +267,7 @@ def test_delete_recipe_deletes_eligible_records(
 
 
 def test_delete_recipe_blocks_protection_without_related_labels(client_user_bulk_publisher_delete, bulk_publishers):
-    contract = Contract.objects.create(publisher=bulk_publishers[1], reference="Confidential contract")
+    contract = Contract.objects.create(publisher=bulk_publishers[1], title="Confidential contract")
     client = client_user_bulk_publisher_delete
     response = post_selection(client, bulk_publishers, path="bulk-delete", stage="review")
     assert response.status_code == 200
@@ -280,6 +280,8 @@ def test_delete_recipe_blocks_protection_without_related_labels(client_user_bulk
 
 @pytest.mark.django_db(transaction=True)
 def test_delete_recipe_late_protection_rolls_back(client_user_bulk_publisher_delete, bulk_publishers, monkeypatch):
+    from tests.test1.app.views_bulk import BulkPublisherDeleteView
+
     original = Publisher.delete
 
     def delete(self, *args, **kwargs):
@@ -287,7 +289,10 @@ def test_delete_recipe_late_protection_rolls_back(client_user_bulk_publisher_del
             raise ProtectedError("late protection", {self})
         return original(self, *args, **kwargs)
 
-    monkeypatch.setattr(Publisher, "delete", delete)
+    # Install the simulated race after inspection, which rejects custom model deletion methods.
+    monkeypatch.setattr(
+        BulkPublisherDeleteView, "cv_post_hook", lambda self, context: monkeypatch.setattr(Publisher, "delete", delete)
+    )
     with pytest.raises(ProtectedError):
         post_selection(client_user_bulk_publisher_delete, bulk_publishers[:2], path="bulk-delete")
     assert publisher_names() == ["Alpha", "Beta", "Locked Gamma"]

@@ -326,6 +326,18 @@ def client_user_bulk_publisher_view(client, user_bulk_publisher_view):
 
 
 @pytest.fixture
+def user_bulk_publisher_delete(user_bulk_publisher_change, cv_bulk_publisher):
+    user_viewset_permission(user_bulk_publisher_change, cv_bulk_publisher, "delete")
+    return user_bulk_publisher_change
+
+
+@pytest.fixture
+def client_user_bulk_publisher_delete(client, user_bulk_publisher_delete):
+    client.force_login(user_bulk_publisher_delete)
+    return client
+
+
+@pytest.fixture
 def cv_publisher():
     from tests.test1.app.views import cv_publisher as ret
 

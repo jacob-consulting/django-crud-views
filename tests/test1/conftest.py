@@ -281,6 +281,29 @@ def author_terry_pratchett():
 
 
 @pytest.fixture
+def cv_bulk_filter():
+    from tests.test1.app.views_bulk import cv_bulk_filter as ret
+
+    return ret
+
+
+@pytest.fixture
+def user_bulk_filter_change(cv_bulk_filter):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_bulk_filter_change", password="password")
+    user_viewset_permission(user, cv_bulk_filter, "view")
+    user_viewset_permission(user, cv_bulk_filter, "change")
+    return user
+
+
+@pytest.fixture
+def client_user_bulk_filter_change(client, user_bulk_filter_change):
+    client.force_login(user_bulk_filter_change)
+    return client
+
+
+@pytest.fixture
 def cv_bulk_publisher():
     from tests.test1.app.views_bulk import cv_bulk_publisher as ret
 

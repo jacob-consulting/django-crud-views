@@ -7,9 +7,15 @@ from crud_views.lib.bulk import BulkFormViewPermissionRequired, BulkSelectionMix
 from crud_views.lib.crispy import CrispyForm
 from crud_views.lib.deletion import inspect_deletion
 from crud_views.lib.table import Table
-from crud_views.lib.views import CardListViewPermissionRequired, ListViewPermissionRequired, ListViewTableMixin
+from crud_views.lib.views import (
+    CardListViewPermissionRequired,
+    ListViewPermissionRequired,
+    ListViewTableFilterMixin,
+    ListViewTableMixin,
+)
 from crud_views.lib.viewset import ParentViewSet, ViewSet
 from tests.test1.app.models import Author, Book, BulkCode, Publisher
+from tests.test1.app.views import PublisherFilterFormHelper, PublisherOrderFilter
 
 cv_bulk_publisher = ViewSet(model=Publisher, name="bulk_publisher", prefix="bulk-publisher")
 cv_bulk_author = ViewSet(model=Author, name="bulk_author", prefix="bulk-author")
@@ -72,6 +78,45 @@ class BulkCodeMarkView(BulkFormViewPermissionRequired):
 
 class BulkPublisherTable(Table):
     name = tables.Column()
+
+
+cv_bulk_filter = ViewSet(model=Publisher, name="bulk_filter", prefix="bulk-filter")
+
+
+class BulkFilterListView(BulkSelectionMixin, ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
+    cv_viewset = cv_bulk_filter
+    table_class = BulkPublisherTable
+    filterset_class = PublisherOrderFilter
+    formhelper_class = PublisherFilterFormHelper
+    paginate_by = 2
+    cv_bulk_actions = ("mark",)
+    cv_list_actions = []
+    cv_context_actions = ["home"]
+
+
+class BulkFilterCardView(BulkSelectionMixin, ListViewTableFilterMixin, CardListViewPermissionRequired):
+    cv_viewset = cv_bulk_filter
+    filterset_class = PublisherOrderFilter
+    formhelper_class = PublisherFilterFormHelper
+    paginate_by = 2
+    cv_order_fields = ["name"]
+    cv_bulk_actions = ("mark",)
+    cv_context_actions = ["home"]
+
+
+class BulkFilterMarkView(BulkFormViewPermissionRequired):
+    cv_viewset = cv_bulk_filter
+    cv_key = "mark"
+    cv_path = "mark"
+    cv_permission = "change"
+    cv_action_label_template_code = "Mark selected"
+    cv_action_short_label_template_code = "Mark"
+    cv_success_key = "list"
+
+    def cv_form_valid(self, context):
+        for obj in self.cv_bulk_objects:
+            obj.name += " (marked)"
+            obj.save(using=self.cv_get_db_alias())
 
 
 cv_bulk_book = ViewSet(

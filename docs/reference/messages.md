@@ -14,6 +14,11 @@ The message snippets see `object`, `view` and, on a child ViewSet, `parent_objec
     a message at any level and shows one inline `{% cv_alert %}` — log in as `alice` / `alice`. See
     [Live demo](../getting_started/demo.md) for data resets and wake-up time.
 
+Bulk action forms include `MessageMixin` and default to `crud_views/snippets/message/bulk.html`, with singular
+and plural messages counting the records handed to the action. Override `cv_message_template_code` for your
+application's wording and outcomes; see [Bulk result messages](bulk_actions.md#result-message-and-return),
+including the limit of messages queued inside a transaction.
+
 ## Usage
 
 Place the tag in your own base template — typically at the top of the content area, next to

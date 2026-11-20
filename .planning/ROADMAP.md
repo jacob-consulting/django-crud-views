@@ -2198,7 +2198,7 @@ Starts from the list, card and custom-form views on `main`; the phase 06.38 impl
 **Requirements**: None; the approved issue contract supplies phase acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the bulk classes, attributes, POST field names and class keys.
-**Plans:** 8/13 plans executed
+**Plans:** 9/13 plans executed
 
 Plans:
 **Wave 1**
@@ -2220,7 +2220,7 @@ Plans:
 - [x] 06.41-08-PLAN.md — Return navigation after cancel, warning, plain GET and success (wave 5)
 
 **Wave 6** *(blocked on Wave 5 completion)*
-- [ ] 06.41-09-PLAN.md — System checks, Guardian warning and German catalogs (wave 6)
+- [x] 06.41-09-PLAN.md — System checks, Guardian warning and German catalogs (wave 6)
 
 **Wave 7** *(blocked on Wave 6 completion)*
 - [ ] 06.41-10-PLAN.md — Reference guide, stability listing, cross-links and changelog (wave 7)

@@ -1,3 +1,4 @@
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
@@ -702,3 +703,84 @@ def test_table_header_sort_tracer():
     _assert_sort_header(other, "none")
     _assert_sort_header(label, None)
     assert parse_qs(urlsplit(value.cssselect("a")[0].get("href")).query) == {"sort": ["value"]}
+
+
+class DefaultSortStateTable(SortStateTable):
+    class Meta:
+        order_by = ("-value",)
+
+
+class HeaderAttributes(HTMLParser):
+    def __init__(self, rendered):
+        super().__init__()
+        self.headers = []
+        self.feed(rendered)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "th":
+            self.headers.append(attrs)
+
+
+@pytest.mark.parametrize(
+    ("query", "prefix", "table_class", "kwargs", "state"),
+    [
+        ({"sort": "value"}, "", SortStateTable, {}, "ascending"),
+        ({"sort": "-value"}, "", SortStateTable, {}, "descending"),
+        ({}, "", SortStateTable, {}, "none"),
+        ({}, "", SortStateTable, {"order_by": "value"}, "ascending"),
+        ({}, "", SortStateTable, {"order_by": "-value"}, "descending"),
+        ({}, "", DefaultSortStateTable, {}, "descending"),
+        ({"mine-sort": "value", "sort": "-other"}, "mine-", SortStateTable, {}, "ascending"),
+        ({"mine-sort": "-value", "sort": "other"}, "mine-", SortStateTable, {}, "descending"),
+    ],
+    ids=[
+        "url-asc",
+        "url-desc",
+        "unsorted",
+        "constructor-asc",
+        "constructor-desc",
+        "meta-default",
+        "prefix-asc",
+        "prefix-desc",
+    ],
+)
+def test_table_header_effective_sort_state(query, prefix, table_class, kwargs, state):
+    table, request = _sort_state_table(query, prefix=prefix, table_class=table_class, **kwargs)
+    rendered = _render_table_pagination(table, request)
+    value, other, label = html.fromstring(rendered).cssselect("thead th")
+    _assert_sort_header(value, state)
+    _assert_sort_header(other, "none")
+    _assert_sort_header(label, None)
+    assert [[name for name, _ in attrs].count("aria-sort") for attrs in HeaderAttributes(rendered).headers] == [1, 1, 0]
+
+
+def test_table_header_attributes_and_links():
+    class CustomHeaders(SortStateTable):
+        value = django_tables2.Column(
+            verbose_name='Value <amount> & "total"',
+            attrs={"th": {"class": "custom", "data-note": 'value" onmouseover="bad'}},
+        )
+
+    table, request = _sort_state_table(
+        {"mine-sort": "-value", "other-sort": "label", "q": "A & B", "mine-page": "2"},
+        prefix="mine-",
+        table_class=CustomHeaders,
+    )
+    rendered = _render_table_pagination(table, request)
+    value, other, label = html.fromstring(rendered).cssselect("thead th")
+    _assert_sort_header(value, "descending")
+    _assert_sort_header(other, "none")
+    _assert_sort_header(label, None)
+    assert "custom" in value.get("class").split()
+    assert value.get("data-note") == 'value" onmouseover="bad'
+    assert set(value.attrib) == {"class", "data-note", "scope", "aria-sort"}
+    link = value.cssselect("a")[0]
+    assert link.text == 'Value <amount> & "total"'
+    assert not link.getchildren()
+    assert parse_qs(urlsplit(link.get("href")).query) == {
+        "mine-sort": ["value"],
+        "other-sort": ["label"],
+        "q": ["A & B"],
+        "mine-page": ["2"],
+    }
+    assert [[name for name, _ in attrs].count("aria-sort") for attrs in HeaderAttributes(rendered).headers] == [1, 1, 0]

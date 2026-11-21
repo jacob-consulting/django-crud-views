@@ -433,6 +433,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Changed
 
+- **Default table ordering** (#393): stock sort icons now appear on first load for effective
+  `Meta.order_by` or constructor ordering without a sort query parameter. This is nonbreaking.
+
 - Full-page workflow actions now participate in the shared form frame, including the no-transitions message.
   History remains first and outside that frame; a table-only responsive wrapper keeps wide history scrolling
   local. Copied action templates need the frame inheritance to participate; see the
@@ -471,6 +474,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `collapse.toggle` returns `false` while the panel is animating and the filter toggle then leaves its state alone.
 
 ### Fixed
+
+- **Prefixed table sort icons** (#393): icons now follow bound-column ordering, matching
+  `aria-sort` even when the table uses a prefixed sorting query parameter.
 
 - **Pydantic 2.2.1 compatibility:** Resource initialization uses public class field metadata and
   preserves real `pk` fields inherited beneath an instance alias. In addition,
@@ -646,6 +652,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   does (#231).
 
 ### Added
+
+- **Breadcrumb classes and table sort state** (#393): `breadcrumb:list`, `breadcrumb:item` and
+  `breadcrumb:item-active` customize the stock breadcrumb through the existing class registry.
+  Orderable stock table headers now expose `aria-sort` from effective ordering. After release,
+  CoreUI can set `breadcrumb:list` to `breadcrumb my-0` and remove its breadcrumb CSS workaround;
+  CoreUI and Tabler can remove their copied `table.thead` blocks.
 
 - **Theme data-attribute prefix** (#391): themes can call `register_data_prefix()` from `crud_views.lib` at
   startup; `{% cv_data_prefix %}` supplies native attributes for actions-menu toggles, language selectors,

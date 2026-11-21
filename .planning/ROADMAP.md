@@ -2284,11 +2284,14 @@ Plans:
 2. Orderable table headers derive both icons and `aria-sort` from `column.is_ordered` and `column.order_by_alias.is_descending`: ascending, descending, or none. Non-orderable columns retain no sort attribute or icon. Tests cover URL ordering in both directions, default ordering, prefixed tables, and unsorted/non-orderable columns.
 3. Button/theme/breadcrumb references document the keys, table documentation explains effective ordering, and CHANGELOG records Added/Changed/Fixed entries. The default-order icon is an accepted nonbreaking visible change; `docs/migrating-1.0.md` stays untouched.
 4. Breadcrumb content/links and nav label, card sorting, pagination, CSS-property work, and downstream theme implementation remain outside scope.
-**Plans:** 0/2 plans executed in 1 wave; approved D-01–D-04 covered.
+**Plans:** 0/2 plans executed in 2 waves; approved D-01–D-04 covered.
 
 Plans:
+**Wave 1**
 - [ ] 06.43-01-PLAN.md — Breadcrumb registry keys, byte-preserving rendering, override coverage and reference inventories (wave 1).
-- [ ] 06.43-02-PLAN.md — Effective table sort indicators, real ordering matrix and nonbreaking release guidance (wave 1).
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.43-02-PLAN.md — Effective table sort indicators, real ordering matrix, nonbreaking release guidance and combined final verification (wave 2; depends on 06.43-01).
 
 ### Phase 7: Theme-surface stability policy
 

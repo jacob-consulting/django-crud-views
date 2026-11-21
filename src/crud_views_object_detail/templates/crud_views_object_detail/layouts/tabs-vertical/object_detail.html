@@ -8,8 +8,8 @@
                     {% cv_heading_icon entry.group.icon location="group" as icon %}
                     <button class="nav-link{% if entry.selected %} active{% endif %} text-start{% if icon.host_class %} {{ icon.host_class }}{% endif %}"
                             id="{{ entry.control_id }}"
-                            data-bs-toggle="pill"
-                            data-bs-target="#{{ entry.panel_id }}"
+                            data-{% cv_data_prefix %}-toggle="pill"
+                            data-{% cv_data_prefix %}-target="#{{ entry.panel_id }}"
                             type="button" role="tab"
                             aria-controls="{{ entry.panel_id }}"
                             tabindex="{% if entry.selected %}0{% else %}-1{% endif %}"

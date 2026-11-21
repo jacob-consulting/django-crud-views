@@ -4,7 +4,7 @@
         {% cv_heading_icon group.icon location="group" as icon %}
         <button class="accordion-button{% if not presentation.selected %} collapsed{% endif %}{% if icon.host_class %} {{ icon.host_class }}{% endif %}" type="button"
                 id="{{ presentation.control_id }}"
-                data-bs-toggle="collapse" data-bs-target="#{{ presentation.panel_id }}"
+                data-{% cv_data_prefix %}-toggle="collapse" data-{% cv_data_prefix %}-target="#{{ presentation.panel_id }}"
                 aria-expanded="{% if presentation.selected %}true{% else %}false{% endif %}"
                 aria-controls="{{ presentation.panel_id }}">
             {{ icon.inline_html }}
@@ -15,7 +15,7 @@
     <div id="{{ presentation.panel_id }}"
          class="accordion-collapse collapse{% if presentation.selected %} show{% endif %}"
          aria-labelledby="{{ presentation.control_id }}"
-         {% if component %}data-bs-parent="#{{ component.id }}"{% endif %}>
+         {% if component %}data-{% cv_data_prefix %}-parent="#{{ component.id }}"{% endif %}>
         <div class="accordion-body">
             {% if group.description %}<p class="text-body-secondary small mb-3">{{ group.description }}</p>{% endif %}
             <table class="table table-sm table-borderless mb-0">

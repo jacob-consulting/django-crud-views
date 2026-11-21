@@ -375,8 +375,12 @@ def test_documented_alert_frame_override(monkeypatch):
 
 
 def _assert_core_bootstrap_data_attributes(root: Path) -> None:
-    """Bootstrap data attributes under a core template root are confined to the dropdown templates (D-09)."""
-    matches = {path.relative_to(root).as_posix() for path in root.rglob("*.html") if "data-bs-" in path.read_text()}
+    """Literal and theme-prefixed native data attributes stay in the dropdown templates (D-09)."""
+    matches = {
+        path.relative_to(root).as_posix()
+        for path in root.rglob("*.html")
+        if re.search(r"data-(?:bs|\{% cv_data_prefix %\})-", path.read_text())
+    }
     assert matches, f"no data-bs- attribute found under {root}"
     forbidden = sorted(matches - BOOTSTRAP_DATA_ALLOWED)
     assert not forbidden, f"Bootstrap data attributes outside the dropdown templates: {forbidden}"

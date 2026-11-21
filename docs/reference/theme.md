@@ -49,6 +49,49 @@ ViewSet Navigation needs no JavaScript; its ordinary full-page links use the
 The scripts call Bootstrap through replaceable adapters (`cv.adapters`), so a theme for a Bootstrap-compatible or
 non-Bootstrap UI library swaps them from its own registered asset. See [JavaScript](javascript.md).
 
+### Data-attribute prefix
+
+For a compatible fork whose native data API differs only in its attribute prefix, register that prefix in
+your theme's `apps.py` instead of copying the component templates:
+
+```python
+from django.apps import AppConfig
+
+from crud_views.lib import register_data_prefix
+
+
+class PrefixThemeConfig(AppConfig):
+    name = "prefix_theme"
+
+    def ready(self):
+        register_data_prefix("coreui")
+```
+
+Replace `prefix_theme` with your theme app's module and use its `PrefixThemeConfig` in `INSTALLED_APPS`.
+The default is `bs`. The prefix must be a string matching `^[a-z][a-z0-9]*(-[a-z0-9]+)*$` exactly;
+invalid input raises `ValueError` before changing the current registration. The last valid call wins,
+including repeated startup calls. This is startup-owned configuration, not concurrent runtime theme switching
+or a project override setting.
+
+The `{% cv_data_prefix %}` tag in the `crud_views` library supplies native attribute names for four components:
+the actions-menu toggle, language selector, vertical object-detail tabs and accordion groups. Their toggle,
+target, parent and Popper-config attributes follow the registration. The shipped object-detail `tabs.js`
+selector follows it too, within `data-cv-od-tabs` tablists. Registration does not choose an adapter namespace:
+align your native UI library and the existing tab adapter separately. It does not change host-app markup,
+CSS custom properties, crispy templates or add a dropdown adapter. Class customization remains in the
+[class table](buttons.md); a different DOM structure still needs [template overrides](#templates-that-follow-bootstraps-dom).
+
+If your theme overrides `crud_views/tags/cv_config.html`, retain the shipped unconditional
+`data-data-prefix="{{ data_prefix }}"` attribute on `#cv-config`, using the current `data_prefix` inclusion context
+supplied by both `cv_config` and `cv_const_js`. Keep its other attributes and modal-shell content too.
+An older copy without the attribute intentionally falls back to `bs`, so custom-prefix triggers such as
+`data-coreui-toggle` will not be discovered until the copy carries the registered prefix. See the
+[JavaScript config and fallback contract](javascript.md#object-detail-tabs).
+
+After adopting the released change, a downstream theme can remove its four prefix-only template copies,
+dedicated tabs script and initialization wrapper, and associated app-order check. Keep any overrides needed
+for other markup differences.
+
 ## INSTALLED_APPS ordering (the one rule that matters)
 
 Your theme app **must be listed before `crud_views`** so its templates are found first:
@@ -725,9 +768,10 @@ The `notice` names are examples; the class names are yours. What closing and acc
 ## Templates that follow Bootstrap's DOM
 
 A dropdown is more than a set of classes: the nesting, the element types and the opening script differ between
-frameworks, so the class table has no keys for it. These templates carry Bootstrap 5 dropdown markup
-(`dropdown-toggle`, `data-bs-toggle="dropdown"`, `dropdown-menu`, `dropdown-item`) and are the ones to override when
-your framework builds dropdowns differently:
+frameworks, so the class table does not configure that structure. These templates retain the stock Bootstrap 5
+DOM (`dropdown-toggle`, `dropdown-menu`, `dropdown-item`) and default `bs` native attribute prefix. Override them
+when your framework builds a different DOM; a compatible fork that only changes the native attribute prefix
+uses [prefix registration](#data-attribute-prefix):
 
 - `tags/actions_menu.html` — the menu wrapper and its `<ul>`
 - `tags/actions_menu_toggle.html` — the toggle button
@@ -736,11 +780,12 @@ your framework builds dropdowns differently:
 The button classes they use (`*:menu-wrapper`, `*:menu-toggle`, `*:hidden-label`) still come from the table, so an
 override can keep calling `{% cv_button_class %}` for them.
 
-In the core `crud_views` templates, these dropdown templates are the only ones with Bootstrap `data-bs-*`
-attributes. The alert frame has none: its close control uses `data-cv-alert-dismiss` and the alert adapter, see
-[Dismissible alerts](javascript.md#dismissible-alerts). Outside core, the `crud_views_object_detail` layouts
-`layouts/accordion/group.html` and `layouts/tabs-vertical/object_detail.html` still use Bootstrap's collapse and tab
-attributes.
+The actions toggle and language selector use the registered prefix for their native data attributes.
+The alert frame stays separate: its close control uses `data-cv-alert-dismiss` and the alert adapter, see
+[Dismissible alerts](javascript.md#dismissible-alerts). The `crud_views_object_detail` layouts
+`layouts/accordion/group.html` and `layouts/tabs-vertical/object_detail.html` likewise keep Bootstrap-compatible
+collapse and tab DOM while using the registered native prefix. These four components need no prefix-only
+copies; structural changes still require overrides, and their class keys remain in the class table.
 
 ## Disabled actions in overridden templates
 

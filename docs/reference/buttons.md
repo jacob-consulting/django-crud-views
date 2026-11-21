@@ -339,7 +339,9 @@ Close name and `data-cv-alert-dismiss` hook; they do not add a close control to 
 
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
 configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`,
-`dropdown-toggle`, `data-bs-toggle` and the like. The one exception for an element is the exact key
+`dropdown-toggle`, native toggle attributes and the like. For compatible native data APIs, use
+[theme data-attribute prefix registration](theme.md#data-attribute-prefix) separately from this class table;
+genuinely different markup still needs template overrides. The one exception for an element is the exact key
 `form:cancel-tag`: `"button"` (the default, also for `None`) or `"a"`, which renders an enabled cancel form button
 with a destination as a native `<a href>` link. It selects the element of that one control only, has no mode keys,
 and does not configure its `href`, its native `type` or `disabled`: a disabled cancel or one without a destination

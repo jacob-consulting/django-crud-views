@@ -1,0 +1,399 @@
+TAP version 13
+# Subtest: accepts the captured choice outcomes
+ok 1 - accepts the captured choice outcomes
+  ---
+  duration_ms: 16.326031
+  type: 'test'
+  ...
+# Subtest: rejects contradictory initial-create-edit observation even with passed=true
+ok 2 - rejects contradictory initial-create-edit observation even with passed=true
+  ---
+  duration_ms: 12.440441
+  type: 'test'
+  ...
+# Subtest: rejects contradictory keyboard-change observation even with passed=true
+ok 3 - rejects contradictory keyboard-change observation even with passed=true
+  ---
+  duration_ms: 10.367406
+  type: 'test'
+  ...
+# Subtest: rejects contradictory shared-active-kept observation even with passed=true
+ok 4 - rejects contradictory shared-active-kept observation even with passed=true
+  ---
+  duration_ms: 11.063475
+  type: 'test'
+  ...
+# Subtest: rejects contradictory unsaved-away-back observation even with passed=true
+ok 5 - rejects contradictory unsaved-away-back observation even with passed=true
+  ---
+  duration_ms: 8.968144
+  type: 'test'
+  ...
+# Subtest: rejects contradictory final-inactive-cleared observation even with passed=true
+ok 6 - rejects contradictory final-inactive-cleared observation even with passed=true
+  ---
+  duration_ms: 10.101524
+  type: 'test'
+  ...
+# Subtest: rejects contradictory invalid-controller-zero-save observation even with passed=true
+ok 7 - rejects contradictory invalid-controller-zero-save observation even with passed=true
+  ---
+  duration_ms: 7.196864
+  type: 'test'
+  ...
+# Subtest: rejects contradictory active-required-redisplay observation even with passed=true
+ok 8 - rejects contradictory active-required-redisplay observation even with passed=true
+  ---
+  duration_ms: 7.788487
+  type: 'test'
+  ...
+# Subtest: rejects contradictory exact-prefix-two-forms observation even with passed=true
+ok 9 - rejects contradictory exact-prefix-two-forms observation even with passed=true
+  ---
+  duration_ms: 9.485475
+  type: 'test'
+  ...
+# Subtest: rejects contradictory disabled-trusted observation even with passed=true
+ok 10 - rejects contradictory disabled-trusted observation even with passed=true
+  ---
+  duration_ms: 9.255559
+  type: 'test'
+  ...
+# Subtest: rejects contradictory independent-disabled observation even with passed=true
+ok 11 - rejects contradictory independent-disabled observation even with passed=true
+  ---
+  duration_ms: 12.265088
+  type: 'test'
+  ...
+# Subtest: rejects contradictory native-reset observation even with passed=true
+ok 12 - rejects contradictory native-reset observation even with passed=true
+  ---
+  duration_ms: 13.849086
+  type: 'test'
+  ...
+# Subtest: rejects contradictory canceled-reset observation even with passed=true
+ok 13 - rejects contradictory canceled-reset observation even with passed=true
+  ---
+  duration_ms: 6.925786
+  type: 'test'
+  ...
+# Subtest: rejects contradictory modal-422-rebind observation even with passed=true
+ok 14 - rejects contradictory modal-422-rebind observation even with passed=true
+  ---
+  duration_ms: 6.712554
+  type: 'test'
+  ...
+# Subtest: rejects contradictory unload-listener-cleanup observation even with passed=true
+ok 15 - rejects contradictory unload-listener-cleanup observation even with passed=true
+  ---
+  duration_ms: 6.83656
+  type: 'test'
+  ...
+# Subtest: rejects contradictory usable-radio-focus observation even with passed=true
+ok 16 - rejects contradictory usable-radio-focus observation even with passed=true
+  ---
+  duration_ms: 6.614355
+  type: 'test'
+  ...
+# Subtest: rejects contradictory adversarial-token-inert observation even with passed=true
+ok 17 - rejects contradictory adversarial-token-inert observation even with passed=true
+  ---
+  duration_ms: 7.216182
+  type: 'test'
+  ...
+# Subtest: rejects contradictory initial-create-edit: native control count
+ok 18 - rejects contradictory initial-create-edit: native control count
+  ---
+  duration_ms: 8.090072
+  type: 'test'
+  ...
+# Subtest: rejects contradictory final-inactive-cleared: reopened clearing
+ok 19 - rejects contradictory final-inactive-cleared: reopened clearing
+  ---
+  duration_ms: 8.677296
+  type: 'test'
+  ...
+# Subtest: rejects contradictory invalid-controller-zero-save: native error
+ok 20 - rejects contradictory invalid-controller-zero-save: native error
+  ---
+  duration_ms: 8.795606
+  type: 'test'
+  ...
+# Subtest: rejects contradictory invalid-controller-zero-save: database preservation
+ok 21 - rejects contradictory invalid-controller-zero-save: database preservation
+  ---
+  duration_ms: 9.469982
+  type: 'test'
+  ...
+# Subtest: rejects contradictory disabled-trusted: disabled controller
+ok 22 - rejects contradictory disabled-trusted: disabled controller
+  ---
+  duration_ms: 8.912241
+  type: 'test'
+  ...
+# Subtest: rejects contradictory independent-disabled: release on active
+ok 23 - rejects contradictory independent-disabled: release on active
+  ---
+  duration_ms: 8.986864
+  type: 'test'
+  ...
+# Subtest: rejects contradictory modal-422-rebind: unload timing
+ok 24 - rejects contradictory modal-422-rebind: unload timing
+  ---
+  duration_ms: 9.125263
+  type: 'test'
+  ...
+# Subtest: rejects contradictory modal-422-rebind: rebound field
+ok 25 - rejects contradictory modal-422-rebind: rebound field
+  ---
+  duration_ms: 14.628192
+  type: 'test'
+  ...
+# Subtest: rejects contradictory usable-radio-focus: checked radio
+ok 26 - rejects contradictory usable-radio-focus: checked radio
+  ---
+  duration_ms: 7.64475
+  type: 'test'
+  ...
+# Subtest: rejects contradictory adversarial-token-inert: native control count
+ok 27 - rejects contradictory adversarial-token-inert: native control count
+  ---
+  duration_ms: 8.180266
+  type: 'test'
+  ...
+# Subtest: compact default accepts historical paths without override
+ok 28 - compact default accepts historical paths without override
+  ---
+  duration_ms: 7.988268
+  type: 'test'
+  ...
+# Subtest: compact override accepts local receipt paths
+not ok 29 - compact override accepts local receipt paths
+  ---
+  duration_ms: 10.493085
+  type: 'test'
+  location: '/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:122:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert(capture.path.startsWith(`${compactPhase}/browser-captures/${c.id}/`))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    validateEvidence (evalmachine.<anonymous>:216:17)
+    TestContext.<anonymous> (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:124:5)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: compact rejects mismatched root {"destination":".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures"}
+ok 30 - compact rejects mismatched root {"destination":".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures"}
+  ---
+  duration_ms: 5.473795
+  type: 'test'
+  ...
+# Subtest: compact rejects mismatched root {"flag":".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures"}
+not ok 31 - compact rejects mismatched root {"flag":".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures"}
+  ---
+  duration_ms: 4.909814
+  type: 'test'
+  location: '/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:127:5'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected exception.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:129:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: compact rejects outside override ../outside
+not ok 32 - compact rejects outside override ../outside
+  ---
+  duration_ms: 13.781345
+  type: 'test'
+  location: '/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:133:5'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected exception.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:134:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: compact rejects outside override /tmp/cv-outside-captures
+not ok 33 - compact rejects outside override /tmp/cv-outside-captures
+  ---
+  duration_ms: 3.931239
+  type: 'test'
+  location: '/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:133:5'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected exception.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:134:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: compact rejects traversal
+not ok 34 - compact rejects traversal
+  ---
+  duration_ms: 5.687318
+  type: 'test'
+  location: '/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:144:5'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected exception.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:151:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: compact rejects nested directory
+not ok 35 - compact rejects nested directory
+  ---
+  duration_ms: 5.378381
+  type: 'test'
+  location: '/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:144:5'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected exception.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:151:16)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: compact rejects missing PNG
+ok 36 - compact rejects missing PNG
+  ---
+  duration_ms: 5.181634
+  type: 'test'
+  ...
+# Subtest: compact rejects stale PNG
+ok 37 - compact rejects stale PNG
+  ---
+  duration_ms: 5.362348
+  type: 'test'
+  ...
+# Subtest: compact rejects stale source
+ok 38 - compact rejects stale source
+  ---
+  duration_ms: 5.365703
+  type: 'test'
+  ...
+# Subtest: compact rejects unsafe Git destination {"ignored":false}
+ok 39 - compact rejects unsafe Git destination {"ignored":false}
+  ---
+  duration_ms: 4.296759
+  type: 'test'
+  ...
+# Subtest: compact rejects unsafe Git destination {"flag":".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures","destination":".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures","tracked":true}
+ok 40 - compact rejects unsafe Git destination {"flag":".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures","destination":".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures","tracked":true}
+  ---
+  duration_ms: 4.392495
+  type: 'test'
+  ...
+# Subtest: compact writer and checker agree for default
+ok 41 - compact writer and checker agree for default
+  ---
+  duration_ms: 4.551084
+  type: 'test'
+  ...
+# Subtest: compact writer and checker agree for .planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures
+not ok 42 - compact writer and checker agree for .planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures
+  ---
+  duration_ms: 3.557315
+  type: 'test'
+  location: '/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:161:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + '.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-lifecycle/invalid-390.png'
+    - '.planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures/compact-lifecycle/invalid-390.png'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '.planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures/compact-lifecycle/invalid-390.png'
+  actual: '.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-lifecycle/invalid-390.png'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:167:16)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: compact writer rejects unsafe override before screenshot {"ignored":false}
+ok 43 - compact writer rejects unsafe override before screenshot {"ignored":false}
+  ---
+  duration_ms: 3.594081
+  type: 'test'
+  ...
+# Subtest: compact writer rejects unsafe override before screenshot {"tracked":true}
+not ok 44 - compact writer rejects unsafe override before screenshot {"tracked":true}
+  ---
+  duration_ms: 3.538077
+  type: 'test'
+  location: '/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:177:5'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets-evidence.test.cjs:180:9)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: compact default writer preserves tracked historical destination behavior
+ok 45 - compact default writer preserves tracked historical destination behavior
+  ---
+  duration_ms: 3.875524
+  type: 'test'
+  ...
+1..45
+# tests 45
+# suites 0
+# pass 37
+# fail 8
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 508.027046

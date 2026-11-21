@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
+last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
 last_mapped_at: 2026-11-21
 ---
 # Testing Patterns
@@ -32,7 +32,7 @@ Use four pytest-xdist workers for broad local runs when resources are shared; us
 ## Test File Organization
 
 **Location:** Separate from source, under `tests/`:
-- `tests/test1/` - Python tests (285 top-level `test_*.py` files at this map revision, mostly flat) plus test apps `tests/test1/app/` (models Author UUID, Publisher int, Book child, Vehicle polymorphic, Campaign workflow), `tests/test1/od_app/`, `tests/test1/project/` (urls), `tests/test1/golden/` (stored markup).
+- `tests/test1/` - Python tests (287 top-level `test_*.py` files, mostly flat) plus test apps `tests/test1/app/` (models Author UUID, Publisher int, Book child, Vehicle polymorphic, Campaign workflow), `tests/test1/od_app/`, `tests/test1/project/` (urls), `tests/test1/golden/` (stored markup).
 - `tests/lib/helper/` - shared helpers: `user.py` (`user_viewset_permission`), `boostrap5.py` (`Table` HTML parser), `golden.py` (`check_golden`), `guardian.py`, `forms.py`, `icons.py`.
 - `tests/browser/` - `*.cjs` scripts, `*.test.cjs` and Python servers for browser tests; `tests/js/`, `tests/js-integration/` - vitest.
 - `tests/check_manage_schema.py` - schema check script.
@@ -41,7 +41,7 @@ Use four pytest-xdist workers for broad local runs when resources are shared; us
 
 ## Test Structure
 
-**Suite Organization:** Module-level functions, no test classes. Typical view test:
+**Suite Organization:** Module-level functions are common; topic-based test classes also group related contracts (for example `TestBreadcrumbItem` and `TestBreadcrumbTopLevel` in `tests/test1/test_breadcrumb.py`). Typical view test:
 ```python
 @pytest.mark.django_db
 def test_debug_view(user_author_view: User, cv_author, author_douglas_adams, author_terry_pratchett):
@@ -62,6 +62,14 @@ def test_debug_view(user_author_view: User, cv_author, author_douglas_adams, aut
 - Escaping tests should parse output and assert hostile inputs do not create markup or active attributes. `tests/test1/test_navbar_templates.py::test_plain_labels_and_accessible_names_are_escaped_once` covers raw/safe labels, entity-looking text, and localized accessible names.
 - Bulk action tests separate rendered selection, request validation, lifecycle, and return-navigation contracts. Use `tests/test1/test_bulk_source.py` for table/card selection markup and proof that source rendering does not invoke destination permission/item hooks; use `tests/test1/test_bulk_scope.py` for UUID/integer/string key canonicalization, deduplication, malformed and NUL key rejection, write-database routing, and authorization boundaries; use `tests/test1/test_bulk_flow.py` for review/execute ordering and atomic rollback; use `tests/test1/test_bulk_return.py` for origin preservation. Build requests with the real Django `Client` and assert state, response, or query behavior at the boundary under test.
 
+## Breadcrumb and Effective Ordering Contracts
+
+- `tests/test1/test_breadcrumb.py::test_breadcrumb_default_bytes` compares three literal outputs: empty, single current item, and linked/unlinked ancestors with a current item. Keep these exact captures alongside DOM checks so default class integration preserves whitespace and escaping.
+- `tests/test1/test_breadcrumb.py::test_breadcrumb_class_overrides` parametrizes three class keys across theme registration, settings, and settings-over-theme precedence, with custom strings, empty strings, `None`, invalid integers, and hostile quote-containing values. Its `assert_breadcrumb_classes` helper verifies the complete element/attribute structure, labels, and link destination. `::test_breadcrumb_current_page_independent_of_classes` clears all contributions and preserves current-page semantics.
+- The opt-in `breadcrumb_classes` fixture in `tests/test1/test_breadcrumb.py` snapshots `_THEME_BUTTON_CLASSES`, resets the class cache, and restores both registry and cache in `finally`. Use this pattern for tests that register theme classes; `override_settings` scopes application overrides.
+- `tests/test1/test_table_template.py::test_table_header_effective_sort_state` has eight cases: URL ascending/descending, unsorted, constructor ascending/descending, `Meta.order_by`, and prefixed URL ascending/descending. It creates real django-tables2 tables and applies `RequestConfig`; assert both icon direction and `aria-sort` from effective ordering.
+- `tests/test1/test_table_template.py::test_table_header_attributes_and_links` checks custom header attributes, hostile text escaping, next-sort URLs, and preservation of unrelated query parameters. Its `HeaderAttributes(HTMLParser)` also counts raw `aria-sort` attributes: DOM parsers alone can hide duplicates. Orderable headers have exactly one; nonorderable headers have none.
+
 ## Mocking
 
 **Framework:** pytest `monkeypatch` (primary), `override_settings`, pytest-mock available.
@@ -81,7 +89,7 @@ monkeypatch.setattr(PublisherDetailView, "cv_context_actions", ["books"])
 
 - Fixtures live in `tests/test1/conftest.py` (grouped by model with `# --- Publisher fixtures ---` comments); no factory library, objects are created through the ORM inside fixtures.
 - Goldens: normalised markup files under `tests/test1/golden/<area>/`, compared through `tests/lib/helper/golden.py::check_golden`; set `CV_UPDATE_GOLDEN=1` to rewrite.
-- Exact compatibility captures may live as frozen raw strings beside their deterministic rendering helper. `tests/test1/test_data_prefix.py` captures seven component outputs from the pre-edit template revision and two config aliases from their pre-edit revision; compare byte-for-byte, never normalize/regenerate them during ordinary test runs. The phase verifier independently rendered the historical Git templates and matched all seven component captures and both config captures.
+- Exact compatibility captures may live as frozen raw strings beside their deterministic rendering helper. `tests/test1/test_data_prefix.py` holds seven component outputs and two config aliases; `tests/test1/test_breadcrumb.py` holds three breadcrumb outputs. Compare byte-for-byte; never normalize or regenerate these captures during ordinary test runs.
 - Real HTTP behavior uses Django `Client` against the in-memory project. Navbar examples include `tests/test1/test_navbar.py::test_real_owner_navbar`, `tests/test1/test_navbar_templates.py::test_component_tags_render_independently_in_real_response`, and `::test_real_response_omits_all_navbar_work_without_consumers_or_in_custom_modal`.
 - Published examples are executable fixtures: `tests/test1/test_navbar_docs.py` extracts navbar recipes and renders them with real context; related harnesses include `tests/test1/test_cancel_docs.py`, `test_object_detail_value_docs.py`, `test_conditional_migration_docs.py`, `test_theme_adoption_docs.py`, and `tests/test1/test_data_prefix_docs.py`. The latter compiles the exact `AppConfig.ready()` recipe from `docs/reference/theme.md`, calls the real tag, renders copied template recipes against real groups, and parses the output DOM. Keep recipe markers/fences stable or update extraction tests with documentation changes.
 - Mutable theme prefix tests must request `isolate_data_prefix` from `tests/test1/conftest.py`; this fixture restores the shared module scalar via `monkeypatch`. Do not add it as an autouse fixture: tests that never register a theme should not acquire unrelated global-state setup. Registration is startup-only; these tests cover repeated startup registration and late tag reads, not runtime switching guarantees.

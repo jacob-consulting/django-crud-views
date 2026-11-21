@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
+last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
 last_mapped_at: 2026-11-21
 ---
 # Technology Stack
@@ -21,7 +21,7 @@ last_mapped_at: 2026-11-21
 **Environment:**
 - CPython >=3.12; nox covers 3.12, 3.13, 3.14, and 3.15 (`noxfile.py`)
 - Django >=4.2; CI/nox matrix covers Django 4.2, 5.2, and 6.0 (`pyproject.toml`, `noxfile.py`); Django 4.2 is skipped on Python 3.14+
-- Phase 06.41 bulk action flows are implemented inside the core Python package and use the existing Django ORM and django-tables2 dependencies; no additional runtime dependency was added (`src/crud_views/lib/bulk/`, `noxfile.py`)
+- Bulk action flows are implemented inside the core Python package and use the existing Django ORM and django-tables2 dependencies; no additional runtime dependency is required (`src/crud_views/lib/bulk/`)
 - Demo runs Python 3.13 on Render (`render.yaml`)
 
 **Package Manager:**
@@ -54,6 +54,8 @@ last_mapped_at: 2026-11-21
 - `python-box` >=6.0.2 and `typing-extensions` >=4.7.1 - core runtime support (`pyproject.toml`)
 - Django, Pydantic, django-tables2, django-filter, django-crispy-forms, crispy-bootstrap5 - core view and form API (`pyproject.toml`)
 - Bulk selection/action support composes Django ORM transactions and querysets, django-tables2 selection columns, Django messages, and the existing Crispy form/theme layer (`src/crud_views/lib/bulk/__init__.py`)
+- The classic `bulk.js` script enhances current-page table/card selection through native form controls, without jQuery, a UI adapter, a network request, or persistent storage; the core JavaScript settings include it (`src/crud_views/static/crud_views/js/bulk.js`, `src/crud_views/lib/settings.py`, `docs/reference/javascript.md`)
+- Stock table sorting uses django-tables2 bound-column effective ordering for icons and `aria-sort`, including default and prefixed ordering; preserve the existing `table.thead` override for custom header semantics (`src/crud_views/templates/crud_views/table/bootstrap5.html`, `docs/reference/list_view.md`)
 
 **Optional extras (one app/feature group each):**
 - `workflow`: django-fsm-2 >=4.0.0 and django-fsm-2-admin >=2.0.1 (`src/crud_views_workflow/`)
@@ -71,6 +73,7 @@ last_mapped_at: 2026-11-21
 **Environment:**
 - Library configuration is Django settings with `CRUD_VIEWS_*` names, parsed by `CrudViewsSettings` in `src/crud_views/lib/settings.py`; includes theme/template and manage-view options
 - Compatible theme native data-API attributes use the process-level prefix registry in `src/crud_views/lib/data_prefix.py`, defaulting to `bs`; a theme registers its prefix during `AppConfig.ready()` through the public `crud_views.lib.register_data_prefix` API. This is startup configuration, not a `CRUD_VIEWS_*` setting or runtime theme switch
+- Breadcrumb styling uses the existing button-class registry keys `breadcrumb:list`, `breadcrumb:item`, and `breadcrumb:item-active`. Theme startup registration and project `CRUD_VIEWS_BUTTON_CLASSES` overrides share the existing class lookup (`src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/breadcrumb.html`, `docs/reference/theme.md`)
 - Tests set `CV_ACCESS_RECORD_REQUESTS` from `noxfile.py`
 - Local Cloudflare tunnel reads `TUNNEL_TOKEN` from `dev/.env`; only the existence of local env files was checked (`dev/.env.example`, `dev/docker-compose.yaml`)
 - Demo uses `DJANGO_SETTINGS_MODULE=project.settings_demo` and a generated `SECRET_KEY` (`render.yaml`)

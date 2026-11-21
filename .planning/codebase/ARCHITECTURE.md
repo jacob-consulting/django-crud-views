@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
+last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
 last_mapped_at: 2026-11-21
 ---
 <!-- refreshed: 2026-11-21 -->
@@ -7,7 +7,7 @@ last_mapped_at: 2026-11-21
 
 **Analysis Date:** 2026-11-21
 
-Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, access trace, the cv_manage_view report contract, bulk selection, templates and the Bootstrap 5 bulk example. Extension-app internals and JavaScript implementation details are summarized from the existing map and file layout.
+Incremental inspection covers `src/`, `tests/`, `docs/`, and `CHANGELOG.md`, including breadcrumb classes and effective table ordering. Other descriptions retain the existing map's scope: ViewSet/CrudView, ancestors, Resource, manage, access trace, bulk selection, templates and the Bootstrap 5 bulk example; extension internals and JavaScript implementation details are summarized from the existing map and file layout.
 
 ## System Overview
 
@@ -61,6 +61,8 @@ Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, acce
 | `Resource` / `ResourceViewMixin` | Non-ORM rows via `cv_get_items`/`cv_get_item`; `_meta` duck type (`ResourceOptions`) | `src/crud_views/lib/resource.py` |
 | Bulk selection and action form | Opt-in table/card selection plus permission-gated review and transactional execution of selected ORM objects | `src/crud_views/lib/bulk/__init__.py` |
 | Object section navigation | Opt-in `NavBar`/`NavItem` declarations, lazy per-view projection, visibility and active-section calculation | `src/crud_views/lib/navbar.py` |
+| Breadcrumb presentation | Opt-in hierarchy projection; list/item/active classes use the shared registry | `src/crud_views/lib/breadcrumb.py`, `src/crud_views/templates/crud_views/tags/breadcrumb.html`, `src/crud_views/lib/button_classes.py` |
+| Table header presentation | Projects effective bound-column ordering to sort icons and `aria-sort`; creates prefixed sort links | `src/crud_views/templates/crud_views/table/bootstrap5.html` |
 | `ManageView` | Developer page; nine `get_manage_*` section builders; `manage_export()` context for complete machine metadata | `src/crud_views/lib/views/manage.py` |
 | Manage report contract | Pydantic wire models, `adapt_section`, `Report` TypeAdapter, `report_schema()` | `src/crud_views/lib/manage_report.py` |
 | `cv_manage_view` command | Catalogue/inspection of registered ViewSets, text or JSON, schema mode | `src/crud_views/management/commands/cv_manage_view.py` |
@@ -135,6 +137,11 @@ Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, acce
 - Four shipped component templates consume `{% cv_data_prefix %}`: `src/crud_views/templates/crud_views/tags/actions_menu_toggle.html`, `src/crud_views/templates/crud_views/snippets/language_selector.html`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/tabs-vertical/object_detail.html`, and `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`.
 - `cv_config` and `cv_const_js` pass the current prefix to `src/crud_views/templates/crud_views/tags/cv_config.html` as `data-data-prefix` on `#cv-config`. `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` reads it when selecting native tab trigger attributes inside `[data-cv-od-tabs]`, falling back to `bs` if absent. The UI adapter remains separately configured.
 
+**Breadcrumb and table theme contracts:**
+- Breadcrumb structure and destinations belong to `src/crud_views/lib/breadcrumb.py`; styling belongs to `src/crud_views/templates/crud_views/tags/breadcrumb.html` and `src/crud_views/lib/button_classes.py`.
+- `breadcrumb:list`, `breadcrumb:item`, and `breadcrumb:item-active` default to `breadcrumb`, `breadcrumb-item`, and `active`. Resolve each through package defaults, theme `register_button_classes()`, then project `CRUD_VIEWS_BUTTON_CLASSES`. Empty/non-string values produce an empty contribution; the final item's `aria-current="page"` is independent of classes.
+- `src/crud_views/templates/crud_views/table/bootstrap5.html` consumes django-tables2 bound columns for sort state. Preserve `table.thead` for different header semantics. See `docs/reference/buttons.md`, `docs/reference/breadcrumb.md`, `docs/reference/theme.md`, and `docs/reference/list_view.md`.
+
 **Object navigation:**
 - Purpose: opt-in identity plus links to owner object views and direct child ViewSets.
 - Location: declarations and checks in `src/crud_views/lib/navbar.py`; the three context-preserving rendering tags in `src/crud_views/templatetags/crud_views.py`; theme leaves in `src/crud_views/templates/crud_views/tags/navbar.html`, `navbar_identity.html`, and `navbar_items.html`.
@@ -190,6 +197,12 @@ The default theme contract is split into wrapper/identity/items leaves under `sr
 4. The object-detail initializer in `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` reads that attribute when selecting tab triggers inside `[data-cv-od-tabs]`. It does not select or replace the theme's tab adapter.
 
 The prefix affects framework-owned data attributes and the owned-tabs selector only. It does not rename `data-cv-*` hooks or adapt host markup; structural differences still need template overrides.
+
+### Breadcrumb and Table Rendering Paths
+
+1. `CrudViewBreadcrumbMixin.get_context_data()` supplies `cv_breadcrumb`; the inclusion tag resolves its items (`src/crud_views/lib/breadcrumb.py`, `src/crud_views/templatetags/crud_views.py`). The stock leaf resolves list/item/active classes through `cv_button_class`, applying the active contribution and `aria-current="page"` only to the final item (`src/crud_views/templates/crud_views/tags/breadcrumb.html`).
+2. django-tables2 configures effective ordering from request parameters or declared defaults. The stock header reads `column.orderable`, `column.is_ordered`, and `column.order_by_alias.is_descending`; orderable headers expose `ascending`, `descending`, or `none`, with icons only for ordered columns (`src/crud_views/templates/crud_views/table/bootstrap5.html`).
+3. Sort links use `cv_querystring table.prefixed_order_by_field=column.order_by_alias.next`, preserving unrelated parameters. Non-orderable columns receive no generated sort attribute, icon or link. `tests/test1/test_table_template.py` covers request, constructor, `Meta.order_by`, prefixed tables, links and escaped attrs; `tests/test1/test_breadcrumb.py` covers default bytes, precedence, empty values and current-item semantics.
 
 ### Access Trace Path (cv_access, Phases 06.34 and 06.37)
 
@@ -267,6 +280,9 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 
 ## Architectural Constraints
 
+- **Theme class state:** `register_button_classes()` merges into process-wide `_THEME_BUTTON_CLASSES` and resets resolved-class caches; project setting changes invalidate the cache too (`src/crud_views/lib/button_classes.py`). Use this registry for breadcrumb styling.
+- **Header attribute ownership:** the stock header owns `aria-sort`. Caller-supplied same-name attrs are unsupported: remove them or override `table.thead`; no collision deduplication is promised (`src/crud_views/templates/crud_views/table/bootstrap5.html`, `docs/reference/list_view.md`).
+
 - **Threading/context:** `_REGISTRY` is module-level guarded by `_REGISTRY_LOCK` (`threading.Lock`); recorder state is a `ContextVar` (`src/crud_views/lib/access_trace.py`). `ViewSet.default_permissions` caches per process once non-empty (#151 comment in code).
 - **Import-time registration:** view classes register when their module is imported; URLconf discovery must have completed before the registry is complete, which is why `cv_manage_view` and some checks call `_url_configuration_loaded()` (`src/crud_views/checks.py`).
 - **Theme prefix lifecycle:** `register_data_prefix()` mutates one process-wide scalar and is intended for app startup, not request-local or concurrent tenant/theme switching. Tags and config contexts read it when called/rendered (`src/crud_views/lib/data_prefix.py`, `src/crud_views/templatetags/crud_views.py`).
@@ -280,6 +296,11 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 - **Package layout:** distribution ships five apps from `src/`; optional apps must not be imported by core modules.
 
 ## Anti-Patterns
+
+### Deriving table sort presentation from raw query parameters
+**What happens:** a copied header decides its icon or `aria-sort` from a literal `sort` parameter.
+**Why it's wrong:** it misses constructor/default ordering and prefixed table parameters.
+**Do this instead:** read bound-column state and use `table.prefixed_order_by_field` for links, following `src/crud_views/templates/crud_views/table/bootstrap5.html`; verify with `tests/test1/test_table_template.py`.
 
 ### Reimplementing sibling route construction
 **What happens:** hand-built URLs or reverse names.

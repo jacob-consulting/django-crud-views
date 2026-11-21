@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
+last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
 last_mapped_at: 2026-11-21
 ---
 # External Integrations
@@ -18,7 +18,8 @@ The package itself makes no outbound network calls. It integrates with Django ec
 - django-guardian - per-object permissions (`src/crud_views_guardian/`)
 - django-ordered-model - ordered up/down actions (`src/crud_views/lib/views/action_ordered.py`)
 - django-pipeline - optional asset bundling through `cv_sources`; exercised by tests (`src/crud_views/lib/assets.py`)
-- Phase 06.41 bulk actions use existing Django ORM/queryset/transaction APIs, django-tables2, Django messages, and Crispy forms; the implementation adds no external service or package dependency (`src/crud_views/lib/bulk/__init__.py`)
+- Bulk actions use existing Django ORM/queryset/transaction APIs, django-tables2, Django messages, and Crispy forms; the implementation requires no external service or additional package dependency (`src/crud_views/lib/bulk/__init__.py`)
+- Stock table headers consume django-tables2 bound-column `is_ordered` and `order_by_alias` to render sorting icons and `aria-sort` from effective ordering, covering URL, default, constructor, and prefixed ordering. Non-orderable headers omit generated sorting controls; use the `table.thead` block for alternate semantics and avoid caller-supplied `aria-sort` collisions (`src/crud_views/templates/crud_views/table/bootstrap5.html`, `docs/reference/list_view.md`, `tests/test1/test_table_template.py`)
 - Theme native data-API prefix integration is an in-process extension point: `register_data_prefix()` in `src/crud_views/lib/data_prefix.py` validates and stores the prefix, default `bs`; a theme calls it from `AppConfig.ready()` (`docs/reference/theme.md`). Last valid startup registration wins; invalid values raise `ValueError` without changing the prior value. It does not enable runtime theme switching or select a JavaScript adapter.
 
 **Host application extension points:**
@@ -27,6 +28,8 @@ The package itself makes no outbound network calls. It integrates with Django ec
 - `cv_data_prefix` and `#cv-config` expose the registered prefix to markup and JavaScript (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/cv_config.html`). Prefix-sensitive native attributes are limited to actions-menu toggles, the language selector, vertical object-detail tabs, and accordion groups; object-detail `tabs.js` also discovers prefixed tab triggers only within `data-cv-od-tabs` tablists (`src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`). A theme overriding `cv_config.html` must preserve `data-data-prefix` for custom-prefix tab discovery; absent config/attribute falls back to `bs`. Registration does not change host markup, CSS classes, DOM structure, or the tab adapter (`docs/reference/theme.md`, `docs/reference/javascript.md`)
 - Navbar declarations are configured on ViewSets and rendered through `cv_navbar`, `cv_navbar_identity`, and `cv_navbar_items` template tags (`src/crud_views/lib/navbar.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/navbar.html`)
 - Bulk actions are opt-in per ORM ViewSet: a table/card list declares destination keys and a permission-required bulk form re-resolves submitted keys in the destination queryset/scope before review and execution (`src/crud_views/lib/bulk/__init__.py`)
+- `bulk.js` enhances the native bulk form with current-page selection, selected count, and disabled action buttons for empty selections. It initializes once per form at document readiness and refreshes browser-restored selections on `pageshow`; record ownership comes from the native `form` association. It has no third-party dependency, persistence, or requests. Without JavaScript or required enhancement controls, native submission remains available (`src/crud_views/static/crud_views/js/bulk.js`, `docs/reference/javascript.md`, `tests/js/bulk.test.js`)
+- The stock breadcrumb template resolves `breadcrumb:list`, `breadcrumb:item`, and `breadcrumb:item-active` through `cv_button_class`. Register theme defaults with `register_button_classes()` during startup; project `CRUD_VIEWS_BUTTON_CLASSES` values override them. Class overrides preserve breadcrumb escaping, links, and current-page semantics (`src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/breadcrumb.html`, `docs/reference/theme.md`, `tests/test1/test_breadcrumb.py`)
 
 ## Data Storage
 

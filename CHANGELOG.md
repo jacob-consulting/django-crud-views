@@ -658,6 +658,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Theme JavaScript namespace and tooltip placements** (#398): startup calls to `register_js_namespace()` and
+  `register_tooltip_placements()` replace namespace/placement adapter scripts for compatible libraries. Namespace
+  and data prefix remain independent; explicit trigger placement wins, including an empty attribute. Defaults stay
+  `bootstrap` and `{}`. See the [startup registration guide](docs/reference/theme.md#javascript-namespace-and-tooltip-placements).
+
 - **Manage and formset CSS tokens** (#394): six documented `--cv-*` values let themes map colours and
   border radius on their own theme roots. Each use retains its Bootstrap and literal fallbacks;
   existing theme mappings remain supported. See [CSS tokens](docs/reference/theme.md#css-tokens)
@@ -961,8 +966,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - `cv.adapters` (`modal`, `tooltip`, `collapse`, `alert`) and `cv.bootstrapAdapters(ns)`; see
   `docs/reference/javascript.md`.
 - `cv.adapters.tooltip.init(el, {location})`: the marker's value, the button's location, reaches the adapter;
-  adapters written for `init(el)` keep working. Per-location configuration is a recipe in
-  `docs/reference/javascript.md` (#202).
+  adapters written for `init(el)` keep working. Use `register_tooltip_placements()` for per-location defaults;
+  see the [startup registration guide](docs/reference/theme.md#javascript-namespace-and-tooltip-placements) (#202).
 - Button variants (`primary`, `secondary`, `tertiary`, `danger`): `cv_action_variant` on views, `ContextButton.variant`
   and `CardAction.variant`.
 - `CRUD_VIEWS_BUTTON_CLASSES`, `register_button_classes` and `{% cv_button_class %}`: every button class comes from one

@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.42"
 current_phase_name: "Theme-registered data-attribute prefix for templates and object-detail tabs (#391)"
 current_plan: 3
-status: executing
-stopped_at: Completed 06.42-02-PLAN.md
-last_updated: "2026-11-21T09:53:33.360Z"
+status: verifying
+stopped_at: Completed 06.42-03-PLAN.md; independent phase review and verification pending
+last_updated: "2026-11-21T10:09:13.385Z"
 last_activity: 2026-11-21
 last_activity_desc: Phase 06.42 execution started
-state_head: 9644e4054e0a039638f8631431b16830f8c6337a
+state_head: 5d438f01db555241b9ef3add348b1adf4e489bce
 progress:
   total_phases: 48
   completed_phases: 46
   total_plans: 260
-  completed_plans: 259
+  completed_plans: 260
 milestone_name: milestone
 ---
 
@@ -32,13 +32,22 @@ See: .planning/PROJECT.md (updated 2026-11-21)
 
 ## Current Position
 
-Phase: 06.42 (Theme-registered data-attribute prefix for templates and object-detail tabs (#391)) — EXECUTING
+Phase: 06.42 (Theme-registered data-attribute prefix for templates and object-detail tabs (#391)) — VERIFYING
 Current Plan: 3
 Total Plans in Phase: 3
-Status: Ready to execute
+Status: Plans executed — independent review and verification pending
 Last activity: 2026-11-21 — Phase 06.42 execution started
 
-Next: Execute 06.42-03-PLAN.md
+Next: Independent phase 06.42 review and verification; Phase 7 has not started.
+
+### Phase 06.42 plan 03 execution — 2026-11-21
+
+- Both tasks complete in two RED/GREEN pairs through 6101ecee; SUMMARY committed at 5d438f01 before progress updates.
+- Published registration/action/layout recipes execute; copied-config and existing Bootstrap DOM guidance agree. Added changelog entry; production source, migration guide and dependency manifests unchanged in this plan.
+- Final Python 3.12.3/Django 5.2.19 acceptance: 16,650 passed, one existing Django-6-only skip in 485.72s, four workers. Focused prefix/recipe selection: 135 passed in 5.05s.
+- Locked JS acceptance: 470 passed in 13.01s on Vitest 5.1.0/jsdom 31.0.0 after orchestrator npm ci restoration; manifests unchanged. Strict docs and full Ruff check/format pass. No native CoreUI browser or full matrix claim.
+- ROADMAP SDK records 3/3 executed, complete=false; stale dotted progress-table row reconciled. STATE remains verifying, with 260/260 plans executed. Original state.json bytes preserved; global REQUIREMENTS.md unchanged for phase-local D-01–D-06.
+- Best-effort WINDOWS append for the existing conditional skip failed on preexisting rendered-table/header versus fenced-JSON mismatch; register left unchanged. Independent review/verification remains pending; phase completion is not claimed.
 
 ### Phase 06.42 plan 02 execution — 2026-11-21
 
@@ -1763,6 +1772,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.40.1 P02 | 5min | 3 tasks | 7 files |
 | Phase 06.42 P01 | 6min | 2 tasks | 10 files |
 | Phase 06.42 P02 | 6min | 2 tasks | 5 files |
+| Phase 06.42 P03 | 12min | 2 tasks | 7 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2110,6 +2120,8 @@ Recent decisions affecting current work:
 - [Phase 06.42]: Keep data-prefix registration stdlib-only and validate before scalar assignment; preserve exact raw component baselines.
 - [Phase 06.42]: Always publish data-data-prefix on cv-config, including bs, as the sole approved default config byte difference.
 - [Phase 06.42]: Read global document config in ownedTriggers on every scan; retain existing ownership and adapter lifecycle.
+- [Phase 06.42]: Keep prefix registration separate from class customization, DOM overrides and adapter selection.
+- [Phase 06.42]: Final JavaScript acceptance uses exact committed dependency versions; cached mismatched results remain development feedback only.
 
 ### Pending Todos
 
@@ -2207,6 +2219,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T09:53:26.428Z
-Stopped at: Completed 06.42-02-PLAN.md
+Last session: 2026-11-21T10:09:06.102Z
+Stopped at: Completed 06.42-03-PLAN.md; independent phase review and verification pending
 Resume file: None

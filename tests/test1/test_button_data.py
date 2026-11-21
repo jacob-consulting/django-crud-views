@@ -561,8 +561,15 @@ def form_ctx(key="submit", **kw):
 
 
 def test_bulk_location_rejects_action_leaf():
-    with pytest.raises(ValueError, match="form leaf"):
+    with pytest.raises(ValueError, match="dedicated bulk leaf"):
         cv_button_data({}, "bulk")
+
+
+def test_bulk_tag_location_rejected():
+    from django.template import Context, Template
+
+    with pytest.raises(ValueError, match="dedicated bulk leaf"):
+        Template("{% load crud_views %}{% cv_button 'bulk' %}").render(Context({}))
 
 
 def test_form_location_contract_constants():
@@ -571,7 +578,8 @@ def test_form_location_contract_constants():
 
     assert set(FORM_TYPES) == FORM_KINDS
     assert VARIANT_LOCATIONS | {"form", "bulk"} == LOCATIONS
-    assert set(ACTION_LOCATIONS) == VARIANT_LOCATIONS
+    assert set(ACTION_LOCATIONS) == {"context", "list", "card"}
+    assert VARIANT_LOCATIONS == {"context", "list", "card", "bulk"}
     assert {
         "cv_location",
         "cv_key",

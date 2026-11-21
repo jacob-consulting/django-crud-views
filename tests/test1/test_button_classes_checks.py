@@ -53,7 +53,7 @@ def test_navbar_typos_and_mode_suffixes_warn(source, key):
 @pytest.mark.parametrize("value", ["theme-bulk", "", None, 42])
 def test_bulk_ordinary_keys_accept_classes_and_clear_invalid_values(source, slot, value):
     assert ids(messages_for({f"bulk:{slot}": value}, source)) == (["crud_views.E361"] if value == 42 else [])
-    assert "bulk" not in bc.VARIANT_LOCATIONS
+    assert bc.VARIANT_LOCATIONS == {"context", "list", "card", "bulk"}
     assert {"submit", "cancel", "delete", "filter-submit", "filter-reset"} == bc.FORM_KINDS
 
 
@@ -265,7 +265,7 @@ def test_alert_utilities_reject_mode_suffixes(source, key, mode):
 
 def test_class_key_vocabularies_are_finite_and_immutable():
     assert isinstance(bc.VARIANT_LOCATIONS, frozenset)
-    assert {"context", "list", "card"} == bc.VARIANT_LOCATIONS
+    assert {"context", "list", "card", "bulk"} == bc.VARIANT_LOCATIONS
     assert isinstance(bc.FORM_KINDS, frozenset)
     assert set(FORM_KINDS) == bc.FORM_KINDS
 

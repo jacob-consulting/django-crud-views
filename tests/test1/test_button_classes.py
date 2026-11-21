@@ -26,6 +26,7 @@ from crud_views.lib.button_classes import (
 from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 
 EXPECTED_KEYS = {
+    *(f"bulk:{variant}" for variant in ("primary", "secondary", "tertiary", "danger")),
     "bulk:toolbar",
     "bulk:controls",
     "bulk:select-all",
@@ -152,13 +153,38 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 138
+    assert len(EXPECTED_KEYS) == 142
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
     assert get_button_class("menu", "item") == "dropdown-item"
     assert DEFAULT_BUTTON_CLASSES["conditional:legend"] == ""
     assert DEFAULT_BUTTON_CLASSES["formset:legend"] == ""
+
+
+@pytest.mark.parametrize("value", ["theme-bulk", "", None])
+@pytest.mark.parametrize(
+    "key,valid",
+    [
+        *(
+            (f"bulk:{variant}:{mode}", True)
+            for variant in ("primary", "secondary", "tertiary", "danger")
+            for mode in ("label", "icon", "both")
+        ),
+        *(
+            (f"bulk:{slot}:{mode}", False)
+            for slot in ("toolbar", "controls", "select-all", "checkbox", "actions", "card-cell", "card-select")
+            for mode in ("label", "icon", "both")
+        ),
+        ("bulk:unknown:icon", False),
+        ("bulk:danger:unknown", False),
+    ],
+)
+def test_bulk_variant_mode_keys(key, valid, value):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: value}):
+        assert [message.id for message in button_class_check_messages()] == ([] if valid else ["crud_views.W362"])
+    for variant in ("primary", "secondary", "tertiary", "danger"):
+        assert DEFAULT_BUTTON_CLASSES[f"bulk:{variant}"] == "btn btn-primary"
 
 
 @pytest.mark.parametrize("width", range(1, 13))
@@ -292,7 +318,7 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
 
     core = dict(DEFAULT_BUTTON_CLASSES)
     workflow = dict(CrudViewsWorkflowConfig.crud_views_button_class_defaults)
-    assert len(core) == 138
+    assert len(core) == 142
     assert len(workflow) == 18
     transitions = {key: value for key, value in workflow.items() if key.startswith("workflow:transition-")}
     assert transitions == {
@@ -300,7 +326,7 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
         for variant in ("primary", "secondary", "success", "danger", "warning", "info", "light", "dark")
     }
     assert bc._get_default_button_classes() == core | workflow
-    assert len(get_button_classes()) == 156
+    assert len(get_button_classes()) == 160
     register_button_classes({"workflow:badge-purple": "theme-purple"})
     seen = []
     original_ready = CrudViewsConfig.ready
@@ -426,7 +452,7 @@ class ThemeConfig(AppConfig):
     name = "badge_theme_probe"
     path = "."
     def ready(self):
-        assert len(bc._get_default_button_classes()) == 156
+        assert len(bc._get_default_button_classes()) == 160
         bc.register_button_classes({"workflow:badge-info": "theme-info"})
         seen.append(bc.get_button_class("workflow", "badge-info"))
 theme.ThemeConfig = ThemeConfig
@@ -439,11 +465,11 @@ settings.configure(
     CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-light": "project-light"},
 )
 from crud_views.lib import button_classes as bc
-assert len(bc.DEFAULT_BUTTON_CLASSES) == 138
+assert len(bc.DEFAULT_BUTTON_CLASSES) == 142
 assert bc.get_button_classes() == {**bc.DEFAULT_BUTTON_CLASSES, "workflow:badge-light": "project-light"}
 django.setup()
 assert seen == ["theme-info"]
-assert len(bc._get_default_button_classes()) == 156
+assert len(bc._get_default_button_classes()) == 160
 assert bc.get_button_class("workflow", "badge-info") == "theme-info"
 assert bc.get_button_class("workflow", "badge-light") == "project-light"
 """

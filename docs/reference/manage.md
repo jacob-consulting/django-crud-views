@@ -122,6 +122,9 @@ modes and the effective manage class. Its summary counts set/default entries. It
 The header help link is a sibling of the summary; scoped `::details-content` styling exposes it while closed in
 supporting browsers. Older browsers can reach it after expanding the card.
 
+For theme colours, see [CSS tokens](theme.md#css-tokens): the canonical theme-root mapping
+and nested colour-mode guidance also explain the stock help-button variable bridge and `manage:help` override.
+
 Context-button rows show key, type, target and label without evaluating runtime access or calling dynamic labels.
 Built-in context, parent, child, sibling and filter buttons use their declared target fields. Top-level parent
 buttons say “top level, never shown”. Custom renderers fall back to type/template information. Child and sibling

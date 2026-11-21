@@ -42,7 +42,13 @@ def test_manage_css_token_documentation_link():
     theme = (REFERENCE.parent / "theme.md").read_text()
     assert theme.count("\n## CSS tokens\n") == 1
     tokens = theme.split("\n## CSS tokens\n", 1)[1].split("\n## ", 1)[0]
-    for term in (":root, [data-demo-theme]", "before inheritance", 'data-bs-theme="dark"', "--bs-btn-color", "manage:help"):
+    for term in (
+        ":root, [data-demo-theme]",
+        "before inheritance",
+        'data-bs-theme="dark"',
+        "--bs-btn-color",
+        "manage:help",
+    ):
         assert term in tokens
 
 

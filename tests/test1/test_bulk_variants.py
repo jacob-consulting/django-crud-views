@@ -140,6 +140,7 @@ def test_destination_variant_matrix(
     }
     _, button = _archive_control(client_user_bulk_publisher_change.get(SOURCE_PATHS[source]))
     assert button.get("class") == f"theme-bulk-{variant}"
+    assert button.text_content().strip() == "Archive"
     assert (button.get("type"), button.get("name"), button.get("value")) == ("submit", "cv_bulk_stage", "review")
     review = client_user_bulk_publisher_change.post(
         button.get("formaction"),
@@ -148,7 +149,10 @@ def test_destination_variant_matrix(
     assert review.status_code == 200
     assert not review.context["form"].is_bound
     assert list(review.context["view"].cv_bulk_objects) == [bulk_publishers[0]]
-    assert "Archive selected publishers" in review.content.decode("utf-8")
+    assert any(
+        heading.text_content().strip() == "Archive selected publishers"
+        for heading in html.fromstring(review.content).cssselect("h1, h2, h3, h4, h5, h6")
+    )
     bulk_publishers[0].refresh_from_db()
     assert bulk_publishers[0].name == "Alpha"
 

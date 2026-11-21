@@ -387,16 +387,17 @@ def test_stock_bootstrap_data_attributes_are_dropdown_only():
     _assert_core_bootstrap_data_attributes(CORE_TEMPLATES)
 
 
-def test_core_bootstrap_data_attribute_guard_rejects_forbidden_path(tmp_path):
+@pytest.mark.parametrize("prefix", ["bs", "{% cv_data_prefix %}"])
+def test_core_bootstrap_data_attribute_guard_rejects_forbidden_path(tmp_path, prefix):
     """The guard accepts an allowed tree and names a forbidden template once one appears."""
     with pytest.raises(AssertionError, match="no data-bs- attribute"):
         _assert_core_bootstrap_data_attributes(tmp_path)
 
     toggle = tmp_path / "crud_views" / "tags" / "actions_menu_toggle.html"
     toggle.parent.mkdir(parents=True)
-    toggle.write_text('<button data-bs-toggle="dropdown"></button>')
+    toggle.write_text(f'<button data-{prefix}-toggle="dropdown"></button>')
     _assert_core_bootstrap_data_attributes(tmp_path)
 
-    (tmp_path / "crud_views" / "tags" / "alert.html").write_text('<button data-bs-dismiss="alert"></button>')
+    (tmp_path / "crud_views" / "tags" / "alert.html").write_text(f'<button data-{prefix}-dismiss="alert"></button>')
     with pytest.raises(AssertionError, match=re.escape("crud_views/tags/alert.html")):
         _assert_core_bootstrap_data_attributes(tmp_path)

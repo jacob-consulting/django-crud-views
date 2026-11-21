@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
+last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
 last_mapped_at: 2026-11-21
 ---
 # Technology Stack
@@ -54,6 +54,7 @@ last_mapped_at: 2026-11-21
 - `python-box` >=6.0.2 and `typing-extensions` >=4.7.1 - core runtime support (`pyproject.toml`)
 - Django, Pydantic, django-tables2, django-filter, django-crispy-forms, crispy-bootstrap5 - core view and form API (`pyproject.toml`)
 - Bulk selection/action support composes Django ORM transactions and querysets, django-tables2 selection columns, Django messages, and the existing Crispy form/theme layer (`src/crud_views/lib/bulk/__init__.py`)
+- Manage pages and formsets consume six optional `--cv-*` CSS custom properties with Bootstrap and literal fallbacks; the package does not define these tokens globally (`src/crud_views/static/crud_views/css/manage.css`, `src/crud_views/static/crud_views/css/formset.css`, `docs/reference/theme.md`)
 - The classic `bulk.js` script enhances current-page table/card selection through native form controls, without jQuery, a UI adapter, a network request, or persistent storage; the core JavaScript settings include it (`src/crud_views/static/crud_views/js/bulk.js`, `src/crud_views/lib/settings.py`, `docs/reference/javascript.md`)
 - Stock table sorting uses django-tables2 bound-column effective ordering for icons and `aria-sort`, including default and prefixed ordering; preserve the existing `table.thead` override for custom header semantics (`src/crud_views/templates/crud_views/table/bootstrap5.html`, `docs/reference/list_view.md`)
 

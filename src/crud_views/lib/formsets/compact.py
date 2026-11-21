@@ -172,5 +172,5 @@ def _compact_helper(x_form):
         cells.append(Div(css_class=f"{controls_class} d-none d-md-block"))
     identities = (declaration.klass.model._meta.pk.name, declaration.klass.fk.name, "ORDER", "DELETE")
     hidden = [Field(name, type="hidden") for name in dict.fromkeys(identities) if name in x_form.form.fields]
-    helper.layout = Layout(*guards, Row(*cells, css_class="cv-formset-compact-fields"), *hidden)
+    helper.layout = Layout(*guards, Row(*cells, css_class="gx-3 cv-formset-compact-fields"), *hidden)
     return helper

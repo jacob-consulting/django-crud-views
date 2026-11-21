@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
+last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
 last_mapped_at: 2026-11-21
 ---
 <!-- refreshed: 2026-11-21 -->
@@ -257,6 +257,8 @@ Phase 06.40 passed all ten supported Python/Django runtime cells in installed no
 Phase 06.41 passed 130/130 verified must-haves and all seven UAT checks. Its core-suite and bulk-example results are superseded by the post-06.42 combined acceptance below. Human confirmation of installed-distribution/full-recorder CI was recorded without a URL or revision, so that CI result is not independently inspectable here. PostgreSQL concurrency/locking measurement was not performed. These are evidence boundaries; the feature contract remains default-database and single-field-PK only (`.planning/phases/06.41-current-page-bulk-selection-and-action-forms-for-table-and-c/06.41-VERIFICATION.md`, `06.41-UAT.md`, `06.41-REGRESSION.md`, `06.41-SECURITY.md`).
 
 Phase 06.42 passed 22/22 verified must-haves after integration with merged PR #392. The combined post-06.42 core suite passed 17,057 tests with one skip, JavaScript passed 486 tests, and the bulk example passed 637 tests plus 296 subtests. Strict documentation and Ruff/format checks also passed. Registration is intentionally startup-only; copied templates/config need downstream adoption. These results do not claim a native CoreUI browser run or a fresh full supported Python/Django matrix (`.planning/phases/06.42-theme-registered-data-attribute-prefix-for-templates-and-obj/06.42-VERIFICATION.md`, `06.42-SECURITY.md`).
+
+Phase 06.44's capture override symlink finding CR-01 is fixed and independently re-reviewed: `tests/browser/conditional-formsets.cjs` preflights all planned override leaves with `lstat`/regular-file checks before screenshots, and the evidence checker applies the same policy. Six real-filesystem regressions cover symlinks, dangling links, and non-regular files; the refreshed evidence tests passed 51 cases and the independent lifecycle checker passed. The finding is historical provenance, not an open security concern (`.planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/06.44-REVIEW-DISPOSITION.md`, `06.44-SECURITY.md`, `06.44-VERIFICATION.md`). Phase 06.44's CSS-token source contract is deliberately bounded to six documented tokens and twelve existing reads across the two CSS sheets; the parser guard fails closed on unsupported syntax, so extending CSS syntax requires updating its contract and tests. This adds no runtime registration, settings, or API surface (`src/crud_views/static/crud_views/css/manage.css`, `src/crud_views/static/crud_views/css/formset.css`, `tests/js/css-tokens.test.js`, `docs/reference/theme.md`). Its refreshed combined acceptance passed 17,122 Python and 512 Node tests; PR #397 compatibility CI remains pending, so merge/release validation is not yet evidenced (`.planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/06.44-VERIFICATION.md`).
 
 ---
 

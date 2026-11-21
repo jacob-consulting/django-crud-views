@@ -20,6 +20,28 @@ ROOT = Path(__file__).resolve().parents[2]
 REFERENCE = ROOT / "docs/reference/formsets.md"
 
 
+def test_compact_css_token_documentation_link():
+    text = REFERENCE.read_text()
+    heading = "### Compact theme surface and exclusions\n"
+    assert text.count(heading) == 1
+    section = re.split(r"\n#{2,3} ", text.split(heading, 1)[1], maxsplit=1)[0]
+    assert re.search(r"\[[^\]]+\]\(theme\.md#css-tokens\)", section)
+    include_guidance = section.split("| Hook |", 1)[0]
+    for term in ("compact_headings.html", "`gx-3`", "`row`", "`cv-formset-compact-headings`", "stylesheet no longer"):
+        assert term in include_guidance
+    theme = (REFERENCE.parent / "theme.md").read_text()
+    assert theme.count("\n## CSS tokens\n") == 1
+    tokens = theme.split("\n## CSS tokens\n", 1)[1].split("\n## ", 1)[0]
+    for term in (
+        ":root, [data-demo-theme]",
+        "before inheritance",
+        'data-bs-theme="dark"',
+        "--bs-btn-color",
+        "manage:help",
+    ):
+        assert term in tokens
+
+
 @pytest.mark.django_db
 def test_published_compact_checkbox_recipe():
     text = REFERENCE.read_text()

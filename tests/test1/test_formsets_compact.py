@@ -142,6 +142,7 @@ def test_compact_presentation_columns_labels_and_owned_feedback(dense):
     headings = doc.cssselect(".cv-formset-compact-headings")
     assert len(headings) == 1
     heading = headings[0]
+    assert {"row", "gx-3", "cv-formset-compact-headings"} <= set(heading.get("class").split())
     assert not heading.xpath("ancestor::div[@cv-data-formset-form-prefix]")
     assert [cell.get("class") for cell in heading] == [f"col-md-{span}" for span in [*spans, 2]]
     assert not heading.cssselect("script")
@@ -149,6 +150,8 @@ def test_compact_presentation_columns_labels_and_owned_feedback(dense):
     assert len(heading.cssselect(".asteriskField")) == 1
     rows = doc.cssselect(".cv-formset-row-compact")
     for row in rows:
+        grid = row.cssselect(".cv-formset-compact-fields")[0]
+        assert {"row", "gx-3", "cv-formset-compact-fields"} <= set(grid.get("class").split())
         cells = row.cssselect(".cv-formset-compact-fields > div")
         assert [cell.get("class").strip() for cell in cells] == [f"col-md-{span}" for span in [*spans, 2]]
         for name in names:
@@ -227,6 +230,8 @@ def test_compact_nested_geometry_is_node_local(parent_compact, child_compact, sh
         own_content = fieldset.cssselect(".cv-formset-content")[0]
         own_headings = own_content.xpath('./div[contains(@class, "cv-formset-compact-headings")]')
         assert len(own_headings) == int(current.formset.compact_layout is not None)
+        for heading in own_headings:
+            assert {"row", "gx-3", "cv-formset-compact-headings"} <= set(heading.get("class").split())
         field_name = "note" if current is child else "title"
         field = fieldset.cssselect(f'input[name="{current.forms[0].prefix}-{field_name}"]')[0]
         labels = fieldset.xpath(".//label[@for=$id]", id=field.get("id"))
@@ -441,6 +446,9 @@ def test_compact_nested_grandchild_and_authorized_fragments(
     doc = html.fromstring(response.content)
 
     def assert_tree(tree):
+        for kind in ("headings", "fields"):
+            for grid in tree.cssselect(f".cv-formset-compact-{kind}"):
+                assert {"row", "gx-3", f"cv-formset-compact-{kind}"} <= set(grid.get("class").split())
         ids = tree.xpath(".//*[@id]/@id")
         assert len(ids) == len(set(ids))
         for fieldset in tree.cssselect("fieldset.cv-formset-fieldset"):
@@ -475,6 +483,7 @@ def test_compact_nested_grandchild_and_authorized_fragments(
         _assert_raw_wrappers(fragment["html"])
         tree = html.fragment_fromstring(fragment["html"], create_parent="div")
         assert_tree(tree)
+        assert not tree.cssselect(":scope > .cv-formset-compact-headings")
         # Only advertised rows are roots; their complete children stay inside them.
         roots = [element for element in tree if isinstance(element.tag, str)]
         assert [row.get("cv-data-formset-form-prefix") for row in roots] == fragment["rows"]

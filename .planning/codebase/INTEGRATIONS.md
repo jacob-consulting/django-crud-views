@@ -1,12 +1,12 @@
 ---
-last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
+last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
 last_mapped_at: 2026-11-21
 ---
 # External Integrations
 
 **Analysis Date:** 2026-11-21
 
-The package itself makes no outbound network calls. It integrates with Django ecosystem packages and leaves application services, database configuration, and resource backends to the host project.
+The package makes no outbound network calls during request handling. An explicit asset-vendoring management command may download configured files from a supplied URL using the Python standard library; integrations, database configuration, and resource backends otherwise belong to the host project (`src/crud_views/lib/vendor.py`, `docs/reference/assets.md`).
 
 ## APIs & External Services
 
@@ -27,6 +27,7 @@ The package itself makes no outbound network calls. It integrates with Django ec
 - Bootstrap 5 theme templates, a configurable semantic icon registry, and shared ViewSet navbar rendering are package-side UI integration points (`src/crud_views/templates/crud_views/`, `src/crud_views/lib/icons.py`, `src/crud_views/lib/navbar.py`)
 - `cv_data_prefix` and `#cv-config` expose the registered prefix to markup and JavaScript (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/cv_config.html`). Prefix-sensitive native attributes are limited to actions-menu toggles, the language selector, vertical object-detail tabs, and accordion groups; object-detail `tabs.js` also discovers prefixed tab triggers only within `data-cv-od-tabs` tablists (`src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`). A theme overriding `cv_config.html` must preserve `data-data-prefix` for custom-prefix tab discovery; absent config/attribute falls back to `bs`. Registration does not change host markup, CSS classes, DOM structure, or the tab adapter (`docs/reference/theme.md`, `docs/reference/javascript.md`)
 - Navbar declarations are configured on ViewSets and rendered through `cv_navbar`, `cv_navbar_identity`, and `cv_navbar_items` template tags (`src/crud_views/lib/navbar.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/navbar.html`)
+- Manage pages and formsets use six optional `--cv-*` CSS custom properties, each with Bootstrap-property and literal fallbacks. Themes may map these aliases on every theme root for nested color modes; the package does not declare global token values (`src/crud_views/static/crud_views/css/manage.css`, `src/crud_views/static/crud_views/css/formset.css`, `docs/reference/theme.md`)
 - Bulk actions are opt-in per ORM ViewSet: a table/card list declares destination keys and a permission-required bulk form re-resolves submitted keys in the destination queryset/scope before review and execution (`src/crud_views/lib/bulk/__init__.py`)
 - `bulk.js` enhances the native bulk form with current-page selection, selected count, and disabled action buttons for empty selections. It initializes once per form at document readiness and refreshes browser-restored selections on `pageshow`; record ownership comes from the native `form` association. It has no third-party dependency, persistence, or requests. Without JavaScript or required enhancement controls, native submission remains available (`src/crud_views/static/crud_views/js/bulk.js`, `docs/reference/javascript.md`, `tests/js/bulk.test.js`)
 - The stock breadcrumb template resolves `breadcrumb:list`, `breadcrumb:item`, and `breadcrumb:item-active` through `cv_button_class`. Register theme defaults with `register_button_classes()` during startup; project `CRUD_VIEWS_BUTTON_CLASSES` values override them. Class overrides preserve breadcrumb escaping, links, and current-page semantics (`src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/breadcrumb.html`, `docs/reference/theme.md`, `tests/test1/test_breadcrumb.py`)

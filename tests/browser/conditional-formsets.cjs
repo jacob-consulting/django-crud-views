@@ -26,6 +26,16 @@ function option(name, fallback) {
 const output = option('--output', '.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/08-browser-results.json');
 const requested = option('--case', 'all');
 const compactPhase = '.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m';
+const compactCaptureOverride = option('--compact-capture-root');
+const compactCaptureAbsolute = path.resolve(root, compactCaptureOverride ?? `${compactPhase}/browser-captures`);
+assert(compactCaptureAbsolute.startsWith(root + path.sep), 'Compact capture root must be inside the repository');
+// Resolve existing ancestors too, so an ignored symlink cannot redirect captures outside the checkout.
+let compactAncestor = compactCaptureAbsolute;
+while (!fs.existsSync(compactAncestor)) compactAncestor = path.dirname(compactAncestor);
+const compactRealAncestor = fs.realpathSync(compactAncestor);
+assert(compactRealAncestor === fs.realpathSync(root) || compactRealAncestor.startsWith(fs.realpathSync(root) + path.sep),
+    'Compact capture root resolves outside the repository');
+const compactCaptureRoot = path.relative(root, compactCaptureAbsolute);
 const compositions = ['compact-compact', 'compact-classic', 'classic-compact'];
 const widths = [390, 767, 768, 1280];
 const portText = process.env.CV_CONDITIONAL_PORT || '8144';
@@ -35,6 +45,11 @@ assert(port >= 1024 && port <= 65535 && port !== 8143, 'CV_CONDITIONAL_PORT must
 const base = `http://127.0.0.1:${port}`;
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+function validateCompactCaptureLeaf(file) {
+    // lstat also sees dangling symlinks; only absent or ordinary file leaves are writable.
+    const stat = fs.lstatSync(file, {throwIfNoEntry: false});
+    assert(!stat || stat.isFile(), `Override compact PNG must be a regular file: ${file}`);
+}
 function filesIn(dir) {
     return fs.readdirSync(dir, {withFileTypes: true}).flatMap(e => e.isDirectory() ? filesIn(`${dir}/${e.name}`) : [`${dir}/${e.name}`]);
 }
@@ -213,8 +228,14 @@ function validateEvidence(r) {
                 : ['invalid-390.png','invalid-1280.png','saved-390.png','saved-1280.png'];
             assert.deepEqual(c.captures.map(s=>path.basename(s.path)).sort(),expectedCaptures.sort());
             for (const capture of c.captures) {
-                assert(capture.path.startsWith(`${compactPhase}/browser-captures/${c.id}/`));
+                assert.equal(capture.path, `${compactCaptureRoot}/${c.id}/${path.basename(capture.path)}`, 'Wrong compact capture path');
                 assert.equal(cp.spawnSync('git', ['check-ignore', '--no-index', capture.path]).status, 0);
+                if (compactCaptureOverride !== undefined) {
+                    validateCompactCaptureLeaf(capture.path);
+                    const tracked = cp.spawnSync('git', ['ls-files', '--', capture.path], {encoding:'utf8'});
+                    assert.equal(tracked.status, 0, 'Cannot inspect compact capture index');
+                    assert.equal(tracked.stdout.trim(), '', 'Override compact PNG must be untracked');
+                }
                 assert.equal(capture.sha256, digest(capture.path), 'Missing/stale compact screenshot');
                 assert(capture.measurements && capture.width, 'Missing browser measurements');
             }
@@ -561,7 +582,19 @@ async function runCase({c, page, context, base, before, result, check, load, sta
         const newParent=parent.rows[0];
         await page.locator(`#editor [name="${newParent}-title"]`).fill('Browser compact added parent');
         const parentRow=page.locator(`#editor .cv-formset-row[cv-data-formset-form-prefix="${newParent}"]`);
-        check('authorized-parent-fragment',parent.html.includes('cv-formset-row-compact') && await parentRow.locator('.cv-formset-compact-headings').count()>=3 && !parent.html.trim().startsWith('<div class="row cv-formset-compact-headings'));
+        const fragmentHeadings = await page.evaluate(html => {
+            const count = markup => {
+                const container = document.createElement('div');
+                container.innerHTML = markup;
+                return container.querySelectorAll(':scope > .cv-formset-compact-headings').length;
+            };
+            return {actual: count(html),
+                leadingUtility: count('<div class="row gx-3 cv-formset-compact-headings"></div>'),
+                trailingUtility: count('<div class="cv-formset-compact-headings row gx-3"></div>'),
+                nested: count('<fieldset><div class="row gx-3 cv-formset-compact-headings"></div></fieldset>')};
+        }, parent.html);
+        check('authorized-parent-fragment',parent.html.includes('cv-formset-row-compact') && await parentRow.locator('.cv-formset-compact-headings').count()>=3 &&
+            fragmentHeadings.actual === 0 && fragmentHeadings.leadingUtility === 1 && fragmentHeadings.trailingUtility === 1 && fragmentHeadings.nested === 0, fragmentHeadings);
         const childContent=parentRow.locator('.cv-formset-content[cv-data-formset-prefix^="books-notes-"]').first();
         const child=await add(ownButton(childContent,'add').last());
         await page.locator(`#editor [name="${child.rows[0]}-note"]`).fill('Added parent child');
@@ -1135,7 +1168,20 @@ async function compactMeasurements(page) {
     });
 }
 async function compactCapture(page, result, name, width, measurements) {
-    const capturePath=`${compactPhase}/browser-captures/${result.id}/${name}.png`;
+    if (compactCaptureOverride !== undefined && result.captures.length === 0) {
+        const names = result.id === 'compact-presentation'
+            ? compositions.flatMap(composition => widths.map(w => `${composition}-${w}`))
+            : ['invalid-390', 'invalid-1280', 'saved-390', 'saved-1280'];
+        for (const basename of names) {
+            const destination = `${compactCaptureRoot}/${result.id}/${basename}.png`;
+            validateCompactCaptureLeaf(destination);
+            assert.equal(cp.spawnSync('git', ['check-ignore', '--no-index', destination]).status, 0, 'Compact PNG must be ignored');
+            const tracked = cp.spawnSync('git', ['ls-files', '--', destination], {encoding:'utf8'});
+            assert.equal(tracked.status, 0, 'Cannot inspect compact capture index');
+            assert.equal(tracked.stdout.trim(), '', 'Override compact PNG must be untracked');
+        }
+    }
+    const capturePath=`${compactCaptureRoot}/${result.id}/${name}.png`;
     assert.equal(cp.spawnSync('git', ['check-ignore', '--no-index', capturePath]).status, 0, 'Compact PNG must be ignored');
     fs.mkdirSync(path.dirname(capturePath), {recursive:true});
     await page.screenshot({path:capturePath,fullPage:true});

@@ -1,0 +1,111 @@
+2026-11-21T10:50:33.590Z pw:api => browserType.launch started
+2026-11-21T10:50:33.758Z pw:api <= browserType.launch succeeded
+2026-11-21T10:50:33.760Z pw:api => browser.newContext started
+2026-11-21T10:50:33.774Z pw:api <= browser.newContext succeeded
+2026-11-21T10:50:33.775Z pw:api => apiRequestContext.get started
+2026-11-21T10:50:33.781Z pw:api → GET http://127.0.0.1:8144/signin/
+2026-11-21T10:50:33.781Z pw:api   user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36
+2026-11-21T10:50:33.781Z pw:api   accept: */*
+2026-11-21T10:50:33.782Z pw:api   accept-encoding: gzip,deflate,br
+2026-11-21T10:50:33.801Z pw:api ← 200 OK
+2026-11-21T10:50:33.802Z pw:api   date: Sat, 21 Nov 2026 10:50:33 GMT
+2026-11-21T10:50:33.802Z pw:api   server: WSGIServer/0.2 CPython/3.12.3
+2026-11-21T10:50:33.802Z pw:api   content-type: application/json
+2026-11-21T10:50:33.802Z pw:api   x-frame-options: DENY
+2026-11-21T10:50:33.802Z pw:api   vary: Cookie
+2026-11-21T10:50:33.802Z pw:api   content-length: 23
+2026-11-21T10:50:33.802Z pw:api   x-content-type-options: nosniff
+2026-11-21T10:50:33.802Z pw:api   referrer-policy: same-origin
+2026-11-21T10:50:33.802Z pw:api   cross-origin-opener-policy: same-origin
+2026-11-21T10:50:33.802Z pw:api   set-cookie: [ephemeral fixture credentials omitted]
+2026-11-21T10:50:33.808Z pw:api <= apiRequestContext.get succeeded
+2026-11-21T10:50:33.808Z pw:api => apiRequestContext.get started
+2026-11-21T10:50:33.811Z pw:api → GET http://127.0.0.1:8144/cases/
+2026-11-21T10:50:33.811Z pw:api   user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36
+2026-11-21T10:50:33.811Z pw:api   accept: */*
+2026-11-21T10:50:33.811Z pw:api   accept-encoding: gzip,deflate,br
+2026-11-21T10:50:33.811Z pw:api   cookie: [ephemeral fixture credentials omitted]
+2026-11-21T10:50:33.813Z pw:api ← 200 OK
+2026-11-21T10:50:33.813Z pw:api   date: Sat, 21 Nov 2026 10:50:33 GMT
+2026-11-21T10:50:33.813Z pw:api   server: WSGIServer/0.2 CPython/3.12.3
+2026-11-21T10:50:33.813Z pw:api   content-type: application/json
+2026-11-21T10:50:33.813Z pw:api   x-frame-options: DENY
+2026-11-21T10:50:33.813Z pw:api   content-length: 11345
+2026-11-21T10:50:33.813Z pw:api   x-content-type-options: nosniff
+2026-11-21T10:50:33.813Z pw:api   referrer-policy: same-origin
+2026-11-21T10:50:33.813Z pw:api   cross-origin-opener-policy: same-origin
+2026-11-21T10:50:33.814Z pw:api <= apiRequestContext.get succeeded
+2026-11-21T10:50:33.815Z pw:api => browserContext.newPage started
+2026-11-21T10:50:33.898Z pw:api <= browserContext.newPage succeeded
+2026-11-21T10:50:33.899Z pw:api => apiRequestContext.get started
+2026-11-21T10:50:33.901Z pw:api → GET http://127.0.0.1:8144/state/
+2026-11-21T10:50:33.901Z pw:api   user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36
+2026-11-21T10:50:33.901Z pw:api   accept: */*
+2026-11-21T10:50:33.901Z pw:api   accept-encoding: gzip,deflate,br
+2026-11-21T10:50:33.901Z pw:api   cookie: [ephemeral fixture credentials omitted]
+2026-11-21T10:50:33.928Z pw:api ← 200 OK
+2026-11-21T10:50:33.928Z pw:api   date: Sat, 21 Nov 2026 10:50:33 GMT
+2026-11-21T10:50:33.928Z pw:api   server: WSGIServer/0.2 CPython/3.12.3
+2026-11-21T10:50:33.928Z pw:api   content-type: application/json
+2026-11-21T10:50:33.928Z pw:api   x-frame-options: DENY
+2026-11-21T10:50:33.928Z pw:api   content-length: 29487
+2026-11-21T10:50:33.928Z pw:api   x-content-type-options: nosniff
+2026-11-21T10:50:33.928Z pw:api   referrer-policy: same-origin
+2026-11-21T10:50:33.928Z pw:api   cross-origin-opener-policy: same-origin
+2026-11-21T10:50:33.929Z pw:api <= apiRequestContext.get succeeded
+2026-11-21T10:50:33.930Z pw:api => page.goto started
+2026-11-21T10:50:33.930Z pw:api navigating to "http://127.0.0.1:8144/compact/stock/74/", waiting until "load"
+2026-11-21T10:50:34.555Z pw:api   "commit" event fired
+2026-11-21T10:50:34.555Z pw:api   navigated to "http://127.0.0.1:8144/compact/stock/74/"
+2026-11-21T10:50:34.638Z pw:api   "domcontentloaded" event fired
+2026-11-21T10:50:34.662Z pw:api   "load" event fired
+2026-11-21T10:50:34.663Z pw:api <= page.goto succeeded
+2026-11-21T10:50:34.663Z pw:api => response.text started
+2026-11-21T10:50:34.672Z pw:api <= response.text succeeded
+2026-11-21T10:50:34.673Z pw:api => page.waitForFunction started
+2026-11-21T10:50:34.697Z pw:api <= page.waitForFunction succeeded
+2026-11-21T10:50:34.784Z pw:api => page.setViewportSize started
+2026-11-21T10:50:34.788Z pw:api <= page.setViewportSize succeeded
+2026-11-21T10:50:34.789Z pw:api => page.evaluate started
+2026-11-21T10:50:34.826Z pw:api <= page.evaluate succeeded
+2026-11-21T10:50:34.827Z pw:api => page.evaluate started
+2026-11-21T10:50:34.830Z pw:api <= page.evaluate succeeded
+2026-11-21T10:50:34.831Z pw:api => locator.count started
+2026-11-21T10:50:34.865Z pw:api <= locator.count succeeded
+2026-11-21T10:50:34.865Z pw:api => locator.fill started
+2026-11-21T10:50:34.868Z pw:api waiting for locator('#editor [name="books-74-0-0-title"]')
+2026-11-21T10:50:34.873Z pw:api   locator resolved to <input type="text" maxlength="200" value="Parent book 0" name="books-74-0-0-title" id="id_books-74-0-0-title" class="textinput form-control"/>
+2026-11-21T10:50:34.875Z pw:api   fill("Retained while loading")
+2026-11-21T10:50:34.876Z pw:api attempting fill action
+2026-11-21T10:50:34.876Z pw:api   waiting for element to be visible, enabled and editable
+2026-11-21T10:50:34.882Z pw:api <= locator.fill succeeded
+2026-11-21T10:50:34.883Z pw:api => page.route started
+2026-11-21T10:50:34.886Z pw:api <= page.route succeeded
+2026-11-21T10:50:34.887Z pw:api => locator.click started
+2026-11-21T10:50:34.889Z pw:api waiting for locator('#editor .cv-formset-content[cv-data-formset-prefix="books-74-0"]').locator(':scope > .cv-formset-row > .cv-formset-form .cv-form-ctrl-add').last()
+2026-11-21T10:50:34.899Z pw:api   locator resolved to <button type="button" title="Add row" aria-label="Add row" data-cv-tooltip="formset" class="btn btn-light cv-form-ctrl-add" cv-data-formset-form-prefix="books-74-0-2">…</button>
+2026-11-21T10:50:34.900Z pw:api attempting click action
+2026-11-21T10:50:34.901Z pw:api   waiting for element to be visible, enabled and stable
+2026-11-21T10:50:34.929Z pw:api   element is visible, enabled and stable
+2026-11-21T10:50:34.930Z pw:api   scrolling into view if needed
+2026-11-21T10:50:34.932Z pw:api   done scrolling
+2026-11-21T10:50:34.936Z pw:api   performing click action
+2026-11-21T10:50:34.947Z pw:api   click action done
+2026-11-21T10:50:34.948Z pw:api   waiting for scheduled navigations to finish
+2026-11-21T10:50:34.950Z pw:api   navigations have finished
+2026-11-21T10:50:34.950Z pw:api <= locator.click succeeded
+2026-11-21T10:50:35.162Z pw:api   "networkidle" event fired
+2026-11-21T10:50:46.895Z pw:api <= page.waitForResponse failed
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+page.waitForResponse: Timeout 12000ms exceeded while waiting for event "response"
+    at add (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets.cjs:330:39)
+    at runCase (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets.cjs:572:29)
+    at async main (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/conditional-formsets.cjs:349:17) {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.21.0

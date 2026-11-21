@@ -573,7 +573,12 @@ requires nor fabricates it. Read-only/edit-only/no-control rows reserve the decl
 
 The additive public surface is `CompactColumn`, `CompactLayout`, `CompactWidgetCompatible`,
 `FormSet.compact_layout`, these CSS hooks
-and the overridable `crud_views/formsets/compact_headings.html` include:
+and the overridable `crud_views/formsets/compact_headings.html` include.
+Copied/custom headings must add `gx-3` while retaining `row` and `cv-formset-compact-headings`
+to stay aligned with stock field rows; the stylesheet no longer supplies that gutter.
+
+See [CSS tokens](theme.md#css-tokens) for the six theme-owned values, theme-root mappings,
+nested colour modes and Bootstrap fallbacks used with these hooks:
 
 | Hook | Owner / purpose |
 | --- | --- |

@@ -47,11 +47,22 @@ function publishedAdapterRecipe(marker) {
     return fence[1];
 }
 
+function pageConfig({ namespace = "tabler", prefix = "bs", placements = {context: "bottom"} } = {}) {
+    const config = document.createElement("div");
+    config.id = "cv-config";
+    config.setAttribute("data-js-namespace", namespace);
+    config.setAttribute("data-data-prefix", prefix);
+    config.setAttribute("data-tooltip-placements", JSON.stringify(placements));
+    document.getElementById("cv-config")?.remove();
+    document.body.append(config);
+    return config;
+}
+
 describe("adapters.js", () => {
     beforeEach(() => { document.body.innerHTML = '<div id="m"><div id="d"></div></div><span id="t"></span>'; });
     afterEach(() => { vi.unstubAllGlobals(); delete window.cv; });
 
-    describe("published tooltip placement recipe", () => {
+    describe("registered tooltip placements", () => {
         let instances, created, globals, Tooltip, adapter;
 
         beforeEach(async () => {
@@ -59,7 +70,7 @@ describe("adapters.js", () => {
             instances = new Map();
             created = [];
             Tooltip = {
-                getOrCreateInstance: vi.fn(el => {
+                getOrCreateInstance: vi.fn((el, options) => {
                     if (!instances.has(el)) {
                         const queued = [];
                         const rawQueue = vi.fn((callback, element, animated) => {
@@ -68,7 +79,7 @@ describe("adapters.js", () => {
                         });
                         const instance = {
                             queued, rawQueue, _queueCallback: rawQueue,
-                            placement: el.getAttribute("data-bs-placement"),
+                            placement: options?.placement ?? el.getAttribute("data-bs-placement"),
                             hide: vi.fn(),
                             dispose: vi.fn(() => {
                                 if (instances.get(el) === instance) instances.delete(el);
@@ -81,10 +92,9 @@ describe("adapters.js", () => {
                 }),
                 getInstance: vi.fn(el => instances.get(el)),
             };
-            globals = {tabler: {Tooltip}};
-            new Function("cv", "globalThis", publishedAdapterRecipe("cv-tooltip-adapter-location"))(
-                window.cv, globals,
-            );
+            globals = window;
+            vi.stubGlobal("tabler", {Tooltip});
+            pageConfig();
             adapter = window.cv.adapters.tooltip;
         });
 
@@ -92,7 +102,8 @@ describe("adapters.js", () => {
             const el = document.getElementById("t");
             adapter.init(el, {location: "context"});
             expect(instances.get(el).placement).toBe("bottom");
-            expect(Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+            expect(Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el, {placement: "bottom"});
+            expect(el.hasAttribute("data-bs-placement")).toBe(false);
         });
 
         it.each(["right", ""])("preserves explicit placement %j", placement => {
@@ -141,7 +152,7 @@ describe("adapters.js", () => {
             adapter.dispose(el);
             expect(instance.hide).toHaveBeenCalledOnce();
             expect(instance.dispose).toHaveBeenCalledOnce();
-            expect(Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+            expect(Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el, {placement: "bottom"});
             expect(created).toHaveLength(1);
         });
 
@@ -182,7 +193,7 @@ describe("adapters.js", () => {
             if (missing === "namespace") delete globals.tabler;
             else delete globals.tabler.Tooltip;
             expect(() => adapter.init(el, {location: "context"})).not.toThrow();
-            expect(el.getAttribute("data-bs-placement")).toBe("bottom");
+            expect(el.hasAttribute("data-bs-placement")).toBe(false);
             expect(Tooltip.getOrCreateInstance).not.toHaveBeenCalled();
             expect(instances.size).toBe(0);
             expect(created).toHaveLength(0);
@@ -190,7 +201,7 @@ describe("adapters.js", () => {
             globals.tabler.Tooltip = Tooltip;
             adapter.init(el, {location: "context"});
             expect(instances.get(el).placement).toBe("bottom");
-            expect(Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+            expect(Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el, {placement: "bottom"});
             expect(created).toHaveLength(1);
         });
 
@@ -415,8 +426,9 @@ describe("adapters.js", () => {
         expect(ns.Tooltip.getOrCreateInstance).not.toHaveBeenCalled();
     });
 
-    it("tooltip transition callbacks stop after disposal or instance replacement", async () => {
+    it.each([false, true])("tooltip transition callbacks stop after disposal or replacement (placement=%s)", async placement => {
         await loadScript("adapters");
+        if (placement) pageConfig();
         const trigger = document.getElementById("t"), queued = [], live = vi.fn();
         let current;
         const first = {
@@ -425,7 +437,7 @@ describe("adapters.js", () => {
         };
         const Tooltip = {getOrCreateInstance: () => current ??= first, getInstance: () => current};
         const adapter = window.cv.bootstrapAdapters({Tooltip}).tooltip;
-        adapter.init(trigger); adapter.init(trigger);
+        adapter.init(trigger, {location: "context"}); adapter.init(trigger, {location: "context"});
         expect(first._queueCallback(live, trigger, true)).toBe("queued");
         queued[0].callback(); expect(live).toHaveBeenCalledTimes(1);
         expect(queued[0].element).toBe(trigger); expect(queued[0].animated).toBe(true);
@@ -436,8 +448,9 @@ describe("adapters.js", () => {
         expect(live).toHaveBeenCalledTimes(1);
     });
 
-    it("live tooltip callback context arguments return and errors are preserved", async () => {
+    it.each([false, true])("live tooltip callback context arguments return and errors are preserved (placement=%s)", async placement => {
         await loadScript("adapters");
+        if (placement) pageConfig();
         const trigger = document.getElementById("t"), receiver = {}, calls = [];
         const instance = {_queueCallback(callback, ...args) {
             expect(this).toBe(instance); calls.push(args); return callback.call(receiver, "event", 3);
@@ -445,7 +458,7 @@ describe("adapters.js", () => {
         const adapter = window.cv.bootstrapAdapters({Tooltip: {
             getOrCreateInstance: () => instance, getInstance: () => instance,
         }}).tooltip;
-        adapter.init(trigger);
+        adapter.init(trigger, {location: "context"});
         const result = instance._queueCallback(function(...args) {
             expect(this).toBe(receiver); expect(args).toEqual(["event", 3]); return 7;
         }, trigger, false, "extension");
@@ -511,6 +524,130 @@ describe("adapters.js", () => {
         expect(window.cv.adapters.modal).toBe(custom);
         expect(window.cv.adapters.tooltip).toBeDefined();
         expect(window.cv.adapters.collapse).toBeDefined();
+    });
+
+    describe("call-time configuration", () => {
+        it("reads a late config and changing namespace for every component", async () => {
+            await loadScript("adapters");
+            const bootstrap = fakeNamespace(), tabler = fakeNamespace(), coreui = fakeNamespace();
+            for (const [name, ns] of Object.entries({bootstrap, tabler, coreui})) {
+                ns.Tab = {getOrCreateInstance: vi.fn()};
+                vi.stubGlobal(name, ns);
+            }
+            const el = document.getElementById("t"), a = window.cv.adapters;
+            const config = pageConfig(); // Added after the adapter script.
+            for (const [name, ns] of Object.entries({tabler, coreui})) {
+                config.setAttribute("data-js-namespace", name);
+                a.modal.show(el); a.tooltip.init(el); a.tab.init(el); a.collapse.toggle(el); a.alert.close(el);
+                for (const component of ["Modal", "Tooltip", "Tab", "Collapse", "Alert"]) {
+                    expect(ns[component].getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+                    expect(bootstrap[component].getOrCreateInstance).not.toHaveBeenCalled();
+                }
+            }
+        });
+
+        it.each(["element", "attribute"])("falls back only for a missing config %s", async missing => {
+            await loadScript("adapters");
+            vi.stubGlobal("bootstrap", fakeNamespace());
+            if (missing === "attribute") pageConfig().removeAttribute("data-js-namespace");
+            const el = document.getElementById("t");
+            window.cv.adapters.tooltip.init(el);
+            expect(window.bootstrap.Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el);
+        });
+
+        it.each(["tabler", ""])("does not substitute bootstrap for absent selected namespace %j", async namespace => {
+            await loadScript("adapters");
+            vi.stubGlobal("bootstrap", fakeNamespace());
+            vi.stubGlobal(namespace, undefined);
+            pageConfig({namespace});
+            const el = document.getElementById("t");
+            window.cv.adapters.tooltip.init(el, {location: "context"});
+            expect(window.bootstrap.Tooltip.getOrCreateInstance).not.toHaveBeenCalled();
+            vi.stubGlobal(namespace, fakeNamespace());
+            window.cv.adapters.tooltip.init(el, {location: "context"});
+            expect(window[namespace].Tooltip.getOrCreateInstance).toHaveBeenCalledExactlyOnceWith(el, {placement: "bottom"});
+        });
+
+        it.each(["before", "after"])("preserves a custom tooltip adapter assigned %s load", async when => {
+            const tooltip = {init: vi.fn()};
+            if (when === "before") window.cv = {adapters: {tooltip}};
+            await loadScript("adapters");
+            if (when === "after") Object.assign(window.cv.adapters, {tooltip});
+            pageConfig();
+            const el = document.getElementById("t");
+            window.cv.adapters.tooltip.init(el, {location: "context"});
+            expect(window.cv.adapters.tooltip).toBe(tooltip);
+            expect(tooltip.init).toHaveBeenCalledExactlyOnceWith(el, {location: "context"});
+        });
+
+        it.each(["object", "resolver", "default"])("%s provider keeps ownership and prefix-specific placement precedence", async kind => {
+            await loadScript("adapters");
+            const supplied = fakeNamespace(), selected = fakeNamespace();
+            vi.stubGlobal("tabler", selected);
+            const adapter = kind === "default" ? window.cv.adapters.tooltip
+                : window.cv.bootstrapAdapters(kind === "object" ? supplied : () => supplied).tooltip;
+            const provider = kind === "default" ? selected : supplied;
+            for (const prefix of ["bs", "coreui"]) {
+                pageConfig({prefix});
+                for (const explicit of [null, "right", ""]) {
+                    const el = document.createElement("button");
+                    // The competing prefix must never suppress this theme's registered default.
+                    el.setAttribute(`data-${prefix === "bs" ? "coreui" : "bs"}-placement`, "left");
+                    if (explicit !== null) el.setAttribute(`data-${prefix}-placement`, explicit);
+                    const original = el.outerHTML;
+                    provider.Tooltip.getOrCreateInstance.mockClear();
+                    adapter.init(el, {location: "context"});
+                    expect(provider.Tooltip.getOrCreateInstance.mock.calls).toEqual([
+                        explicit === null ? [el, {placement: "bottom"}] : [el],
+                    ]);
+                    expect(el.outerHTML).toBe(original);
+                }
+            }
+            if (kind !== "default") expect(selected.Tooltip.getOrCreateInstance).not.toHaveBeenCalled();
+        });
+
+        it.each([null, "{bad", "null", "[]", '"text"', "3", "true"])("uses library defaults for placements JSON %j", async raw => {
+            await loadScript("adapters");
+            vi.stubGlobal("tabler", fakeNamespace());
+            const config = pageConfig();
+            if (raw === null) config.removeAttribute("data-tooltip-placements");
+            else config.setAttribute("data-tooltip-placements", raw);
+            const el = document.getElementById("t");
+            window.cv.adapters.tooltip.init(el, {location: "context"});
+            expect(window.tabler.Tooltip.getOrCreateInstance.mock.calls).toEqual([[el]]);
+        });
+
+        it.each(["toString", "constructor", "__proto__", "unregistered", undefined])("ignores unmatched/inherited location %j", async location => {
+            await loadScript("adapters");
+            vi.stubGlobal("tabler", fakeNamespace());
+            pageConfig();
+            const el = document.getElementById("t");
+            window.cv.adapters.tooltip.init(el, {location});
+            expect(window.tabler.Tooltip.getOrCreateInstance.mock.calls).toEqual([[el]]);
+        });
+
+        it("reads changed placements and prefix on subsequent calls, including a bare location", async () => {
+            await loadScript("adapters");
+            vi.stubGlobal("tabler", fakeNamespace());
+            pageConfig({placements: {"": "left"}}).removeAttribute("data-data-prefix");
+            const first = document.createElement("button"), second = document.createElement("button");
+            first.setAttribute("data-bs-placement", "");
+            second.setAttribute("data-bs-placement", "right");
+            window.cv.adapters.tooltip.init(first, {location: ""});
+            pageConfig({prefix: "coreui", placements: {"": "auto"}});
+            window.cv.adapters.tooltip.init(second, {location: ""});
+            expect(window.tabler.Tooltip.getOrCreateInstance.mock.calls).toEqual([[first], [second, {placement: "auto"}]]);
+        });
+
+        it.each([false, true])("propagates present provider errors (placement=%s)", async matched => {
+            await loadScript("adapters");
+            const error = new Error("provider failure");
+            vi.stubGlobal("tabler", {Tooltip: {getOrCreateInstance() {throw error;}}});
+            pageConfig();
+            expect(thrownBy(() => window.cv.adapters.tooltip.init(document.getElementById("t"), {
+                location: matched ? "context" : "list",
+            }))).toBe(error);
+        });
     });
 
     describe("alert adapter ownership", () => {

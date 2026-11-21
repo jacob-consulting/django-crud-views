@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.128" timestamp="2026-11-21T20:31:37.506244+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_icon_host_leaves" name="test_form_utility_keys_and_finite_grammar" time="0.002"><failure message="AssertionError: assert {'card', 'context', 'list'} == frozenset({'b...ext', 'list'})&#10;  &#10;  Extra items in the right set:&#10;  'bulk'&#10;  Use -v to get more diff">def test_form_utility_keys_and_finite_grammar():
+        from django.core.checks import Warning as DjangoWarning
+    
+        from crud_views.lib.button_classes import (
+            DEFAULT_BUTTON_CLASSES,
+            FORM_KINDS,
+            VARIANT_LOCATIONS,
+            _action_key_parts,
+            _is_action_mode_key,
+            button_class_check_messages,
+        )
+    
+        assert DEFAULT_BUTTON_CLASSES["form:hidden-label"] == "visually-hidden"
+        assert DEFAULT_BUTTON_CLASSES["form:icon-host"] == "{name_class}"
+        assert {"submit", "cancel", "delete", "filter-submit", "filter-reset"} == FORM_KINDS
+&gt;       assert {"context", "list", "card"} == VARIANT_LOCATIONS
+E       AssertionError: assert {'card', 'context', 'list'} == frozenset({'b...ext', 'list'})
+E         
+E         Extra items in the right set:
+E         'bulk'
+E         Use -v to get more diff
+
+tests/test1/test_icon_host_leaves.py:366: AssertionError</failure></testcase></testsuite></testsuites>

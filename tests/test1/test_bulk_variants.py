@@ -5,8 +5,11 @@ import re
 from pathlib import Path
 
 import pytest
+from django.template.loader import render_to_string
 from django.utils.translation import override
+from lxml import html
 
+from crud_views.lib import bulk
 from tests.lib.helper.icons import HOST_LIBRARY
 from tests.test1.app.views_bulk import cv_bulk_publisher
 
@@ -59,3 +62,55 @@ def test_stock_toolbar_bytes(client_user_bulk_publisher_view, bulk_publishers, s
     data = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
     assert buttons == data["cases"][case]["buttons"]
     assert controls == data["cases"][case]["controls"]
+
+
+def test_table_variant_native_review(client_user_bulk_publisher_change, bulk_publishers, settings, monkeypatch):
+    destination = cv_bulk_publisher.get_view_class("archive")
+    monkeypatch.setattr(destination, "cv_action_variant", "danger")
+    settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:danger": "theme-bulk-danger"}
+    response = client_user_bulk_publisher_change.get(SOURCE_PATHS["table"])
+    assert response.status_code == 200
+    controls = [html.fragment_fromstring(control) for control in raw_bulk_controls(response.content.decode("utf-8"))]
+    (button,) = [control for control in controls if control.get("data-cv-bulk-action") == "archive"]
+    assert button.get("class") == "theme-bulk-danger"
+    assert button.get("type") == "submit"
+    assert (button.get("name"), button.get("value")) == ("cv_bulk_stage", "review")
+    selected = bulk_publishers[:2]
+    review = client_user_bulk_publisher_change.post(
+        button.get("formaction"),
+        {button.get("name"): button.get("value"), "cv_bulk_ids": [obj.pk for obj in selected]},
+    )
+    assert review.status_code == 200
+    assert not review.context["form"].is_bound
+    assert list(review.context["view"].cv_bulk_objects) == selected
+    assert "Archive selected publishers" in review.content.decode("utf-8")
+    for obj, name in zip(bulk_publishers, ("Alpha", "Beta", "Locked Gamma"), strict=True):
+        obj.refresh_from_db()
+        assert obj.name == name
+
+
+@pytest.mark.parametrize("source", SOURCE_PATHS)
+@pytest.mark.parametrize("mode", MODES)
+@pytest.mark.parametrize("icons", ICON_CASES)
+def test_stock_toolbar_matches_form_leaf(
+    client_user_bulk_publisher_view, bulk_publishers, settings, monkeypatch, source, mode, icons
+):
+    """The unchanged form leaf independently renders each actual normalized payload."""
+    payloads = []
+    normalize = bulk.cv_button_data
+
+    def capture(raw, location):
+        data = normalize(raw, location)
+        payloads.append(dict(data))
+        return data
+
+    monkeypatch.setattr(bulk, "cv_button_data", capture)
+    response = _stock_response(client_user_bulk_publisher_view, settings, monkeypatch, source, mode, icons)
+    controls = raw_bulk_controls(response.content.decode("utf-8"))
+    assert len(payloads) == len(controls)
+    with override("en"):
+        for data, control in zip(payloads, controls, strict=True):
+            expected = render_to_string("crud_views/tags/button/form.html", data)
+            assert control == expected
+            data["cv_variant"] = "secondary"
+            assert render_to_string("crud_views/tags/button/bulk.html", data) == expected

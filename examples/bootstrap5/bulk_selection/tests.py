@@ -220,7 +220,10 @@ class NativeCancelTest(BulkSelectionTestCase):
                     href = links[0].get("href")
                     self.assertTrue(href)
                     self.assertEqual(urlsplit(href).path, reverse(f"bulk_document-{source}"))
-                    self.assertEqual(parse_qs(urlsplit(href).query), {key: [value] for key, value in query.items()})
+                    self.assertEqual(
+                        parse_qs(urlsplit(href).query),
+                        {**{key: [value] for key, value in query.items()}, "cv_from_restore": ["1"]},
+                    )
                     # Follow the actual anchor as a native GET, without submitting the owner form.
                     returned = self.client.get(href)
                     self.assertEqual(returned.status_code, 200)

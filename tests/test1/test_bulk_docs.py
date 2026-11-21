@@ -308,6 +308,28 @@ def test_bulk_locking_recipe_rejects_missing_and_changed_records_before_write():
         assert name in normalized(locking)
 
 
+def test_bulk_delete_example_variant():
+    source = (ROOT / "examples/bootstrap5/bulk_selection/views.py").read_text()
+    recipe = next(
+        block for block in python_blocks(section(guide(), "Bulk delete")) if "class DeleteDocumentsView" in block
+    )
+    for text in (source, recipe):
+        destination = next(
+            node
+            for node in ast.parse(text).body
+            if isinstance(node, ast.ClassDef) and node.name == "DeleteDocumentsView"
+        )
+        attributes = {
+            target.id: ast.literal_eval(node.value)
+            for node in destination.body
+            if isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant)
+            for target in node.targets
+            if isinstance(target, ast.Name)
+        }
+        assert attributes.get("cv_action_variant") == "danger"
+        assert attributes["cv_icon_action"] == "delete"
+
+
 def test_bulk_review_and_toolbar_public_contract():
     review = section(guide(), "Review templates")
     for name in ("bulk_review", "objects", "blocked", "pk", "label", "reasons", "hidden", "every record"):
@@ -327,7 +349,25 @@ def test_bulk_review_and_toolbar_public_contract():
         "both",
         "CRUD_VIEWS_LABEL_MODE_DEFAULTS",
         "no per-action map",
-        "no variant",
+        "cv_action_variant",
+        "inherited `secondary`",
+        "bulk:primary",
+        "bulk:secondary",
+        "bulk:tertiary",
+        "bulk:danger",
+        "btn btn-primary",
+        "bulk:danger:icon",
+        "effective label mode",
+        "empty string",
+        "None",
+        "no longer inherit",
+        "review Confirm",
+        "all-blocked Cancel",
+        "crud_views/tags/button/bulk.html",
+        "form:hidden-label",
+        "form:icon-host",
+        'data-cv-tooltip="form"',
+        "buttons.md#bulk-button-leaf",
         "buttons.md#bulk-selection-classes",
     ):
         assert name in toolbar

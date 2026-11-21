@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 
 const harness = "tests/js/runtime-contract.test.js";
 const requiredFiles = [
-    "adapters", "formset", "harness", "list.filter", "modal", "object-detail-tabs", "toggle", "tooltip", "viewset", "bulk",
+    "adapters", "css-tokens", "formset", "harness", "list.filter", "modal", "object-detail-tabs", "toggle", "tooltip", "viewset", "bulk",
 ].map(name => `tests/js/${name}.test.js`);
 
 describe("test runtime boundary", () => {
@@ -19,12 +19,14 @@ describe("test runtime boundary", () => {
             .map(name => `tests/js/${name.split(path.sep).join("/")}`)
             .filter(name => name !== harness).sort();
         directory = fs.mkdtempSync(path.join(os.tmpdir(), "cv-node-only-"));
-        // Only JS, config, executable documentation and HTML golden data are copied.
+        // Only JS, config, executable documentation, scoped CSS fixtures and HTML golden data are copied.
         // Installed node_modules is linked; no Python tree, install, or checkout mutation.
         for (const relative of [
             "package.json", "vitest.config.js", "vitest.integration.config.js",
             "tests/js", "tests/js-integration", "tests/test1/golden/alerts",
             "src/crud_views/static/crud_views/js", "docs/reference/javascript.md",
+            "src/crud_views/static/crud_views/css/manage.css", "src/crud_views/static/crud_views/css/formset.css",
+            "docs/reference/theme.md",
             "src/crud_views_object_detail/static/crud_views_object_detail/js",
         ]) {
             const destination = path.join(directory, relative);

@@ -1,0 +1,202 @@
+{
+  "recorded": "2026-11-21T13:57:58.180994+00:00",
+  "base": "4ec93cb9512a5918da66d3e5d7f827b0d006e9e0",
+  "checked_revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+  "environment": {
+    "PYTHONPATH": "src:.",
+    "CV_FRAGMENT_PYTHON": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python",
+    "CV_FOCUS_PYTHON": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python",
+    "CV_FOCUS_NODE": "/home/alex/.nvm/versions/node/v24.21.0/bin/node"
+  },
+  "checks": [
+    {
+      "label": "full-python",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python",
+        "-m",
+        "pytest",
+        "tests",
+        "-n",
+        "4",
+        "-q"
+      ],
+      "exit": 0,
+      "seconds": 604.36,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": " 90%]\n........................................................................ [ 91%]\n........................................................................ [ 91%]\n........................................................................ [ 92%]\n........................................................................ [ 92%]\n........................................................................ [ 92%]\n........................................................................ [ 93%]\n........................................................................ [ 93%]\n........................................................................ [ 94%]\n........................................................................ [ 94%]\n........................................................................ [ 95%]\n........................................................................ [ 95%]\n........................................................................ [ 95%]\n........................................................................ [ 96%]\n........................................................................ [ 96%]\n........................................................................ [ 97%]\n........................................................................ [ 97%]\n........................................................................ [ 97%]\n........................................................................ [ 98%]\n........................................................................ [ 98%]\n........................................................................ [ 99%]\n........................................................................ [ 99%]\n..........................................................               [100%]\n17122 passed in 602.66s (0:10:02)\n"
+    },
+    {
+      "label": "node",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 12.253,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": "\n> django-crud-views-js-tests@1.0.0 test\n> vitest run\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\n RUN  v5.1.0 /home/alex/projects/workspaces/cv-phase-06-44/django-crud-views\n\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\n\n Test Files  13 passed (13)\n      Tests  512 passed (512)\n   Start at  13:46:46\n   Duration  11.70s (tests 57%, environment 37%, setup 4%, transform 1%, import 1%)\n\nEnvironment  jsdom was created 13 times \u00b7 12.35s total, 37% of tracked time\n             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)\n             learn more: https://vitest.dev/guide/improving-performance#test-environments\n\n"
+    },
+    {
+      "label": "integration",
+      "command": [
+        "npm",
+        "run",
+        "test:integration"
+      ],
+      "exit": 0,
+      "seconds": 17.017,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": "\n> django-crud-views-js-tests@1.0.0 test:integration\n> vitest run --config vitest.integration.config.js\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.integration.config.js:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\n RUN  v5.1.0 /home/alex/projects/workspaces/cv-phase-06-44/django-crud-views\n\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  13:46:58\n   Duration  16.48s (tests 97%, environment 3%)\n\n"
+    },
+    {
+      "label": "docs",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+        "-m",
+        "mkdocs",
+        "build",
+        "--strict"
+      ],
+      "exit": 0,
+      "seconds": 1.8,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/site\nINFO    -  Documentation built in 1.50 seconds\n"
+    },
+    {
+      "label": "lint",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit": 0,
+      "seconds": 0.142,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": "All checks passed!\n"
+    },
+    {
+      "label": "format",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit": 0,
+      "seconds": 0.072,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": "798 files already formatted\n"
+    },
+    {
+      "label": "css-browser",
+      "command": [
+        "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+        "tests/browser/css-tokens.cjs",
+        "--case",
+        "all",
+        "--output",
+        ".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/css-tokens.json"
+      ],
+      "exit": 0,
+      "seconds": 1.697,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": "passed: 6 cases; .planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/css-tokens.json\n"
+    },
+    {
+      "label": "manage-browser",
+      "command": [
+        "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+        "tests/browser/manage-presentation.cjs",
+        "--python",
+        "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python",
+        "--case",
+        "smoke",
+        "--output",
+        ".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/manage-smoke.json"
+      ],
+      "exit": 0,
+      "seconds": 5.421,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": "passed: core-normal-390\npassed: guardian-normal-390\npassed: 3 cases; .planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/manage-smoke.json\n"
+    },
+    {
+      "label": "preservation-before",
+      "command": [
+        "bash",
+        "-lc",
+        "/home/alex/projects/alex/django-crud-views/.venv/bin/python -c 'import hashlib,pathlib; root=pathlib.Path(\".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-lifecycle\"); expected={\"invalid-1280.png\":\"45993b30c8aa83e556e12e711e3d88a68fbb6860dc12b2b34ce6a201f7792896\",\"invalid-390.png\":\"67eaa3cd9286f1e72b558b624e4436ea2339b067166c52091761c4304800aa52\",\"saved-1280.png\":\"e673d421d10785bdd1d6a1debeda3f0c135e585fb9afb9b6dd9e142829e738b0\",\"saved-390.png\":\"2c8a557213b2a74dea1bcb8c55104b1f0e5d2f0c901ac3c074d7880dd3b715f6\"}; mismatches=[name for name,want in expected.items() if hashlib.sha256((root/name).read_bytes()).hexdigest()!=want]; assert not mismatches,mismatches'"
+      ],
+      "exit": 0,
+      "seconds": 0.036,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": ""
+    },
+    {
+      "label": "compact-browser",
+      "command": [
+        "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+        "tests/browser/conditional-formsets.cjs",
+        "--case",
+        "compact-lifecycle",
+        "--compact-capture-root",
+        ".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures",
+        "--output",
+        ".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-lifecycle.json"
+      ],
+      "exit": 0,
+      "seconds": 18.971,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": "PASS stock:compact-lifecycle (19 assertions)\nCONDITIONAL_EVIDENCE_OK 1 cases\n"
+    },
+    {
+      "label": "compact-check",
+      "command": [
+        "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+        "tests/browser/conditional-formsets.cjs",
+        "--case",
+        "compact-lifecycle",
+        "--compact-capture-root",
+        ".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures",
+        "--check-evidence",
+        ".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-lifecycle.json"
+      ],
+      "exit": 0,
+      "seconds": 0.319,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": "CONDITIONAL_EVIDENCE_OK 1 cases\n"
+    },
+    {
+      "label": "preservation-after",
+      "command": [
+        "bash",
+        "-lc",
+        "/home/alex/projects/alex/django-crud-views/.venv/bin/python -c 'import hashlib,pathlib; root=pathlib.Path(\".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-lifecycle\"); expected={\"invalid-1280.png\":\"45993b30c8aa83e556e12e711e3d88a68fbb6860dc12b2b34ce6a201f7792896\",\"invalid-390.png\":\"67eaa3cd9286f1e72b558b624e4436ea2339b067166c52091761c4304800aa52\",\"saved-1280.png\":\"e673d421d10785bdd1d6a1debeda3f0c135e585fb9afb9b6dd9e142829e738b0\",\"saved-390.png\":\"2c8a557213b2a74dea1bcb8c55104b1f0e5d2f0c901ac3c074d7880dd3b715f6\"}; mismatches=[name for name,want in expected.items() if hashlib.sha256((root/name).read_bytes()).hexdigest()!=want]; assert not mismatches,mismatches'"
+      ],
+      "exit": 0,
+      "seconds": 0.047,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": ""
+    },
+    {
+      "label": "capture-unit",
+      "command": [
+        "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+        "--test",
+        "tests/browser/conditional-formsets-evidence.test.cjs"
+      ],
+      "exit": 0,
+      "seconds": 0.656,
+      "revision": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
+      "output_tail": "/outside (1.15323ms)\n\u2714 compact rejects outside override /tmp/cv-outside-captures (0.864954ms)\n\u2714 compact rejects traversal (7.936431ms)\n\u2714 compact rejects nested directory (15.00255ms)\n\u2714 compact rejects missing PNG (6.301325ms)\n\u2714 compact rejects stale PNG (6.054693ms)\n\u2714 compact rejects stale source (6.164578ms)\n\u2714 compact rejects unsafe Git destination {\"ignored\":false} (4.556172ms)\n\u2714 compact rejects unsafe Git destination {\"flag\":\".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures\",\"destination\":\".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures\",\"tracked\":true} (4.526507ms)\n\u2714 compact writer and checker agree for default (5.463921ms)\n\u2714 compact writer and checker agree for .planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures (5.357561ms)\n\u2714 compact writer rejects unsafe override before screenshot {\"ignored\":false} (4.113915ms)\n\u2714 compact writer rejects unsafe override before screenshot {\"tracked\":true} (3.875316ms)\n\u2714 compact default writer preserves tracked historical destination behavior (3.900744ms)\n\u2714 compact override writer rejects later symlink leaf before writing (6.780417ms)\n\u2714 compact override checker rejects later symlink leaf before writing (7.317347ms)\n\u2714 compact override writer rejects later dangling symlink leaf before writing (6.284098ms)\n\u2714 compact override checker rejects later dangling symlink leaf before writing (7.815909ms)\n\u2714 compact override writer rejects later directory leaf before writing (6.195786ms)\n\u2714 compact override checker rejects later directory leaf before writing (7.625983ms)\n\u2139 tests 51\n\u2139 suites 0\n\u2139 pass 51\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 594.680829\n"
+    }
+  ],
+  "preserved_main_files": {
+    "docs/migrating-1.0.md": "4eec3937d5291566b749615bc6a8999f24dd782cd972c12ad376f893389d81ad",
+    "package.json": "07daa4860e87e73ac3ad459848eaadc218281036f8d4a7e958aab6c49999b440",
+    "package-lock.json": "aba033d067d60e33ab912e946471ef3c72f76f020dcfb4cbd6ab224b0cd0da39"
+  }
+}

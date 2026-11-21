@@ -433,6 +433,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Changed
 
+- **Compact formset gutters** (#394): heading and field rows now use Bootstrap's `gx-3` utility,
+  retaining their existing component hooks and standard-spacing-scale alignment. Copied/custom headings
+  must retain or add `gx-3` alongside `row` and `cv-formset-compact-headings`; the stylesheet no longer
+  supplies the gutter. See [compact theme guidance](docs/reference/formsets.md#compact-theme-surface-and-exclusions).
+
 - **Default table ordering** (#393): stock sort icons now appear on first load for effective
   `Meta.order_by` or constructor ordering without a sort query parameter. This is nonbreaking.
 
@@ -652,6 +657,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   does (#231).
 
 ### Added
+
+- **Manage and formset CSS tokens** (#394): six documented `--cv-*` values let themes map colours and
+  border radius on their own theme roots. Each use retains its Bootstrap and literal fallbacks;
+  existing theme mappings remain supported. See [CSS tokens](docs/reference/theme.md#css-tokens)
+  for the complete table, nested colour modes and stock help-button guidance.
 
 - **Breadcrumb classes and table sort state** (#393): `breadcrumb:list`, `breadcrumb:item` and
   `breadcrumb:item-active` customize the stock breadcrumb through the existing class registry.

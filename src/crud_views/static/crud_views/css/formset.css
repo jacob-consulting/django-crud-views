@@ -50,9 +50,9 @@
     min-width: 0;
     padding: 1rem 1rem .25rem;
     margin: 0 0 1.25rem;
-    border: 1px solid var(--bs-secondary-color, #6c757d);
-    border-radius: var(--bs-border-radius, .375rem);
-    background-color: var(--bs-body-bg, #fff);
+    border: 1px solid var(--cv-secondary-color, var(--bs-secondary-color, #6c757d));
+    border-radius: var(--cv-border-radius, var(--bs-border-radius, .375rem));
+    background-color: var(--cv-body-bg, var(--bs-body-bg, #fff));
 }
 
 .cv-formset-row-card > .cv-formset-row-legend {
@@ -72,12 +72,12 @@
     padding: 1rem;
     margin-bottom: 1rem;
     border: 0;
-    border-radius: var(--bs-border-radius, .375rem);
-    background-color: var(--bs-body-bg, #fff);
+    border-radius: var(--cv-border-radius, var(--bs-border-radius, .375rem));
+    background-color: var(--cv-body-bg, var(--bs-body-bg, #fff));
 }
 
 .cv-formset-row-compact.cv-formset-row-bordered {
-    border: 1px solid var(--bs-border-color, #dee2e6);
+    border: 1px solid var(--cv-border-color, var(--bs-border-color, #dee2e6));
 }
 
 .cv-formset-compact-headings {
@@ -89,7 +89,6 @@
 
 .cv-formset-compact-fields,
 .cv-formset-compact-headings {
-    --bs-gutter-x: 1rem;
     align-items: flex-start;
 }
 
@@ -129,9 +128,9 @@
 
 .cv-formset-compact-child {
     padding: .5rem;
-    background-color: var(--bs-tertiary-bg, #f8f9fa);
-    border: 1px solid var(--bs-border-color, #dee2e6);
-    border-radius: var(--bs-border-radius, .375rem);
+    background-color: var(--cv-tertiary-bg, var(--bs-tertiary-bg, #f8f9fa));
+    border: 1px solid var(--cv-border-color, var(--bs-border-color, #dee2e6));
+    border-radius: var(--cv-border-radius, var(--bs-border-radius, .375rem));
 }
 
 .cv-formset-compact-child > .cv-formset-content > .cv-formset-row-compact {

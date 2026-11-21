@@ -1,0 +1,25 @@
+{
+  "command": "/home/alex/projects/alex/django-crud-views/.venv/bin/python -c 'import hashlib,pathlib; root=pathlib.Path(\".planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures/compact-lifecycle\"); expected={\"invalid-1280.png\":\"45993b30c8aa83e556e12e711e3d88a68fbb6860dc12b2b34ce6a201f7792896\",\"invalid-390.png\":\"67eaa3cd9286f1e72b558b624e4436ea2339b067166c52091761c4304800aa52\",\"saved-1280.png\":\"e673d421d10785bdd1d6a1debeda3f0c135e585fb9afb9b6dd9e142829e738b0\",\"saved-390.png\":\"2c8a557213b2a74dea1bcb8c55104b1f0e5d2f0c901ac3c074d7880dd3b715f6\"}; mismatches=[name for name,want in expected.items() if hashlib.sha256((root/name).read_bytes()).hexdigest()!=want]; assert not mismatches,mismatches'",
+  "historicalReceiptBefore": "0863338311026556b0d1c2b780b66cda561fb9d1aa60c1f598e453bc6e4a070a",
+  "before": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "capture": {
+    "exit": 0,
+    "stdout": "PASS stock:compact-lifecycle (19 assertions)\nCONDITIONAL_EVIDENCE_OK 1 cases\n",
+    "stderr": ""
+  },
+  "check": {
+    "exit": 0,
+    "stdout": "CONDITIONAL_EVIDENCE_OK 1 cases\n",
+    "stderr": ""
+  },
+  "after": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "historicalReceiptAfter": "0863338311026556b0d1c2b780b66cda561fb9d1aa60c1f598e453bc6e4a070a"
+}

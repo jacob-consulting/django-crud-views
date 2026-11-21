@@ -72,7 +72,7 @@
 }
 
 [data-cv-manage] th {
-    color: var(--bs-secondary-text-emphasis, #495057);
+    color: var(--cv-secondary-text-emphasis, var(--bs-secondary-text-emphasis, #495057));
 }
 
 [data-cv-manage] .h6 {
@@ -99,11 +99,11 @@
 
 /* Stock outline-secondary is below 4.5:1 on Bootstrap's tinted card header. */
 [data-cv-manage] [data-cv-manage-help].btn-outline-secondary {
-    --bs-btn-color: var(--bs-secondary-text-emphasis, #495057);
+    --bs-btn-color: var(--cv-secondary-text-emphasis, var(--bs-secondary-text-emphasis, #495057));
 }
 
 [data-cv-manage] .cv-manage-default td {
-    color: var(--bs-secondary-color, #6c757d);
+    color: var(--cv-secondary-color, var(--bs-secondary-color, #6c757d));
 }
 
 [data-cv-manage] #cv-manage-presentation {

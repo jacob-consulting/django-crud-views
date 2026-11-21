@@ -5,22 +5,22 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.43 complete, ready to plan Phase 7
-last_updated: "2026-11-21T12:13:38.749Z"
+stopped_at: Phase 06.44 complete, ready to plan Phase 7
+last_updated: "2026-11-21T14:04:15.264Z"
 last_activity: 2026-11-21
-last_activity_desc: "Phase 06.43 shipped as PR #396 after rebase onto merged PR #395; codebase maps refreshed"
-state_head: b7246b14151f8f4ec6c8eba987df1c277ddd5262
+last_activity_desc: "Phase 06.44 shipped as PR #397 after merging PR #396 and rebasing onto main"
+state_head: 4743623acd0ef386b655141d24915bf996c37c34
 progress:
-  total_phases: 50
-  completed_phases: 49
-  total_plans: 276
-  completed_plans: 276
+  total_phases: 51
+  completed_phases: 50
+  total_plans: 278
+  completed_plans: 278
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 50
-Completed Phases: 49
+Total Phases: 51
+Completed Phases: 50
 
 # Project State
 
@@ -37,9 +37,23 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-21 -- Phase 06.43 shipped as PR #396 after rebase onto merged PR #395; codebase maps refreshed
+Last activity: 2026-11-21 -- Phase 06.44 shipped as PR #397 after merging PR #396 and rebasing onto main
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.44 completion — 2026-11-21
+
+- User passed the single stock visual/readability UAT. Canonical verification and the combined UAT/verification gate now pass; 9/9 technical truths and D-01–D-04 remain verified.
+- Both plans/five tasks complete, review clean after CR-01 fix, security6/6 closed and validation5/5. Existing full-suite and browser evidence retained; no redundant test runs after a human-only acceptance update.
+- phase.complete advanced to Phase7. Reconciled its stale dotted progress row/count/focus; command-as-path SUMMARY warnings are heuristic false positives, not missing deliverables. No learning artifacts or stale phase handoffs. Derived state.json preserved. No ship/push/merge; required map refresh follows gsd-ship.
+
+### Phase 06.44 execution — 2026-11-21
+
+- Both plans/five tasks complete. Six CSS tokens, twelve fallback chains, both gx-3 grids, canonical/consumer docs and bounded contract guard delivered. No new dependency/API or migration change.
+- Full Django 6.0/Python 3.12 suite: 16,548 passed, four workers; Node483, integration2, strict docs and Ruff passed. Six synthetic CSS cases, three manage smoke cases and 19 lifecycle assertions pass. No full compatibility matrix or downstream theme claim.
+- Deep review16files found CR-01 screenshot leaf-symlink risk; fixed19640864 with six regressions, independently re-reviewed clean. Fresh51 VM tests/lifecycle receipt check passed; historical captures unchanged. Security6/6 closed; validation5/5; UI22/24 retains existing minor visual notes.
+- Independent verifier9/9 technical truths, D01–D04 all honored; canonical status human_needed. One bounded stock visual/readability confirmation saved in06.44-UAT.md. Phase remains pending; no phase.complete, ship, push or merge.
+- Regression gate reused fresh broad checks; only changed harness files received fresh targeted verification. Parent06 UAT has no gaps. GSD codebase maps remain stale and refresh after ship. Optional WINDOWS ledger append remains blocked by existing table/JSON mismatch. Derived state.json timestamp rewrite restored byte-identically.
 
 ### Phase 06.43 completion — 2026-11-21
 
@@ -2255,5 +2269,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-21T11:50:01.426421+00:00
-Stopped at: Phase 06.43 complete, ready to discuss Phase 7
+Stopped at: Phase 06.44 complete, ready to discuss Phase 7
 Resume file: None

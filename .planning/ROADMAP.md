@@ -70,6 +70,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.41: Current-page bulk selection and action forms for table and card views (#387) (INSERTED)** - opt-in selection on table and card views, submitted to registered action form views in the same ViewSet. (completed 2026-11-21)
 - [x] **Phase 06.42: Theme-registered data-attribute prefix for templates and object-detail tabs (#391) (INSERTED)** - approved U1/U2 handover; theme prefix registration, four templates and the existing object-detail tabs lifecycle. (completed 2026-11-21)
 - [x] **Phase 06.43: Breadcrumb class keys and accessible table sort state (#393) (INSERTED)** (completed 2026-11-21)
+- [x] **Phase 06.44: CSS tokens for manage pages and formsets with Bootstrap fallbacks (#394)** (completed 2026-11-21)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2294,6 +2295,24 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.43-02-PLAN.md — Effective table sort indicators, real ordering matrix, nonbreaking release guidance and combined final verification (wave 2; depends on 06.43-01).
 
+### Phase 06.44: CSS tokens for manage pages and formsets with Bootstrap fallbacks (#394) (INSERTED)
+
+**Goal:** Give theme authors six documented `--cv-*` CSS tokens for manage pages and formsets, with Bootstrap and existing hard-coded fallbacks that preserve stock rendering and nested colour modes.
+**Source:** [Issue #394](https://github.com/jacob-consulting/django-crud-views/issues/394), approved U5 handover D-01–D-04; snapshot in `06.44-ISSUE-394.md`.
+**Requirements**: None assigned; use the approved issue acceptance criteria.
+**Depends on:** Phase 06.40.1
+**Ordering:** Complete before Phase 7 inventories and freezes the public theme surface.
+**Scope:** Read the six tokens without declaring them; replace the compact-row gutter declaration with `gx-3`; preserve and document the Bootstrap help-button contrast rule; add CSS contract checks, rendering verification, theme/formset/manage documentation and non-breaking changelog entries. No new Python API/settings, class keys, extra tokens, other CSS files or extensions U12 work; the compact layout's `css_class` change is explicitly included by D-03.
+**Acceptance:** Enforce the six approved fallback chains and documented token list; permit only the existing help-button `--bs-btn-color` declaration; verify unchanged stock light/nested-dark computed styles and passing formset/manage tests and goldens apart from `gx-3`; document theme-root mappings and nested-mode behavior.
+**Plans:** 2/2 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.44-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.44-02-PLAN.md
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -2301,6 +2320,7 @@ from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
 **Additional ordering:** Phases 06.30, 06.31, 06.40, 06.40.1 and 06.41 must settle before this freeze; inventory their final conditional-field, developer-diagnostic, object-navbar and bulk-action contracts, including the navbar class keys and owner-heading theme guidance from #384 and the bulk class keys from #387.
 Phase 06.42 must also settle before this freeze; include the theme data-prefix registration, template tag and JavaScript configuration contract from #391.
+Phase 06.44 must also settle before this freeze; include the six CSS tokens with Bootstrap fallback behavior from #394.
 **Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
 bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
@@ -2428,4 +2448,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.41. Current-page bulk selection and action forms for table and card views (#387) | 14/14 | Complete | 2026-11-21 |
 | 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 3/3 | Complete | 2026-11-21 |
 | 06.43. Breadcrumb class keys and accessible table sort state (#393) | 2/2 | Complete | 2026-11-21 |
+| 06.44. CSS tokens for manage pages and formsets (#394) | 2/2 | Complete | 2026-11-21 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

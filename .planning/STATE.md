@@ -5,11 +5,11 @@ current_phase: "06.41"
 current_phase_name: "Current-page bulk selection and action forms for table and card views (#387)"
 current_plan: 14
 status: awaiting_verification
-stopped_at: Phase 06.41 plan 14 executed; phase regression and independent re-verification in progress
-last_updated: "2026-11-20T16:16:38.765000+00:00"
-last_activity: 2026-11-20
+stopped_at: Phase 06.41 gap plan 14 verified; awaiting human no-JavaScript Cancel retest
+last_updated: "2026-11-21T08:05:39.808802+00:00"
+last_activity: 2026-11-21
 last_activity_desc: Phase 06.41 native Cancel gap plan 14 executed; human retest pending
-state_head: 7b291e9eadecbbd932c5fba110704ab5a5a01d1b
+state_head: 3eabbd4eb33910b9a55916225d244f2c5c6a19f8
 progress:
   total_phases: 48
   completed_phases: 46
@@ -35,10 +35,18 @@ See: .planning/PROJECT.md (updated 2026-11-19)
 Phase: 06.41 (Current-page bulk selection and action forms for table and card views (#387)) — AWAITING ACCEPTANCE
 Current Plan: 14
 Total Plans in Phase: 14
-Status: Plan 14 executed; regression/re-verification in progress; human UAT retest pending
-Last activity: 2026-11-20 — All 13 plans executed; security and review gates resolved
+Status: All 14 plans executed; verification 129/130 human_needed; UAT test 6 retest pending
+Last activity: 2026-11-21 — All 14 plans executed; native Cancel browser retest passes; human acceptance pending
 
-Next: $gsd-verify-work 06.41 after re-verification
+Next: $gsd-verify-work 06.41
+
+### Phase 06.41 gap plan 14 — 2026-11-21
+
+- Existing native Cancel setting enabled in the Bootstrap example; guide recipe and rendered-href tests added. Package defaults and URL/permission policy unchanged. Two existing example test modules now follow native hrefs.
+- RED/GREEN commits 2fc1b720/9a1ce6c2 and bd558fa7/0a307cfc; committed summary c7d17b4e, full receipts 0a2aaa47.
+- Full core 16,952 passed/one existing skip; full example 637 passed/296 subtests; focused core 726 passed. Scoped Ruff/format and strict docs pass. Eighteen real Chromium JS-off/on Cancel scenarios preserve source state with no POST or document mutation.
+- Deep review six files/zero findings; validation extended to 25 tasks; security 35 closed/zero open. Historical UI audit retained with E1 native-Cancel follow-up. Codebase drift remains advisory; schema/UI gates nonblocking.
+- Independent re-verification 129/130, human_needed; CLI fingerprint/status accepted. Only human defect retest H6-R remains. Six prior UAT passes and missing CI URL/revision limitation preserved; no UAT resolution fields altered, no phase completion or shipment.
 
 ### Phase 06.41 conversational UAT — 2026-11-21
 

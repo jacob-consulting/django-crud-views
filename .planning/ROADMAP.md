@@ -2198,7 +2198,7 @@ Starts from the list, card and custom-form views on `main`; the phase 06.38 impl
 **Requirements**: None; the approved issue contract supplies phase acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the bulk classes, attributes, POST field names and class keys.
-**Plans:** 13/14 plans executed; UAT gap closure plan 14 ready
+**Plans:** 14/14 plans executed; native Cancel gap implemented, human UAT retest pending
 
 Plans:
 **Wave 1**

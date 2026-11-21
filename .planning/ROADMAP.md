@@ -68,8 +68,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.40: Object navbar: opt-in section navigation (#381) (INSERTED)** - all nine plans complete, including independent navbar component tags (plan 09). (completed 2026-11-19)
 - [x] **Phase 06.40.1: ViewSet Navigation: theme class keys and owner-heading layouts (#384) (INSERTED)** - expose navbar class keys and document theme-owned owner headings. (completed 2026-11-19)
 - [x] **Phase 06.41: Current-page bulk selection and action forms for table and card views (#387) (INSERTED)** - opt-in selection on table and card views, submitted to registered action form views in the same ViewSet. (completed 2026-11-21)
-
-- [ ] **Phase 06.42: Theme-registered data-attribute prefix for templates and object-detail tabs (#391) (INSERTED)** - approved U1/U2 handover; theme prefix registration, four templates and the existing object-detail tabs lifecycle.
+- [x] **Phase 06.42: Theme-registered data-attribute prefix for templates and object-detail tabs (#391) (INSERTED)** - approved U1/U2 handover; theme prefix registration, four templates and the existing object-detail tabs lifecycle. (completed 2026-11-21)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2242,7 +2241,8 @@ Plans:
 **Goal:** A theme registers its UI library's data-attribute prefix once, removing the need for four template
 overrides and a separate object-detail tabs script while preserving stock Bootstrap rendering and the proven tabs lifecycle.
 **Source:** [Issue #391 and its approved GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/391#gsd-handover), approved 2026-11-21.
-**Requirements:** Issue #391 D-01–D-05 and acceptance criteria; carry the approved contract into planning.
+**Requirements:** None
+**Phase-local decisions:** Issue #391 D-01, D-02, D-03, D-04, D-05, D-06; all verified. These are not global REQUIREMENTS.md IDs.
 **Scope:** CoreUI upstream findings U1 and U2 only: actions-menu toggle, language selector, vertical object-detail
 tabs, accordion groups, and the trigger selector in `tabs.js`.
 **Approved contract:**
@@ -2258,7 +2258,7 @@ crispy-bootstrap5 (U6), `register_theme()` (U8), new Django settings, and downst
 **Builder decisions:** Module placement, validation exception type, exact config attribute name and test layout.
 **Depends on:** Phase 06.17 (existing object-detail tab adapter/lifecycle contract).
 **Ordering:** Complete before Phase 7 freezes the prefix registration, template tag and JavaScript configuration contract.
-**Plans:** 3/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 **Wave 1**
@@ -2402,5 +2402,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Complete | 2026-11-19 |
 | 06.40.1. ViewSet Navigation: theme class keys and owner-heading layouts (#384) | 2/2 | Complete | 2026-11-19 |
 | 06.41. Current-page bulk selection and action forms for table and card views (#387) | 14/14 | Complete | 2026-11-21 |
-| 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 3/3 | In Progress | - |
+| 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 3/3 | Complete | 2026-11-21 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

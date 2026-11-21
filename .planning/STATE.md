@@ -1,25 +1,26 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.42"
-current_phase_name: "Theme-registered data-attribute prefix for templates and object-detail tabs (#391)"
-current_plan: 3
-status: verifying
-stopped_at: Completed 06.42-03-PLAN.md; independent phase review and verification pending
-last_updated: "2026-11-21T10:09:13.385Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.42 complete, ready to plan Phase 7
+last_updated: "2026-11-21T10:23:04.876Z"
 last_activity: 2026-11-21
-last_activity_desc: Phase 06.42 execution started
-state_head: 5d438f01db555241b9ef3add348b1adf4e489bce
+last_activity_desc: Phase 06.42 complete, transitioned to Phase 7
+state_head: c914f31f31da2e0687593fea72e0a67353eace2f
 progress:
   total_phases: 48
-  completed_phases: 46
+  completed_phases: 47
   total_plans: 260
   completed_plans: 260
+  percent: 98
 milestone_name: milestone
 ---
 
 Total Phases: 48
-Completed Phases: 46
+Completed Phases: 47
 
 # Project State
 
@@ -28,17 +29,25 @@ Completed Phases: 46
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.42 — Theme-registered data-attribute prefix for templates and object-detail tabs (#391)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.42 (Theme-registered data-attribute prefix for templates and object-detail tabs (#391)) — VERIFYING
-Current Plan: 3
-Total Plans in Phase: 3
-Status: Plans executed — independent review and verification pending
-Last activity: 2026-11-21 — Phase 06.42 execution started
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: 0
+Status: Ready to plan
+Last activity: 2026-11-21 — Phase 06.42 complete, transitioned to Phase 7
 
-Next: Independent phase 06.42 review and verification; Phase 7 has not started.
+Next: $gsd-discuss-phase 7
+
+### Phase 06.42 completion — 2026-11-21
+
+- All three plans/six tasks complete; independent verification 22/22, decisions 6/6, validation complete, security 9/9 closed. Owner verification.status passed with CLI fingerprint; deep review 20 files, no findings.
+- Full acceptance: 16,650 Python tests passed, one existing Django-6-only skip; 470 JS tests on restored locked dependencies; strict docs and full Ruff/format pass. Independent verifier adds 91 Python/22 JS checks and historical raw-byte baseline comparison. No native CoreUI browser/full matrix claim.
+- Source UI audit 23/24; inherited accordion singular/plural wording advisory is out of frozen-markup scope. Stock component bytes remain unchanged; config adds only data-data-prefix.
+- phase.complete advanced to Phase 7. Reconciled dotted progress row/count and clarified phase-local decisions versus global requirements. CLI summary warning misreads an npm command as a missing file; actual file exists. WINDOWS append remains a preexisting bookkeeping defect.
+- Original unrelated state.json/config.default.json and untracked work preserved. No matching todo, stale handoff or learning promotion. No ship/push/merge; codebase refresh remains scheduled after gsd-ship.
 
 ### Phase 06.42 plan 03 execution — 2026-11-21
 
@@ -1581,6 +1590,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.40 | 9 | - | - |
 | 06.40.1 | 2 | - | - |
 | 06.41 | 14 | - | - |
+| 06.42 | 3 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2219,6 +2229,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T10:09:06.102Z
-Stopped at: Completed 06.42-03-PLAN.md; independent phase review and verification pending
+Last session: 2026-11-21T10:24:00Z
+Stopped at: Phase 06.42 complete, ready to plan Phase 7
 Resume file: None

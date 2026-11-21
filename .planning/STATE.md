@@ -1,25 +1,26 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.47"
-current_phase_name: "Semantic variants for bulk toolbar buttons (#400)"
-current_plan: 3
-status: verifying
-stopped_at: Completed 06.47-03-PLAN.md
-last_updated: "2026-11-21T20:58:11.557Z"
+current_phase: "06.45"
+current_phase_name: "Theme-registered JS namespace and tooltip placements (#398)"
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.47 complete, ready to plan Phase 06.45
+last_updated: "2026-11-21T21:21:01.973Z"
 last_activity: 2026-11-21
-last_activity_desc: Phase 06.47 execution started
-state_head: d9209f4e7b0f65bb04c272903a0a644c4daa9d4d
+last_activity_desc: Phase 06.47 complete, transitioned to Phase 06.45
+state_head: df9644d7b9591bcfb9f1e6cfc840085e6ec7c237
 progress:
   total_phases: 53
-  completed_phases: 50
+  completed_phases: 51
   total_plans: 281
   completed_plans: 281
+  percent: 96
 milestone_name: milestone
 ---
 
 Total Phases: 53
-Completed Phases: 50
+Completed Phases: 51
 
 # Project State
 
@@ -28,17 +29,25 @@ Completed Phases: 50
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.47 — Semantic variants for bulk toolbar buttons (#400)
+**Current focus:** Phase 06.45 — Theme-registered JS namespace and tooltip placements (#398)
 
 ## Current Position
 
-Phase: 06.47 (Semantic variants for bulk toolbar buttons (#400)) — VERIFYING
-Current Plan: 3
-Total Plans in Phase: 3
-Status: Ready for verification
-Last activity: 2026-11-21 — Phase 06.47 execution started
+Phase: 06.45 — Theme-registered JS namespace and tooltip placements (#398)
+Current Plan: Not started
+Total Plans in Phase: 0
+Status: Ready to plan
+Last activity: 2026-11-21 — Phase 06.47 complete, transitioned to Phase 06.45
 
-Next: Orchestrator review and verification for Phase 06.47
+Next: $gsd-plan-phase 06.45 (next pending phase in this checkout)
+
+### Phase 06.47 completion — 2026-11-21
+
+- All three plans/six tasks complete; independent verification16/16, validation6/6, security9/9. Dedicated bulk leaf and four semantic class keys preserve frozen stock bytes and existing native review/confirmation behavior.
+- Deep review21files warning WR-01 fixed in8ea60499 (unavailable icon contract); independent re-review clean. Full Python suite17,264 passed; focused2,467, JS512, integration2, strict docs, Ruff and wheel/sdist validation passed. Post-fix104 affected tests plus independent copied-leaf36 and verifier268 targeted checks passed; no redundant full-suite rerun.
+- Source-only UI audit clean; browser/downstream theme and full dependency matrix acceptance remain outside scope. No required human checks. CLI verification fingerprint passed before completion; no warning debt returned.
+- Reconciled CLI's stale dotted progress row and preserved-disagreeing completed-phase count from actual roadmap (51/53). No parent UAT gaps, pending phase todos, learning artifacts or stale handoffs. Derived state.json rewrite restored; codebase-map refresh follows shipping per AGENTS.md.
+- Issue400 now carries P06.47. No push/merge/ship performed. Next pending checkout phase is06.45; independent worktrees may have newer progress.
 
 ### Phase 06.44 completion — 2026-11-21
 
@@ -1572,7 +1581,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 262
+- Total plans completed: 270
 
 - Total plans completed: 186
 - Average duration: -
@@ -1628,6 +1637,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.41 | 14 | - | - |
 | 06.42 | 3 | - | - |
 | 06.43 | 2 | - | - |
+| 06.47 | 3 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2273,6 +2283,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T20:58:03.863Z
-Stopped at: Completed 06.47-03-PLAN.md
+Last session: 2026-11-21T21:21:53.058017+00:00
+Stopped at: Phase 06.47 complete, ready to plan Phase 06.45
 Resume file: None

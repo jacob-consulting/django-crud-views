@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
 last_mapped_at: 2026-11-21
 ---
 # Coding Conventions
@@ -22,6 +22,7 @@ last_mapped_at: 2026-11-21
 **Variables / class attributes:**
 - Every `CrudView` class attribute uses the `cv_` prefix: `cv_key`, `cv_path`, `cv_success_key`, `cv_context_actions`, `cv_header_template`, `cv_icon_action`, `cv_modal_supported`.
 - Module-level constants are UPPER_SNAKE (`TAG`, `_REGISTRY`, `_REGISTRY_LOCK`, `GOLDEN_DIR`). Sentinels are `_NAME_UNSET = object()`.
+- Process-wide theme registration is a module scalar with a public register/get API (`src/crud_views/lib/data_prefix.py`, re-exported from `src/crud_views/lib/__init__.py`); validate the complete value before assignment. This is a startup-only setting: register from `AppConfig.ready()`, and do not build runtime theme switching or request-scoped behavior on top of it.
 - View keys match CRUD operations: `list`, `detail`, `create`, `update`, `delete`, `workflow`, `manage`.
 - Permission mapping: list/detail -> view, create -> add, update -> change, delete -> delete.
 - Settings read from Django settings use the `CRUD_VIEWS_*` prefix.
@@ -95,6 +96,13 @@ last_mapped_at: 2026-11-21
 
 - When docs publish copyable recipes, extract the exact fenced block and execute it against project objects/views. Follow `tests/test1/test_navbar_docs.py`, `test_object_detail_value_docs.py`, `test_cancel_docs.py`, and `test_theme_adoption_docs.py`; avoid maintaining a retyped example that can drift.
 - For rendering recipes, use Django `Template`, real request/context/response fixtures, and parsed DOM assertions. Verify public semantics and documented inventories/cross-links alongside recipe behavior.
+- For published registration examples, extract and execute the exact fenced recipe in `tests/test1/test_data_prefix_docs.py::test_data_prefix_documented_registration`; verify default, repeat-ready, and last-registration behavior through the real `{% cv_data_prefix %}` tag. Keep all calls scoped to startup registration.
+
+## Global Scalar Isolation
+
+- Tests that register a theme prefix opt into `isolate_data_prefix` from `tests/test1/conftest.py`. It snapshots the current scalar through `monkeypatch` and restores it after the test; use the fixture on every test that changes the registration. Do not make it autouse, because modules that do not register a prefix need no additional global-state handling.
+- Keep invalid registration atomic: validate first, raise `ValueError` for invalid input, and assert the previous value remains intact (`tests/test1/test_data_prefix.py::test_data_prefix_invalid_values_preserve_state`).
+- Preserve default output using named frozen raw captures. Authorized template changes should compare exact output and explain each byte delta; do not normalize or regenerate captures to make a changed render pass (`tests/test1/test_data_prefix.py::test_data_prefix_default_component_bytes`, `::test_data_prefix_config_byte_delta`).
 
 ## Project Rules
 

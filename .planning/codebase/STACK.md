@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
 last_mapped_at: 2026-11-21
 ---
 # Technology Stack
@@ -70,6 +70,7 @@ last_mapped_at: 2026-11-21
 
 **Environment:**
 - Library configuration is Django settings with `CRUD_VIEWS_*` names, parsed by `CrudViewsSettings` in `src/crud_views/lib/settings.py`; includes theme/template and manage-view options
+- Compatible theme native data-API attributes use the process-level prefix registry in `src/crud_views/lib/data_prefix.py`, defaulting to `bs`; a theme registers its prefix during `AppConfig.ready()` through the public `crud_views.lib.register_data_prefix` API. This is startup configuration, not a `CRUD_VIEWS_*` setting or runtime theme switch
 - Tests set `CV_ACCESS_RECORD_REQUESTS` from `noxfile.py`
 - Local Cloudflare tunnel reads `TUNNEL_TOKEN` from `dev/.env`; only the existence of local env files was checked (`dev/.env.example`, `dev/docker-compose.yaml`)
 - Demo uses `DJANGO_SETTINGS_MODULE=project.settings_demo` and a generated `SECRET_KEY` (`render.yaml`)

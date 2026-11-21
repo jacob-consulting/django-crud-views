@@ -36,8 +36,11 @@ other view types raises system check error `viewset.E251`. Create/update support
 
 ## Requirements
 
-Your base template must provide the standard `{% cv_config %}` / `{% cv_js %}` tags and either Bootstrap 5's
-JavaScript bundle on `window.bootstrap` or a replacement [adapter](javascript.md#cvadapters). jQuery is not needed.
+Your base template must provide the standard `{% cv_config %}` / `{% cv_js %}` tags and one of:
+Bootstrap 5's JavaScript bundle on `window.bootstrap` (the default), a compatible library selected with
+[`register_js_namespace`](theme.md#javascript-namespace-and-tooltip-placements) using the stock adapters,
+or a replacement [adapter](javascript.md#cvadapters). jQuery is not needed. Namespace registration preserves the
+stock adapter's fixed modal events and lifecycle requirements; it does not certify native CoreUI/Tabler behavior.
 
 `cv_modal_size` takes the tokens `""` (default), `"sm"`, `"lg"` and `"xl"`; the adapter maps them to the dialog's
 size. Bootstrap class names such as `"modal-lg"` fail system check `viewset.E250`, whose message names the replacement.

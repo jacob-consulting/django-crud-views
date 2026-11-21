@@ -2258,14 +2258,14 @@ crispy-bootstrap5 (U6), `register_theme()` (U8), new Django settings, and downst
 **Builder decisions:** Module placement, validation exception type, exact config attribute name and test layout.
 **Depends on:** Phase 06.17 (existing object-detail tab adapter/lifecycle contract).
 **Ordering:** Complete before Phase 7 freezes the prefix registration, template tag and JavaScript configuration contract.
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 **Wave 1**
 - [x] 06.42-01-PLAN.md
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.42-02-PLAN.md
+- [x] 06.42-02-PLAN.md
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.42-03-PLAN.md
@@ -2402,5 +2402,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Complete | 2026-11-19 |
 | 06.40.1. ViewSet Navigation: theme class keys and owner-heading layouts (#384) | 2/2 | Complete | 2026-11-19 |
 | 06.41. Current-page bulk selection and action forms for table and card views (#387) | 14/14 | Complete | 2026-11-21 |
-| 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 1/3 | In Progress | - |
+| 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 2/3 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

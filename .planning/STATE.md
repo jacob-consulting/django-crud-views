@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.42"
 current_phase_name: "Theme-registered data-attribute prefix for templates and object-detail tabs (#391)"
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 06.42-01-PLAN.md
-last_updated: "2026-11-21T09:46:27.886Z"
+stopped_at: Completed 06.42-02-PLAN.md
+last_updated: "2026-11-21T09:53:33.360Z"
 last_activity: 2026-11-21
 last_activity_desc: Phase 06.42 execution started
-state_head: 60d7ab8ecaaf2ad2f0969e97fe66db9fcf8e13af
+state_head: 9644e4054e0a039638f8631431b16830f8c6337a
 progress:
   total_phases: 48
   completed_phases: 46
   total_plans: 260
-  completed_plans: 258
+  completed_plans: 259
 milestone_name: milestone
 ---
 
@@ -33,12 +33,20 @@ See: .planning/PROJECT.md (updated 2026-11-21)
 ## Current Position
 
 Phase: 06.42 (Theme-registered data-attribute prefix for templates and object-detail tabs (#391)) — EXECUTING
-Current Plan: 2
+Current Plan: 3
 Total Plans in Phase: 3
 Status: Ready to execute
 Last activity: 2026-11-21 — Phase 06.42 execution started
 
-Next: Execute 06.42-02-PLAN.md
+Next: Execute 06.42-03-PLAN.md
+
+### Phase 06.42 plan 02 execution — 2026-11-21
+
+- Both tasks complete in two RED/GREEN pairs through 7c224425; SUMMARY committed at 9644e405 before progress updates.
+- Config aliases always publish the current prefix, preserving all previous bytes apart from the one approved attribute line. Tabs read global config at each init/dispose scan while retaining ownership and lifecycle behavior.
+- Prefix/modal suite: 130 passed in 7.79s; broad affected Python selection: 246 passed in 9.10s, four workers. JavaScript: 40 passed (27 unchanged plus 13 new), 1.09s. Scoped Ruff/format/whitespace checks pass.
+- JS receipt uses cached Vitest 5.0.5/jsdom 30.1.3; declared-lockfile acceptance remains plan 03. No browser/CoreUI-native or full-matrix acceptance is claimed.
+- ROADMAP SDK records 2/3 executed, complete=false; its stale dotted progress row was reconciled to that result. STATE advanced to plan 3; existing unscoped state.update-progress limitation remains. Original state.json bytes preserved. D-01/D-04/D-05/D-06 are phase-local IDs, so global REQUIREMENTS.md remains unchanged. Phase completion is not claimed.
 
 ### Phase 06.42 plan 01 execution — 2026-11-21
 
@@ -1754,6 +1762,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.40.1 P01 | 4min | 2 tasks | 9 files |
 | Phase 06.40.1 P02 | 5min | 3 tasks | 7 files |
 | Phase 06.42 P01 | 6min | 2 tasks | 10 files |
+| Phase 06.42 P02 | 6min | 2 tasks | 5 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2099,6 +2108,8 @@ Recent decisions affecting current work:
 - [Phase 06.40.1]: Use the six approved ordinary navbar keys without changing registry algorithms, tags or navigation admission.
 - [Phase 06.40.1]: Owner-heading examples use explicit theme-owned h1/h2 markup; global heading settings do not infer navbar presence.
 - [Phase 06.42]: Keep data-prefix registration stdlib-only and validate before scalar assignment; preserve exact raw component baselines.
+- [Phase 06.42]: Always publish data-data-prefix on cv-config, including bs, as the sole approved default config byte difference.
+- [Phase 06.42]: Read global document config in ownedTriggers on every scan; retain existing ownership and adapter lifecycle.
 
 ### Pending Todos
 
@@ -2196,6 +2207,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T09:46:21.493Z
-Stopped at: Completed 06.42-01-PLAN.md
+Last session: 2026-11-21T09:53:26.428Z
+Stopped at: Completed 06.42-02-PLAN.md
 Resume file: None

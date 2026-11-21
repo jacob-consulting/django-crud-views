@@ -1,26 +1,25 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.42"
+current_phase_name: Theme-registered data-attribute prefix for templates and object-detail tabs
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.41 complete, ready to plan Phase 7
-last_updated: "2026-11-21T08:20:33.924Z"
+stopped_at: Phase 06.42 context gathered
+last_updated: "2026-11-21T08:39:19.820Z"
 last_activity: 2026-11-21
-last_activity_desc: Phase 06.41 shipped as PR #392
-state_head: 41ee5aabf8b0ebfe7c85af1e098f3a2a91854836
+last_activity_desc: "Phase 06.42 inserted for issue #391"
+state_head: 1cb6cd7a39985585b8f1bd19fda342d4a7096bf0
 progress:
   total_phases: 48
-  completed_phases: 47
-  total_plans: 271
-  completed_plans: 271
-  percent: 98
+  completed_phases: 46
+  total_plans: 257
+  completed_plans: 257
 milestone_name: milestone
 ---
 
 Total Phases: 48
-Completed Phases: 47
+Completed Phases: 46
 
 # Project State
 
@@ -29,17 +28,17 @@ Completed Phases: 47
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.42 — Theme-registered data-attribute prefix (#391)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.42 — Theme-registered data-attribute prefix for templates and object-detail tabs (#391)
 Current Plan: Not started
 Total Plans in Phase: Not planned
 Status: Ready to plan
-Last activity: 2026-11-21 — Phase 06.41 shipped as PR #392
+Last activity: 2026-11-21 -- Phase 06.42 inserted for issue #391
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.42
 
 ### Phase 06.41 completion — 2026-11-21
 
@@ -2178,6 +2177,7 @@ None yet.
 - Phase 06.40 inserted after Phase 06.39: Object navbar: opt-in section navigation (#381) (URGENT)
 - Phase 06.40.1 inserted after Phase 06.40: ViewSet Navigation: theme class keys and owner-heading layouts (#384); findings 36 and 38, Guardian finding 37 separate (URGENT)
 - Phase 06.41 inserted after Phase 06.40: Current-page bulk selection and action forms for table and card views (#387); approved D-01–D-10 with the code-examples comment captured as planning proposals; replaces the unmerged phase 06.38 (#378) approach (URGENT)
+- Phase 06.42 inserted after Phase 06.40.1: Theme-registered data-attribute prefix for templates and object-detail tabs (#391); explicitly assigned 06.42, approved U1/U2 handover D-01–D-05, before Phase 7 theme-surface freeze (URGENT)
 
 ## Deferred Items
 
@@ -2187,6 +2187,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T08:21:16.745922+00:00
-Stopped at: Phase 06.41 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-21T08:39:12.935Z
+Stopped at: Phase 06.42 context gathered
+Resume file: .planning/phases/06.42-theme-registered-data-attribute-prefix-for-templates-and-obj/06.42-CONTEXT.md

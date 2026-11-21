@@ -208,10 +208,24 @@ markup differs. Project settings (`CRUD_VIEWS_BUTTON_CLASSES`) still win over a 
 def ready(self):
     from crud_views.lib.button_classes import register_button_classes
 
-    register_button_classes({"card:primary": "button is-primary is-small", "form:submit": "button is-primary"})
+    register_button_classes({
+        "card:primary": "button is-primary is-small",
+        "form:submit": "button is-primary",
+        "bulk:primary": "button is-primary",
+        "bulk:secondary": "button is-secondary",
+        "bulk:tertiary": "button is-light",
+        "bulk:danger": "button is-danger",
+    })
 ```
 
 See [Buttons](buttons.md#registering-classes-from-a-theme).
+
+Bulk toolbar buttons use destination variants independently of `form:submit`; effective mode keys such as
+`bulk:danger:icon` override their base key when present. For changed markup, copy the complete
+[bulk button leaf](buttons.md#bulk-button-leaf) with its nine-field contract. It shares `form:hidden-label`,
+`form:icon-host` and `data-cv-tooltip="form"` with form controls. Downstream themes (including CoreUI, Tabler and
+AdminLTE) can register their four classes and mark destructive demo destinations with `cv_action_variant = "danger"`;
+those downstream changes are a theme/demo handoff, separate from this package's Bootstrap defaults.
 
 A design system that builds a button row as a list, and drops the row for a single button, needs no template either:
 
@@ -852,15 +866,17 @@ longer carry a branch of their own. See [Hide or disable inaccessible actions](i
 
 ## Authorized data in overridden templates
 
-The library decides what a user may see and do before a template renders. An overridden template receives context
-that is already authorized, and it should render that context rather than fetch or recompute anything. Hiding a
-control in a template is presentation, not protection: every request is checked again on the server, whatever the
-page showed.
+For permission-filtered action/menu leaves, the library decides which actions a user may see before the leaf
+renders. Render that supplied context rather than fetching or recomputing it. This action/menu rule does not cover
+configured bulk destinations: the toolbar renders them without destination access or item checks during source
+rendering; the destination POST enforces permissions and admission. Styling or hiding a bulk button grants no
+authority. Every request is checked on the server, whatever the page showed.
 
 | Template | What it receives |
 |---|---|
 | List and card templates | Only the rows the view's queryset permits. Do not query the model again in the template. |
 | Button leaves (`tags/button/action.html`, `tags/button/menu_item.html`) | Only actions the user may see. A denied action never reaches the leaf, and a disabled one arrives with `cv_disabled`. |
+| Bulk leaf (`tags/button/bulk.html`) | Configured bulk destinations, with no destination permission/item work or additional queries during source rendering; destination POST owns authorization and admission. |
 | `crud_views/view_delete.content.html`, `snippets/delete/related_objects.html` | Every delete page has independent `has_protected_objects`; omit the whole form while true. Detailed context has selected `protected_objects` and `related_objects`, independent full `related_summary` and `delete_preview_truncated`; these are absent when previews are off. |
 | `crud_views/snippets/delete/protected_objects.html` | Independent body inside the shared alert frame, consuming caller-context `items` with model instance `obj` and always `url=None`. Render escaped plain text; model fields use `item.obj.field`. |
 | `crud_views/view_guardian_manage.html` | Shared `manage_*` cards, including each `manage_views` row's `guardian_policy` and `manage_guardian.get_objects_for_user`; legacy dictionaries remain available. See [manage contracts](#structured-manage-contracts). |

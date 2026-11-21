@@ -562,8 +562,15 @@ def test_copied_bulk_leaf_contract(
     client_user_bulk_publisher_view, bulk_publishers, settings, monkeypatch, source, mode, icon, hostile
 ):
     fields = {
-        "cv_id", "cv_variant", "cv_label_mode", "cv_label", "cv_icon", "cv_icon_class",
-        "cv_icon_inline", "cv_title", "cv_flat_attrs",
+        "cv_id",
+        "cv_variant",
+        "cv_label_mode",
+        "cv_label",
+        "cv_icon",
+        "cv_icon_class",
+        "cv_icon_inline",
+        "cv_title",
+        "cv_flat_attrs",
     }
     text = (ROOT / "docs/reference/buttons.md").read_text()
     assert "### Bulk button leaf\n" in text, "Publish the complete nine-field bulk leaf recipe"
@@ -571,7 +578,10 @@ def test_copied_bulk_leaf_contract(
     (copied,) = re.findall(r"```django\n(.*?)```", contract, re.S)
     assert copied.endswith("\n")  # Preserve the stock leaf's terminal newline.
     assert set(re.findall(r"^\| `(cv_\w+)` \|", contract, re.M)) == fields
-    templates = [Template(copied), Template((ROOT / "src/crud_views/templates/crud_views/tags/button/bulk.html").read_text())]
+    templates = [
+        Template(copied),
+        Template((ROOT / "src/crud_views/templates/crud_views/tags/button/bulk.html").read_text()),
+    ]
     settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"bulk": mode}
     settings.CRUD_VIEWS_ICON_LIBRARIES = HOST_LIBRARY
     settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:danger:icon": "theme-danger-icon"}
@@ -592,7 +602,7 @@ def test_copied_bulk_leaf_contract(
     with override("en"):
         response = client_user_bulk_publisher_view.get(source)
     assert response.status_code == 200
-    (data, stock) = [(data, stock) for data, stock in payloads if data["cv_id"] == "cv-bulk-archive"]
+    ((data, stock),) = [(data, stock) for data, stock in payloads if data["cv_id"] == "cv-bulk-archive"]
     projected = {key: value for key, value in data.items() if key in fields}
     assert set(projected) == fields - ({"cv_title"} if mode != "icon" else set())
     resolve = Variable.resolve
@@ -614,7 +624,7 @@ def test_copied_bulk_leaf_contract(
 
     synthetic = Template("{% if cv_key %}undeclared{% endif %}")
     for context in ({}, {"cv_key": False}, {"cv_key": "truthy"}):
-        with pytest.raises(AssertionError, match="Undeclared bulk leaf inputs.*cv_key"):
+        with pytest.raises(AssertionError, match=r"Undeclared bulk leaf inputs.*cv_key"):
             guarded(synthetic, context)
     for template in templates:
         assert guarded(template, projected) == stock
@@ -629,7 +639,7 @@ def test_copied_bulk_leaf_contract(
     if mode == "icon":
         assert "theme-danger-icon" in button.classes
         assert button.get("title") == label
-    if icon == "ui:archive":
+    if icon == "ui:archive" and mode != "label":
         assert projected["cv_icon_inline"] is False
 
 

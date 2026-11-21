@@ -1,4 +1,4 @@
-// Checker-only mutations of a captured fixture; no browser or evidence file writes.
+// Checker/writer regressions use isolated fixtures; never write historical evidence.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -79,17 +79,23 @@ for (const [id, outcome, corrupt] of [
 const compactDefault = '.planning/phases/06.24-opt-in-compact-formsets-shared-desktop-headings-and-nested-m/browser-captures';
 const compactLocal = '.planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures';
 const compactWriter = source.slice(source.indexOf('async function compactCapture('), source.indexOf("(argv.includes('--check-evidence')"));
-function compactSample({flag, destination = compactDefault, ignored = true, tracked = false} = {}) {
+function compactSample({flag, destination = compactDefault, ignored = true, tracked = false, realFiles = false} = {}) {
     const bytes = new Map(), calls = [], writes = [];
     const mockFs = {...fs,
         readFileSync(file, ...args) {
-            if (String(file).endsWith('.png')) {
+            if (!realFiles && String(file).endsWith('.png')) {
                 assert(bytes.has(file), `Missing fixture PNG: ${file}`);
                 return bytes.get(file);
             }
             return fs.readFileSync(file, ...args);
         },
-        mkdirSync() {},
+        lstatSync(file, options) {
+            if (!realFiles && String(file).endsWith('.png')) {
+                return bytes.has(file) ? {isFile: () => true} : undefined;
+            }
+            return fs.lstatSync(file, options);
+        },
+        mkdirSync(...args) {if (realFiles) fs.mkdirSync(...args);},
     };
     const mockCp = {...require('node:child_process'), spawnSync(command, args) {
         assert.equal(command, 'git'); calls.push(args);
@@ -110,9 +116,17 @@ function compactSample({flag, destination = compactDefault, ignored = true, trac
         capture.path = `${destination}/compact-lifecycle/${path.basename(capture.path)}`;
         const body = Buffer.from(`unit fixture ${capture.path}`);
         bytes.set(capture.path, body);
+        if (realFiles) {
+            fs.mkdirSync(path.dirname(capture.path), {recursive: true});
+            fs.writeFileSync(capture.path, body);
+        }
         capture.sha256 = require('node:crypto').createHash('sha256').update(body).digest('hex');
     }
-    const page = {async screenshot({path: file}) {writes.push(file); bytes.set(file, Buffer.from('new screenshot'));}};
+    const page = {async screenshot({path: file}) {
+        writes.push(file);
+        bytes.set(file, Buffer.from('new screenshot'));
+        if (realFiles) fs.writeFileSync(file, 'new screenshot');
+    }};
     return {...api, bytes, calls, writes, page};
 }
 
@@ -187,3 +201,40 @@ test('compact default writer preserves tracked historical destination behavior',
     await sample.compactCapture(sample.page, result, 'invalid-390', 390, {unit: true});
     assert.equal(sample.writes.length, 1);
 });
+
+for (const kind of ['symlink', 'dangling symlink', 'directory']) {
+    for (const mode of ['writer', 'checker']) {
+        test(`compact override ${mode} rejects later ${kind} leaf before writing`, async t => {
+            const root = path.resolve(__dirname, '../..');
+            const temporary = fs.mkdtempSync(path.join(root, '.compact-capture-test-'));
+            t.after(() => fs.rmSync(temporary, {recursive: true, force: true}));
+            const destination = path.relative(root, temporary);
+            // Git results are isolated; leaf inspection and screenshot file writes use the real filesystem.
+            const sample = compactSample({flag: destination, destination, realFiles: true});
+            sample.validateEvidence(sample.record);
+            const result = sample.record.cases[0];
+            const later = result.captures.at(-1).path;
+            const protectedFile = path.join(temporary, 'protected.txt');
+            fs.writeFileSync(protectedFile, 'protected target');
+            const missingFile = path.join(temporary, 'missing.txt');
+            fs.unlinkSync(later);
+            if (kind === 'directory') fs.mkdirSync(later);
+            else fs.symlinkSync(kind === 'symlink' ? protectedFile : missingFile, later);
+            if (kind === 'symlink') {
+                // A matching digest must not allow the checker to accept a symlink.
+                result.captures.at(-1).sha256 = require('node:crypto').createHash('sha256')
+                    .update('protected target').digest('hex');
+            }
+            if (mode === 'writer') {
+                result.captures.length = 0;
+                await assert.rejects(sample.compactCapture(sample.page, result, 'invalid-390', 390, {unit: true}),
+                    /regular file/);
+            } else {
+                assert.throws(() => sample.validateEvidence(sample.record), /regular file/);
+            }
+            assert.deepEqual(sample.writes, []);
+            assert.equal(fs.readFileSync(protectedFile, 'utf8'), 'protected target');
+            assert.equal(fs.existsSync(missingFile), false);
+        });
+    }
+}

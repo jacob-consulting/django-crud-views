@@ -45,6 +45,11 @@ assert(port >= 1024 && port <= 65535 && port !== 8143, 'CV_CONDITIONAL_PORT must
 const base = `http://127.0.0.1:${port}`;
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+function validateCompactCaptureLeaf(file) {
+    // lstat also sees dangling symlinks; only absent or ordinary file leaves are writable.
+    const stat = fs.lstatSync(file, {throwIfNoEntry: false});
+    assert(!stat || stat.isFile(), `Override compact PNG must be a regular file: ${file}`);
+}
 function filesIn(dir) {
     return fs.readdirSync(dir, {withFileTypes: true}).flatMap(e => e.isDirectory() ? filesIn(`${dir}/${e.name}`) : [`${dir}/${e.name}`]);
 }
@@ -226,6 +231,7 @@ function validateEvidence(r) {
                 assert.equal(capture.path, `${compactCaptureRoot}/${c.id}/${path.basename(capture.path)}`, 'Wrong compact capture path');
                 assert.equal(cp.spawnSync('git', ['check-ignore', '--no-index', capture.path]).status, 0);
                 if (compactCaptureOverride !== undefined) {
+                    validateCompactCaptureLeaf(capture.path);
                     const tracked = cp.spawnSync('git', ['ls-files', '--', capture.path], {encoding:'utf8'});
                     assert.equal(tracked.status, 0, 'Cannot inspect compact capture index');
                     assert.equal(tracked.stdout.trim(), '', 'Override compact PNG must be untracked');
@@ -1168,6 +1174,7 @@ async function compactCapture(page, result, name, width, measurements) {
             : ['invalid-390', 'invalid-1280', 'saved-390', 'saved-1280'];
         for (const basename of names) {
             const destination = `${compactCaptureRoot}/${result.id}/${basename}.png`;
+            validateCompactCaptureLeaf(destination);
             assert.equal(cp.spawnSync('git', ['check-ignore', '--no-index', destination]).status, 0, 'Compact PNG must be ignored');
             const tracked = cp.spawnSync('git', ['ls-files', '--', destination], {encoding:'utf8'});
             assert.equal(tracked.status, 0, 'Cannot inspect compact capture index');

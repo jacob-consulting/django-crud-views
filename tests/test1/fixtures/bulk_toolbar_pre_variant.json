@@ -1,0 +1,366 @@
+{
+  "source_revision": "699e3dc1e16446ba7f5990aa52c3508b11e66c11",
+  "renderer": "crud_views/tags/button/form.html",
+  "cases": {
+    "table/label/available": {
+      "source": "table",
+      "mode": "label",
+      "icons": "available",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ]
+    },
+    "card/label/available": {
+      "source": "card",
+      "mode": "label",
+      "icons": "available",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ]
+    },
+    "table/icon/available": {
+      "source": "table",
+      "mode": "icon",
+      "icons": "available",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" title=\"Archive now\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" title=\"Delete\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" title=\"Archive now\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" title=\"Delete\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Delete</span></button>\n"
+      ]
+    },
+    "card/icon/available": {
+      "source": "card",
+      "mode": "icon",
+      "icons": "available",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" title=\"Archive now\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" title=\"Archive now\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i><span class=\"visually-hidden\">Archive now</span></button>\n"
+      ]
+    },
+    "table/both/available": {
+      "source": "table",
+      "mode": "both",
+      "icons": "available",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Delete</span></button>\n"
+      ]
+    },
+    "card/both/available": {
+      "source": "card",
+      "mode": "both",
+      "icons": "available",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><i class=\"fa-regular fa-trash-can\" aria-hidden=\"true\"></i> <span>Archive now</span></button>\n"
+      ]
+    },
+    "table/label/missing": {
+      "source": "table",
+      "mode": "label",
+      "icons": "missing",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ]
+    },
+    "card/label/missing": {
+      "source": "card",
+      "mode": "label",
+      "icons": "missing",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ]
+    },
+    "table/icon/missing": {
+      "source": "table",
+      "mode": "icon",
+      "icons": "missing",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ]
+    },
+    "card/icon/missing": {
+      "source": "card",
+      "mode": "icon",
+      "icons": "missing",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ]
+    },
+    "table/both/missing": {
+      "source": "table",
+      "mode": "both",
+      "icons": "missing",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ]
+    },
+    "card/both/missing": {
+      "source": "card",
+      "mode": "both",
+      "icons": "missing",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ]
+    },
+    "table/label/disabled": {
+      "source": "table",
+      "mode": "label",
+      "icons": "disabled",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ]
+    },
+    "card/label/disabled": {
+      "source": "card",
+      "mode": "label",
+      "icons": "disabled",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ]
+    },
+    "table/icon/disabled": {
+      "source": "table",
+      "mode": "icon",
+      "icons": "disabled",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ]
+    },
+    "card/icon/disabled": {
+      "source": "card",
+      "mode": "icon",
+      "icons": "disabled",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ]
+    },
+    "table/both/disabled": {
+      "source": "table",
+      "mode": "both",
+      "icons": "disabled",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ]
+    },
+    "card/both/disabled": {
+      "source": "card",
+      "mode": "both",
+      "icons": "disabled",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ]
+    },
+    "table/label/host": {
+      "source": "table",
+      "mode": "label",
+      "icons": "host",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ]
+    },
+    "card/label/host": {
+      "source": "card",
+      "mode": "label",
+      "icons": "host",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ]
+    },
+    "table/icon/host": {
+      "source": "table",
+      "mode": "icon",
+      "icons": "host",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary icon-archive\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary icon-archive\" title=\"Archive now\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span class=\"visually-hidden\">Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary icon-archive\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary icon-archive\" title=\"Delete\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span class=\"visually-hidden\">Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary icon-archive\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary icon-archive\" title=\"Archive now\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span class=\"visually-hidden\">Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary icon-archive\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary icon-archive\" title=\"Delete\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span class=\"visually-hidden\">Delete</span></button>\n"
+      ]
+    },
+    "card/icon/host": {
+      "source": "card",
+      "mode": "icon",
+      "icons": "host",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary icon-archive\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary icon-archive\" title=\"Archive now\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span class=\"visually-hidden\">Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary icon-archive\" title=\"Archive\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span class=\"visually-hidden\">Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary icon-archive\" title=\"Archive now\" data-cv-tooltip=\"form\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span class=\"visually-hidden\">Archive now</span></button>\n"
+      ]
+    },
+    "table/both/host": {
+      "source": "table",
+      "mode": "both",
+      "icons": "host",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive now</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-rename\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"rename\" formaction=\"/bulk-publisher/rename/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-bulk_delete\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"bulk_delete\" formaction=\"/bulk-publisher/bulk-delete/?cv_from=list&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJsaXN0IiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AcTR2WX5C2yElqamHUZ6rUQI7D31CPpif1SBwKUQGeXM\"><span>Delete</span></button>\n"
+      ]
+    },
+    "card/both/host": {
+      "source": "card",
+      "mode": "both",
+      "icons": "host",
+      "buttons": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ],
+      "controls": [
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"archive\" formaction=\"/bulk-publisher/archive/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive</span></button>\n",
+        "<button type=\"submit\" name=\"cv_bulk_stage\" value=\"review\" id=\"cv-bulk-archive_now\"\n    class=\"btn btn-primary icon-archive\" data-cv-bulk-action=\"archive_now\" formaction=\"/bulk-publisher/archive-now/?cv_from=card&amp;cv_from_cancel=eyJ2IjoxLCJvcmlnaW4iOiJjYXJkIiwicXVlcnkiOiIiLCJ2aWV3c2V0IjpbIiIsImJ1bGtfcHVibGlzaGVyIl0sInBhcmVudHMiOnt9fQ%3AG2Ed0nnx6XXMBXRh34acqqJsreePLVDPh6LUdSUM_3U\"><span>Archive now</span></button>\n"
+      ]
+    }
+  }
+}

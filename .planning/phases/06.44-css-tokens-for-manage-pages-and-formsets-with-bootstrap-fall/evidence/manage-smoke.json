@@ -9,7 +9,7 @@
     "--output",
     ".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/manage-smoke.json"
   ],
-  "started": "2026-11-21T11:01:30.100Z",
+  "started": "2026-11-21T13:47:06.288Z",
   "cases": [
     {
       "id": "core-normal-390",
@@ -621,10 +621,46 @@
       "source": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     },
     {
+      "url": "http://127.0.0.1:40179/static/crud_views/css/property.css",
+      "status": 200,
+      "sha256": "127b36c0f767bb2d05d7bb5bbce3f92de59657d5fd24679f5136c39d8b8454af",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/property.css"
+    },
+    {
       "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
       "status": 200,
       "sha256": "74005d7c17d4a02f2f25404ec0655d9bc2fdaa53166874c87d7b7eec69d9088a",
       "source": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views/css/table.css",
+      "status": 200,
+      "sha256": "17f7c3d900d57c423e0728b41ef9cd39f4d4c7ea828294c71c9a84efd56deea4",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/table.css"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views/css/formset.css",
+      "status": 200,
+      "sha256": "e216fdbfe50dc9424184290922d8e03fd532e6d8dc472ef100bfe879258c4e27",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/formset.css"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views/css/icons.css",
+      "status": 200,
+      "sha256": "1330b06fd3850f4b8567e1fd0c44cd2dc942d1d547d5ac9de1902467105db255",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/icons.css"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views/css/manage.css",
+      "status": 200,
+      "sha256": "8b617bf32db046ad6f6daa379dd7c79a4b5b0efe2f05b2521c6b691f6d19670c",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/manage.css"
+    },
+    {
+      "url": "http://127.0.0.1:40179/jquery.js",
+      "status": 200,
+      "sha256": "fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/node_modules/jquery/dist/jquery.min.js"
     },
     {
       "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
@@ -633,94 +669,64 @@
       "source": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/css/property.css",
-      "status": 200,
-      "sha256": "127b36c0f767bb2d05d7bb5bbce3f92de59657d5fd24679f5136c39d8b8454af",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/property.css"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/css/table.css",
-      "status": 200,
-      "sha256": "17f7c3d900d57c423e0728b41ef9cd39f4d4c7ea828294c71c9a84efd56deea4",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/table.css"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/css/formset.css",
-      "status": 200,
-      "sha256": "e216fdbfe50dc9424184290922d8e03fd532e6d8dc472ef100bfe879258c4e27",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/formset.css"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/css/icons.css",
-      "status": 200,
-      "sha256": "1330b06fd3850f4b8567e1fd0c44cd2dc942d1d547d5ac9de1902467105db255",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/icons.css"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/css/manage.css",
-      "status": 200,
-      "sha256": "8b617bf32db046ad6f6daa379dd7c79a4b5b0efe2f05b2521c6b691f6d19670c",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/manage.css"
-    },
-    {
-      "url": "http://127.0.0.1:43833/jquery.js",
-      "status": 200,
-      "sha256": "fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/node_modules/jquery/dist/jquery.min.js"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/adapters.js",
-      "status": 200,
-      "sha256": "06eed642fdf55daa7aa6afea2099f25c69ac153062d926c707e34c74316eaf2b",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/adapters.js"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/viewset.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/viewset.js",
       "status": 200,
       "sha256": "f3a411cc7b779a88e40a86e8189eafcc8e9c965e47503f94cad218b7b9fd5367",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/viewset.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/formset.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/formset.js",
       "status": 200,
       "sha256": "b8a48c082e12728cae16caa62b52f568ee281ac647eb8bbd9920a92b1570d025",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/formset.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/list.filter.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/adapters.js",
       "status": 200,
-      "sha256": "86600d74a66dcd586a6eb749369b858a19e365b21f9ff17646b79457805810a3",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/list.filter.js"
+      "sha256": "06eed642fdf55daa7aa6afea2099f25c69ac153062d926c707e34c74316eaf2b",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/adapters.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/modal.js",
-      "status": 200,
-      "sha256": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/modal.js"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/toggle.js",
-      "status": 200,
-      "sha256": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/toggle.js"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/tooltip.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/tooltip.js",
       "status": 200,
       "sha256": "69212dee6b30d655c08dbfeb2e423ede582c8b9ecf10358d64bf5d9196e62802",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/tooltip.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/manage.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/manage.js",
       "status": 200,
       "sha256": "c790b4176e86fed8ab8ce1ca12b497208990133cf804afe65b93d737335a9fe9",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/manage.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views_object_detail/js/tabs.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/bulk.js",
       "status": 200,
-      "sha256": "513fbd6652fc7afd4405d2c8eaf3c58239ecae9ba48afbd109c83dd806fce27d",
+      "sha256": "36a939572058f06f727cd6a71852371928f072bb8628b84da69f390443229bee",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/bulk.js"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views_object_detail/js/tabs.js",
+      "status": 200,
+      "sha256": "0566681a04048d8a32b3951dade373f7940d793c010c070fa51930231ee17602",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views/js/list.filter.js",
+      "status": 200,
+      "sha256": "86600d74a66dcd586a6eb749369b858a19e365b21f9ff17646b79457805810a3",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/list.filter.js"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views/js/modal.js",
+      "status": 200,
+      "sha256": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/modal.js"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views/js/toggle.js",
+      "status": 200,
+      "sha256": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/toggle.js"
     },
     {
       "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
@@ -735,145 +741,153 @@
       "source": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     },
     {
+      "url": "http://127.0.0.1:40179/static/crud_views/css/property.css",
+      "status": 200,
+      "sha256": "127b36c0f767bb2d05d7bb5bbce3f92de59657d5fd24679f5136c39d8b8454af",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/property.css"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views/css/table.css",
+      "status": 200,
+      "sha256": "17f7c3d900d57c423e0728b41ef9cd39f4d4c7ea828294c71c9a84efd56deea4",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/table.css"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views/css/formset.css",
+      "status": 200,
+      "sha256": "e216fdbfe50dc9424184290922d8e03fd532e6d8dc472ef100bfe879258c4e27",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/formset.css"
+    },
+    {
       "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
       "status": 200,
       "sha256": "0833b2e9c3a26c258476c46266e6877fc75218625162e0460be9a3a098a61c6c",
       "source": "/home/alex/.cache/django-crud-views/cancel-assets-06.7/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/css/property.css",
-      "status": 200,
-      "sha256": "127b36c0f767bb2d05d7bb5bbce3f92de59657d5fd24679f5136c39d8b8454af",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/property.css"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/css/table.css",
-      "status": 200,
-      "sha256": "17f7c3d900d57c423e0728b41ef9cd39f4d4c7ea828294c71c9a84efd56deea4",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/table.css"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/css/formset.css",
-      "status": 200,
-      "sha256": "e216fdbfe50dc9424184290922d8e03fd532e6d8dc472ef100bfe879258c4e27",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/formset.css"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/css/icons.css",
+      "url": "http://127.0.0.1:40179/static/crud_views/css/icons.css",
       "status": 200,
       "sha256": "1330b06fd3850f4b8567e1fd0c44cd2dc942d1d547d5ac9de1902467105db255",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/icons.css"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/css/manage.css",
+      "url": "http://127.0.0.1:40179/static/crud_views/css/manage.css",
       "status": 200,
       "sha256": "8b617bf32db046ad6f6daa379dd7c79a4b5b0efe2f05b2521c6b691f6d19670c",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/css/manage.css"
     },
     {
-      "url": "http://127.0.0.1:43833/jquery.js",
-      "status": 200,
-      "sha256": "fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/node_modules/jquery/dist/jquery.min.js"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/adapters.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/adapters.js",
       "status": 200,
       "sha256": "06eed642fdf55daa7aa6afea2099f25c69ac153062d926c707e34c74316eaf2b",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/adapters.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/viewset.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/viewset.js",
       "status": 200,
       "sha256": "f3a411cc7b779a88e40a86e8189eafcc8e9c965e47503f94cad218b7b9fd5367",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/viewset.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/formset.js",
-      "status": 200,
-      "sha256": "b8a48c082e12728cae16caa62b52f568ee281ac647eb8bbd9920a92b1570d025",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/formset.js"
-    },
-    {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/list.filter.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/list.filter.js",
       "status": 200,
       "sha256": "86600d74a66dcd586a6eb749369b858a19e365b21f9ff17646b79457805810a3",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/list.filter.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/modal.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/formset.js",
+      "status": 200,
+      "sha256": "b8a48c082e12728cae16caa62b52f568ee281ac647eb8bbd9920a92b1570d025",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/formset.js"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views/js/modal.js",
       "status": 200,
       "sha256": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/modal.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/tooltip.js",
+      "url": "http://127.0.0.1:40179/jquery.js",
       "status": 200,
-      "sha256": "69212dee6b30d655c08dbfeb2e423ede582c8b9ecf10358d64bf5d9196e62802",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/tooltip.js"
+      "sha256": "fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/node_modules/jquery/dist/jquery.min.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/toggle.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/toggle.js",
       "status": 200,
       "sha256": "adbf2ca6c22708171a8ee76169930be17b73f395d489e8dd54d4580d67904e9a",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/toggle.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views_object_detail/js/tabs.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/tooltip.js",
       "status": 200,
-      "sha256": "513fbd6652fc7afd4405d2c8eaf3c58239ecae9ba48afbd109c83dd806fce27d",
-      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js"
+      "sha256": "69212dee6b30d655c08dbfeb2e423ede582c8b9ecf10358d64bf5d9196e62802",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/tooltip.js"
     },
     {
-      "url": "http://127.0.0.1:43833/static/crud_views/js/manage.js",
+      "url": "http://127.0.0.1:40179/static/crud_views/js/manage.js",
       "status": 200,
       "sha256": "c790b4176e86fed8ab8ce1ca12b497208990133cf804afe65b93d737335a9fe9",
       "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/manage.js"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views/js/bulk.js",
+      "status": 200,
+      "sha256": "36a939572058f06f727cd6a71852371928f072bb8628b84da69f390443229bee",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/static/crud_views/js/bulk.js"
+    },
+    {
+      "url": "http://127.0.0.1:40179/static/crud_views_object_detail/js/tabs.js",
+      "status": 200,
+      "sha256": "0566681a04048d8a32b3951dade373f7940d793c010c070fa51930231ee17602",
+      "source": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js"
     }
   ],
   "requiredAssets": [
     "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-    "http://127.0.0.1:43833/static/crud_views/css/property.css",
-    "http://127.0.0.1:43833/static/crud_views/css/table.css",
-    "http://127.0.0.1:43833/static/crud_views/css/formset.css",
-    "http://127.0.0.1:43833/static/crud_views/css/icons.css",
-    "http://127.0.0.1:43833/static/crud_views/css/manage.css",
+    "http://127.0.0.1:40179/static/crud_views/css/property.css",
+    "http://127.0.0.1:40179/static/crud_views/css/table.css",
+    "http://127.0.0.1:40179/static/crud_views/css/formset.css",
+    "http://127.0.0.1:40179/static/crud_views/css/icons.css",
+    "http://127.0.0.1:40179/static/crud_views/css/manage.css",
     "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-    "http://127.0.0.1:43833/jquery.js",
-    "http://127.0.0.1:43833/static/crud_views/js/adapters.js",
-    "http://127.0.0.1:43833/static/crud_views/js/viewset.js",
-    "http://127.0.0.1:43833/static/crud_views/js/formset.js",
-    "http://127.0.0.1:43833/static/crud_views/js/list.filter.js",
-    "http://127.0.0.1:43833/static/crud_views/js/modal.js",
-    "http://127.0.0.1:43833/static/crud_views/js/toggle.js",
-    "http://127.0.0.1:43833/static/crud_views/js/tooltip.js",
-    "http://127.0.0.1:43833/static/crud_views/js/manage.js",
-    "http://127.0.0.1:43833/static/crud_views_object_detail/js/tabs.js",
+    "http://127.0.0.1:40179/jquery.js",
+    "http://127.0.0.1:40179/static/crud_views/js/adapters.js",
+    "http://127.0.0.1:40179/static/crud_views/js/viewset.js",
+    "http://127.0.0.1:40179/static/crud_views/js/formset.js",
+    "http://127.0.0.1:40179/static/crud_views/js/list.filter.js",
+    "http://127.0.0.1:40179/static/crud_views/js/modal.js",
+    "http://127.0.0.1:40179/static/crud_views/js/toggle.js",
+    "http://127.0.0.1:40179/static/crud_views/js/tooltip.js",
+    "http://127.0.0.1:40179/static/crud_views/js/manage.js",
+    "http://127.0.0.1:40179/static/crud_views/js/bulk.js",
+    "http://127.0.0.1:40179/static/crud_views_object_detail/js/tabs.js",
     "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
-    "http://127.0.0.1:43833/static/crud_views/css/property.css",
-    "http://127.0.0.1:43833/static/crud_views/css/table.css",
-    "http://127.0.0.1:43833/static/crud_views/css/formset.css",
-    "http://127.0.0.1:43833/static/crud_views/css/icons.css",
-    "http://127.0.0.1:43833/static/crud_views/css/manage.css",
+    "http://127.0.0.1:40179/static/crud_views/css/property.css",
+    "http://127.0.0.1:40179/static/crud_views/css/table.css",
+    "http://127.0.0.1:40179/static/crud_views/css/formset.css",
+    "http://127.0.0.1:40179/static/crud_views/css/icons.css",
+    "http://127.0.0.1:40179/static/crud_views/css/manage.css",
     "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-    "http://127.0.0.1:43833/jquery.js",
-    "http://127.0.0.1:43833/static/crud_views/js/adapters.js",
-    "http://127.0.0.1:43833/static/crud_views/js/viewset.js",
-    "http://127.0.0.1:43833/static/crud_views/js/formset.js",
-    "http://127.0.0.1:43833/static/crud_views/js/list.filter.js",
-    "http://127.0.0.1:43833/static/crud_views/js/modal.js",
-    "http://127.0.0.1:43833/static/crud_views/js/toggle.js",
-    "http://127.0.0.1:43833/static/crud_views/js/tooltip.js",
-    "http://127.0.0.1:43833/static/crud_views/js/manage.js",
-    "http://127.0.0.1:43833/static/crud_views_object_detail/js/tabs.js"
+    "http://127.0.0.1:40179/jquery.js",
+    "http://127.0.0.1:40179/static/crud_views/js/adapters.js",
+    "http://127.0.0.1:40179/static/crud_views/js/viewset.js",
+    "http://127.0.0.1:40179/static/crud_views/js/formset.js",
+    "http://127.0.0.1:40179/static/crud_views/js/list.filter.js",
+    "http://127.0.0.1:40179/static/crud_views/js/modal.js",
+    "http://127.0.0.1:40179/static/crud_views/js/toggle.js",
+    "http://127.0.0.1:40179/static/crud_views/js/tooltip.js",
+    "http://127.0.0.1:40179/static/crud_views/js/manage.js",
+    "http://127.0.0.1:40179/static/crud_views/js/bulk.js",
+    "http://127.0.0.1:40179/static/crud_views_object_detail/js/tabs.js"
   ],
   "cleanup": [
     {
-      "pid": 417014,
+      "pid": 556446,
       "stopped": true,
-      "directory": "/tmp/cv-manage-mxPSzW",
+      "directory": "/tmp/cv-manage-BKmz44",
       "databaseRemoved": true
     }
   ],
@@ -962,12 +976,12 @@
     ]
   },
   "sources": {
-    "head": "5ae47d50631c4c13ac758c1121c1cec619666edc",
+    "head": "5b3fc9a04c44e0814e2af8086fb6f5a672252158",
     "files": {
       "src/crud_views/__init__.py": "3a56ad144140e2db6a49222257c8dd13eb2adca1b9ceeda19c2e01e26cd6177b",
       "src/crud_views/apps.py": "6f703360e9e76a87ae9d65b772390f13a8e298fa0d3e6b193286c802d9584b34",
       "src/crud_views/checks.py": "99f1e15f53aef0c913f5491a2ab1b7b62ca0474b46dc7f69f681388652fecdec",
-      "src/crud_views/lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/crud_views/lib/__init__.py": "f2a742eea7372687a2fb4769eeb8774d01c7a03e5be483922b43a40f522c99b4",
       "src/crud_views/lib/access_trace.py": "c34e508930ae11a0d9c85580bb1cadbdccca05c587d3c44570ae38b9a84892b5",
       "src/crud_views/lib/access_trace_export.py": "35753fe0f2b7cd83c56cc8b1a07e14ab2984e2df8c173bb6af515efc41ca0223",
       "src/crud_views/lib/access_trace_runner.py": "eddeb4585fd28f7530b5382ab7779bc5cb9afdffeda4810c69ed62155e3b191e",
@@ -976,7 +990,8 @@
       "src/crud_views/lib/ancestors.py": "6ea88f8c4eeff02402af390f5447a7a4290b0f48f4531d31467c462be97f614d",
       "src/crud_views/lib/assets.py": "815fabd2b3616d6efb5ca04074fc7f362d88005abec53f096d34478f6dc2797b",
       "src/crud_views/lib/breadcrumb.py": "675d281efae8d7b900766fe300b9ddde5a904c041737ea6575b6f18d3206b74c",
-      "src/crud_views/lib/button_classes.py": "246da41009787b222284c7ba3c3f7a087329ce6c1b4747b1ea601ff81751d0e3",
+      "src/crud_views/lib/bulk/__init__.py": "a1ceea8cbf0ba52e3590f5a49efde050bb32c4ab64fea84084bd11a2ef984762",
+      "src/crud_views/lib/button_classes.py": "2ac1fbcdafb6bcb55d6e6da20638536a43b72cd34bebe9a53c507a46f8380763",
       "src/crud_views/lib/check.py": "6f0e03f8dd87d26b3589b2b68dffb8d97e463d12d8e114a9c07ef542a2ba57d6",
       "src/crud_views/lib/conditional/__init__.py": "bb875e2fd013694b190dfbda334e13d152f1d0a8fddb94d4d41f636ed3dd2c10",
       "src/crud_views/lib/conditional/formset.py": "b25a46c6016d3916f0c2dff18c771de89f8f5ff14cbd60208bca4f9cab3b6041",
@@ -990,6 +1005,7 @@
       "src/crud_views/lib/crispy/buttons.py": "1d7092ef2be94c63e834a612adb8a8121242f22525a459af022776abc1245fba",
       "src/crud_views/lib/crispy/form.py": "b3adea0be60b969703df43f1b2975842a1291eb9dfb32ae73f4a54f32716c9d8",
       "src/crud_views/lib/crispy/table.py": "cce837dc72c088cda909d94ff2c741c8c2a33786de3cd855f807c6a246eef1f3",
+      "src/crud_views/lib/data_prefix.py": "94ec91d87d5a5dec9ea1bb8b44dda68fec6043c8aec0dd07d50168fce585dba4",
       "src/crud_views/lib/deletion.py": "91b3464f8337006d79b839e4af344dd223fcf12e2ee536f14d0545c3f36280b6",
       "src/crud_views/lib/exceptions.py": "0072a39d98525f445939f027d76568b32388ecd5302cc59d36c8a270731d2e96",
       "src/crud_views/lib/formsets/__init__.py": "2fdf0da93267781d818af1dc00344083d2d2579508390c6a682ad86c92a26e72",
@@ -1008,7 +1024,7 @@
       "src/crud_views/lib/pipeline.py": "d675c2091eed75b65dec51e33a2d3c81b4d556a7bb6f859f398bb68116fd0f35",
       "src/crud_views/lib/resource.py": "6c921ed896b570472e604b2518a26a319173b3ce46c59eb74c48765a94bc8260",
       "src/crud_views/lib/session.py": "f44b8a4fc249afc9ad3db6c62e552f85d4925d4029e6f4349008c66966c74d74",
-      "src/crud_views/lib/settings.py": "87cdc74bb6028f446d0c9242dd664f1df2d7bb1c7e59f1d46e3f45baee86fee0",
+      "src/crud_views/lib/settings.py": "0617de3fc2dd7f46aa11e4d85a70c96adbf211e268e6917ef85f981e7ea9d58b",
       "src/crud_views/lib/table/__init__.py": "a338bdccef6068cd9892579146a38a203b8f9338a32fdd985d4a142a46289545",
       "src/crud_views/lib/table/attrs.py": "32fa50e24f9fb81aa4ee1d71702279573c5c586f6e1a1f3c44db90fd04f89564",
       "src/crud_views/lib/table/columns.py": "c7170fe7ac6df56e1dd55ed0e2e0dc8c7ab75fe6f4a630eaa00a63e685adae4c",
@@ -1017,12 +1033,12 @@
       "src/crud_views/lib/view/__init__.py": "12348de5ba48918ca6b4e7693720e07164e60388ee4dcc0d39dac3e3281d8255",
       "src/crud_views/lib/view/action_menu.py": "f39bb30b71d706012341f9f3ee4abdf299b2d2a28ffa18da279284a072745602",
       "src/crud_views/lib/view/base.py": "75d512e211bff665c349fd73dbca1f763bddc52296df8f4dddd834b8c29a79b9",
-      "src/crud_views/lib/view/button_data.py": "f251e3018884511b69dd8fa5d0aa357f432e7e522da67794a0afb54ea29f9eff",
+      "src/crud_views/lib/view/button_data.py": "4529d27bb9418c97a1ee5bf89418b281bbdee1f540e222c8ba7942e99891a962",
       "src/crud_views/lib/view/buttons.py": "e7ba4108f7f237ea6e5fc49a7e711dd60bf104681f5b41619fa640e740d8eef4",
       "src/crud_views/lib/view/cancel.py": "2346062872e6d8e2c606aca91a81c39469f9873c90a93e59fe857d66c821e8af",
       "src/crud_views/lib/view/card.py": "1aa942b39ae0a5e6b20daa5037d0801a4fa2cd95a906cfdac74bedb2373cb61e",
       "src/crud_views/lib/view/context.py": "ee871ad35b3bbf412c4af227555ccad92d34499e048557b20820bc3cfd2b44a3",
-      "src/crud_views/lib/view/label_mode.py": "0b3f31dc9c283cb2b47cd4ae59935732c6922d70d88e4dffdd830e420e0da2f7",
+      "src/crud_views/lib/view/label_mode.py": "61cf8f84a63d92b6cb8372860b7bf3ec4e3133243cee2cca9fb2fc67c60c1ce5",
       "src/crud_views/lib/view/meta.py": "03401c7898839d0f1a4429e8ed0d6941c43ef6614aada7e716afca8f79c2bb82",
       "src/crud_views/lib/view/variant.py": "7f71fd0349b0b59435b577ecd668d19aefeb40488d859957e98f4e0d3067ff58",
       "src/crud_views/lib/view/visibility.py": "18548c82f58c12af2dda45ed3d8b8bf97256dca045a4730067230af313754ef5",
@@ -1043,8 +1059,8 @@
       "src/crud_views/lib/viewset/parentviewset.py": "1b7525686dcaaed2a6003a3efa324156ba0100600af40d15a2d57c6312e88981",
       "src/crud_views/lib/viewset/path_regs.py": "48e8810979f535d39dfaf7ecaa44513256f81dd683727ffb237f37e3a7b61bed",
       "src/crud_views/locale/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "src/crud_views/locale/de/LC_MESSAGES/django.mo": "08a747ee1f2ba31f08a520210bb65b0dcb447477ae1279f7fa98b04cfa40f79a",
-      "src/crud_views/locale/de/LC_MESSAGES/django.po": "5ad8d010435e7c5e3260f781385890e042ca74d90324d85f369dd035fdd98278",
+      "src/crud_views/locale/de/LC_MESSAGES/django.mo": "cd572a565a3e5c4e8dd98e26920d6e2701580fc5541f0ffc8ba36bede081533c",
+      "src/crud_views/locale/de/LC_MESSAGES/django.po": "8ea2460951b45b5a9e5f0e01b824edd9495519ea922406f99334efb0e8548855",
       "src/crud_views/management/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "src/crud_views/management/commands/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "src/crud_views/management/commands/crud_views_show.py": "ce0b8b62e4b48afa81970cc8f5895e3d6986164712ec96259db02d672f93afc4",
@@ -1059,6 +1075,7 @@
       "src/crud_views/static/crud_views/css/property.css": "127b36c0f767bb2d05d7bb5bbce3f92de59657d5fd24679f5136c39d8b8454af",
       "src/crud_views/static/crud_views/css/table.css": "17f7c3d900d57c423e0728b41ef9cd39f4d4c7ea828294c71c9a84efd56deea4",
       "src/crud_views/static/crud_views/js/adapters.js": "06eed642fdf55daa7aa6afea2099f25c69ac153062d926c707e34c74316eaf2b",
+      "src/crud_views/static/crud_views/js/bulk.js": "36a939572058f06f727cd6a71852371928f072bb8628b84da69f390443229bee",
       "src/crud_views/static/crud_views/js/formset.js": "b8a48c082e12728cae16caa62b52f568ee281ac647eb8bbd9920a92b1570d025",
       "src/crud_views/static/crud_views/js/list.filter.js": "86600d74a66dcd586a6eb749369b858a19e365b21f9ff17646b79457805810a3",
       "src/crud_views/static/crud_views/js/manage.js": "c790b4176e86fed8ab8ce1ca12b497208990133cf804afe65b93d737335a9fe9",
@@ -1067,6 +1084,7 @@
       "src/crud_views/static/crud_views/js/tooltip.js": "69212dee6b30d655c08dbfeb2e423ede582c8b9ecf10358d64bf5d9196e62802",
       "src/crud_views/static/crud_views/js/viewset.js": "f3a411cc7b779a88e40a86e8189eafcc8e9c965e47503f94cad218b7b9fd5367",
       "src/crud_views/templates/crud_views/columns/actions.html": "6a37475842a165cc5a976c545964578935a544a62703c2885e568c4905af7c04",
+      "src/crud_views/templates/crud_views/columns/bulk_select.html": "80e943db2eae7c11081240f6ccdc65a81cb66409ded77e8b64652f994b6585b6",
       "src/crud_views/templates/crud_views/columns/child.html": "bed04279a64ac06ab9e29069adbe4e9b9990fb56295798416bcd5d0e4a3914ef",
       "src/crud_views/templates/crud_views/columns/naturalday.html": "d50d5f9ace73de54206b6fa67b437e792fcd9786a6499db56ac35aab30fa1570",
       "src/crud_views/templates/crud_views/columns/naturaltime.html": "8a0732b1ac54480ed4fd1786fd7b3b4f1b20c1a5e4b01d87f37611842f8e5eb0",
@@ -1109,6 +1127,10 @@
       "src/crud_views/templates/crud_views/snippets/alert/list.html": "ecb12fdbd7010f73ab50ea400c0c55c7c1ea1ccf3d9e1b84fa5acba0826d324f",
       "src/crud_views/templates/crud_views/snippets/alert/manage_checks.html": "e9eda7b92a7c6856d84e04d8110d3a65d8fd024cf78bb6b55d2dc3a770b42390",
       "src/crud_views/templates/crud_views/snippets/alert/text.html": "086dad1784cd3cf16be3beec0c15d969a44ce93bbc15c3f52916a6b5cec89850",
+      "src/crud_views/templates/crud_views/snippets/bulk/blocked.html": "a50e0fe40887be3f27e4e113379e83d7b7c12863d339026b17f1c7c57e63fcca",
+      "src/crud_views/templates/crud_views/snippets/bulk/blocked_items.html": "77953146be946fcd0d3b13d0644d4f31dd93fd204513036c984e134aa5c61deb",
+      "src/crud_views/templates/crud_views/snippets/bulk/eligible.html": "ef46422a01e864fc1ab1bd9b311be3a1929306f733a62f98b922eecd721a1323",
+      "src/crud_views/templates/crud_views/snippets/bulk_toolbar.html": "75ce3ac92ab981468eb975a759fc2735b5d7542f54dded17c081c09b612fe745",
       "src/crud_views/templates/crud_views/snippets/card_order.html": "a39139996b232b3cc15ac83a942032c1a61ce23293b181d35b4d10c00f6888c3",
       "src/crud_views/templates/crud_views/snippets/delete/protected_objects.html": "bf8fd0b973823e4f8c75a2d08e2ab956fddb1fd6a46c5c6364d28af107388a93",
       "src/crud_views/templates/crud_views/snippets/delete/protection_errors.html": "5efd8f4091c16c0aa9e37875650fd4a902f4449f8d50786f8bc9722e57f38f6d",
@@ -1124,13 +1146,15 @@
       "src/crud_views/templates/crud_views/snippets/header/list.html": "f6ce30f9bd32204cd443501f6520abc8a846cba2b17b2a647a90bd7fe7568076",
       "src/crud_views/templates/crud_views/snippets/header/manage.html": "486170fa79570c3e2377056b0c6e486e71dc362ad8391cf96d604cb4e01b5bb6",
       "src/crud_views/templates/crud_views/snippets/header/update.html": "5bfe99eb6b34c2f943369316e7421f5b84a505165099c102bd095d52da0ee50e",
-      "src/crud_views/templates/crud_views/snippets/language_selector.html": "f91d1e2d178e9261a160d7d10be7f1762f04d3575902833fd3bd4f1ae31753d1",
+      "src/crud_views/templates/crud_views/snippets/language_selector.html": "bb9ecd0ecfe5aaad45fad57276b365b5e362b50613814ff763df8591dc6b1c16",
+      "src/crud_views/templates/crud_views/snippets/message/bulk.html": "6bd9df94385d3b8479e0cfddf58f08c0b7c694d252f791b73b79233ec1726c0d",
       "src/crud_views/templates/crud_views/snippets/message/create.html": "eb9112cf2ff2eaff593fb6ec1c4dc15c84b90efd524aef940e44e7ff951023ae",
       "src/crud_views/templates/crud_views/snippets/message/delete.html": "01066fa8e25a15709b8aad629b901165d5f8baf048a671dd103c4b9fcf618bba",
       "src/crud_views/templates/crud_views/snippets/message/down.html": "1f8fb28c1d411139d22351ca263c0eecfa2106ed22be1d96de8eeeb15d0fe55d",
       "src/crud_views/templates/crud_views/snippets/message/up.html": "dac90c8e2065bec674efeb5ed06842607e3e6b8d37aa598ad0a5f7193b6be664",
       "src/crud_views/templates/crud_views/snippets/message/update.html": "a398c1b2c49ccd4664d99d854739d42557aa68304a0ea0f0e6d8bd67ce8dc1b8",
       "src/crud_views/templates/crud_views/snippets/pagination.html": "bb4d05aa38179b686e35cfd2c2edf3b30fa15ecc6340614aa13f51430e73cc41",
+      "src/crud_views/templates/crud_views/snippets/paragraph/bulk.html": "84c16735cdf08f29a87e4c21a99252772a59023e0ec1e9c8b49e2f8e9627804e",
       "src/crud_views/templates/crud_views/snippets/paragraph/card.html": "dbe46becca8ab4b2bf6cfcd84d0674e759f40d8f7de4bee7f82e90265b1a0e49",
       "src/crud_views/templates/crud_views/snippets/paragraph/create.html": "4684df1a87cf259a419111232a8c183a705e89a7d19b005c4d1d09d39d1c8343",
       "src/crud_views/templates/crud_views/snippets/paragraph/create_select.html": "4684df1a87cf259a419111232a8c183a705e89a7d19b005c4d1d09d39d1c8343",
@@ -1139,13 +1163,13 @@
       "src/crud_views/templates/crud_views/snippets/paragraph/list.html": "6a37ed5128648dda0028a8a1634cd5cbde4e0d2a41cd866429e077c2c9b4d285",
       "src/crud_views/templates/crud_views/snippets/paragraph/manage.html": "1b6a3258aa68f8f3009065a9b2571d685a815bbf9772014ef21f5e345a8deb90",
       "src/crud_views/templates/crud_views/snippets/paragraph/update.html": "b94fd77bb4865c802f18f9d3f72fb62401973d5850ac2a8caa70d6b346a7a7df",
-      "src/crud_views/templates/crud_views/table/bootstrap5.html": "8c48a7ddf8e4371a658be490191957f9b44e7fba9f0dfc978f3321b531dcae10",
+      "src/crud_views/templates/crud_views/table/bootstrap5.html": "cc3e3335480e71ce7fc391744eb95a2569549a22002a9958c67b4660c8ab5592",
       "src/crud_views/templates/crud_views/tags/actions_menu.html": "6bd0ef03a4469dd909918ee21bb8a6757fb26b6b209d40304a33ef5d16aa3280",
       "src/crud_views/templates/crud_views/tags/actions_menu_item.html": "f2a71de627fe880acb80180efc2aed4f5b8f61fcbfb8ab3456b6c0cb702a8ff6",
       "src/crud_views/templates/crud_views/tags/actions_menu_item_label.html": "beba4593a7b9c866f12caefb9a4c004f025b0fe703a3130d2b9fd8f645eed226",
-      "src/crud_views/templates/crud_views/tags/actions_menu_toggle.html": "c15435b084f5d167a2a9305aa49efd2a39f0e05da734c09d377cd6aae4d8811d",
+      "src/crud_views/templates/crud_views/tags/actions_menu_toggle.html": "aa022ed37b6b0878c17416ccfbd37db0c4baa1f0feca1ef21cebd2cc3c892cb8",
       "src/crud_views/templates/crud_views/tags/alert.html": "c57505c5e36a4718b8288aa9adc8c4cde6f05eb6b97e489d91ff4f050c8906cb",
-      "src/crud_views/templates/crud_views/tags/breadcrumb.html": "bb8963ef632dcc4fc07aa2be75f3a41a7adf62b9fe17d8465ed591bdac63ee17",
+      "src/crud_views/templates/crud_views/tags/breadcrumb.html": "65ac6007b6435ee63fb8f81e81f4274f1b7de7bdedc3af006588a0e2dff4a219",
       "src/crud_views/templates/crud_views/tags/button/action.html": "55ea449a22f7181f02845052cee8195a5099430d1ba08582b69e111705d577d1",
       "src/crud_views/templates/crud_views/tags/button/container.html": "524bb64924a4640d74fdcb33201364d7a04b3d0c7cf328d9206819cee283e8bb",
       "src/crud_views/templates/crud_views/tags/button/form.html": "a4c6bbdf1d6188aca56bccb70deaa0c5e6b0810abcea6877d7c78ba6f76a8e35",
@@ -1156,7 +1180,7 @@
       "src/crud_views/templates/crud_views/tags/context_action.html": "8271c13e0e1f8a27d13acea182b996d8f866f79b4de2b8451396b80ea9066271",
       "src/crud_views/templates/crud_views/tags/context_action_filter.html": "82338275d6557be63636e93814a0f9e7f554f3bfc9f08320b3280f9c75c5f4e5",
       "src/crud_views/templates/crud_views/tags/context_actions.html": "5e5b1a8f48e517e1f91a5947cb33812a57a25deaef38f0d8ffcc1a965d3a74ba",
-      "src/crud_views/templates/crud_views/tags/cv_config.html": "5a2b50239e3d8fea6418080492b54e8934290db44a437800b34df22297d2a218",
+      "src/crud_views/templates/crud_views/tags/cv_config.html": "07b65a4cf08e6e8d50e4407401609055029497534ebd91193a2d6201d94ac87b",
       "src/crud_views/templates/crud_views/tags/form.html": "b299cf3816dd7be9b05bfce61f1b1fbb91e01694e85eced67e59a85cc3b0db9f",
       "src/crud_views/templates/crud_views/tags/list_action.html": "c492ae7f2bace9cb92f6c125425e037d5bfdada45cd1e544205752cb7f4a1b75",
       "src/crud_views/templates/crud_views/tags/list_action_form.html": "56eddc71105e7b64ea88374b47139c9c14fb0b4602c0d20aaf7448ca572521cf",
@@ -1166,7 +1190,9 @@
       "src/crud_views/templates/crud_views/tags/navbar.html": "d18bb58e7978768202dd39fcc193bf7d94eb0dd2f455425bc63290daf3b19e8a",
       "src/crud_views/templates/crud_views/tags/navbar_identity.html": "8e33cb07c9ab85e3aec92b6eb5eaa4383cb6f743361823a07fe097a75f0dd362",
       "src/crud_views/templates/crud_views/tags/navbar_items.html": "03259acf969010b10f55997a09092e07dce6c47c9af137b84e35ac9cac65958b",
-      "src/crud_views/templates/crud_views/view_card.content.html": "1ade75a2e558efc8bd897827b049b42677cc251607a34988db0f94e81e73c5f3",
+      "src/crud_views/templates/crud_views/view_bulk_form.content.html": "cb5f06263d3719599766190e0828bd3c8ba07439ce34c4c135cda00fe8d68646",
+      "src/crud_views/templates/crud_views/view_bulk_form.html": "6e31bf64186d4d403c9c85496549d4e2a217f22dae475ce01426705ae7a0047c",
+      "src/crud_views/templates/crud_views/view_card.content.html": "e9d2943e8b77bbb0d9a55bdb417abcc65c48cc7ea422b206825d2d02845b709f",
       "src/crud_views/templates/crud_views/view_card.html": "7ee735f84f99cb7ae8326a8d045edb4f27c27818b48e551a7dd99234e14c38ba",
       "src/crud_views/templates/crud_views/view_create.content.html": "fe4cf5292da4298f6f18a7dc37f1f91f8816c34abf8bfd864fbfba03d005eb3c",
       "src/crud_views/templates/crud_views/view_create.html": "1b3ce2d65024033c88d0b2501ecb5bb6d9519131f75d0d9725a4f635a1e3fa37",
@@ -1179,33 +1205,33 @@
       "src/crud_views/templates/crud_views/view_detail_custom.html": "7d69dd42cb1980a18bed8ae5c4bbed04c360ee5d0fa47cdadd079c74a57cd9f3",
       "src/crud_views/templates/crud_views/view_list.content.html": "e7bb9c2a86fcd683831f04e2c05d84b9578170ee7dfe2e2b3ccb14a29dc91b4f",
       "src/crud_views/templates/crud_views/view_list.html": "c984a14518a31f9e6754c8a71b2a1a5ae951e6daa593d2840011e702a1035604",
-      "src/crud_views/templates/crud_views/view_list_table.content.html": "e864007c5c54db8f79de498f28dad2e850e58b6da4b377d6bc52a8da1fd03428",
+      "src/crud_views/templates/crud_views/view_list_table.content.html": "321b370e15ca7fc493fb2b7d34e8148f84ec226f3dd7a72f58afbe611a6a5beb",
       "src/crud_views/templates/crud_views/view_list_table.filter.html": "c65530927db56cb678357ffde4e08ff570e29dba289cc9f2d621f07575b678ea",
       "src/crud_views/templates/crud_views/view_list_table.html": "77f014792b74f822879019fbe0fa07e02ef807011950a9ff5fab3fa7c0fec7c2",
       "src/crud_views/templates/crud_views/view_manage.html": "ade71546347bc8f07284ba748e54dcecf5d3f4309b470f292f2a669cb1949ea1",
       "src/crud_views/templates/crud_views/view_update.content.html": "fe4cf5292da4298f6f18a7dc37f1f91f8816c34abf8bfd864fbfba03d005eb3c",
       "src/crud_views/templates/crud_views/view_update.html": "6e31bf64186d4d403c9c85496549d4e2a217f22dae475ce01426705ae7a0047c",
       "src/crud_views/templatetags/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "src/crud_views/templatetags/crud_views.py": "2ffc3f1a998ca959258ddc0366103f7cd01c7f8a28ca8168b4fad437423d4a19",
+      "src/crud_views/templatetags/crud_views.py": "2d6b0ca9437cf48bc9ce99c29d64ca249cc591b88c370d55a60e2bdb7c208d66",
       "src/crud_views/templatetags/crud_views_formsets.py": "2d1f5eb1bb614965dc15c1cd078f96b4d324cd5b77f536b6364347cb45885dc8",
       "src/crud_views_guardian/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "src/crud_views_guardian/apps.py": "0ba2babfa16a252062da72175393b5138ee18b650b56cb98fac8f45236187782",
-      "src/crud_views_guardian/checks.py": "730c5101601f0070851f6bbd61477f3bc234a21829e4c5bac7980732152732a3",
+      "src/crud_views_guardian/checks.py": "fdffe55b09c80319eb017ea1dfef126b7d54612b728839b5348db8beaa7d9203",
       "src/crud_views_guardian/lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "src/crud_views_guardian/lib/ancestors.py": "e6f2b2ce5464b2fae5954c51b0e927d1075be6873e9052847d8f568bf2e83071",
       "src/crud_views_guardian/lib/mixins.py": "671a986eed67bc04dcb51f5e0b70bfeffbfa6cac598419aaeb4e90d4ddd748c8",
       "src/crud_views_guardian/lib/views.py": "c32a122f7654936e523bf68c2452e55c09fc7da97c51dc81f63b281ea3f8dd6f",
       "src/crud_views_guardian/lib/viewset.py": "ac08108f61a7586d99824cf7f28e29c5c29fb4f023d9d964ee6c058c095829a6",
       "src/crud_views_guardian/locale/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "src/crud_views_guardian/locale/de/LC_MESSAGES/django.mo": "3f5045491455829c5aaf013b085691d8d5b625f18aaed92a73c434413640f3cb",
-      "src/crud_views_guardian/locale/de/LC_MESSAGES/django.po": "399ba84d992489c432a0b55e814c10a4790294e87717b7b44d4991e52f2bc6d6",
+      "src/crud_views_guardian/locale/de/LC_MESSAGES/django.mo": "d99f31db1df1fe29b3a2a60e170eaf01379e5119db821059073e7b410fdbf5a9",
+      "src/crud_views_guardian/locale/de/LC_MESSAGES/django.po": "6a2e6f300661cd9baf8e47f42add5f9ab17b02f895ed8675110ca69b5b592368",
       "src/crud_views_guardian/templates/crud_views/snippets/guardian/config_table.html": "47ab0db7a67f35489a314f1b9737270928ac84979fe78c83aa159bcd2a051208",
       "src/crud_views_guardian/templates/crud_views/view_guardian_manage.html": "ef8a7936796dd849cf403535ef403161ee0cb486676a7108415c7d0d4606d07b",
       "tests/browser/manage_presentation_server.py": "15ebfc14334aed8c8f9da7f8aead0a497ab48ea880ba69d3a012ce0fb12b74d0",
       "tests/browser/manage-presentation.cjs": "2448624f330c54633271677294d6a73255d894e0b2ec7280e8c2aeb7e1b206a4",
       "tests/browser/templates/manage/page.html": "11c3833b69868158cd065b852b20213df654ac5d9279a8474cf575ce3df92980",
-      "tests/test1/app/models.py": "ef81d1f6f12fd7e517d726fc7e2813e407fcfbfa8a89b412f3e24c5491176347",
-      "tests/test1/conftest.py": "f636780fba0963e423ff50bb9dd1d76996d561a46ccc02477b0777039ed35863"
+      "tests/test1/app/models.py": "dd4609ff6af78e3e97f971328e4ade0a37836056d398a08a1a05d0667aa17886",
+      "tests/test1/conftest.py": "41cbd5aeb2998d06bdfcbdbd295730050cbcd0a63cb286743d7fe61366414a60"
     }
   },
   "browser": {
@@ -1214,8 +1240,8 @@
     "version": "159.0.8154.6"
   },
   "server": {
-    "ready": 43833,
-    "database": "/tmp/cv-manage-mxPSzW/database-h_ftr136/manage.sqlite3",
+    "ready": 40179,
+    "database": "/tmp/cv-manage-BKmz44/database-ktemivgn/manage.sqlite3",
     "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
     "versions": {
       "Django": "6.0.10",
@@ -1233,9 +1259,9 @@
     "csp": "default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'"
   },
   "logs": {
-    "stdout": "{\"ready\": 43833, \"database\": \"/tmp/cv-manage-mxPSzW/database-h_ftr136/manage.sqlite3\", \"python\": \"3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]\", \"versions\": {\"Django\": \"6.0.10\", \"django-guardian\": \"3.5.2\"}, \"modules\": {\"crud_views\": \"/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/__init__.py\", \"crud_views_guardian\": \"/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views_guardian/__init__.py\"}, \"origins\": {\"crud_views/view_manage.html\": \"/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/templates/crud_views/view_manage.html\", \"crud_views/view_guardian_manage.html\": \"/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views_guardian/templates/crud_views/view_guardian_manage.html\", \"manage/page.html\": \"/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/templates/manage/page.html\"}, \"csp\": \"default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'\"}\n",
-    "stderr": "127.0.0.1 - - [21/Nov/2026 11:01:31] \"GET /signin/ HTTP/1.1\" 200 294\n127.0.0.1 - - [21/Nov/2026 11:01:31] \"POST /signin/ HTTP/1.1\" 200 42\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /case/core/normal/ HTTP/1.1\" 200 74463\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 4147\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/css/manage.css HTTP/1.1\" 200 3321\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /jquery.js HTTP/1.1\" 200 87533\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/adapters.js HTTP/1.1\" 200 7073\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/viewset.js HTTP/1.1\" 200 1997\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/formset.js HTTP/1.1\" 200 21226\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/list.filter.js HTTP/1.1\" 200 3099\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/modal.js HTTP/1.1\" 200 10190\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/toggle.js HTTP/1.1\" 200 12915\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/tooltip.js HTTP/1.1\" 200 3395\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/manage.js HTTP/1.1\" 200 2140\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views_object_detail/js/tabs.js HTTP/1.1\" 200 2564\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /case/guardian/normal/ HTTP/1.1\" 200 78652\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 4147\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/css/manage.css HTTP/1.1\" 200 3321\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /jquery.js HTTP/1.1\" 200 87533\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/adapters.js HTTP/1.1\" 200 7073\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/viewset.js HTTP/1.1\" 200 1997\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/formset.js HTTP/1.1\" 200 21226\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/list.filter.js HTTP/1.1\" 200 3099\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/modal.js HTTP/1.1\" 200 10190\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/toggle.js HTTP/1.1\" 200 12915\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/tooltip.js HTTP/1.1\" 200 3395\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views/js/manage.js HTTP/1.1\" 200 2140\n127.0.0.1 - - [21/Nov/2026 11:01:32] \"GET /static/crud_views_object_detail/js/tabs.js HTTP/1.1\" 200 2564\n127.0.0.1 - - [21/Nov/2026 11:01:33] \"GET /signin/ HTTP/1.1\" 200 294\n127.0.0.1 - - [21/Nov/2026 11:01:33] \"POST /signin/ HTTP/1.1\" 200 43\n127.0.0.1 - - [21/Nov/2026 11:01:33] \"GET /case/core/normal/ HTTP/1.1\" 403 135\n127.0.0.1 - - [21/Nov/2026 11:01:33] \"GET /case/guardian/normal/ HTTP/1.1\" 403 135\n127.0.0.1 - - [21/Nov/2026 11:01:33] \"GET /case/nested/normal/ HTTP/1.1\" 403 135\n"
+    "stdout": "{\"ready\": 40179, \"database\": \"/tmp/cv-manage-BKmz44/database-ktemivgn/manage.sqlite3\", \"python\": \"3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]\", \"versions\": {\"Django\": \"6.0.10\", \"django-guardian\": \"3.5.2\"}, \"modules\": {\"crud_views\": \"/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/__init__.py\", \"crud_views_guardian\": \"/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views_guardian/__init__.py\"}, \"origins\": {\"crud_views/view_manage.html\": \"/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views/templates/crud_views/view_manage.html\", \"crud_views/view_guardian_manage.html\": \"/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/src/crud_views_guardian/templates/crud_views/view_guardian_manage.html\", \"manage/page.html\": \"/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/templates/manage/page.html\"}, \"csp\": \"default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'\"}\n",
+    "stderr": "127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /signin/ HTTP/1.1\" 200 294\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"POST /signin/ HTTP/1.1\" 200 42\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /case/core/normal/ HTTP/1.1\" 200 74552\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 4147\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/css/manage.css HTTP/1.1\" 200 3321\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /jquery.js HTTP/1.1\" 200 87533\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/js/adapters.js HTTP/1.1\" 200 7073\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/js/viewset.js HTTP/1.1\" 200 1997\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/js/formset.js HTTP/1.1\" 200 21226\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/js/list.filter.js HTTP/1.1\" 200 3099\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/js/modal.js HTTP/1.1\" 200 10190\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/js/toggle.js HTTP/1.1\" 200 12915\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/js/tooltip.js HTTP/1.1\" 200 3395\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/js/manage.js HTTP/1.1\" 200 2140\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views/js/bulk.js HTTP/1.1\" 200 2050\n127.0.0.1 - - [21/Nov/2026 13:47:08] \"GET /static/crud_views_object_detail/js/tabs.js HTTP/1.1\" 200 2692\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /case/guardian/normal/ HTTP/1.1\" 200 78741\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 4147\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/css/manage.css HTTP/1.1\" 200 3321\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /jquery.js HTTP/1.1\" 200 87533\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/js/adapters.js HTTP/1.1\" 200 7073\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/js/viewset.js HTTP/1.1\" 200 1997\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/js/formset.js HTTP/1.1\" 200 21226\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/js/list.filter.js HTTP/1.1\" 200 3099\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/js/modal.js HTTP/1.1\" 200 10190\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/js/toggle.js HTTP/1.1\" 200 12915\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/js/tooltip.js HTTP/1.1\" 200 3395\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/js/manage.js HTTP/1.1\" 200 2140\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views/js/bulk.js HTTP/1.1\" 200 2050\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /static/crud_views_object_detail/js/tabs.js HTTP/1.1\" 200 2692\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /signin/ HTTP/1.1\" 200 294\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"POST /signin/ HTTP/1.1\" 200 43\n127.0.0.1 - - [21/Nov/2026 13:47:09] \"GET /case/core/normal/ HTTP/1.1\" 403 135\n127.0.0.1 - - [21/Nov/2026 13:47:10] \"GET /case/guardian/normal/ HTTP/1.1\" 403 135\n127.0.0.1 - - [21/Nov/2026 13:47:10] \"GET /case/nested/normal/ HTTP/1.1\" 403 135\n"
   },
   "status": "passed",
-  "finished": "2026-11-21T11:01:33.514Z"
+  "finished": "2026-11-21T13:47:10.347Z"
 }

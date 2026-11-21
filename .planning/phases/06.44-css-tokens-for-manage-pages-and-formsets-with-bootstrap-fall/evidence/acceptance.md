@@ -160,3 +160,13 @@ No production source changes in Plan 02; Plan 01 supplies the twelve CSS reads a
 
 Only the prescribed Python 3.12 / Django 6.0 runtime is tested here. Synthetic browser style comparisons do not claim downstream CoreUI/Tabler adoption or a complete compatibility matrix. There are no formal requirement IDs, so the ID-driven spec-less probe is inapplicable; D-01–D-04 remain the acceptance criteria. No phase completion, ship, push or release is claimed.
 
+
+## Main rebase acceptance — 2026-11-21
+
+Phase 06.43 PR #396 passed every CI check and merged as `4ec93cb9`. Phase 06.44 rebased onto that main at `5b3fc9a0`. The four production files are byte-identical to the accepted pre-rebase versions. Resolutions combined changelog/planning records and retained both `bulk` and `css-tokens` in the runtime sandbox inventory. Already-merged 06.42 planning commits and two obsolete intermediate STATE-only commits were omitted. Main's completed 06.41–06.43 records remain intact.
+
+Fresh checks on the combined source passed: full Python 3.12.3/Django 6.0.10 suite 17,122 tests with four workers (604.36 seconds including wrapper); Node 512 tests; integration 2; strict MkDocs; Ruff check and format (798 files); six synthetic CSS cases; three manage cases; compact lifecycle 19 assertions and separate receipt validation; capture-path unit suite 51 tests. There were no failed or skipped cases. The full Python/Node runs cover the discovered 373 prior-phase test paths. No shared dependency environment was mutated.
+
+`rebase-checks.json` records commands, exits, durations and output tails. CSS, manage and compact receipts now record the rebased source fingerprints. Before/after gates confirmed the four fixed historical screenshot hashes unchanged; fresh compact captures remain ignored/untracked. Earlier successful receipt bytes remain in the pre-rebase backup commit `014a54dc` and the rebased parent history; pre-CR01 history remains explicitly archived. Earlier sections describe their original execution revisions rather than this rebase run.
+
+The migration guide and both dependency manifests match merged main byte-for-byte. The phase-start migration hash is historical: authorized upstream changes from main are preserved, and this phase adds no migration change. Existing production invariants, six authored security mitigations and all five task coverage mappings remain intact. The accepted UI audit and user's 1/1 visual UAT are retained; no new visual requirement was introduced. Independent current-base review inspected all 16 product/test/doc diffs and found zero new/open issues. Compatibility CI on the forthcoming 06.44 PR remains pending and is required before merge.

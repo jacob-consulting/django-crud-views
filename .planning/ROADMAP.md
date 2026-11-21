@@ -2294,6 +2294,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.43-02-PLAN.md — Effective table sort indicators, real ordering matrix, nonbreaking release guidance and combined final verification (wave 2; depends on 06.43-01).
+
 ### Phase 06.44: CSS tokens for manage pages and formsets with Bootstrap fallbacks (#394) (INSERTED)
 
 **Goal:** Give theme authors six documented `--cv-*` CSS tokens for manage pages and formsets, with Bootstrap and existing hard-coded fallbacks that preserve stock rendering and nested colour modes.

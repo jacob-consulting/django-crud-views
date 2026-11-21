@@ -191,11 +191,11 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `manage:trace-not-reached` | `badge bg-secondary` |
 | `manage:trace-not-evaluated` | `badge bg-warning text-dark` |
 
-The default table has 135 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 138 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
 Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
 keys and two dismissal utilities; the two form-group utilities each contribute one key, numbered columns contribute
-twelve width keys, ViewSet Navigation contributes six keys, bulk selection contributes seven keys, and manage
+twelve width keys, ViewSet Navigation contributes six keys, bulk selection contributes seven keys, breadcrumbs contribute three keys, and manage
 diagnostics contribute twenty keys. Manage values replace complete class strings;
 theme registrations override defaults and project settings override the theme. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
@@ -272,7 +272,7 @@ registry strings lets a theme own their appearance; the default-state JS uses da
 Keep textual labels and focus/help behavior when restyling. The one Show defaults switch hides default rows in
 Views and Presentation only after successful JS setup; without JavaScript all rows are readable. See the
 [theme registration recipe](theme.md#manage-class-registration) and [external asset contract](javascript.md#manage-defaults).
-The exact inventories are 135 core / 153 with workflow, including all twenty manage keys.
+The exact inventories are 138 core / 156 with workflow, including all twenty manage keys.
 
 ### Numbered column classes
 
@@ -296,8 +296,8 @@ an alternate framework's grid.
 
 ### Optional workflow defaults
 
-The 135-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
-for 153 effective default keys with only that contribution. Other installed extensions may add more.
+The 138-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
+for 156 effective default keys with only that contribution. Other installed extensions may add more.
 
 | Key | Complete default classes |
 |---|---|

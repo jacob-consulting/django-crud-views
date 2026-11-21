@@ -1,0 +1,32 @@
+Planning diagnostic, 2026-11-21. Python 3.12.3 / Django 6.0.10.
+Command: PYTHONPATH=src:. /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python -m pytest -p tests.test1.conftest .planning/phases/06.46-bulk-toolbar-show-only-actions-the-viewer-can-enter-399/measure_queries.py -q -s --tb=short
+Serial execution is intentional for readable per-case query output; bounded 24-case diagnostic.
+No product implementation is present. Gate probe injects the existing shared gate into get_context_data; it does not implement filtering/caching. Nested actions=4 repeats the same real destination four times (a cost stress probe, not valid production configuration). Nested card is an in-memory adaptation of the existing card fixture. Each request gets a fresh authenticated actor; URL/template caches are warmed. Initial diagnostic setup errors (nonexistent reverse helper, shared client login, wrong URLconf) were corrected before this receipt.
+
+MEASURE {"nested": false, "card": false, "rows": 1, "actions": 0, "baseline": 8, "gate_probe": 8, "calls": {}}
+.MEASURE {"nested": false, "card": false, "rows": 5, "actions": 0, "baseline": 8, "gate_probe": 8, "calls": {}}
+.MEASURE {"nested": false, "card": false, "rows": 1, "actions": 1, "baseline": 8, "gate_probe": 8, "calls": {}}
+.MEASURE {"nested": false, "card": false, "rows": 5, "actions": 1, "baseline": 8, "gate_probe": 8, "calls": {}}
+.MEASURE {"nested": false, "card": false, "rows": 1, "actions": 4, "baseline": 8, "gate_probe": 8, "calls": {}}
+.MEASURE {"nested": false, "card": false, "rows": 5, "actions": 4, "baseline": 8, "gate_probe": 8, "calls": {}}
+.MEASURE {"nested": true, "card": false, "rows": 1, "actions": 0, "baseline": 9, "gate_probe": 9, "calls": {}}
+.MEASURE {"nested": true, "card": false, "rows": 5, "actions": 0, "baseline": 9, "gate_probe": 9, "calls": {}}
+.MEASURE {"nested": true, "card": false, "rows": 1, "actions": 1, "baseline": 9, "gate_probe": 9, "calls": {"access": 1, "state": 1}}
+.MEASURE {"nested": true, "card": false, "rows": 5, "actions": 1, "baseline": 9, "gate_probe": 9, "calls": {"access": 1, "state": 1}}
+.MEASURE {"nested": true, "card": false, "rows": 1, "actions": 4, "baseline": 9, "gate_probe": 9, "calls": {"access": 4, "state": 4}}
+.MEASURE {"nested": true, "card": false, "rows": 5, "actions": 4, "baseline": 9, "gate_probe": 9, "calls": {"access": 4, "state": 4}}
+.MEASURE {"nested": false, "card": true, "rows": 1, "actions": 0, "baseline": 7, "gate_probe": 7, "calls": {}}
+.MEASURE {"nested": false, "card": true, "rows": 5, "actions": 0, "baseline": 7, "gate_probe": 7, "calls": {}}
+.MEASURE {"nested": false, "card": true, "rows": 1, "actions": 1, "baseline": 7, "gate_probe": 7, "calls": {}}
+.MEASURE {"nested": false, "card": true, "rows": 5, "actions": 1, "baseline": 7, "gate_probe": 7, "calls": {}}
+.MEASURE {"nested": false, "card": true, "rows": 1, "actions": 4, "baseline": 7, "gate_probe": 7, "calls": {}}
+.MEASURE {"nested": false, "card": true, "rows": 5, "actions": 4, "baseline": 7, "gate_probe": 7, "calls": {}}
+.MEASURE {"nested": true, "card": true, "rows": 1, "actions": 0, "baseline": 8, "gate_probe": 8, "calls": {}}
+.MEASURE {"nested": true, "card": true, "rows": 5, "actions": 0, "baseline": 8, "gate_probe": 8, "calls": {}}
+.MEASURE {"nested": true, "card": true, "rows": 1, "actions": 1, "baseline": 8, "gate_probe": 8, "calls": {"access": 1, "state": 1}}
+.MEASURE {"nested": true, "card": true, "rows": 5, "actions": 1, "baseline": 8, "gate_probe": 8, "calls": {"access": 1, "state": 1}}
+.MEASURE {"nested": true, "card": true, "rows": 1, "actions": 4, "baseline": 8, "gate_probe": 8, "calls": {"access": 4, "state": 4}}
+.MEASURE {"nested": true, "card": true, "rows": 5, "actions": 4, "baseline": 8, "gate_probe": 8, "calls": {"access": 4, "state": 4}}
+.
+24 passed in 8.08s
+

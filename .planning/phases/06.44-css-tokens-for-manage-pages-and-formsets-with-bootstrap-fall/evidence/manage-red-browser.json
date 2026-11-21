@@ -1,0 +1,121 @@
+{
+  "selection": "manage",
+  "expectedCases": [
+    "stock-light-1280",
+    "stock-dark-1280",
+    "stock-light-390",
+    "stock-dark-390",
+    "theme-root-mapping"
+  ],
+  "cases": [
+    {
+      "id": "stock-light-1280",
+      "passed": true,
+      "actual": {
+        "values": {
+          "th": "rgb(43, 47, 50)",
+          "default": "rgba(33, 37, 41, 0.75)",
+          "help": "rgb(43, 47, 50)"
+        },
+        "rows": {}
+      },
+      "expected": {
+        "values": {
+          "th": "rgb(43, 47, 50)",
+          "default": "rgba(33, 37, 41, 0.75)",
+          "help": "rgb(43, 47, 50)"
+        },
+        "rows": {}
+      }
+    },
+    {
+      "id": "stock-dark-1280",
+      "passed": true,
+      "actual": {
+        "values": {
+          "th": "rgb(167, 172, 177)",
+          "default": "rgba(222, 226, 230, 0.75)",
+          "help": "rgb(167, 172, 177)"
+        },
+        "rows": {}
+      },
+      "expected": {
+        "values": {
+          "th": "rgb(167, 172, 177)",
+          "default": "rgba(222, 226, 230, 0.75)",
+          "help": "rgb(167, 172, 177)"
+        },
+        "rows": {}
+      }
+    },
+    {
+      "id": "stock-light-390",
+      "passed": true,
+      "actual": {
+        "values": {
+          "th": "rgb(43, 47, 50)",
+          "default": "rgba(33, 37, 41, 0.75)",
+          "help": "rgb(43, 47, 50)"
+        },
+        "rows": {}
+      },
+      "expected": {
+        "values": {
+          "th": "rgb(43, 47, 50)",
+          "default": "rgba(33, 37, 41, 0.75)",
+          "help": "rgb(43, 47, 50)"
+        },
+        "rows": {}
+      }
+    },
+    {
+      "id": "stock-dark-390",
+      "passed": true,
+      "actual": {
+        "values": {
+          "th": "rgb(167, 172, 177)",
+          "default": "rgba(222, 226, 230, 0.75)",
+          "help": "rgb(167, 172, 177)"
+        },
+        "rows": {}
+      },
+      "expected": {
+        "values": {
+          "th": "rgb(167, 172, 177)",
+          "default": "rgba(222, 226, 230, 0.75)",
+          "help": "rgb(167, 172, 177)"
+        },
+        "rows": {}
+      }
+    }
+  ],
+  "started": "2026-11-21T10:44:43.523Z",
+  "status": "failed",
+  "baseline": {
+    "revision": "04f95c30a6b368697ad92248071fec0477689186",
+    "hashes": {
+      "src/crud_views/static/crud_views/css/manage.css": "da593f9dc2f3c69385a96fd13ef734f5d6549292b388a9d4659beff7c0f09808",
+      "src/crud_views/static/crud_views/css/formset.css": "a874e3f1a8f26520087adcdc5e4839f2befaccea462350a75d04e88f2231a630",
+      "src/crud_views/templates/crud_views/formsets/compact_headings.html": "2f4b3b5133ee315a8c25c99e20bb6c4ad034c2d7a223d5daccdd7d55fe6ccfd0",
+      "src/crud_views/lib/formsets/compact.py": "28fd041d458042c08d9921ed45ce5d124fd975ab28a28b4de9959be227c4d5a4"
+    }
+  },
+  "current": {
+    "src/crud_views/static/crud_views/css/manage.css": "da593f9dc2f3c69385a96fd13ef734f5d6549292b388a9d4659beff7c0f09808",
+    "src/crud_views/static/crud_views/css/formset.css": "a874e3f1a8f26520087adcdc5e4839f2befaccea462350a75d04e88f2231a630",
+    "src/crud_views/templates/crud_views/formsets/compact_headings.html": "2f4b3b5133ee315a8c25c99e20bb6c4ad034c2d7a223d5daccdd7d55fe6ccfd0",
+    "src/crud_views/lib/formsets/compact.py": "28fd041d458042c08d9921ed45ce5d124fd975ab28a28b4de9959be227c4d5a4"
+  },
+  "runnerHash": "5a6301c09c0079a877153616c650f0b2f49e706d8b18f9b49eb4aa24df15641d",
+  "bootstrapHash": "3c8f27e6009ccfd710a905e6dcf12d0ee3c6f2ac7da05b0572d3e0d12e736fc8",
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "playwright": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromium": "/home/alex/.cache/ms-playwright/chromium-1255/chrome-linux64/chrome",
+    "browser": "159.0.8154.6",
+    "playwrightVersion": "1.64.1"
+  },
+  "error": "AssertionError [ERR_ASSERTION]: theme-root-mapping/light\n+ actual - expected\n\n  {\n+   default: 'rgba(33, 37, 41, 0.75)',\n+   help: 'rgb(43, 47, 50)',\n+   th: 'rgb(43, 47, 50)'\n-   default: 'rgb(11, 22, 33)',\n-   help: 'rgb(44, 55, 66)',\n-   th: 'rgb(44, 55, 66)'\n  }\n\n    at Object.main (/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views/tests/browser/css-tokens.cjs:140:24)\n    at async TestContext.<anonymous> ([eval]:1:90)\n    at async Test.run (node:internal/test_runner/test:1409:7)\n    at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)",
+  "finished": "2026-11-21T10:44:44.805Z"
+}

@@ -2303,10 +2303,15 @@ Plans:
 **Ordering:** Complete before Phase 7 inventories and freezes the public theme surface.
 **Scope:** Read the six tokens without declaring them; replace the compact-row gutter declaration with `gx-3`; preserve and document the Bootstrap help-button contrast rule; add CSS contract checks, rendering verification, theme/formset/manage documentation and non-breaking changelog entries. No new Python API/settings, class keys, extra tokens, other CSS files or extensions U12 work; the compact layout's `css_class` change is explicitly included by D-03.
 **Acceptance:** Enforce the six approved fallback chains and documented token list; permit only the existing help-button `--bs-btn-color` declaration; verify unchanged stock light/nested-dark computed styles and passing formset/manage tests and goldens apart from `gx-3`; document theme-root mappings and nested-mode behavior.
-**Plans:** 0 plans
+**Plans:** 0/2 plans executed
 
 Plans:
+**Wave 1**
+- [ ] 06.44-01-PLAN.md
 - [ ] TBD (run $gsd-plan-phase 06.44 to break down)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.44-02-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
 

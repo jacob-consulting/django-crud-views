@@ -202,6 +202,23 @@ buttons look the same for every variant by default, the `card` buttons distingui
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
 
+### Breadcrumb classes
+
+These ordinary keys style the existing breadcrumb without copying its template.
+
+| Key | Default |
+|---|---|
+| `breadcrumb:list` | `breadcrumb` |
+| `breadcrumb:item` | `breadcrumb-item` |
+| `breadcrumb:item-active` | `active` |
+
+`breadcrumb:list` styles the `ol`; `breadcrumb:item` styles every `li`; `breadcrumb:item-active`
+adds a class contribution only to the final `li`. Defaults are overridden by theme registrations,
+then by `CRUD_VIEWS_BUTTON_CLASSES` per key. Empty strings, `None` and other non-string values
+produce an empty contribution. The final item's `aria-current="page"` remains independent of styling.
+See the [breadcrumb registration example](theme.md#breadcrumb-class-registration) and
+[breadcrumb reference](breadcrumb.md#styling).
+
 ### ViewSet Navigation classes
 
 These six ordinary utility keys replace the complete class strings in the stock navbar leaves.

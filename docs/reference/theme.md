@@ -922,6 +922,31 @@ These are suggested consumer values, not already-shipped Tabler code or a promis
 Validate spacing, wrapping and keyboard focus in your own theme. No additional settings or per-bar leaf
 configuration are needed.
 
+### Breadcrumb class registration
+
+The stock breadcrumb uses these three ordinary class keys, next to the navbar keys:
+
+| Key | Default |
+|---|---|
+| `breadcrumb:list` | `breadcrumb` |
+| `breadcrumb:item` | `breadcrumb-item` |
+| `breadcrumb:item-active` | `active` |
+
+`breadcrumb:list` applies to the `ol`, `breadcrumb:item` to each `li`, and `breadcrumb:item-active`
+only to the final item. Add this to your theme's `AppConfig.ready()`:
+
+```python
+def ready(self):
+    from crud_views.lib.button_classes import register_button_classes
+
+    register_button_classes({"breadcrumb:list": "breadcrumb my-0"})
+```
+
+Defaults yield to theme registrations, then `CRUD_VIEWS_BUTTON_CLASSES` wins per key.
+`None`, `""` or another non-string value clears that contribution. Current-page semantics
+(`aria-current="page"`) do not depend on active classes. Item content, links and the nav label
+are unchanged. See [breadcrumb classes](buttons.md#breadcrumb-classes) for the registry contract.
+
 ## Structured manage contracts
 
 Core `crud_views/view_manage.html` owns the shared page; Guardian's

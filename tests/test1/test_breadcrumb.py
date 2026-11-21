@@ -6,11 +6,10 @@ from django.template import Context, Template
 from django.test import RequestFactory, override_settings
 from django.utils.safestring import SafeString, mark_safe
 from django.utils.translation import gettext_lazy
-from pydantic import ValidationError
 from lxml import html as lxml_html
+from pydantic import ValidationError
 
 from crud_views.lib import button_classes as bc
-
 from crud_views.lib.breadcrumb import Breadcrumb, BreadcrumbItem
 from crud_views.lib.settings import crud_views_settings
 from tests.test1.app.models import Book, BookNote, Publisher
@@ -513,9 +512,45 @@ class TestBreadcrumbLabelCheck:
 
 # Literal output captured from the original renderer before the class-key change.
 BREADCRUMB_DEFAULT_OUTPUTS = [
-    "\n",
-    '\n    <nav aria-label="breadcrumb">\n        <ol class="breadcrumb">\n            \n                \n                    <li class="breadcrumb-item active" aria-current="page">A &amp; B</li>\n                \n            \n        </ol>\n    </nav>\n\n',
-    '\n    <nav aria-label="breadcrumb">\n        <ol class="breadcrumb">\n            \n                \n                    <li class="breadcrumb-item">\n                        <a href="/publisher_bc/">Publishers</a>\n                    </li>\n                \n            \n                \n                    <li class="breadcrumb-item">\n                        Middle &lt;text&gt;\n                    </li>\n                \n            \n                \n                    <li class="breadcrumb-item active" aria-current="page">Current</li>\n                \n            \n        </ol>\n    </nav>\n\n',
+    ("\n"),
+    (
+        "\n"
+        '    <nav aria-label="breadcrumb">\n'
+        '        <ol class="breadcrumb">\n'
+        "            \n"
+        "                \n"
+        '                    <li class="breadcrumb-item active" aria-current="page">A &amp; B</li>\n'
+        "                \n"
+        "            \n"
+        "        </ol>\n"
+        "    </nav>\n"
+        "\n"
+    ),
+    (
+        "\n"
+        '    <nav aria-label="breadcrumb">\n'
+        '        <ol class="breadcrumb">\n'
+        "            \n"
+        "                \n"
+        '                    <li class="breadcrumb-item">\n'
+        '                        <a href="/publisher_bc/">Publishers</a>\n'
+        "                    </li>\n"
+        "                \n"
+        "            \n"
+        "                \n"
+        '                    <li class="breadcrumb-item">\n'
+        "                        Middle &lt;text&gt;\n"
+        "                    </li>\n"
+        "                \n"
+        "            \n"
+        "                \n"
+        '                    <li class="breadcrumb-item active" aria-current="page">Current</li>\n'
+        "                \n"
+        "            \n"
+        "        </ol>\n"
+        "    </nav>\n"
+        "\n"
+    ),
 ]
 
 
@@ -553,3 +588,53 @@ def test_breadcrumb_class_registration(breadcrumb_classes):
     assert tree.find("ol").get("class") == "breadcrumb my-0"
     assert tree.find("ol/li").get("class") == "breadcrumb-item active"
     assert tree.find("ol/li").get("aria-current") == "page"
+
+
+BREADCRUMB_CLASSES = {
+    "breadcrumb:list": "breadcrumb",
+    "breadcrumb:item": "breadcrumb-item",
+    "breadcrumb:item-active": "active",
+}
+
+
+def assert_breadcrumb_classes(classes):
+    breadcrumb = Breadcrumb(
+        items=(
+            BreadcrumbItem(title="A & B", url_name="publisher_bc-list"),
+            BreadcrumbItem(title="Middle <text>"),
+            BreadcrumbItem(title="Current", url_name="publisher_bc-list"),
+        )
+    )
+    tree = lxml_html.fromstring(render_breadcrumb_tag({"cv_breadcrumb": breadcrumb}))
+    assert tree.tag == "nav" and tree.attrib == {"aria-label": "breadcrumb"}
+    ol = tree.find("ol")
+    assert ol.attrib == {"class": classes["breadcrumb:list"]}
+    items = ol.findall("li")
+    assert len(items) == 3
+    for index, item in enumerate(items):
+        expected = {"class": classes["breadcrumb:item"]}
+        if index == 2:
+            expected["class"] += " " + classes["breadcrumb:item-active"]
+            expected["aria-current"] = "page"
+        assert item.attrib == expected
+    assert items[0].find("a").attrib == {"href": "/publisher_bc/"}
+    assert items[0].find("a").text == "A & B"
+    assert items[1].text.strip() == "Middle <text>"
+    assert items[2].text == "Current"
+    assert len(tree.xpath(".//a")) == 1
+    assert len(list(tree.iter())) == 6
+
+
+@pytest.mark.parametrize("key", BREADCRUMB_CLASSES)
+@pytest.mark.parametrize("source", ["theme", "settings", "precedence"])
+@pytest.mark.parametrize("value", ["custom classes", "", None, 42, 'quoted" onmouseover="bad'])
+def test_breadcrumb_class_overrides(breadcrumb_classes, key, source, value):
+    if source in {"theme", "precedence"}:
+        bc.register_button_classes({key: value if source == "theme" else "losing-theme"})
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: value} if source != "theme" else {}):
+        assert_breadcrumb_classes({**BREADCRUMB_CLASSES, key: value if isinstance(value, str) else ""})
+
+
+def test_breadcrumb_current_page_independent_of_classes(breadcrumb_classes):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=dict.fromkeys(BREADCRUMB_CLASSES, "")):
+        assert_breadcrumb_classes(dict.fromkeys(BREADCRUMB_CLASSES, ""))

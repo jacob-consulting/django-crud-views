@@ -101,3 +101,12 @@ by default) or on the viewset's container view (list, or card without a list), w
   the card view as container.
 - Each ancestor level costs one database query, scoped to the URL's parent chain — a
   tampered parent pk in the URL yields 404. The trail is built once per request.
+
+## Styling
+
+Use `breadcrumb:list`, `breadcrumb:item` and `breadcrumb:item-active` to style the list,
+every item and the final item respectively, without copying the leaf template.
+See [defaults and precedence](buttons.md#breadcrumb-classes) and the
+[theme registration example](theme.md#breadcrumb-class-registration), which sets
+`breadcrumb:list` to `breadcrumb my-0`. Empty contributions leave the current item's
+`aria-current="page"` intact.

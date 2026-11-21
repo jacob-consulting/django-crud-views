@@ -297,6 +297,7 @@ class DeleteDocumentsView(BreadcrumbMixin, BulkFormViewPermissionRequired):
     cv_path = "bulk-delete"
     cv_permission = "delete"
     cv_icon_action = "delete"
+    cv_action_variant = "danger"
     cv_action_label_template_code = _("Delete selected documents")
     cv_action_short_label_template_code = _("Delete")
     cv_success_key = "list"
@@ -412,14 +413,29 @@ The result message uses `crud_views/snippets/message/bulk.html`.
 
 ## Toolbar buttons
 
-There is one button per action, with and without JavaScript. These are form submit buttons styled by
-`form:submit`. Their visible text, hidden text in icon-only mode and tooltip all come from the destination's
-short action label; the icon comes from `cv_icon_action`. The full action label appears only as the header of
-the review page.
+There is one button per action, with and without JavaScript. These are native form submit buttons rendered by
+`crud_views/tags/button/bulk.html`: `type="submit"`, `name="cv_bulk_stage"`, `value="review"` and each destination's
+`formaction` preserve JavaScript-free submission. Their visible text, hidden text in icon-only mode and tooltip
+all come from the destination's short action label; the icon comes from `cv_icon_action`. The full action label
+appears only as the header of the review page.
+
+Each button takes `cv_action_variant` from its destination, with inherited `secondary` as the default.
+The source view's variant does not override it. Set `cv_action_variant = "danger"` on destructive destinations,
+as in the delete example above. Themes configure `bulk:primary`, `bulk:secondary`, `bulk:tertiary` and `bulk:danger`
+in `CRUD_VIEWS_BUTTON_CLASSES`. All four stock defaults are `btn btn-primary`, so declaring `danger` alone keeps
+the stock appearance. Bulk buttons no longer inherit a project's `form:submit` override; review Confirm still
+uses `form:submit`, and all-blocked Cancel still uses the form leaf and its existing form class contract.
 
 Label mode comes only from the `bulk` location floor in `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, default `both`.
-There is no per-action map and no variant. The seven structural class keys are `bulk:toolbar`, `bulk:controls`,
-`bulk:select-all`, `bulk:checkbox`, `bulk:actions`, `bulk:card-cell` and `bulk:card-select`; see
+There is no per-action map. A mode-specific class key, such as `bulk:danger:icon`, takes precedence over the base
+variant key when present, including an empty string or `None` override. Selection uses the effective label mode:
+a missing or disabled icon falls back to `label`, so `bulk:danger:label` applies instead of `bulk:danger:icon`.
+The leaf reuses `form:hidden-label` for icon-only text, `form:icon-host` for host-placed icons and the form tooltip
+location, `data-cv-tooltip="form"`. Host icons add classes to the button without a duplicate inline icon.
+See [Bulk button leaf](buttons.md#bulk-button-leaf) for the exact fields available to themes copying the leaf.
+
+The seven structural class keys remain `bulk:toolbar`, `bulk:controls`, `bulk:select-all`, `bulk:checkbox`,
+`bulk:actions`, `bulk:card-cell` and `bulk:card-select`; see
 [Bulk selection classes](buttons.md#bulk-selection-classes) for their theme defaults.
 
 ## JavaScript

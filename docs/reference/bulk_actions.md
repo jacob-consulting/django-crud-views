@@ -257,6 +257,18 @@ so Cancel and the warning redirect fall back to `cv_cancel_key` (and ultimately 
 The stock Cancel button needs JavaScript unless the theme renders it as a link. Returning never restores
 checked boxes.
 
+To make eligible Cancel controls native links that work without JavaScript, add this project setting
+(or merge the entry into your existing mapping):
+
+```python
+CRUD_VIEWS_BUTTON_CLASSES = {"form:cancel-tag": "a"}
+```
+
+The Bootstrap example enables this setting for all its forms. Native Cancel links navigate without
+submitting the form, including when a required owner is empty or the selection is all blocked.
+Custom forms can explicitly choose `tag="a"` or `tag="button"` on their Cancel control; see
+[Cancel links](buttons.md#cancel-links) for precedence and eligibility.
+
 ## Bulk delete
 
 Offer bulk delete only when the application can explain what deleting each selected root means. A leaf

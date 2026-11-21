@@ -63,7 +63,7 @@ class TicketDetailEditorTest(ContextButtonsTestCase):
         capture = signing.Signer(salt="crud_views.cancel.v1").unsign_object(params["cv_from_cancel"][0])
         self.assertEqual(capture, {"v": 1, "origin": "detail", "query": "", "viewset": ["", "ticket"], "parents": {}})
         form = self.client.get(link)
-        (cancel,) = lxml_html.fromstring(form.content).xpath("//form//*[@data-cv-cancel-url]/@data-cv-cancel-url")
+        (cancel,) = lxml_html.fromstring(form.content).xpath('//form//a[normalize-space(.)="Cancel"]/@href')
         self.assertEqual(cancel, reverse("ticket-detail", kwargs={"pk": self.ticket.pk}))
         self.assertEqual(self.client.get(cancel).status_code, 200)
 

@@ -1,0 +1,887 @@
+{
+  "selection": "all",
+  "expectedCases": [
+    "stock-light-1280",
+    "stock-dark-1280",
+    "stock-light-390",
+    "stock-dark-390",
+    "theme-root-mapping",
+    "literal-fallback"
+  ],
+  "cases": [
+    {
+      "id": "stock-light-1280",
+      "passed": true,
+      "actual": {
+        "values": {
+          "th": "rgb(43, 47, 50)",
+          "default": "rgba(33, 37, 41, 0.75)",
+          "help": "rgb(43, 47, 50)",
+          "card-border": "rgba(33, 37, 41, 0.75)",
+          "card-radius": "6px",
+          "card-bg": "rgb(255, 255, 255)",
+          "compact-radius": "6px",
+          "compact-bg": "rgb(255, 255, 255)",
+          "compact-border": "rgb(222, 226, 230)",
+          "child-bg": "rgb(248, 249, 250)",
+          "child-border": "rgb(222, 226, 230)",
+          "child-radius": "6px"
+        },
+        "rows": {
+          "headings": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "1px",
+            "marginRight": "1px",
+            "box": {
+              "x": 34,
+              "y": 153,
+              "width": 1212,
+              "height": 32
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 42,
+                  "y": 153,
+                  "width": 598,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 640,
+                  "y": 153,
+                  "width": 598,
+                  "height": 24
+                }
+              }
+            ]
+          },
+          "fields": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "-8px",
+            "marginRight": "-8px",
+            "box": {
+              "x": 25,
+              "y": 185,
+              "width": 1230,
+              "height": 24
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 25,
+                  "y": 185,
+                  "width": 615,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 640,
+                  "y": 185,
+                  "width": 615,
+                  "height": 24
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "values": {
+          "th": "rgb(43, 47, 50)",
+          "default": "rgba(33, 37, 41, 0.75)",
+          "help": "rgb(43, 47, 50)",
+          "card-border": "rgba(33, 37, 41, 0.75)",
+          "card-radius": "6px",
+          "card-bg": "rgb(255, 255, 255)",
+          "compact-radius": "6px",
+          "compact-bg": "rgb(255, 255, 255)",
+          "compact-border": "rgb(222, 226, 230)",
+          "child-bg": "rgb(248, 249, 250)",
+          "child-border": "rgb(222, 226, 230)",
+          "child-radius": "6px"
+        },
+        "rows": {
+          "headings": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "1px",
+            "marginRight": "1px",
+            "box": {
+              "x": 34,
+              "y": 153,
+              "width": 1212,
+              "height": 32
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 42,
+                  "y": 153,
+                  "width": 598,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 640,
+                  "y": 153,
+                  "width": 598,
+                  "height": 24
+                }
+              }
+            ]
+          },
+          "fields": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "-8px",
+            "marginRight": "-8px",
+            "box": {
+              "x": 25,
+              "y": 185,
+              "width": 1230,
+              "height": 24
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 25,
+                  "y": 185,
+                  "width": 615,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 640,
+                  "y": 185,
+                  "width": 615,
+                  "height": 24
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "stock-dark-1280",
+      "passed": true,
+      "actual": {
+        "values": {
+          "th": "rgb(167, 172, 177)",
+          "default": "rgba(222, 226, 230, 0.75)",
+          "help": "rgb(167, 172, 177)",
+          "card-border": "rgba(222, 226, 230, 0.75)",
+          "card-radius": "6px",
+          "card-bg": "rgb(33, 37, 41)",
+          "compact-radius": "6px",
+          "compact-bg": "rgb(33, 37, 41)",
+          "compact-border": "rgb(73, 80, 87)",
+          "child-bg": "rgb(43, 48, 53)",
+          "child-border": "rgb(73, 80, 87)",
+          "child-radius": "6px"
+        },
+        "rows": {
+          "headings": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "1px",
+            "marginRight": "1px",
+            "box": {
+              "x": 50,
+              "y": 437,
+              "width": 1180,
+              "height": 32
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 58,
+                  "y": 437,
+                  "width": 582,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 640,
+                  "y": 437,
+                  "width": 582,
+                  "height": 24
+                }
+              }
+            ]
+          },
+          "fields": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "-8px",
+            "marginRight": "-8px",
+            "box": {
+              "x": 41,
+              "y": 469,
+              "width": 1198,
+              "height": 24
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 41,
+                  "y": 469,
+                  "width": 599,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 640,
+                  "y": 469,
+                  "width": 599,
+                  "height": 24
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "values": {
+          "th": "rgb(167, 172, 177)",
+          "default": "rgba(222, 226, 230, 0.75)",
+          "help": "rgb(167, 172, 177)",
+          "card-border": "rgba(222, 226, 230, 0.75)",
+          "card-radius": "6px",
+          "card-bg": "rgb(33, 37, 41)",
+          "compact-radius": "6px",
+          "compact-bg": "rgb(33, 37, 41)",
+          "compact-border": "rgb(73, 80, 87)",
+          "child-bg": "rgb(43, 48, 53)",
+          "child-border": "rgb(73, 80, 87)",
+          "child-radius": "6px"
+        },
+        "rows": {
+          "headings": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "1px",
+            "marginRight": "1px",
+            "box": {
+              "x": 50,
+              "y": 437,
+              "width": 1180,
+              "height": 32
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 58,
+                  "y": 437,
+                  "width": 582,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 640,
+                  "y": 437,
+                  "width": 582,
+                  "height": 24
+                }
+              }
+            ]
+          },
+          "fields": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "-8px",
+            "marginRight": "-8px",
+            "box": {
+              "x": 41,
+              "y": 469,
+              "width": 1198,
+              "height": 24
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 41,
+                  "y": 469,
+                  "width": 599,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 640,
+                  "y": 469,
+                  "width": 599,
+                  "height": 24
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "stock-light-390",
+      "passed": true,
+      "actual": {
+        "values": {
+          "th": "rgb(43, 47, 50)",
+          "default": "rgba(33, 37, 41, 0.75)",
+          "help": "rgb(43, 47, 50)",
+          "card-border": "rgba(33, 37, 41, 0.75)",
+          "card-radius": "6px",
+          "card-bg": "rgb(255, 255, 255)",
+          "compact-radius": "6px",
+          "compact-bg": "rgb(255, 255, 255)",
+          "compact-border": "rgb(222, 226, 230)",
+          "child-bg": "rgb(248, 249, 250)",
+          "child-border": "rgb(222, 226, 230)",
+          "child-radius": "6px"
+        },
+        "rows": {
+          "headings": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "none",
+            "marginLeft": "1px",
+            "marginRight": "1px",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                }
+              }
+            ]
+          },
+          "fields": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "-8px",
+            "marginRight": "-8px",
+            "box": {
+              "x": 25,
+              "y": 153,
+              "width": 340,
+              "height": 24
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 25,
+                  "y": 153,
+                  "width": 170,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 195,
+                  "y": 153,
+                  "width": 170,
+                  "height": 24
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "values": {
+          "th": "rgb(43, 47, 50)",
+          "default": "rgba(33, 37, 41, 0.75)",
+          "help": "rgb(43, 47, 50)",
+          "card-border": "rgba(33, 37, 41, 0.75)",
+          "card-radius": "6px",
+          "card-bg": "rgb(255, 255, 255)",
+          "compact-radius": "6px",
+          "compact-bg": "rgb(255, 255, 255)",
+          "compact-border": "rgb(222, 226, 230)",
+          "child-bg": "rgb(248, 249, 250)",
+          "child-border": "rgb(222, 226, 230)",
+          "child-radius": "6px"
+        },
+        "rows": {
+          "headings": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "none",
+            "marginLeft": "1px",
+            "marginRight": "1px",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                }
+              }
+            ]
+          },
+          "fields": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "-8px",
+            "marginRight": "-8px",
+            "box": {
+              "x": 25,
+              "y": 153,
+              "width": 340,
+              "height": 24
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 25,
+                  "y": 153,
+                  "width": 170,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 195,
+                  "y": 153,
+                  "width": 170,
+                  "height": 24
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "stock-dark-390",
+      "passed": true,
+      "actual": {
+        "values": {
+          "th": "rgb(167, 172, 177)",
+          "default": "rgba(222, 226, 230, 0.75)",
+          "help": "rgb(167, 172, 177)",
+          "card-border": "rgba(222, 226, 230, 0.75)",
+          "card-radius": "6px",
+          "card-bg": "rgb(33, 37, 41)",
+          "compact-radius": "6px",
+          "compact-bg": "rgb(33, 37, 41)",
+          "compact-border": "rgb(73, 80, 87)",
+          "child-bg": "rgb(43, 48, 53)",
+          "child-border": "rgb(73, 80, 87)",
+          "child-radius": "6px"
+        },
+        "rows": {
+          "headings": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "none",
+            "marginLeft": "1px",
+            "marginRight": "1px",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                }
+              }
+            ]
+          },
+          "fields": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "-8px",
+            "marginRight": "-8px",
+            "box": {
+              "x": 41,
+              "y": 405,
+              "width": 308,
+              "height": 24
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 41,
+                  "y": 405,
+                  "width": 154,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 195,
+                  "y": 405,
+                  "width": 154,
+                  "height": 24
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "values": {
+          "th": "rgb(167, 172, 177)",
+          "default": "rgba(222, 226, 230, 0.75)",
+          "help": "rgb(167, 172, 177)",
+          "card-border": "rgba(222, 226, 230, 0.75)",
+          "card-radius": "6px",
+          "card-bg": "rgb(33, 37, 41)",
+          "compact-radius": "6px",
+          "compact-bg": "rgb(33, 37, 41)",
+          "compact-border": "rgb(73, 80, 87)",
+          "child-bg": "rgb(43, 48, 53)",
+          "child-border": "rgb(73, 80, 87)",
+          "child-radius": "6px"
+        },
+        "rows": {
+          "headings": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "none",
+            "marginLeft": "1px",
+            "marginRight": "1px",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                }
+              }
+            ]
+          },
+          "fields": {
+            "gutter": "1rem",
+            "align": "flow-start",
+            "display": "flex",
+            "marginLeft": "-8px",
+            "marginRight": "-8px",
+            "box": {
+              "x": 41,
+              "y": 405,
+              "width": 308,
+              "height": 24
+            },
+            "columns": [
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 41,
+                  "y": 405,
+                  "width": 154,
+                  "height": 24
+                }
+              },
+              {
+                "paddingLeft": "8px",
+                "paddingRight": "8px",
+                "box": {
+                  "x": 195,
+                  "y": 405,
+                  "width": 154,
+                  "height": 24
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "theme-root-mapping",
+      "passed": true,
+      "light": {
+        "actual": {
+          "th": "rgb(44, 55, 66)",
+          "default": "rgb(11, 22, 33)",
+          "help": "rgb(44, 55, 66)",
+          "card-border": "rgb(11, 22, 33)",
+          "card-radius": "10px",
+          "card-bg": "rgb(77, 88, 99)",
+          "compact-radius": "10px",
+          "compact-bg": "rgb(77, 88, 99)",
+          "compact-border": "rgb(111, 122, 133)",
+          "child-bg": "rgb(144, 155, 166)",
+          "child-border": "rgb(111, 122, 133)",
+          "child-radius": "10px"
+        },
+        "expected": {
+          "th": "rgb(44, 55, 66)",
+          "default": "rgb(11, 22, 33)",
+          "help": "rgb(44, 55, 66)",
+          "card-border": "rgb(11, 22, 33)",
+          "card-radius": "10px",
+          "card-bg": "rgb(77, 88, 99)",
+          "compact-radius": "10px",
+          "compact-bg": "rgb(77, 88, 99)",
+          "compact-border": "rgb(111, 122, 133)",
+          "child-bg": "rgb(144, 155, 166)",
+          "child-border": "rgb(111, 122, 133)",
+          "child-radius": "10px"
+        }
+      },
+      "dark": {
+        "actual": {
+          "th": "rgb(54, 65, 76)",
+          "default": "rgb(21, 32, 43)",
+          "help": "rgb(54, 65, 76)",
+          "card-border": "rgb(21, 32, 43)",
+          "card-radius": "14px",
+          "card-bg": "rgb(87, 98, 109)",
+          "compact-radius": "14px",
+          "compact-bg": "rgb(87, 98, 109)",
+          "compact-border": "rgb(121, 132, 143)",
+          "child-bg": "rgb(154, 165, 176)",
+          "child-border": "rgb(121, 132, 143)",
+          "child-radius": "14px"
+        },
+        "expected": {
+          "th": "rgb(54, 65, 76)",
+          "default": "rgb(21, 32, 43)",
+          "help": "rgb(54, 65, 76)",
+          "card-border": "rgb(21, 32, 43)",
+          "card-radius": "14px",
+          "card-bg": "rgb(87, 98, 109)",
+          "compact-radius": "14px",
+          "compact-bg": "rgb(87, 98, 109)",
+          "compact-border": "rgb(121, 132, 143)",
+          "child-bg": "rgb(154, 165, 176)",
+          "child-border": "rgb(121, 132, 143)",
+          "child-radius": "14px"
+        }
+      },
+      "rootOnly": {
+        "actual": {
+          "th": "rgb(44, 55, 66)",
+          "default": "rgb(11, 22, 33)",
+          "help": "rgb(44, 55, 66)",
+          "card-border": "rgb(11, 22, 33)",
+          "card-radius": "10px",
+          "card-bg": "rgb(77, 88, 99)",
+          "compact-radius": "10px",
+          "compact-bg": "rgb(77, 88, 99)",
+          "compact-border": "rgb(111, 122, 133)",
+          "child-bg": "rgb(144, 155, 166)",
+          "child-border": "rgb(111, 122, 133)",
+          "child-radius": "10px"
+        },
+        "expected": {
+          "th": "rgb(44, 55, 66)",
+          "default": "rgb(11, 22, 33)",
+          "help": "rgb(44, 55, 66)",
+          "card-border": "rgb(11, 22, 33)",
+          "card-radius": "10px",
+          "card-bg": "rgb(77, 88, 99)",
+          "compact-radius": "10px",
+          "compact-bg": "rgb(77, 88, 99)",
+          "compact-border": "rgb(111, 122, 133)",
+          "child-bg": "rgb(144, 155, 166)",
+          "child-border": "rgb(111, 122, 133)",
+          "child-radius": "10px"
+        }
+      }
+    },
+    {
+      "id": "literal-fallback",
+      "passed": true,
+      "actual": {
+        "th": "rgb(73, 80, 87)",
+        "default": "rgb(108, 117, 125)",
+        "help": "rgb(73, 80, 87)",
+        "card-border": "rgb(108, 117, 125)",
+        "card-radius": "6px",
+        "card-bg": "rgb(255, 255, 255)",
+        "compact-radius": "6px",
+        "compact-bg": "rgb(255, 255, 255)",
+        "compact-border": "rgb(222, 226, 230)",
+        "child-bg": "rgb(248, 249, 250)",
+        "child-border": "rgb(222, 226, 230)",
+        "child-radius": "6px"
+      },
+      "expected": {
+        "th": "rgb(73, 80, 87)",
+        "default": "rgb(108, 117, 125)",
+        "help": "rgb(73, 80, 87)",
+        "card-border": "rgb(108, 117, 125)",
+        "card-radius": "6px",
+        "card-bg": "rgb(255, 255, 255)",
+        "compact-radius": "6px",
+        "compact-bg": "rgb(255, 255, 255)",
+        "compact-border": "rgb(222, 226, 230)",
+        "child-bg": "rgb(248, 249, 250)",
+        "child-border": "rgb(222, 226, 230)",
+        "child-radius": "6px"
+      }
+    }
+  ],
+  "started": "2026-11-21T10:46:56.412Z",
+  "status": "passed",
+  "baseline": {
+    "revision": "04f95c30a6b368697ad92248071fec0477689186",
+    "hashes": {
+      "src/crud_views/static/crud_views/css/manage.css": "da593f9dc2f3c69385a96fd13ef734f5d6549292b388a9d4659beff7c0f09808",
+      "src/crud_views/static/crud_views/css/formset.css": "a874e3f1a8f26520087adcdc5e4839f2befaccea462350a75d04e88f2231a630",
+      "src/crud_views/templates/crud_views/formsets/compact_headings.html": "2f4b3b5133ee315a8c25c99e20bb6c4ad034c2d7a223d5daccdd7d55fe6ccfd0",
+      "src/crud_views/lib/formsets/compact.py": "28fd041d458042c08d9921ed45ce5d124fd975ab28a28b4de9959be227c4d5a4"
+    }
+  },
+  "current": {
+    "src/crud_views/static/crud_views/css/manage.css": "8b617bf32db046ad6f6daa379dd7c79a4b5b0efe2f05b2521c6b691f6d19670c",
+    "src/crud_views/static/crud_views/css/formset.css": "e216fdbfe50dc9424184290922d8e03fd532e6d8dc472ef100bfe879258c4e27",
+    "src/crud_views/templates/crud_views/formsets/compact_headings.html": "d0795718526dd8ae9bf753d03dcd792e621a1b41fbf0905747c2dba4c47df02d",
+    "src/crud_views/lib/formsets/compact.py": "bc007fffce7b30be1ad0259baef1b7891ae9a5901cad3ab332371908d5d33f0e"
+  },
+  "runnerHash": "5a6301c09c0079a877153616c650f0b2f49e706d8b18f9b49eb4aa24df15641d",
+  "bootstrapHash": "3c8f27e6009ccfd710a905e6dcf12d0ee3c6f2ac7da05b0572d3e0d12e736fc8",
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "playwright": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromium": "/home/alex/.cache/ms-playwright/chromium-1255/chrome-linux64/chrome",
+    "browser": "159.0.8154.6",
+    "playwrightVersion": "1.64.1"
+  },
+  "finished": "2026-11-21T10:46:57.806Z"
+}

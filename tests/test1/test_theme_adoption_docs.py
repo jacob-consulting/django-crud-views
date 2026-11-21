@@ -341,6 +341,7 @@ def test_workflow_presentation_docs():
     row = next(line for line in text.splitlines() if line.startswith("| `crud_views.W362` |"))
     for phrase in (
         "effective core/installed-app defaults",
+        "`context`/`list`/`card`/`bulk`",
         "With workflow installed",
         "one nonempty colour segment without whitespace or colon",
         "custom colours need not occur in the default table",

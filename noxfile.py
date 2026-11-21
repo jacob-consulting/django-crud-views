@@ -146,6 +146,7 @@ CRISPY_FLOOR_TESTS = [
     "tests/test1/test_bulk_flow.py",
     "tests/test1/test_bulk_execution.py",
     "tests/test1/test_bulk_source.py",
+    "tests/test1/test_bulk_variants.py",
     "tests/test1/test_bulk_scope.py",
     "tests/test1/test_bulk_return.py",
 ]

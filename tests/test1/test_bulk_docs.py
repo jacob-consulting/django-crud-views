@@ -679,9 +679,19 @@ def test_bulk_modules_remain_in_maintained_crispy_floor_selection():
         and any(isinstance(target, ast.Name) and target.id == "CRISPY_FLOOR_TESTS" for target in node.targets)
     )
     assert isinstance(assignment.value, ast.List)
-    assert {f"tests/test1/test_bulk_{name}.py" for name in ("flow", "execution", "source", "scope", "return")} <= set(
-        ast.literal_eval(assignment.value)
-    )
+    assert {
+        f"tests/test1/test_bulk_{name}.py" for name in ("flow", "execution", "source", "scope", "return", "variants")
+    } <= set(ast.literal_eval(assignment.value))
+
+
+def test_bulk_variant_release_note():
+    unreleased = section((ROOT / "CHANGELOG.md").read_text(), "Unreleased")
+    added = unreleased.split("### Added\n", 1)[1].split("\n### ", 1)[0]
+    entries = re.split(r"\n(?=- \*\*)", added)
+    (entry,) = [entry for entry in entries if "**Current-page bulk selection and action forms** (#387)" in entry]
+    for phrase in ("Destination semantic variants", "bulk:<variant>", "crud_views/tags/button/bulk.html", "#400"):
+        assert phrase in entry
+    assert "#400" not in unreleased.split("### Breaking\n", 1)[1].split("\n### ", 1)[0]
 
 
 def test_bulk_guide_documents_native_cancel_opt_in():

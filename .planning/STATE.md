@@ -1,26 +1,26 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.43"
+current_phase_name: Breadcrumb class keys and accessible table sort state
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.42 complete, ready to plan Phase 7
-last_updated: "2026-11-21T10:23:04.876Z"
+stopped_at: Phase 06.43 context gathered
+last_updated: "2026-11-21T08:41:24.195Z"
 last_activity: 2026-11-21
-last_activity_desc: Phase 06.42 shipped as PR #395; codebase maps refreshed
-state_head: c914f31f31da2e0687593fea72e0a67353eace2f
+last_activity_desc: "Inserted Phase 06.43 for approved issue #393; ready to plan"
+state_head: bef4a0cfe686abe93d16aec8b0104dc5b320ac6d
 progress:
-  total_phases: 49
-  completed_phases: 48
-  total_plans: 274
-  completed_plans: 274
-  percent: 98
+  total_phases: 48
+  completed_phases: 46
+  total_plans: 257
+  completed_plans: 257
+  percent: 96
 milestone_name: milestone
 ---
 
-Total Phases: 49
-Completed Phases: 48
+Total Phases: 48
+Completed Phases: 46
 
 # Project State
 
@@ -29,17 +29,17 @@ Completed Phases: 48
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.43 — Breadcrumb class keys and accessible table sort state (#393)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.43 — Breadcrumb class keys and accessible table sort state (#393)
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-21 — Phase 06.42 shipped as PR #395; codebase maps refreshed
+Last activity: 2026-11-21 -- Inserted Phase 06.43 for approved issue #393; ready to plan
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.43
 
 ### Phase 06.42 integration after PR #392 — 2026-11-21
 
@@ -2226,6 +2226,7 @@ None yet.
 - Phase 06.40.1 inserted after Phase 06.40: ViewSet Navigation: theme class keys and owner-heading layouts (#384); findings 36 and 38, Guardian finding 37 separate (URGENT)
 - Phase 06.41 inserted after Phase 06.40: Current-page bulk selection and action forms for table and card views (#387); approved D-01–D-10 with the code-examples comment captured as planning proposals; replaces the unmerged phase 06.38 (#378) approach (URGENT)
 - Phase 06.42 inserted after Phase 06.40.1: Theme-registered data-attribute prefix for templates and object-detail tabs (#391); explicitly assigned 06.42, approved U1/U2 handover D-01–D-05, before Phase 7 theme-surface freeze (URGENT)
+- Phase 06.43 inserted after Phase 06.40.1: Issue #393: breadcrumb class keys and accessible table sort state; approved D-01–D-04 handover. Explicitly assigned 06.43 for this workspace, independently deliverable before the Phase 7 freeze. (URGENT)
 
 ## Deferred Items
 
@@ -2235,6 +2236,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T10:24:00Z
-Stopped at: Phase 06.42 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-21T08:40:57.879Z
+Stopped at: Phase 06.43 context gathered
+Resume file: .planning/phases/06.43-breadcrumb-class-keys-and-accessible-table-sort-state-393/06.43-CONTEXT.md

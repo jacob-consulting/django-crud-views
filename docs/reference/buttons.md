@@ -658,7 +658,7 @@ identity: `type="submit"`, `name="cv_bulk_stage"`, `value="review"`, plus the no
 | `cv_variant` | Destination semantic variant: primary, secondary, tertiary or danger. |
 | `cv_label_mode` | Effective label, icon or both mode, after unavailable-icon fallback. |
 | `cv_label` | Literal short caption text for visible and hidden labels; the full caption stays in the review header. |
-| `cv_icon` | Resolved icon name, or an empty value when unavailable. |
+| `cv_icon` | Normalized destination icon string (semantic name, library-prefixed name or raw classes), or `None` for blank/non-string input. The string can remain nonempty when unavailable. |
 | `cv_icon_class` | Host-icon classes to add to the button, or an empty string. |
 | `cv_icon_inline` | May be False for host icons; do not render an extra inline icon then. |
 | `cv_title` | Optional literal short caption text for the icon-only tooltip; absent in other modes. |
@@ -668,6 +668,9 @@ identity: `type="submit"`, `name="cv_bulk_stage"`, `value="review"`, plus the no
 {% load crud_views %}<button type="submit" name="cv_bulk_stage" value="review" id="{{ cv_id }}"
     class="{% cv_button_class 'bulk' cv_variant cv_label_mode %}{% if cv_icon_class %} {{ cv_icon_class }}{% endif %}"{% if cv_title %} title="{{ cv_title }}" data-cv-tooltip="form"{% endif %}{{ cv_flat_attrs }}>{% if cv_label_mode == "icon" %}{% if cv_icon and cv_icon_inline is not False %}{% cv_icon cv_icon %}{% endif %}<span class="{% cv_button_class 'form' 'hidden-label' %}">{{ cv_label }}</span>{% elif cv_label_mode == "both" %}{% if cv_icon and cv_icon_inline is not False %}{% cv_icon cv_icon %} {% endif %}<span>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</button>
 ```
+
+Honor the effective `cv_label_mode` and render icons through the `cv_icon` tag; do not infer availability from
+`cv_icon` truthiness.
 
 Keep the shared `form:hidden-label`, `form:icon-host` and `data-cv-tooltip="form"` conventions. The form tooltip
 adapter handles these buttons too. Do not mark labels or titles safe, escape the already normalized attribute

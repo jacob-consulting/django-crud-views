@@ -556,10 +556,10 @@ def test_bulk_theme_authorization_boundary():
 @pytest.mark.django_db
 @pytest.mark.parametrize("source", ["/bulk-publisher/", "/bulk-publisher/card/"])
 @pytest.mark.parametrize("mode", ["label", "icon", "both"])
-@pytest.mark.parametrize("icon", ["delete", "ui:archive"])
+@pytest.mark.parametrize("icon, disabled", [("delete", False), ("ui:archive", False), ("delete", True)])
 @pytest.mark.parametrize("hostile", [False, True])
 def test_copied_bulk_leaf_contract(
-    client_user_bulk_publisher_view, bulk_publishers, settings, monkeypatch, source, mode, icon, hostile
+    client_user_bulk_publisher_view, bulk_publishers, settings, monkeypatch, source, mode, icon, disabled, hostile
 ):
     fields = {
         "cv_id",
@@ -585,6 +585,9 @@ def test_copied_bulk_leaf_contract(
     settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"bulk": mode}
     settings.CRUD_VIEWS_ICON_LIBRARIES = HOST_LIBRARY
     settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:danger:icon": "theme-danger-icon"}
+    if disabled:
+        settings.CRUD_VIEWS_ICONS = {"delete": None}
+    effective_mode = "label" if disabled else mode
     destination = cv_bulk_publisher.get_view_class("archive")
     monkeypatch.setattr(destination, "cv_action_variant", "danger")
     monkeypatch.setattr(destination, "cv_icon_action", icon)
@@ -604,7 +607,9 @@ def test_copied_bulk_leaf_contract(
     assert response.status_code == 200
     ((data, stock),) = [(data, stock) for data, stock in payloads if data["cv_id"] == "cv-bulk-archive"]
     projected = {key: value for key, value in data.items() if key in fields}
-    assert set(projected) == fields - ({"cv_title"} if mode != "icon" else set())
+    assert set(projected) == fields - ({"cv_title"} if effective_mode != "icon" else set())
+    assert projected["cv_icon"] == icon
+    assert projected["cv_label_mode"] == effective_mode
     resolve = Variable.resolve
     unexpected = []
 
@@ -636,7 +641,10 @@ def test_copied_bulk_leaf_contract(
     assert button.get("formaction") and button.get("data-cv-bulk-action") == "archive"
     assert button.text_content().strip() == label
     assert not button.cssselect("img, [onerror]")
-    if mode == "icon":
+    if disabled:
+        assert not button.cssselect("i, svg")
+        assert button.get("title") is None
+    if effective_mode == "icon":
         assert "theme-danger-icon" in button.classes
         assert button.get("title") == label
     if icon == "ui:archive" and mode != "label":

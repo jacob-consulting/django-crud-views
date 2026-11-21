@@ -666,3 +666,39 @@ def test_table_pagination_hidden_label_values(paginated_author_client, case, pag
     _assert_hidden_labels(nav, raw, expected)
     if case == "unicode":
         assert f'class="{expected}"'.encode() in response.content
+
+
+class SortStateTable(django_tables2.Table):
+    value = django_tables2.Column(verbose_name="Value & amount")
+    other = django_tables2.Column()
+    label = django_tables2.Column(orderable=False)
+
+
+def _sort_state_table(query=None, *, prefix="", table_class=SortStateTable, **kwargs):
+    table = table_class([{"value": 2, "other": 1, "label": "Example"}], prefix=prefix, **kwargs)
+    request = RequestFactory().get("/", data=query or {})
+    RequestConfig(request, paginate=False).configure(table)
+    return table, request
+
+
+def _assert_sort_header(header, state):
+    assert header.get("scope") == "col"
+    assert header.get("aria-sort") == state
+    icons = header.cssselect("i")
+    expected = {"ascending": "fa-angles-up", "descending": "fa-angles-down"}.get(state)
+    if expected:
+        assert len(icons) == 1
+        assert expected in icons[0].get("class").split()
+    else:
+        assert not icons
+    assert len(header.cssselect("a")) == (0 if state is None else 1)
+
+
+def test_table_header_sort_tracer():
+    table, request = _sort_state_table({"sort": "-value"})
+    rendered = _render_table_pagination(table, request)
+    value, other, label = html.fromstring(rendered).cssselect("thead th")
+    _assert_sort_header(value, "descending")
+    _assert_sort_header(other, "none")
+    _assert_sort_header(label, None)
+    assert parse_qs(urlsplit(value.cssselect("a")[0].get("href")).query) == {"sort": ["value"]}

@@ -1,26 +1,26 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.46"
+current_phase_name: "Bulk toolbar: show only actions the viewer can enter"
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.45 complete, ready to plan Phase 7
-last_updated: "2026-11-21T20:58:09.310Z"
+stopped_at: "Phase 06.46 context gathered; ready to plan from approved issue #399"
+last_updated: "2026-11-21T17:42:06.165Z"
 last_activity: 2026-11-21
-last_activity_desc: "Phase 06.45 shipped as PR #401"
-state_head: 59b4b859da09602c996969d6bb5e52ce896ee781
+last_activity_desc: "Phase 06.46 context captured from approved issue #399 D-01–D-06; ready to plan"
+state_head: 49d5173aa3721827c4dc34032f72cf55fac967a3
 progress:
   total_phases: 52
-  completed_phases: 51
-  total_plans: 280
-  completed_plans: 280
-  percent: 98
+  completed_phases: 50
+  total_plans: 278
+  completed_plans: 278
+  percent: 96
 milestone_name: milestone
 ---
 
 Total Phases: 52
-Completed Phases: 51
+Completed Phases: 50
 
 # Project State
 
@@ -29,17 +29,17 @@ Completed Phases: 51
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.46 — Bulk toolbar destination entry gates (#399)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.46 — Bulk toolbar: show only actions the viewer can enter (#399)
 Current Plan: Not started
 Total Plans in Phase: TBD
 Status: Ready to plan
-Last activity: 2026-11-21 -- Phase 06.45 shipped as PR #401
+Last activity: 2026-11-21 -- Phase 06.46 context captured from approved issue #399 D-01–D-06; ready to plan
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.46
 
 ### Phase 06.45 shipping — 2026-11-21
 
@@ -2281,7 +2281,7 @@ None yet.
 - Phase 06.41 inserted after Phase 06.40: Current-page bulk selection and action forms for table and card views (#387); approved D-01–D-10 with the code-examples comment captured as planning proposals; replaces the unmerged phase 06.38 (#378) approach (URGENT)
 - Phase 06.42 inserted after Phase 06.40.1: Theme-registered data-attribute prefix for templates and object-detail tabs (#391); explicitly assigned 06.42, approved U1/U2 handover D-01–D-05, before Phase 7 theme-surface freeze (URGENT)
 - Phase 06.43 inserted after Phase 06.40.1: Issue #393: breadcrumb class keys and accessible table sort state; approved D-01–D-04 handover. Explicitly assigned 06.43 for this workspace, independently deliverable before the Phase 7 freeze. (URGENT)
-- Phase 06.45 inserted after Phase 06.44: Theme-registered JS namespace and tooltip placements (#398); approved D-01–D-05, depends on 06.42, before Phase 7 freeze (URGENT)
+- Phase 06.46 inserted after Phase 06.44: Issue #399: bulk toolbar destination entry gates; approved D-01–D-06 handover amends #387. Requested 06.46 retained; 06.45 remains unallocated in this checkout. (URGENT)
 
 ## Deferred Items
 
@@ -2291,6 +2291,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T20:54:22Z
-Stopped at: Phase 06.45 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-21T17:41:36.031Z
+Stopped at: Phase 06.46 context gathered; ready to plan from approved issue #399
+Resume file: .planning/phases/06.46-bulk-toolbar-show-only-actions-the-viewer-can-enter-399/06.46-CONTEXT.md

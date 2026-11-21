@@ -1,25 +1,24 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.45"
+current_phase_name: Theme-registered JS namespace and tooltip placements
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.44 complete, ready to plan Phase 7
-last_updated: "2026-11-21T14:04:15.264Z"
+stopped_at: Phase 06.45 context gathered
+last_updated: "2026-11-21T17:37:09.722Z"
 last_activity: 2026-11-21
-last_activity_desc: "Phase 06.44 shipped as PR #397 after merging PR #396 and rebasing onto main"
-state_head: 4743623acd0ef386b655141d24915bf996c37c34
+last_activity_desc: "Phase 06.45 inserted for issue #398; ready to plan"
+state_head: 924b00a4fe903c7ad9f1cc4dd61356fd6d98220e
 progress:
-  total_phases: 51
+  total_phases: 52
   completed_phases: 50
   total_plans: 278
   completed_plans: 278
-  percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 51
+Total Phases: 52
 Completed Phases: 50
 
 # Project State
@@ -29,17 +28,17 @@ Completed Phases: 50
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.45 — Theme-registered JS namespace and tooltip placements (#398)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.45 — Theme-registered JS namespace and tooltip placements (#398)
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-21 -- Phase 06.44 shipped as PR #397 after merging PR #396 and rebasing onto main
+Last activity: 2026-11-21 -- Phase 06.45 inserted for issue #398; ready to plan
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.45
 
 ### Phase 06.44 completion — 2026-11-21
 
@@ -2259,6 +2258,7 @@ None yet.
 - Phase 06.41 inserted after Phase 06.40: Current-page bulk selection and action forms for table and card views (#387); approved D-01–D-10 with the code-examples comment captured as planning proposals; replaces the unmerged phase 06.38 (#378) approach (URGENT)
 - Phase 06.42 inserted after Phase 06.40.1: Theme-registered data-attribute prefix for templates and object-detail tabs (#391); explicitly assigned 06.42, approved U1/U2 handover D-01–D-05, before Phase 7 theme-surface freeze (URGENT)
 - Phase 06.43 inserted after Phase 06.40.1: Issue #393: breadcrumb class keys and accessible table sort state; approved D-01–D-04 handover. Explicitly assigned 06.43 for this workspace, independently deliverable before the Phase 7 freeze. (URGENT)
+- Phase 06.45 inserted after Phase 06.44: Theme-registered JS namespace and tooltip placements (#398); approved D-01–D-05, depends on 06.42, before Phase 7 freeze (URGENT)
 
 ## Deferred Items
 
@@ -2268,6 +2268,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T11:50:01.426421+00:00
-Stopped at: Phase 06.44 complete, ready to discuss Phase 7
-Resume file: None
+Last session: 2026-11-21T17:37:02.795Z
+Stopped at: Phase 06.45 context gathered
+Resume file: .planning/phases/06.45-theme-registered-js-namespace-and-tooltip-placements-398/06.45-CONTEXT.md

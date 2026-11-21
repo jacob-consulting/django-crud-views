@@ -1,24 +1,24 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.45"
-current_phase_name: Theme-registered JS namespace and tooltip placements
+current_phase: "06.47"
+current_phase_name: Semantic variants for bulk toolbar buttons
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.45 context gathered
-last_updated: "2026-11-21T17:37:09.722Z"
+stopped_at: Phase 06.47 context gathered
+last_updated: "2026-11-21T17:53:58.418Z"
 last_activity: 2026-11-21
-last_activity_desc: "Phase 06.45 inserted for issue #398; ready to plan"
-state_head: 924b00a4fe903c7ad9f1cc4dd61356fd6d98220e
+last_activity_desc: "Phase 06.47 inserted for issue #400; ready to plan"
+state_head: 1896b89583daa8b3ac3c065c15c136edb28f934a
 progress:
-  total_phases: 52
+  total_phases: 53
   completed_phases: 50
   total_plans: 278
   completed_plans: 278
 milestone_name: milestone
 ---
 
-Total Phases: 52
+Total Phases: 53
 Completed Phases: 50
 
 # Project State
@@ -28,17 +28,17 @@ Completed Phases: 50
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.45 — Theme-registered JS namespace and tooltip placements (#398)
+**Current focus:** Phase 06.47 — Semantic variants for bulk toolbar buttons (#400)
 
 ## Current Position
 
-Phase: 06.45 — Theme-registered JS namespace and tooltip placements (#398)
+Phase: 06.47 — Semantic variants for bulk toolbar buttons (#400)
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-21 -- Phase 06.45 inserted for issue #398; ready to plan
+Last activity: 2026-11-21 -- Phase 06.47 inserted for issue #400; ready to plan
 
-Next: $gsd-plan-phase 06.45
+Next: $gsd-plan-phase 06.47
 
 ### Phase 06.44 completion — 2026-11-21
 
@@ -2259,6 +2259,7 @@ None yet.
 - Phase 06.42 inserted after Phase 06.40.1: Theme-registered data-attribute prefix for templates and object-detail tabs (#391); explicitly assigned 06.42, approved U1/U2 handover D-01–D-05, before Phase 7 theme-surface freeze (URGENT)
 - Phase 06.43 inserted after Phase 06.40.1: Issue #393: breadcrumb class keys and accessible table sort state; approved D-01–D-04 handover. Explicitly assigned 06.43 for this workspace, independently deliverable before the Phase 7 freeze. (URGENT)
 - Phase 06.45 inserted after Phase 06.44: Theme-registered JS namespace and tooltip placements (#398); approved D-01–D-05, depends on 06.42, before Phase 7 freeze (URGENT)
+- Phase 06.47 inserted after Phase 06.45: Semantic variants for bulk toolbar buttons (#400); explicitly assigned 06.47 by the maintainer, approved D-01–D-05, depends on 06.41, before Phase 7 freeze (URGENT)
 
 ## Deferred Items
 
@@ -2268,6 +2269,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T17:37:02.795Z
-Stopped at: Phase 06.45 context gathered
-Resume file: .planning/phases/06.45-theme-registered-js-namespace-and-tooltip-placements-398/06.45-CONTEXT.md
+Last session: 2026-11-21T17:53:51.244Z
+Stopped at: Phase 06.47 context gathered
+Resume file: .planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-CONTEXT.md

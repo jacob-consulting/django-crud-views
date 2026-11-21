@@ -1,13 +1,13 @@
 ---
-last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
-last_mapped_at: 2026-11-19
+last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_at: 2026-11-21
 ---
-<!-- refreshed: 2026-11-17 -->
+<!-- refreshed: 2026-11-21 -->
 # Architecture
 
-**Analysis Date:** 2026-11-19
+**Analysis Date:** 2026-11-21
 
-Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, access trace, the cv_manage_view report contract, settings and checks. Items marked *(inferred)* were not read line by line (extension-app internals, templates, JS).
+Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, access trace, the cv_manage_view report contract, bulk selection, templates and the Bootstrap 5 bulk example. Extension-app internals and JavaScript implementation details are summarized from the existing map and file layout.
 
 ## System Overview
 
@@ -59,6 +59,7 @@ Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, acce
 | Action/button projection | Buttons, button data, action menus, label modes, visibility, cancel target | `src/crud_views/lib/view/buttons.py`, `button_data.py`, `action_menu.py`, `label_mode.py`, `visibility.py`, `cancel.py` |
 | Ancestor engine | Walk/validate parent chain, authorize ancestors per request, scope child queryset | `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_policy.py`, `src/crud_views/lib/ancestor_db.py` |
 | `Resource` / `ResourceViewMixin` | Non-ORM rows via `cv_get_items`/`cv_get_item`; `_meta` duck type (`ResourceOptions`) | `src/crud_views/lib/resource.py` |
+| Bulk selection and action form | Opt-in table/card selection plus permission-gated review and transactional execution of selected ORM objects | `src/crud_views/lib/bulk/__init__.py` |
 | Object section navigation | Opt-in `NavBar`/`NavItem` declarations, lazy per-view projection, visibility and active-section calculation | `src/crud_views/lib/navbar.py` |
 | `ManageView` | Developer page; nine `get_manage_*` section builders; `manage_export()` context for complete machine metadata | `src/crud_views/lib/views/manage.py` |
 | Manage report contract | Pydantic wire models, `adapt_section`, `Report` TypeAdapter, `report_schema()` | `src/crud_views/lib/manage_report.py` |
@@ -110,6 +111,13 @@ Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, acce
 - Purpose: non-ORM rows through existing list/detail/action handlers.
 - Location: `src/crud_views/lib/resource.py`; Resource branches in `src/crud_views/lib/viewset/__init__.py` (`is_resource`, `permissions`, `pk` from `_meta.pk_type`).
 - No ContentType permission lookup; `ViewSet.default_permissions` raises for Resources.
+
+**Bulk actions:**
+- Purpose: opt-in selection on table/card lists and a destination view that rechecks visibility, per-object authorization and eligibility before applying one action.
+- Location: `src/crud_views/lib/bulk/__init__.py`; public exports are `BulkSelectionMixin`, `BulkFormViewPermissionRequired`, and `BulkConfirmForm`.
+- Depends on: ORM model ViewSets, normal destination permission and ancestor checks, `cv_get_atomic()`, and `cv_form_valid()`/`cv_form_valid_hook()` for the write. The component is limited to the default database and scalar PK models.
+- Presentation: `src/crud_views/templates/crud_views/snippets/bulk_toolbar.html`, `columns/bulk_select.html`, `view_bulk_form.content.html`, and `snippets/bulk/`; progressive enhancement is in `src/crud_views/static/crud_views/js/bulk.js`.
+- Consumer example: `examples/bootstrap5/bulk_selection/views.py` shows table and card selection plus bulk delete/archive/owner assignment actions.
 
 **Diagnostics (manage + trace + CLI contracts):**
 - Purpose: developer-facing projections of configuration and access.
@@ -185,6 +193,14 @@ The default theme contract is split into wrapper/identity/items leaves under `sr
 5. `Report.validate_python()` validates the whole document, JSON is emitted with `ensure_ascii=True, allow_nan=False`. Exit codes: 0 ok; 1 when any check message level >= 40 (error); 2 for any non-complete report.
 6. `report_schema()` (serialization mode) feeds `--schema`; the committed copy is `docs/reference/cv_manage_view.schema.json`, verified by `tests/check_manage_schema.py` and `tests/test1/test_manage_command*.py`.
 
+### Bulk Selection and Execution Path
+
+1. A table or card view opts in with `BulkSelectionMixin` and `cv_bulk_actions`; the mixin adds checkboxes and action submits while leaving ordinary list GET and POST behavior alone (`src/crud_views/lib/bulk/__init__.py`, `src/crud_views/templates/crud_views/snippets/bulk_toolbar.html`).
+2. The action key must resolve in the same ViewSet to a `BulkFormViewPermissionRequired` subclass; system checks also validate model shape, action form and positive `cv_bulk_max` (`src/crud_views/lib/bulk/__init__.py`).
+3. POST IDs are normalized using the model PK field. Review queries intersect the destination-visible queryset with the base ViewSet and nested-parent scope, then classify missing, unauthorized, ineligible and explicitly excluded rows without exposing inaccessible labels.
+4. Confirmation posts eligible and blocked IDs back to the destination. Execution re-resolves and rechecks selection inside `cv_get_atomic()`, rejects changed eligibility, then invokes the consumer write through `cv_form_valid()` and its hook. A `cv_on_commit` callback runs after the transaction (`src/crud_views/lib/bulk/__init__.py`).
+5. The example consumer demonstrates extension points and per-object checks in `examples/bootstrap5/bulk_selection/views.py`; list/card templates are `src/crud_views/templates/crud_views/view_list_table.content.html` and `view_card.content.html`.
+
 ## Key Abstractions
 
 **ViewSet:**
@@ -240,6 +256,7 @@ The default theme contract is split into wrapper/identity/items leaves under `sr
 - **Pydantic compatibility:** wire modules deliberately use `typing_extensions.TypeAliasType`, `Generic[...]` instead of PEP 695 syntax and validation-mode schema for the trace, noted in comments as Pydantic 2.2 compatibility (`src/crud_views/lib/manage_report.py`, `src/crud_views/lib/access_trace_export.py`).
 - **Contracts import before Django:** `access_trace.py` and `access_trace_export.py` document being importable before Django configuration.
 - **Resource boundary:** Resources are never parents; model ancestors resolve first; nested filtering belongs in the app loader (`src/crud_views/lib/resource.py`, `src/crud_views/lib/ancestors.py`).
+- **Bulk action boundary:** bulk forms require scalar-PK ORM models and querysets on the default database; do not assume they support Resource rows, composite identifiers, or multi-database writes (`src/crud_views/lib/bulk/__init__.py`). Put the domain mutation in `cv_form_valid()` and keep object eligibility in `cv_bulk_check()`/`cv_bulk_has_permission()`.
 - **Guardian:** replaces the ViewSet class and manage view; does not support Resource models.
 - **Package layout:** distribution ships five apps from `src/`; optional apps must not be imported by core modules.
 
@@ -292,4 +309,4 @@ The default theme contract is split into wrapper/identity/items leaves under `sr
 
 ---
 
-*Architecture analysis: 2026-11-19*
+*Architecture analysis: 2026-11-21*

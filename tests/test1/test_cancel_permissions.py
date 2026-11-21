@@ -72,6 +72,13 @@ VALID_FORMS = {
     "workflowrequest": "WorkflowRequestWorkflowView",
 }
 COLLECTED_VALID = {
+    "bulk_filter": "BulkFilterMarkView",
+    "bulk_author": "BulkAuthorMarkView",
+    "bulk_code": "BulkCodeMarkView",
+    "bulk_book": "BulkBookMarkView",
+    "bulk_tenant": "BulkTenantMarkView BulkTenantNarrowView",
+    "bulk_publisher": "BulkPublisherArchiveView BulkPublisherArchiveNowView BulkPublisherRenameView "
+    "BulkPublisherDeleteView BulkPublisherLockedArchiveView",
     "s3file": "S3FileDeleteView",
     "publisher_formset": "PublisherFormSetCreateView PublisherFormSetUpdateView",
     "readme": "ReadmeAuthorCreate ReadmeAuthorUpdate ReadmeAuthorDelete",

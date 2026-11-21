@@ -191,11 +191,12 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `manage:trace-not-reached` | `badge bg-secondary` |
 | `manage:trace-not-evaluated` | `badge bg-warning text-dark` |
 
-The default table has 128 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 135 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
 Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
 keys and two dismissal utilities; the two form-group utilities each contribute one key, numbered columns contribute
-twelve width keys, ViewSet Navigation contributes six keys, and manage diagnostics contribute twenty keys. Manage values replace complete class strings;
+twelve width keys, ViewSet Navigation contributes six keys, bulk selection contributes seven keys, and manage
+diagnostics contribute twenty keys. Manage values replace complete class strings;
 theme registrations override defaults and project settings override the theme. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
@@ -225,6 +226,31 @@ project settings override the theme. An explicit `None` or `""` removes that key
 without restoring default classes. Clearing or replacing the active classes preserves current-link semantics.
 See [ViewSet Navigation](navbar.md) for the full wrapper and independent component templates.
 
+### Bulk selection classes
+
+These seven utility keys replace complete class strings and take no label-mode suffix.
+
+| Key | Complete default classes |
+|---|---|
+| `bulk:toolbar` | `mb-3` |
+| `bulk:controls` | `d-flex align-items-center gap-3 mb-2` |
+| `bulk:select-all` | `form-check mb-0` |
+| `bulk:checkbox` | `form-check-input` |
+| `bulk:actions` | `d-flex flex-wrap gap-2` |
+| `bulk:card-cell` | `position-relative` |
+| `bulk:card-select` | `form-check-input position-absolute top-0 start-0 translate-middle z-1` |
+
+`bulk:toolbar` styles the toolbar form; `bulk:controls` styles the row containing "Select this page" and the count.
+`bulk:select-all` styles the label around the page checkbox, while `bulk:checkbox` styles that checkbox and each
+table row checkbox. `bulk:actions` styles the row of action buttons. `bulk:card-cell` provides the positioning
+context around one card; `bulk:card-select` styles the checkbox at the card's top-left corner.
+
+Theme registrations override defaults and `CRUD_VIEWS_BUTTON_CLASSES` overrides the theme per key; `None` or
+`""` removes the class contribution. The toolbar's action buttons are ordinary form submit buttons styled by
+`form:submit`; their label mode comes from the `bulk` location floor of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`.
+
+See [Bulk actions](bulk_actions.md#toolbar-buttons) for toolbar labels, selection and review templates.
+
 ### Manage diagnostic classes
 
 The twenty `manage:*` entries above are complete utility class strings, without label-mode variants.
@@ -246,7 +272,7 @@ registry strings lets a theme own their appearance; the default-state JS uses da
 Keep textual labels and focus/help behavior when restyling. The one Show defaults switch hides default rows in
 Views and Presentation only after successful JS setup; without JavaScript all rows are readable. See the
 [theme registration recipe](theme.md#manage-class-registration) and [external asset contract](javascript.md#manage-defaults).
-The exact inventories are 128 core / 146 with workflow, including all twenty manage keys.
+The exact inventories are 135 core / 153 with workflow, including all twenty manage keys.
 
 ### Numbered column classes
 
@@ -270,8 +296,8 @@ an alternate framework's grid.
 
 ### Optional workflow defaults
 
-The 128-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
-for 146 effective default keys with only that contribution. Other installed extensions may add more.
+The 135-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
+for 153 effective default keys with only that contribution. Other installed extensions may add more.
 
 | Key | Complete default classes |
 |---|---|
@@ -1022,7 +1048,7 @@ Full-caption APIs and unrelated template helpers remain available. Form buttons 
 | `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is not in effective core/installed-app defaults, a supported `heading-page`/`heading-modal`/`heading-group` icon slot, a valid `location:variant:mode` at `context`/`list`/`card`, or `form:kind:mode`. With workflow installed, `workflow:badge-colour` also accepts one nonempty colour segment without whitespace or colon; custom colours need not occur in the default table. Workflow keys warn when workflow is absent. Unknown action modes retain their specific mode warning. |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
 | `crud_views.E106` | error | a `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` or `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"`; `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` is not a dict of form kind → mode (an unknown form kind is an error here, not a W291) |
-| `crud_views.E108` | error | `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`, `"form"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |
+| `crud_views.E108` | error | `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`, `"form"`, `"bulk"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |
 | `viewset.E210` | error | a `CardAction.label_mode`, `cv_card_actions_label_mode`, `ContextButton.label_mode` or `cv_context_action_label_mode` is set to a value other than `"label"`, `"icon"`, `"both"`; these are optional, and `None` is accepted as unset (for `cv_card_actions_label_mode` too). For forms: one error per form kind of a view's own `cv_form_actions_label_mode` (a dict with string keys) whose mode is invalid, in map order |
 | `viewset.E211` | error | a `cv_context_actions_label_mode` or `cv_list_actions_label_mode` is not `None` or a dict of action key → label mode (`cv_card_actions_label_mode` is the string or None default of card views, `cv_context_action_label_mode` the string or None target-view default; both are scalars, checked by E210). For forms: a view's own `cv_form_actions_label_mode` that is not `None` or a dict, or has a key that is not a string; reported once, its modes are then not checked |
 | `viewset.W291` | warning | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions; for `cv_form_actions_label_mode`, a key with a valid mode that is not one of the five form kinds (a ViewSet form map raises at construction and the setting fails E106 instead) |

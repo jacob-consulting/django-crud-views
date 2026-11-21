@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_bulk_execution.py::test_delete_recipe_deletes_eligible_records -q --junitxml=/tmp/06.41-02-02-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.823\" timestamp=\"2026-11-20T12:26:12.432050+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_bulk_execution\" name=\"test_delete_recipe_deletes_eligible_records\" time=\"0.546\"><failure message=\"assert 404 == 302&#10; +  where 404 = &lt;HttpResponseNotFound status_code=404, &quot;text/html; charset=utf-8&quot;&gt;.status_code\">client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x7543d55e4680&gt;\nuser_bulk_publisher_change = &lt;User: user_bulk_publisher_change&gt;\ncv_bulk_publisher = ViewSet(bulk_publisher)\nbulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]\n\n    def test_delete_recipe_deletes_eligible_records(client_user_bulk_publisher_change, user_bulk_publisher_change,\n                                                   cv_bulk_publisher, bulk_publishers):\n        from tests.test1.conftest import user_viewset_permission\n    \n        user_viewset_permission(user_bulk_publisher_change, cv_bulk_publisher, \"delete\")\n        response = post_selection(client_user_bulk_publisher_change, bulk_publishers[:2], path=\"bulk-delete\")\n&gt;       assert response.status_code == 302\nE       assert 404 == 302\nE        +  where 404 = &lt;HttpResponseNotFound status_code=404, \"text/html; charset=utf-8\"&gt;.status_code\n\ntests/test1/test_bulk_execution.py:229: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_delete_recipe_deletes_eligible_records",
+  "targetFile": "tests/test1/test_bulk_execution.py",
+  "expected": "HTTP 302 and eligible publishers deleted",
+  "actual": "HTTP 404; application recipe not registered",
+  "reportPath": "/tmp/06.41-02-02-red.xml",
+  "runStartedAt": "2026-11-20T12:26:12.432050+00:00",
+  "reportModifiedAt": "2026-11-20T12:26:13.253673+00:00",
+  "semanticAssessment": "Target executed and failed on the expected HTTP response because the application deletion destination is not implemented."
+}

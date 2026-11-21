@@ -1,0 +1,122 @@
+[
+  {
+    "title": "Document 03",
+    "status": "draft",
+    "is_locked": true,
+    "owner__username": null
+  },
+  {
+    "title": "Document 04",
+    "status": "archived",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 05",
+    "status": "published",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 06",
+    "status": "archived",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 07",
+    "status": "archived",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 08",
+    "status": "archived",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 09",
+    "status": "draft",
+    "is_locked": true,
+    "owner__username": null
+  },
+  {
+    "title": "Document 10",
+    "status": "draft",
+    "is_locked": false,
+    "owner__username": "bob"
+  },
+  {
+    "title": "Document 11",
+    "status": "draft",
+    "is_locked": false,
+    "owner__username": "bob"
+  },
+  {
+    "title": "Document 12",
+    "status": "archived",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 13",
+    "status": "archived",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 14",
+    "status": "draft",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 17",
+    "status": "published",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 18",
+    "status": "archived",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 19",
+    "status": "archived",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 20",
+    "status": "draft",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 21",
+    "status": "draft",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 22",
+    "status": "draft",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 23",
+    "status": "draft",
+    "is_locked": false,
+    "owner__username": null
+  },
+  {
+    "title": "Document 24",
+    "status": "draft",
+    "is_locked": false,
+    "owner__username": null
+  }
+]

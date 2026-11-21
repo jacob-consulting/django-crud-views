@@ -110,6 +110,7 @@ def manage_report_floor(session):
 # The form-button leaf feature suite (Phase 06): crispy adapters and goldens, the normalizer, host icons, the filter
 # helper, owner/config resolution, system checks, workflow forms, CRUD pages, modals and cancel origins.
 # Phase 06.6 adds page ownership, theme defaults/groups, request/migration contracts, alerts and the full key table.
+# Phase 06.41 covers bulk review forms, cancel-only forms and non-field errors at the crispy floor.
 CRISPY_FLOOR_TESTS = [
     "tests/test1/test_theme_form_ownership.py",
     "tests/test1/test_theme_label_modes.py",
@@ -142,6 +143,11 @@ CRISPY_FLOOR_TESTS = [
     "tests/test1/test_form_frame.py",
     "tests/test1/test_modal.py",
     "tests/test1/test_cancel_origin.py",
+    "tests/test1/test_bulk_flow.py",
+    "tests/test1/test_bulk_execution.py",
+    "tests/test1/test_bulk_source.py",
+    "tests/test1/test_bulk_scope.py",
+    "tests/test1/test_bulk_return.py",
 ]
 
 # The filter region golden is byte-exact over the template pack's own wrapper markup (field label, FormActions

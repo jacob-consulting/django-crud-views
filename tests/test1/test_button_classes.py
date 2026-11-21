@@ -26,6 +26,13 @@ from crud_views.lib.button_classes import (
 from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 
 EXPECTED_KEYS = {
+    "bulk:toolbar",
+    "bulk:controls",
+    "bulk:select-all",
+    "bulk:checkbox",
+    "bulk:actions",
+    "bulk:card-cell",
+    "bulk:card-select",
     "navbar:wrapper",
     "navbar:identity",
     "navbar:nav",
@@ -142,7 +149,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 128
+    assert len(EXPECTED_KEYS) == 135
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
@@ -155,6 +162,31 @@ def test_default_table_is_complete():
 def test_numbered_column_defaults(width):
     assert DEFAULT_BUTTON_CLASSES[f"form:column-{width}"] == f"col-md-{width}"
     assert get_button_class("form", f"column-{width}") == f"col-md-{width}"
+
+
+@pytest.mark.parametrize(
+    "slot,default",
+    [
+        ("toolbar", "mb-3"),
+        ("controls", "d-flex align-items-center gap-3 mb-2"),
+        ("select-all", "form-check mb-0"),
+        ("checkbox", "form-check-input"),
+        ("actions", "d-flex flex-wrap gap-2"),
+        ("card-cell", "position-relative"),
+        ("card-select", "form-check-input position-absolute top-0 start-0 translate-middle z-1"),
+    ],
+)
+def test_bulk_class_defaults_and_override_precedence(slot, default):
+    assert get_button_class("bulk", slot) == default
+    key = f"bulk:{slot}"
+    register_button_classes({key: "theme-bulk"})
+    assert get_button_class("bulk", slot) == "theme-bulk"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "project-bulk"}):
+        assert get_button_class("bulk", slot) == "project-bulk"
+    for empty in (None, ""):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: empty}):
+            assert get_button_class("bulk", slot) == ""
+    assert get_button_class("bulk", slot) == "theme-bulk"
 
 
 def test_manage_registry_defaults_and_overrides():
@@ -257,7 +289,7 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
 
     core = dict(DEFAULT_BUTTON_CLASSES)
     workflow = dict(CrudViewsWorkflowConfig.crud_views_button_class_defaults)
-    assert len(core) == 128
+    assert len(core) == 135
     assert len(workflow) == 18
     transitions = {key: value for key, value in workflow.items() if key.startswith("workflow:transition-")}
     assert transitions == {
@@ -265,7 +297,7 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
         for variant in ("primary", "secondary", "success", "danger", "warning", "info", "light", "dark")
     }
     assert bc._get_default_button_classes() == core | workflow
-    assert len(get_button_classes()) == 146
+    assert len(get_button_classes()) == 153
     register_button_classes({"workflow:badge-purple": "theme-purple"})
     seen = []
     original_ready = CrudViewsConfig.ready
@@ -391,7 +423,7 @@ class ThemeConfig(AppConfig):
     name = "badge_theme_probe"
     path = "."
     def ready(self):
-        assert len(bc._get_default_button_classes()) == 146
+        assert len(bc._get_default_button_classes()) == 153
         bc.register_button_classes({"workflow:badge-info": "theme-info"})
         seen.append(bc.get_button_class("workflow", "badge-info"))
 theme.ThemeConfig = ThemeConfig
@@ -404,11 +436,11 @@ settings.configure(
     CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-light": "project-light"},
 )
 from crud_views.lib import button_classes as bc
-assert len(bc.DEFAULT_BUTTON_CLASSES) == 128
+assert len(bc.DEFAULT_BUTTON_CLASSES) == 135
 assert bc.get_button_classes() == {**bc.DEFAULT_BUTTON_CLASSES, "workflow:badge-light": "project-light"}
 django.setup()
 assert seen == ["theme-info"]
-assert len(bc._get_default_button_classes()) == 146
+assert len(bc._get_default_button_classes()) == 153
 assert bc.get_button_class("workflow", "badge-info") == "theme-info"
 assert bc.get_button_class("workflow", "badge-light") == "project-light"
 """

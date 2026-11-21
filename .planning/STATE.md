@@ -5,28 +5,28 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.40.1 complete, ready to plan Phase 7
-last_updated: "2026-11-19T13:24:43.811Z"
-last_activity: 2026-11-19
-last_activity_desc: "Phase 06.40.1 shipped as PR #386"
-state_head: 3676829908a93fbd2f383d45e38a558591b7a3a2
+stopped_at: Phase 06.41 complete, ready to plan Phase 7
+last_updated: "2026-11-21T08:20:33.924Z"
+last_activity: 2026-11-21
+last_activity_desc: Phase 06.41 shipped as PR #392
+state_head: 41ee5aabf8b0ebfe7c85af1e098f3a2a91854836
 progress:
-  total_phases: 47
-  completed_phases: 46
-  total_plans: 257
-  completed_plans: 257
+  total_phases: 48
+  completed_phases: 47
+  total_plans: 271
+  completed_plans: 271
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 47
-Completed Phases: 46
+Total Phases: 48
+Completed Phases: 47
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-19)
+See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -35,11 +35,104 @@ See: .planning/PROJECT.md (updated 2026-11-19)
 
 Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: TBD
+Total Plans in Phase: Not planned
 Status: Ready to plan
-Last activity: 2026-11-19 -- Phase 06.40.1 shipped as PR #386
+Last activity: 2026-11-21 — Phase 06.41 shipped as PR #392
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.41 completion — 2026-11-21
+
+- User confirmed the native Cancel retest; all seven UAT tests pass and G-06.41-1 is resolved by plan 14. Original defect report and the missing CI URL/revision limitation remain recorded.
+- Independent report refreshed for the human receipt: 130/130 verified, no remaining human checks. Canonical verification and combined UAT/verification completion predicates pass.
+- All 14 plans complete; phase.complete advances to Phase 7. Reconciled the dotted progress row and completed-phase count. SDK file warnings refer to command fragments/placeholder patterns; actual RED evidence exists. Original derived state.json preserved after its known inaccurate rewrite.
+- No new source changes or repeated broad tests; passing regression/review evidence remains applicable. No learning files or graduation candidates. No ship, push, PR or merge.
+
+### Phase 06.41 gap plan 14 — 2026-11-21
+
+- Existing native Cancel setting enabled in the Bootstrap example; guide recipe and rendered-href tests added. Package defaults and URL/permission policy unchanged. Two existing example test modules now follow native hrefs.
+- RED/GREEN commits 2fc1b720/9a1ce6c2 and bd558fa7/0a307cfc; committed summary c7d17b4e, full receipts 0a2aaa47.
+- Full core 16,952 passed/one existing skip; full example 637 passed/296 subtests; focused core 726 passed. Scoped Ruff/format and strict docs pass. Eighteen real Chromium JS-off/on Cancel scenarios preserve source state with no POST or document mutation.
+- Deep review six files/zero findings; validation extended to 25 tasks; security 35 closed/zero open. Historical UI audit retained with E1 native-Cancel follow-up. Codebase drift remains advisory; schema/UI gates nonblocking.
+- Independent re-verification 129/130, human_needed; CLI fingerprint/status accepted. Only human defect retest H6-R remains. Six prior UAT passes and missing CI URL/revision limitation preserved; no UAT resolution fields altered, no phase completion or shipment.
+
+### Phase 06.41 conversational UAT — 2026-11-21
+
+- Six tests passed by user confirmation; test 6 reported Cancel does not work without JavaScript.
+- Diagnosis: stock Cancel needs its delegated JS listener; example settings omit the existing native-link opt-in.
+- Plan 14 closes G-06.41-1 through example configuration, guide recipe, native-href regression cases and browser retest.
+- Two existing rendering probes pass; plan structure and inline review pass. No implementation changes made.
+- Test 7 was confirmed by the user; no CI URL/revision was supplied in chat. Phase remains unaccepted pending the fix and retest.
+
+### Phase 06.41 execution and review closeout — 2026-11-20
+
+- All 13 plans / 23 tasks executed. Plan 13 acceptance records supported Django 4.2/5.2/6.0 core and example suites, JavaScript, recorder, crispy floor, strict docs and wheel checks. Browser automation passed six groups; six independent human approvals remain pending.
+- Nyquist coverage validated; security register has zero open threats. Deep review found two bounded presentation defects, fixed in 9ffedc6b/c180246e and independently rechecked (102 tests). UI advisories and accepted limitations are recorded explicitly.
+- Installed-distribution/full-recorder CI and PostgreSQL locking measurements are not claimed. Final regression passed: 16,951 core tests, 622 example tests / 278 subtests, and 473 JavaScript tests. Independent goal verification: 124/126 truths verified, zero blocking implementation gaps, human_needed. Six browser approvals and installed-distribution/full-recorder CI receipt are persisted in 06.41-UAT.md; phase is not complete.
+
+### Phase 06.41 plan 12 execution — 2026-11-20
+
+- Example feature registration, developer permissions and German catalog delivered in f6cdd292 after REDaa0d2cc2; summary912309ab. Tests506/287subtests and focused105/115subtests, both German tests, checks and scoped Ruff/format pass.
+- Wave8 complete,12/13 executed; final plan13 next for guide synchronization, browser, supported Django/floor/recorder and wheel acceptance. Phase verification remains pending.
+
+### Phase 06.41 plan 11 execution — 2026-11-20
+
+- Bulk-selection example app delivered in29f94564 after RED87d6f5ff; summary06f3bd6a. Focused14 tests/9subtests, migration consistency, system checks, scoped Ruff/format and wave build pass.
+- Wave7 complete,11/13 executed; feature inventories/translations plan12 and browser/final acceptance plan13 remain. Phase acceptance pending.
+
+### Phase 06.41 plan 10 execution — 2026-11-20
+
+- Reference guide, stable public API, Guardian/lifecycle guidance and cross-links delivered through cbe06ea1; summary9635c938. Three tasks/six RED-GREEN commits; no production changes.
+- Docs717 passed, task selections11/67/230, three strict docs builds and Ruff pass. Example synchronization remains plan13. 10/13 executed; plan11 next; acceptance pending.
+
+### Phase 06.41 plan 09 execution — 2026-11-20
+
+- Nine core checks, Guardian W002 and German bulk catalogs delivered through 2602f61e; summary c9cbddf4. Six RED/GREEN task commits. Core16,899 passed/one existing skip; focused checks/Ruff/format and wave build pass.
+- Guardian warning remains startup-only; existing conditional-checker string-form limitation deferred. Wave6 complete,9/13 executed; plan10 next. Phase acceptance pending.
+
+### Phase 06.41 plan 08 execution — 2026-11-20
+
+- Twenty return-navigation regression cases and filter fixtures committed c6c3650a; summary 11edf6da. No production changes. Focused 147, named fallback3 and core16,837 passed/one existing skip; Ruff/format and wave package build pass.
+- Wave 5 complete, 8/13 plans; plan09 next. Schema/UI gates nonblocking with existing degraded scope. Phase acceptance pending.
+
+### Phase 06.41 plan 07 execution — 2026-11-20
+
+- Toolbar/card source integration delivered through 40caadf8; summary fc14dd0f. Full core 16,816 passed/one existing skip; focused 225/210, named 1/3, JS16; scoped Ruff/format and wave package build pass.
+- Three browser-only checks remain plan 13. Existing WINDOWS table/JSON disagreement prevented append; summary/deferred-items retain obligations. Wave 4 complete, 7/13 plans; plan 08 next. Phase acceptance pending.
+
+### Phase 06.41 plan 06 execution — 2026-11-20
+
+- Seven bulk theme keys and inventories delivered in 0bea1901 after RED d81a48d7; summary 6624e7fa. Focused 1,153 passed; full core 16,785 passed/one existing skip; strict docs, scoped Ruff and wave package build pass.
+- Wave 3 complete; 6/13 executed, plan 07 next. Schema/UI gates nonblocking (degraded UI scope); visual card acceptance remains later.
+
+### Phase 06.41 plan 05 execution — 2026-11-20
+
+- Scope and permission boundary tests committed c0c90d6f/3dcb5cc4, summary d96e58e2. Forty new cases; no production correction needed.
+- Full core 16,718 passed/one existing skip; focused 186 passed, targeted selections and scoped Ruff/format pass. PostgreSQL unmeasured.
+- 5/13 executed; plan 06 next; phase acceptance pending.
+
+### Phase 06.41 plan 04 execution — 2026-11-20
+
+- Two tasks/four commits through dbd3c490, summary c7ff36d7. External bulk script and asset inventories delivered; final toolbar integration belongs to plan 07.
+- Full core: 16,677 passed/one existing skip; JS 473 passed; focused Python 98 passed/one skip, JS 29 passed, strict docs/Ruff and wave package build pass. Existing Vite warning retained.
+- Wave 2 complete, 4/13 plans executed; schema/UI gates nonblocking, UI scope remains degraded by summary parsing. Plan 05 next; phase acceptance pending.
+
+### Phase 06.41 plan 03 execution — 2026-11-20
+
+- Label-mode registration and inventories committed acd4390d after RED 4a3fbc2e; summary 1607b5f8. 1,583 focused and 20 named tests; full core 16,676 passed/one existing skip; strict docs and Ruff pass.
+- 3/13 executed; plan 04 next. Toolbar consumption remains plan 07; phase acceptance pending.
+
+### Phase 06.41 plan 02 execution — 2026-11-20
+
+- Both tasks complete through 0c0cb6e6; summary eee7a139 committed. Confirmation outcomes, blocked review forms and execution/recipe evidence delivered.
+- Core suite: 16,654 passed, one existing skip; focused 408 passed, named hook/guard checks and Ruff clean. SQLite locking-recipe logic only, no server row-lock claim; accepted D-38 message behavior pinned.
+- 2/13 plans executed; plan 03 next. Phase acceptance remains pending.
+
+### Phase 06.41 plan 01 execution — 2026-11-20
+
+- Both tasks complete in four RED/GREEN commits through 41ac7d76; SUMMARY 29b3f358 committed before progress updates. Native table selection, scoped permission-gated confirmation, bounded input and transactional execution delivered.
+- Full core suite: 16,603 passed, one existing skip (Python 3.12.3/Django 5.2.19, four workers). Final focused suite: 109 passed; scoped Ruff/format/whitespace and package build pass. PostgreSQL unmeasured; DataError simulated.
+- ROADMAP records 1/13 executed, phase incomplete; plan 02 next. Sequential execution selected by fork-base guard. UI gate nonblocking with degraded scope; codebase drift advisory retained. Original derived state.json preserved; unrelated changes untouched.
 
 ### Phase 06.40.1 completion — 2026-11-19
 
@@ -1411,7 +1504,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 248
+- Total plans completed: 262
 
 - Total plans completed: 186
 - Average duration: -
@@ -1464,6 +1557,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.37 | 4 | - | - |
 | 06.40 | 9 | - | - |
 | 06.40.1 | 2 | - | - |
+| 06.41 | 14 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2083,6 +2177,7 @@ None yet.
 - Phase 06.39 inserted after Phase 06.37: Immediate-parent permission checks for child links (#380), ahead of the object navbar (#381) (URGENT)
 - Phase 06.40 inserted after Phase 06.39: Object navbar: opt-in section navigation (#381) (URGENT)
 - Phase 06.40.1 inserted after Phase 06.40: ViewSet Navigation: theme class keys and owner-heading layouts (#384); findings 36 and 38, Guardian finding 37 separate (URGENT)
+- Phase 06.41 inserted after Phase 06.40: Current-page bulk selection and action forms for table and card views (#387); approved D-01–D-10 with the code-examples comment captured as planning proposals; replaces the unmerged phase 06.38 (#378) approach (URGENT)
 
 ## Deferred Items
 
@@ -2092,6 +2187,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-19T13:15:37.896966+00:00
-Stopped at: Phase 06.40.1 complete, ready to plan Phase 7
+Last session: 2026-11-21T08:21:16.745922+00:00
+Stopped at: Phase 06.41 complete, ready to plan Phase 7
 Resume file: None

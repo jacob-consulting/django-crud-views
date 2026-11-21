@@ -405,7 +405,7 @@ def test_button_chain_renders_only_table_classes(monkeypatch):
         styled[name] = len(_styled(doc))
 
     # the action and menu leaves serve the variant locations; the form location has its own leaf, checked below
-    assert LOCATIONS - {"form"} == VARIANT_LOCATIONS
+    assert LOCATIONS - {"form", "bulk"} == VARIANT_LOCATIONS
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES=SENTINEL_CLASSES):
         for location in sorted(VARIANT_LOCATIONS):
             for mode in sorted(LABEL_MODES):
@@ -498,6 +498,20 @@ def test_cv_button_tag_rejects_form_location(tag_spies, tag, ctx, strict):
         template.render(Context(dict(ctx)))
     assert "'form'" in str(excinfo.value)
     assert tag_spies == []  # rejected before resolution, normalization and leaf dispatch
+
+
+@pytest.mark.parametrize("strict", [True, False])
+@pytest.mark.parametrize("tag", [tag.replace('"form"', '"bulk"') for tag in _TAG_KINDS])
+@pytest.mark.parametrize(
+    "ctx", [_VALID_FORM_TAG_CONTEXT, {}, {"cv_key": "submit", "cv_access": False}], ids=["visible", "empty", "hidden"]
+)
+def test_cv_button_tag_rejects_bulk_location(tag_spies, tag, ctx, strict):
+    template = Template("{% load crud_views %}" + tag)
+    with override_settings(CRUD_VIEWS_STRICT=strict), pytest.raises(ValueError, match="cv_button") as excinfo:
+        template.render(Context(dict(ctx)))
+    assert "'bulk'" in str(excinfo.value)
+    assert "form leaf" in str(excinfo.value)
+    assert tag_spies == []
 
 
 def test_direct_form_normalization_still_succeeds():

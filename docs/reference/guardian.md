@@ -491,6 +491,28 @@ rows. Nested create views keep their parent permission/state gate without requir
 Top-level views retain their existing permission delegation. Custom overrides must preserve cooperative `super()`
 calls; the check does not prove that an application override enforces authorization.
 
+## Bulk actions
+
+The default `BulkFormViewPermissionRequired.cv_bulk_has_permission(obj)` returns `True`; it does not add
+an object permission check to endpoint admission and queryset scope. On a Guardian ViewSet,
+`crud_views_guardian.W002` warns when a bulk destination inherits that default. Implement the application's
+item policy explicitly; for example, extend your archive destination with an object check:
+
+```python
+class GuardianArchiveDocumentsView(ArchiveDocumentsView):
+    def cv_bulk_has_permission(self, obj):
+        return self.request.user.has_perm("documents.change_document", obj)
+```
+
+Use your app's permission codename. If `get_queryset()` already enforces the complete item policy,
+silence the warning by adding `"crud_views_guardian.W002"` to `SILENCED_SYSTEM_CHECKS`.
+The selection's ViewSet and parent scope still apply; related form choices require their own scope.
+See [Bulk actions](bulk_actions.md#scope-and-permissions) for the full contract.
+
+The warning is reported by Django's system checks: `manage.py check`, and management commands that run
+the checks such as `runserver` and `migrate`. The manage page of a Guardian ViewSet does not list
+`crud_views_guardian.W002`, so a clean manage page does not establish that the hook is implemented.
+
 ## Formset fragments
 
 The AJAX request that adds a formset row runs the same gates as the editor page it belongs to. On a Guardian update

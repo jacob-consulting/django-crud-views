@@ -119,6 +119,9 @@ override `post()`, call them instead of `cv_form_valid` / `action()` directly to
 For delete views delegate to `super().post()` to retain confirmation, early protection and HTTP marker handling;
 calling `cv_form_valid_process` directly does not supply those gates.
 For workflow views delegate to `super().post()` to retain scoped recovery and bound invalid responses.
+A bulk destination (`BulkFormViewPermissionRequired`) keeps its own execute order and does not call `cv_form_valid_process`,
+because it checks eligibility inside the transaction before the write, so an override of that method has no effect there.
+See [How a bulk submission is handled](bulk_actions.md#how-a-submission-is-handled).
 
 ## Hook reference
 

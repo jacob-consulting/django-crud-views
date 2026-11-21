@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.199" timestamp="2026-11-20T14:10:58.485869+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_bulk_checks" name="test_guardian_default_hook_warning" time="0.002"><failure message="assert 0 == 1&#10; +  where 0 = len([])">bulk_registry = None
+
+    def test_guardian_default_hook_warning(bulk_registry):
+        from django.core.checks import run_checks
+    
+        from crud_views_guardian.lib.viewset import GuardianViewSet
+    
+        _, _, destination = configured_views(viewset_class=GuardianViewSet)
+        matches = [
+            message for message in run_checks(tags=["crud_views_guardian"]) if message.id == "crud_views_guardian.W002"
+        ]
+&gt;       assert len(matches) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_bulk_checks.py:257: AssertionError</failure></testcase></testsuite></testsuites>

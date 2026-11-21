@@ -1,0 +1,9 @@
+{
+  "gate": 5,
+  "command": "node node_modules/vitest/vitest.mjs run",
+  "source_revision": "6b236cd2e6e8670005712e0bb79caedd85d22bad",
+  "started_epoch": 1795187629.134314,
+  "duration_seconds": 12.86,
+  "exit_code": 0,
+  "output": "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\n RUN  v5.0.5 /home/alex/projects/alex/django-crud-views\n\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\nNot implemented: navigation to another Document\n\n Test Files  12 passed (12)\n      Tests  473 passed (473)\n   Start at  15:13:49\n   Duration  12.47s (tests 61%, environment 35%, setup 3%, import 1%)\n\nEnvironment  jsdom was created 12 times \u00b7 12.24s total, 35% of tracked time\n             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)\n             learn more: https://vitest.dev/guide/improving-performance#test-environments\n\n"
+}

@@ -1,0 +1,413 @@
+{
+  "browser": "159.0.8154.6",
+  "results": [
+    {
+      "javaScriptEnabled": false,
+      "source": "list",
+      "action": "archive",
+      "ids": [
+        13,
+        17
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/?page=2&sort=title&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": false,
+      "source": "list",
+      "action": "archive",
+      "ids": [
+        17
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/?page=2&sort=title&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": false,
+      "source": "list",
+      "action": "assign_owner",
+      "ids": [
+        13
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/?page=2&sort=title&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": false,
+      "source": "list",
+      "action": "assign_owner",
+      "ids": [
+        13
+      ],
+      "invalid": true,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/?page=2&sort=title&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": false,
+      "source": "list",
+      "action": "bulk_delete",
+      "ids": [
+        13
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/?page=2&sort=title&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": false,
+      "source": "card",
+      "action": "archive",
+      "ids": [
+        10,
+        9
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/card/?page=2&order=title&dir=asc&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": false,
+      "source": "card",
+      "action": "archive",
+      "ids": [
+        9
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/card/?page=2&order=title&dir=asc&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": false,
+      "source": "card",
+      "action": "assign_owner",
+      "ids": [
+        10
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/card/?page=2&order=title&dir=asc&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": false,
+      "source": "card",
+      "action": "assign_owner",
+      "ids": [
+        10
+      ],
+      "invalid": true,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/card/?page=2&order=title&dir=asc&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": true,
+      "source": "list",
+      "action": "archive",
+      "ids": [
+        13,
+        17
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/?page=2&sort=title&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": true,
+      "source": "list",
+      "action": "archive",
+      "ids": [
+        17
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/?page=2&sort=title&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": true,
+      "source": "list",
+      "action": "assign_owner",
+      "ids": [
+        13
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/?page=2&sort=title&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": true,
+      "source": "list",
+      "action": "assign_owner",
+      "ids": [
+        13
+      ],
+      "invalid": true,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/?page=2&sort=title&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": true,
+      "source": "list",
+      "action": "bulk_delete",
+      "ids": [
+        13
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/?page=2&sort=title&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": true,
+      "source": "card",
+      "action": "archive",
+      "ids": [
+        10,
+        9
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/card/?page=2&order=title&dir=asc&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": true,
+      "source": "card",
+      "action": "archive",
+      "ids": [
+        9
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/card/?page=2&order=title&dir=asc&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": true,
+      "source": "card",
+      "action": "assign_owner",
+      "ids": [
+        10
+      ],
+      "invalid": false,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/card/?page=2&order=title&dir=asc&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    },
+    {
+      "javaScriptEnabled": true,
+      "source": "card",
+      "action": "assign_owner",
+      "ids": [
+        10
+      ],
+      "invalid": true,
+      "status": "passed",
+      "url": "http://127.0.0.1:8842/bulk-selection/document/card/?page=2&order=title&dir=asc&cv_from_restore=1",
+      "noPost": true,
+      "recordsUnchanged": true
+    }
+  ],
+  "recordSnapshot": [
+    [
+      1,
+      "Document 01",
+      "draft",
+      0,
+      null
+    ],
+    [
+      2,
+      "Document 02",
+      "draft",
+      0,
+      null
+    ],
+    [
+      3,
+      "Document 03",
+      "draft",
+      1,
+      null
+    ],
+    [
+      4,
+      "Document 04",
+      "draft",
+      0,
+      null
+    ],
+    [
+      5,
+      "Document 05",
+      "published",
+      0,
+      null
+    ],
+    [
+      6,
+      "Document 06",
+      "draft",
+      0,
+      null
+    ],
+    [
+      7,
+      "Document 07",
+      "draft",
+      0,
+      null
+    ],
+    [
+      8,
+      "Document 08",
+      "draft",
+      0,
+      null
+    ],
+    [
+      9,
+      "Document 09",
+      "draft",
+      1,
+      null
+    ],
+    [
+      10,
+      "Document 10",
+      "draft",
+      0,
+      null
+    ],
+    [
+      11,
+      "Document 11",
+      "draft",
+      0,
+      null
+    ],
+    [
+      12,
+      "Document 12",
+      "draft",
+      0,
+      null
+    ],
+    [
+      13,
+      "Document 13",
+      "draft",
+      0,
+      null
+    ],
+    [
+      14,
+      "Document 14",
+      "draft",
+      0,
+      null
+    ],
+    [
+      15,
+      "Document 15",
+      "draft",
+      0,
+      null
+    ],
+    [
+      16,
+      "Document 16",
+      "draft",
+      0,
+      null
+    ],
+    [
+      17,
+      "Document 17",
+      "published",
+      0,
+      null
+    ],
+    [
+      18,
+      "Document 18",
+      "draft",
+      0,
+      null
+    ],
+    [
+      19,
+      "Document 19",
+      "draft",
+      0,
+      null
+    ],
+    [
+      20,
+      "Document 20",
+      "draft",
+      0,
+      null
+    ],
+    [
+      21,
+      "Document 21",
+      "draft",
+      0,
+      null
+    ],
+    [
+      22,
+      "Document 22",
+      "draft",
+      0,
+      null
+    ],
+    [
+      23,
+      "Document 23",
+      "draft",
+      0,
+      null
+    ],
+    [
+      24,
+      "Document 24",
+      "draft",
+      0,
+      null
+    ]
+  ]
+}

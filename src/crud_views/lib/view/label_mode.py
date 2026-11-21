@@ -21,7 +21,7 @@ LABEL_MODES: frozenset[str] = frozenset(mode.value for mode in LabelMode)
 
 # Read-only package floor; themes and then live project settings override it per key.
 LABEL_MODE_DEFAULTS: Mapping[str, str] = MappingProxyType(
-    {"context": "icon", "list": "icon", "card": "both", "form": "label"}
+    {"context": "icon", "list": "icon", "card": "both", "form": "label", "bulk": "both"}
 )
 
 _THEME_LABEL_MODE_DEFAULTS: dict[str, str] = {}

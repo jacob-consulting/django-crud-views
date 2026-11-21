@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.107" timestamp="2026-11-20T14:42:45.469679+00:00" hostname="weaver-dev"><testcase classname="test_i18n" name="test_bulk_selection_msgids_are_translated" time="0.007"><failure message="AssertionError: missing German entry: status&#10;assert None is not None">def test_bulk_selection_msgids_are_translated():
+        import polib
+    
+        msgids = [
+            "document",
+            "documents",
+            "title",
+            "status",
+            "locked",
+            "owner",
+            "Owner",
+            "Draft",
+            "Published",
+            "Archived",
+            "Delete selected documents",
+            "Delete",
+            "Archive selected documents",
+            "Archive",
+            "Assign owner to selected documents",
+            "Assign owner",
+            "Assign",
+            "Locked documents cannot be deleted.",
+            "Locked documents cannot be archived.",
+            "Only drafts can be archived.",
+            "Locked documents cannot be reassigned.",
+            "{{ view.cv_bulk_objects|length }} documents deleted.",
+            "{{ view.cv_bulk_objects|length }} documents archived.",
+            "Owner assigned to {{ view.cv_bulk_objects|length }} documents.",
+        ]
+        catalog = polib.pofile(str(LOCALE_DIR / "de" / "LC_MESSAGES" / "django.po"))
+        for msgid in msgids:
+            entry = catalog.find(msgid)
+&gt;           assert entry is not None, f"missing German entry: {msgid}"
+E           AssertionError: missing German entry: status
+E           assert None is not None
+
+examples/bootstrap5/test_i18n.py:178: AssertionError</failure></testcase></testsuite></testsuites>

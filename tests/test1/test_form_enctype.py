@@ -18,6 +18,7 @@ class UploadForm(forms.Form):
         "crud_views/view_create.content.html",
         "crud_views/view_update.content.html",
         "crud_views/view_custom_form.content.html",
+        "crud_views/view_bulk_form.content.html",
     ],
 )
 def test_form_content_template_posts_multipart(template):

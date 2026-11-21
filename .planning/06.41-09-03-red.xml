@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="10" skipped="0" tests="10" time="2.171" timestamp="2026-11-20T14:12:33.833791+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_bulk_i18n" name="test_bulk_success_german[1-1 Eintrag verarbeitet.]" time="0.610"><failure message="AssertionError: assert ['1 record processed.'] == ['1 Eintrag verarbeitet.']&#10;  &#10;  At index 0 diff: '1 record processed.' != '1 Eintrag verarbeitet.'&#10;  Use -v to get more diff">german = None
+client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x70e181924200&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+count = 1, expected = '1 Eintrag verarbeitet.'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("count, expected", [(1, "1 Eintrag verarbeitet."), (2, "2 Einträge verarbeitet.")])
+    def test_bulk_success_german(german, client_user_bulk_publisher_change, bulk_publishers, count, expected):
+        client = client_user_bulk_publisher_change
+        review = client.post(
+            "/bulk-publisher/archive/",
+            {"cv_bulk_stage": "review", "cv_bulk_ids": [obj.pk for obj in bulk_publishers[:count]]},
+        )
+        assert review.status_code == 200
+        response = client.post("/bulk-publisher/archive/", review_data(review))
+        assert response.status_code == 302
+&gt;       assert [str(message) for message in get_messages(response.wsgi_request)] == [expected]
+E       AssertionError: assert ['1 record processed.'] == ['1 Eintrag verarbeitet.']
+E         
+E         At index 0 diff: '1 record processed.' != '1 Eintrag verarbeitet.'
+E         Use -v to get more diff
+
+tests/test1/test_bulk_i18n.py:125: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_i18n" name="test_bulk_source_german" time="0.670"><failure message="AssertionError: assert 'Diese Seite auswählen' in '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...    \n            \n            \n        \n    \n\n    \n        \n    \n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n'&#10;[+2 more lines; full report in element text]">german = None
+client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x7bcd377a5a60&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+
+    @pytest.mark.django_db
+    def test_bulk_source_german(german, client_user_bulk_publisher_change, bulk_publishers):
+        page = soup(client_user_bulk_publisher_change.get("/bulk-publisher/"))
+&gt;       assert "Diese Seite auswählen" in page.text_content()
+E       AssertionError: assert 'Diese Seite auswählen' in '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...    \n            \n            \n        \n    \n\n    \n        \n    \n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n'
+E        +  where '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...    \n            \n            \n        \n    \n\n    \n        \n    \n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n' = text_content()
+E        +    where text_content = &lt;Element html at 0x7bcd377e4140&gt;.text_content
+
+tests/test1/test_bulk_i18n.py:78: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_i18n" name="test_bulk_review_german[1]" time="0.623"><failure message="AssertionError: assert 'Zu verarbeiten: 2' in '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...o process: 2\n\n    AlphaBeta\n\n\n    \n\n\n\n  Confirm\nAbbrechen \n\n\n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n'&#10;[+2 more lines; full report in element text]">german = None
+client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x788695c1e5d0&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+blocked_count = 1
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("blocked_count", [0, 1, 2])
+    def test_bulk_review_german(german, client_user_bulk_publisher_change, bulk_publishers, blocked_count):
+        selected = [record.pk for record in bulk_publishers[:2]] + [987650 + index for index in range(blocked_count)]
+        response = client_user_bulk_publisher_change.post(
+            "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": selected}
+        )
+        assert response.status_code == 200
+        page = soup(response)
+&gt;       assert "Zu verarbeiten: 2" in page.text_content()
+E       AssertionError: assert 'Zu verarbeiten: 2' in '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...o process: 2\n\n    AlphaBeta\n\n\n    \n\n\n\n  Confirm\nAbbrechen \n\n\n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n'
+E        +  where '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...o process: 2\n\n    AlphaBeta\n\n\n    \n\n\n\n  Confirm\nAbbrechen \n\n\n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n' = text_content()
+E        +    where text_content = &lt;Element html at 0x788695e26f30&gt;.text_content
+
+tests/test1/test_bulk_i18n.py:93: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_i18n" name="test_bulk_selection_warnings_german[0-Mindestens einen Eintrag ausw\xe4hlen.]" time="0.575"><failure message="AssertionError: assert ['Select at l... one record.'] == ['Mindestens ...g auswählen.']&#10;  &#10;  At index 0 diff: 'Select at least one record.' != 'Mindestens einen Eintrag auswählen.'&#10;  Use -v to get more diff">german = None
+client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x79eba6004440&gt;
+count = 0, expected = 'Mindestens einen Eintrag auswählen.'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        "count, expected", [(0, "Mindestens einen Eintrag auswählen."), (101, "Höchstens 100 Einträge auswählen.")]
+    )
+    def test_bulk_selection_warnings_german(german, client_user_bulk_publisher_change, count, expected):
+        response = client_user_bulk_publisher_change.post(
+            "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": list(range(1, count + 1))}
+        )
+        assert response.status_code == 302
+&gt;       assert [str(message) for message in get_messages(response.wsgi_request)] == [expected]
+E       AssertionError: assert ['Select at l... one record.'] == ['Mindestens ...g auswählen.']
+E         
+E         At index 0 diff: 'Select at least one record.' != 'Mindestens einen Eintrag auswählen.'
+E         Use -v to get more diff
+
+tests/test1/test_bulk_i18n.py:111: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_i18n" name="test_bulk_selection_warnings_german[101-H\xf6chstens 100 Eintr\xe4ge ausw\xe4hlen.]" time="0.240"><failure message="AssertionError: assert ['Select at m...100 records.'] == ['Höchstens 1...e auswählen.']&#10;  &#10;  At index 0 diff: 'Select at most 100 records.' != 'Höchstens 100 Einträge auswählen.'&#10;  Use -v to get more diff">german = None
+client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x79eba5e60200&gt;
+count = 101, expected = 'Höchstens 100 Einträge auswählen.'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        "count, expected", [(0, "Mindestens einen Eintrag auswählen."), (101, "Höchstens 100 Einträge auswählen.")]
+    )
+    def test_bulk_selection_warnings_german(german, client_user_bulk_publisher_change, count, expected):
+        response = client_user_bulk_publisher_change.post(
+            "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": list(range(1, count + 1))}
+        )
+        assert response.status_code == 302
+&gt;       assert [str(message) for message in get_messages(response.wsgi_request)] == [expected]
+E       AssertionError: assert ['Select at m...100 records.'] == ['Höchstens 1...e auswählen.']
+E         
+E         At index 0 diff: 'Select at most 100 records.' != 'Höchstens 100 Einträge auswählen.'
+E         Use -v to get more diff
+
+tests/test1/test_bulk_i18n.py:111: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_i18n" name="test_bulk_template_catalog_completeness" time="0.005"><failure message="AssertionError: Select this page&#10;assert None is not None">def test_bulk_template_catalog_completeness():
+        catalog = polib.pofile(str(CORE / "locale/de/LC_MESSAGES/django.po"))
+        extracted = set()
+        for relative in TEMPLATES:
+            template = (CORE / "templates/crud_views" / relative).read_text()
+            for literal in re.findall(r'{%\s*translate\s+"([^"]+)"[^%]*%}', template):
+                extracted.add(literal)
+&gt;               assert_translated(catalog, literal)
+
+tests/test1/test_bulk_i18n.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+catalog = [&lt;polib.POEntry object at 0x79eba5f92c00&gt;, &lt;polib.POEntry object at 0x79eba6183f80&gt;, &lt;polib.POEntry object at 0x79eba6....POEntry object at 0x79eba5e87e60&gt;, &lt;polib.POEntry object at 0x79eba5e87e90&gt;, &lt;polib.POEntry object at 0x79eba5e87ec0&gt;]
+msgid = 'Select this page', plural = None
+
+    def assert_translated(catalog, msgid, plural=None):
+        entry = catalog.find(msgid)
+&gt;       assert entry is not None, msgid
+E       AssertionError: Select this page
+E       assert None is not None
+
+tests/test1/test_bulk_i18n.py:39: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_i18n" name="test_bulk_success_german[2-2 Eintr\xe4ge verarbeitet.]" time="0.288"><failure message="AssertionError: assert ['2 records processed.'] == ['2 Einträge verarbeitet.']&#10;  &#10;  At index 0 diff: '2 records processed.' != '2 Einträge verarbeitet.'&#10;  Use -v to get more diff">german = None
+client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x70e1817f5250&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+count = 2, expected = '2 Einträge verarbeitet.'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("count, expected", [(1, "1 Eintrag verarbeitet."), (2, "2 Einträge verarbeitet.")])
+    def test_bulk_success_german(german, client_user_bulk_publisher_change, bulk_publishers, count, expected):
+        client = client_user_bulk_publisher_change
+        review = client.post(
+            "/bulk-publisher/archive/",
+            {"cv_bulk_stage": "review", "cv_bulk_ids": [obj.pk for obj in bulk_publishers[:count]]},
+        )
+        assert review.status_code == 200
+        response = client.post("/bulk-publisher/archive/", review_data(review))
+        assert response.status_code == 302
+&gt;       assert [str(message) for message in get_messages(response.wsgi_request)] == [expected]
+E       AssertionError: assert ['2 records processed.'] == ['2 Einträge verarbeitet.']
+E         
+E         At index 0 diff: '2 records processed.' != '2 Einträge verarbeitet.'
+E         Use -v to get more diff
+
+tests/test1/test_bulk_i18n.py:125: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_i18n" name="test_bulk_review_german[2]" time="0.330"><failure message="AssertionError: assert 'Zu verarbeiten: 2' in '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...o process: 2\n\n    AlphaBeta\n\n\n    \n\n\n\n  Confirm\nAbbrechen \n\n\n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n'&#10;[+2 more lines; full report in element text]">german = None
+client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x788695ed2b70&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+blocked_count = 2
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("blocked_count", [0, 1, 2])
+    def test_bulk_review_german(german, client_user_bulk_publisher_change, bulk_publishers, blocked_count):
+        selected = [record.pk for record in bulk_publishers[:2]] + [987650 + index for index in range(blocked_count)]
+        response = client_user_bulk_publisher_change.post(
+            "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": selected}
+        )
+        assert response.status_code == 200
+        page = soup(response)
+&gt;       assert "Zu verarbeiten: 2" in page.text_content()
+E       AssertionError: assert 'Zu verarbeiten: 2' in '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...o process: 2\n\n    AlphaBeta\n\n\n    \n\n\n\n  Confirm\nAbbrechen \n\n\n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n'
+E        +  where '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...o process: 2\n\n    AlphaBeta\n\n\n    \n\n\n\n  Confirm\nAbbrechen \n\n\n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n' = text_content()
+E        +    where text_content = &lt;Element html at 0x7886959477a0&gt;.text_content
+
+tests/test1/test_bulk_i18n.py:93: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_i18n" name="test_bulk_review_german[0]" time="0.250"><failure message="AssertionError: assert 'Zu verarbeiten: 2' in '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...o process: 2\n\n    AlphaBeta\n\n\n    \n\n\n\n  Confirm\nAbbrechen \n\n\n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n'&#10;[+2 more lines; full report in element text]">german = None
+client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x7bcd37778d40&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+blocked_count = 0
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("blocked_count", [0, 1, 2])
+    def test_bulk_review_german(german, client_user_bulk_publisher_change, bulk_publishers, blocked_count):
+        selected = [record.pk for record in bulk_publishers[:2]] + [987650 + index for index in range(blocked_count)]
+        response = client_user_bulk_publisher_change.post(
+            "/bulk-publisher/archive/", {"cv_bulk_stage": "review", "cv_bulk_ids": selected}
+        )
+        assert response.status_code == 200
+        page = soup(response)
+&gt;       assert "Zu verarbeiten: 2" in page.text_content()
+E       AssertionError: assert 'Zu verarbeiten: 2' in '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...o process: 2\n\n    AlphaBeta\n\n\n    \n\n\n\n  Confirm\nAbbrechen \n\n\n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n'
+E        +  where '\n\n    \n    \n    \n\n    \n\n    \n    \n    \n\n    \n    \n\n    \n    \n\n    \n    \n\n    \n        \n    \n\...o process: 2\n\n    AlphaBeta\n\n\n    \n\n\n\n  Confirm\nAbbrechen \n\n\n\n\n\n\n\n        \n    \n\n\n\n    \n\n\n\n' = text_content()
+E        +    where text_content = &lt;Element html at 0x7bcd37673de0&gt;.text_content
+
+tests/test1/test_bulk_i18n.py:93: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_i18n" name="test_bulk_module_catalog_completeness" time="0.005"><failure message="AssertionError: Select&#10;assert None is not None">def test_bulk_module_catalog_completeness():
+        catalog = polib.pofile(str(CORE / "locale/de/LC_MESSAGES/django.po"))
+        for msgid in MODULE_MSGIDS:
+&gt;           assert_translated(catalog, msgid)
+
+tests/test1/test_bulk_i18n.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+catalog = [&lt;polib.POEntry object at 0x70e1824fb6e0&gt;, &lt;polib.POEntry object at 0x70e181623290&gt;, &lt;polib.POEntry object at 0x70e182....POEntry object at 0x70e181a910a0&gt;, &lt;polib.POEntry object at 0x70e181a912b0&gt;, &lt;polib.POEntry object at 0x70e181a91250&gt;]
+msgid = 'Select', plural = None
+
+    def assert_translated(catalog, msgid, plural=None):
+        entry = catalog.find(msgid)
+&gt;       assert entry is not None, msgid
+E       AssertionError: Select
+E       assert None is not None
+
+tests/test1/test_bulk_i18n.py:39: AssertionError</failure></testcase></testsuite></testsuites>

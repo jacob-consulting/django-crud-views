@@ -73,6 +73,24 @@ Private builders, resolvers, normalization helpers and check carriers remain int
 There is no navbar-specific provisional exception: public breaking changes follow the major-release,
 deprecation and migration policy below.
 
+**Bulk actions** — `crud_views.lib.bulk`:
+`BulkSelectionMixin`, `BulkFormViewPermissionRequired` and `BulkConfirmForm`; the attributes
+`cv_bulk_actions`, `cv_bulk_max`, `cv_bulk_confirm` and `cv_bulk_objects`; the hooks
+`cv_bulk_has_permission(obj)` and `cv_bulk_check(obj)`; and the read-only property `cv_bulk_header`.
+The POST fields are `cv_bulk_ids`, `cv_bulk_blocked_ids` and `cv_bulk_stage`; the `cv_bulk_` prefix is reserved.
+The override contract includes `crud_views/view_bulk_form.html`, `crud_views/view_bulk_form.content.html`,
+`crud_views/snippets/bulk_toolbar.html`, `crud_views/columns/bulk_select.html`,
+`crud_views/snippets/message/bulk.html`, `crud_views/snippets/bulk/blocked.html` and
+`crud_views/snippets/bulk/eligible.html`. The two review snippets receive `bulk_review` with `objects` and
+`blocked`; each blocked item has `pk`, `label` and `reasons`.
+The six data attributes are `data-cv-bulk`, `data-cv-bulk-item`, `data-cv-bulk-all`, `data-cv-bulk-count`,
+`data-cv-bulk-action` and `data-cv-bulk-enhanced`. The seven class keys are `bulk:toolbar`, `bulk:controls`,
+`bulk:select-all`, `bulk:checkbox`, `bulk:actions`, `bulk:card-cell` and `bulk:card-select`, with the
+label-mode location `bulk` (floor `both`). These names and the behavior in the
+[bulk actions reference](../reference/bulk_actions.md) are stable at 1.0.
+There is no bulk-specific provisional exception: public breaking changes follow the major-release,
+deprecation and migration policy below.
+
 **Settings**: all `CRUD_VIEWS_*` settings documented in the
 [settings reference](../reference/settings.md).
 
@@ -85,6 +103,11 @@ above, and the documented overridable hooks — e.g. `cv_form_valid` (framework 
 `cv_form_valid_redirect`, and the transaction API: `cv_atomic`, `cv_get_atomic`,
 `cv_get_db_alias`, `cv_on_commit`, `cv_form_valid_process`, `cv_action_process`
 (see [Request lifecycle, transactions & hooks](../reference/request_lifecycle.md)).
+A bulk destination (`BulkFormViewPermissionRequired`) does not call `cv_form_valid_process`, because it runs
+`cv_form_valid` and `cv_form_valid_hook` itself inside `cv_get_atomic()` after its eligibility check.
+An override of `cv_form_valid_process` has no effect on a bulk destination; applications override
+`cv_form_valid` or `cv_form_valid_hook` there, as described in
+[How a submission is handled](../reference/bulk_actions.md#how-a-submission-is-handled).
 
 ### `crud_views_workflow`
 

@@ -190,7 +190,7 @@ class AuthorCrudTest(LibraryTestCase):
         capture = signing.Signer(salt="crud_views.cancel.v1").unsign_object(params["cv_from_cancel"][0])
         self.assertEqual(capture, {"v": 1, "origin": origin, "query": query, "viewset": ["", "author"], "parents": {}})
         form = self.client.get(link)
-        (cancel,) = html.fromstring(form.content).xpath("//form//*[@data-cv-cancel-url]/@data-cv-cancel-url")
+        (cancel,) = html.fromstring(form.content).xpath('//form//a[normalize-space(.)="Cancel"]/@href')
         self.assertEqual(urlsplit(cancel).path, origin_url)
         restored = parse_qs(urlsplit(cancel).query, keep_blank_values=True)
         expected = parse_qs(query, keep_blank_values=True)
@@ -208,7 +208,8 @@ class AuthorCrudTest(LibraryTestCase):
             with self.subTest(origin=origin):
                 expected = reverse(f"author-{origin}", kwargs={"pk": self.author.pk} if origin == "detail" else {})
                 response = self.client.get(update_url, {"cv_from": origin})
-                self.assertContains(response, f'data-cv-cancel-url="{expected}"')
+                (cancel,) = html.fromstring(response.content).xpath('//form//a[normalize-space(.)="Cancel"]/@href')
+                self.assertEqual(cancel, expected)
 
     def test_update_success_returns_to_detail_origin(self):
         detail_url = reverse("author-detail", kwargs={"pk": self.author.pk})

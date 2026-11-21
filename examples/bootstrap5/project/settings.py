@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "action_menus",
     "delete_demo",
     "custom_form",
+    "bulk_selection",
     "label_modes",
     "flash_messages",
     "disabled_actions",
@@ -145,6 +146,8 @@ CRUD_VIEWS_MANAGE_ACCESS_TRACE = True
 # form buttons (save, delete, cancel, filter apply / reset) show icon and text; merged per location, so the
 # toolbar, row and card buttons keep their package floors
 CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"form": "both"}
+# Native Cancel links work even when JavaScript is disabled.
+CRUD_VIEWS_BUTTON_CLASSES = {"form:cancel-tag": "a"}
 
 # public demo (see settings_demo.py); False for local runs
 DEMO_MODE = False

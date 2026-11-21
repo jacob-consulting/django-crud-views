@@ -1,0 +1,18 @@
+{% load i18n crud_views %}
+<form id="{{ view.cv_bulk_form_id }}" method="post" data-cv-bulk class="{% cv_button_class 'bulk' 'toolbar' %}">
+    {% csrf_token %}
+    {# Enter must not pick a real action. The dialog method does nothing outside a dialog. #}
+    <button type="submit" formmethod="dialog" hidden></button>
+    <div data-cv-bulk-enhanced hidden>
+        <div class="{% cv_button_class 'bulk' 'controls' %}">
+            <label class="{% cv_button_class 'bulk' 'select-all' %}">
+                <input type="checkbox" data-cv-bulk-all class="{% cv_button_class 'bulk' 'checkbox' %}">
+                {% translate "Select this page" %}
+            </label>
+            <span aria-live="polite"><span data-cv-bulk-count>0</span> {% translate "selected" %}</span>
+        </div>
+    </div>
+    <div class="{% cv_button_class 'bulk' 'actions' %}">
+        {% for button in view.cv_bulk_buttons %}{{ button }}{% endfor %}
+    </div>
+</form>

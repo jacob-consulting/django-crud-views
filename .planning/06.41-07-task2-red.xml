@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="12" skipped="0" tests="29" time="3.678" timestamp="2026-11-20T13:41:00.894179+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_bulk_source" name="test_disabled_action_icon_uses_visible_label[both]" time="0.634" /><testcase classname="tests.test1.test_bulk_source" name="test_bulk_floor_is_independent_of_form" time="0.614" /><testcase classname="tests.test1.test_bulk_source" name="test_bulk_label_floor[icon]" time="0.668" /><testcase classname="tests.test1.test_bulk_source" name="test_table_toolbar_controls" time="0.688" /><testcase classname="tests.test1.test_bulk_source" name="test_table_checkboxes_and_structure" time="0.234" /><testcase classname="tests.test1.test_bulk_source" name="test_bulk_label_floor[label]" time="0.240" /><testcase classname="tests.test1.test_bulk_source" name="test_disabled_action_icon_uses_visible_label[icon]" time="0.290" /><testcase classname="tests.test1.test_bulk_source" name="test_bulk_label_floor[both]" time="0.235" /><testcase classname="tests.test1.test_bulk_source" name="test_table_checkbox_label_escapes_record_name" time="0.232" /><testcase classname="tests.test1.test_bulk_source" name="test_toolbar_class_overrides[custom-bulk-slot]" time="0.240" /><testcase classname="tests.test1.test_bulk_source" name="test_toolbar_class_overrides[None]" time="0.242" /><testcase classname="tests.test1.test_bulk_source" name="test_table_page_renders_actions_without_permission_work" time="0.283" /><testcase classname="tests.test1.test_bulk_source" name="test_card_selection_and_form_structure" time="0.274"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = len([])&#10; +    where [] = cssselect('form#cv-bulk-selection')&#10; +      where cssselect = &lt;Element html at 0x72350a9675c0&gt;.cssselect">client_user_bulk_publisher_view = &lt;django.test.client.Client object at 0x723509a11ca0&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+
+    def test_card_selection_and_form_structure(client_user_bulk_publisher_view, bulk_publishers):
+        response = client_user_bulk_publisher_view.get("/bulk-publisher/card/")
+        assert response.status_code == 200
+        page = soup(response)
+        assert len(page.cssselect("form#cv-card-order-form")) == 1
+&gt;       assert len(page.cssselect("form#cv-bulk-selection")) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = cssselect('form#cv-bulk-selection')
+E        +      where cssselect = &lt;Element html at 0x72350a9675c0&gt;.cssselect
+
+tests/test1/test_bulk_source.py:208: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_source" name="test_card_selection_survives_custom_template" time="0.244"><failure message="assert 0 == 2&#10; +  where 0 = len([])">client_user_bulk_publisher_view = &lt;django.test.client.Client object at 0x70ba0fcd9fd0&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x70ba0fcda180&gt;
+
+    def test_card_selection_survives_custom_template(client_user_bulk_publisher_view, bulk_publishers, monkeypatch):
+        monkeypatch.setattr(BulkPublisherCardView, "cv_card_template", "app/bulk_card.html")
+        response = client_user_bulk_publisher_view.get("/bulk-publisher/card/")
+        boxes = soup(response).cssselect("[data-cv-bulk-item]")
+&gt;       assert len(boxes) == 2
+E       assert 0 == 2
+E        +  where 0 = len([])
+
+tests/test1/test_bulk_source.py:239: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_source" name="test_card_class_overrides[None]" time="0.245"><failure message="assert 0 == 2&#10; +  where 0 = len([])">client_user_bulk_publisher_view = &lt;django.test.client.Client object at 0x79d7c8f08410&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+settings = &lt;pytest_django.fixtures.Settings object at 0x79d7c8a72d50&gt;
+value = None
+
+    @pytest.mark.parametrize("value", ["custom-card-slot", None])
+    def test_card_class_overrides(client_user_bulk_publisher_view, bulk_publishers, settings, value):
+        settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:card-cell": value, "bulk:card-select": value}
+        boxes = soup(client_user_bulk_publisher_view.get("/bulk-publisher/card/")).cssselect("[data-cv-bulk-item]")
+&gt;       assert len(boxes) == 2
+E       assert 0 == 2
+E        +  where 0 = len([])
+
+tests/test1/test_bulk_source.py:251: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_source" name="test_card_class_overrides[custom-card-slot]" time="0.277"><failure message="assert 0 == 2&#10; +  where 0 = len([])">client_user_bulk_publisher_view = &lt;django.test.client.Client object at 0x77bf8c6acfb0&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+settings = &lt;pytest_django.fixtures.Settings object at 0x77bf8c65b410&gt;
+value = 'custom-card-slot'
+
+    @pytest.mark.parametrize("value", ["custom-card-slot", None])
+    def test_card_class_overrides(client_user_bulk_publisher_view, bulk_publishers, settings, value):
+        settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:card-cell": value, "bulk:card-select": value}
+        boxes = soup(client_user_bulk_publisher_view.get("/bulk-publisher/card/")).cssselect("[data-cv-bulk-item]")
+&gt;       assert len(boxes) == 2
+E       assert 0 == 2
+E        +  where 0 = len([])
+
+tests/test1/test_bulk_source.py:251: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_source" name="test_nonparticipant_card_content_is_byte_identical[/bulk-publisher/card/]" time="0.241" /><testcase classname="tests.test1.test_bulk_source" name="test_nonparticipant_card_content_is_byte_identical[/publisher/card/]" time="0.268" /><testcase classname="tests.test1.test_bulk_source" name="test_card_toolbar_carries_card_origin" time="0.236"><failure message="assert 0 == 2&#10; +  where 0 = len([])">client_user_bulk_publisher_view = &lt;django.test.client.Client object at 0x79d7c918f710&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+
+    def test_card_toolbar_carries_card_origin(client_user_bulk_publisher_view, bulk_publishers):
+        page = soup(client_user_bulk_publisher_view.get("/bulk-publisher/card/"))
+        buttons = page.cssselect("[data-cv-bulk-action]")
+&gt;       assert len(buttons) == 2
+E       assert 0 == 2
+E        +  where 0 = len([])
+
+tests/test1/test_bulk_source.py:274: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_source" name="test_shared_action_confirmation_from_both_sources[archive_now-False-/bulk-publisher/]" time="0.262" /><testcase classname="tests.test1.test_bulk_source" name="test_shared_action_confirmation_from_both_sources[archive_now-True-/bulk-publisher/]" time="0.266" /><testcase classname="tests.test1.test_bulk_source" name="test_shared_action_confirmation_from_both_sources[archive_now-False-/bulk-publisher/card/]" time="0.238"><failure message="assert 0 == 1&#10; +  where 0 = len([])">client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x723509cfa570&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+path = '/bulk-publisher/card/', key = 'archive_now', mixed = False
+
+    @pytest.mark.parametrize("path", ["/bulk-publisher/", "/bulk-publisher/card/"])
+    @pytest.mark.parametrize("key,mixed", [("archive_now", False), ("archive_now", True), ("archive", False)])
+    def test_shared_action_confirmation_from_both_sources(
+        client_user_bulk_publisher_change, bulk_publishers, path, key, mixed
+    ):
+        client = client_user_bulk_publisher_change
+        page = soup(client.get(path))
+        buttons = page.cssselect(f'[data-cv-bulk-action="{key}"]')
+&gt;       assert len(buttons) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_bulk_source.py:287: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_source" name="test_shared_action_confirmation_from_both_sources[archive_now-True-/bulk-publisher/card/]" time="0.240"><failure message="assert 0 == 1&#10; +  where 0 = len([])">client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x79d7c838aa80&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+path = '/bulk-publisher/card/', key = 'archive_now', mixed = True
+
+    @pytest.mark.parametrize("path", ["/bulk-publisher/", "/bulk-publisher/card/"])
+    @pytest.mark.parametrize("key,mixed", [("archive_now", False), ("archive_now", True), ("archive", False)])
+    def test_shared_action_confirmation_from_both_sources(
+        client_user_bulk_publisher_change, bulk_publishers, path, key, mixed
+    ):
+        client = client_user_bulk_publisher_change
+        page = soup(client.get(path))
+        buttons = page.cssselect(f'[data-cv-bulk-action="{key}"]')
+&gt;       assert len(buttons) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_bulk_source.py:287: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_source" name="test_shared_action_confirmation_from_both_sources[archive-False-/bulk-publisher/]" time="0.255" /><testcase classname="tests.test1.test_bulk_source" name="test_empty_card_page_keeps_toolbar" time="0.233"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = len([])&#10; +    where [] = cssselect('[data-cv-bulk]')&#10; +      where cssselect = &lt;Element html at 0x723509e41310&gt;.cssselect">client_user_bulk_publisher_view = &lt;django.test.client.Client object at 0x723509e165a0&gt;
+
+    def test_empty_card_page_keeps_toolbar(client_user_bulk_publisher_view):
+        page = soup(client_user_bulk_publisher_view.get("/bulk-publisher/card/"))
+&gt;       assert len(page.cssselect("[data-cv-bulk]")) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = cssselect('[data-cv-bulk]')
+E        +      where cssselect = &lt;Element html at 0x723509e41310&gt;.cssselect
+
+tests/test1/test_bulk_source.py:307: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_source" name="test_card_page_renders_actions_without_permission_work" time="0.232"><failure message="assert 0 == 1&#10; +  where 0 = len([])&#10; +    where [] = cssselect('[data-cv-bulk-action=&quot;archive&quot;]')&#10; +      where cssselect = &lt;Element html at 0x79d7c83f3f70&gt;.cssselect">client_user_bulk_publisher_view = &lt;django.test.client.Client object at 0x79d7c83d6450&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x79d7c83d6120&gt;
+
+    def test_card_page_renders_actions_without_permission_work(
+        client_user_bulk_publisher_view, bulk_publishers, monkeypatch
+    ):
+        calls = []
+        def record_call(*args, **kwargs):
+            calls.append((args, kwargs))
+            return True
+        for key in BulkPublisherCardView.cv_bulk_actions:
+            destination = cv_bulk_publisher.get_view_class(key)
+            monkeypatch.setattr(destination, "cv_has_access", classmethod(record_call))
+            monkeypatch.setattr(destination, "cv_bulk_has_permission", record_call)
+            monkeypatch.setattr(destination, "cv_bulk_check", record_call)
+        client = client_user_bulk_publisher_view
+        response = client.get("/bulk-publisher/card/")
+        assert response.status_code == 200
+        assert not response.wsgi_request.user.has_perm("app.change_publisher")
+        page = soup(response)
+        for key in ("archive", "archive_now"):
+&gt;           assert len(page.cssselect(f'[data-cv-bulk-action="{key}"]')) == 1
+E           assert 0 == 1
+E            +  where 0 = len([])
+E            +    where [] = cssselect('[data-cv-bulk-action="archive"]')
+E            +      where cssselect = &lt;Element html at 0x79d7c83f3f70&gt;.cssselect
+
+tests/test1/test_bulk_source.py:330: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_source" name="test_shared_action_confirmation_from_both_sources[archive-False-/bulk-publisher/card/]" time="0.254"><failure message="assert 0 == 1&#10; +  where 0 = len([])">client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x70ba0fb36b70&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+path = '/bulk-publisher/card/', key = 'archive', mixed = False
+
+    @pytest.mark.parametrize("path", ["/bulk-publisher/", "/bulk-publisher/card/"])
+    @pytest.mark.parametrize("key,mixed", [("archive_now", False), ("archive_now", True), ("archive", False)])
+    def test_shared_action_confirmation_from_both_sources(
+        client_user_bulk_publisher_change, bulk_publishers, path, key, mixed
+    ):
+        client = client_user_bulk_publisher_change
+        page = soup(client.get(path))
+        buttons = page.cssselect(f'[data-cv-bulk-action="{key}"]')
+&gt;       assert len(buttons) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_bulk_source.py:287: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_source" name="test_card_checkbox_label_escapes_record_name" time="0.236"><failure message="assert 'aria-label=&quot;Select &amp;lt;b&amp;gt;Bold&amp;lt;/b&amp;gt; &amp;amp; &amp;quot;Co&amp;quot;&quot;' in '\n\n\n&lt;!DOCTYPE html&gt;\n&lt;html lang=&quot;en&quot;&gt;\n&lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;/&gt;\n    &lt;meta http-equiv=&quot;x-ua-compatible&quot; ...n\n        &lt;/div&gt;\n        \n&lt;/div&gt;\n\n\n\n\n\n\n        &lt;/div&gt;\n    &lt;/div&gt;\n\n\n\n    &lt;/main&gt;\n\n\n&lt;/body&gt;\n&lt;/html&gt;\n'">client_user_bulk_publisher_view = &lt;django.test.client.Client object at 0x77bf8c6af050&gt;
+
+    def test_card_checkbox_label_escapes_record_name(client_user_bulk_publisher_view):
+        Publisher.objects.create(name='&lt;b&gt;Bold&lt;/b&gt; &amp; "Co"')
+        response = client_user_bulk_publisher_view.get("/bulk-publisher/card/")
+        markup = response.content.decode()
+&gt;       assert 'aria-label="Select &amp;lt;b&amp;gt;Bold&amp;lt;/b&amp;gt; &amp;amp; &amp;quot;Co&amp;quot;"' in markup
+E       assert 'aria-label="Select &amp;lt;b&amp;gt;Bold&amp;lt;/b&amp;gt; &amp;amp; &amp;quot;Co&amp;quot;"' in '\n\n\n&lt;!DOCTYPE html&gt;\n&lt;html lang="en"&gt;\n&lt;head&gt;\n    &lt;meta charset="utf-8"/&gt;\n    &lt;meta http-equiv="x-ua-compatible" ...n\n        &lt;/div&gt;\n        \n&lt;/div&gt;\n\n\n\n\n\n\n        &lt;/div&gt;\n    &lt;/div&gt;\n\n\n\n    &lt;/main&gt;\n\n\n&lt;/body&gt;\n&lt;/html&gt;\n'
+
+tests/test1/test_bulk_source.py:346: AssertionError</failure></testcase><testcase classname="tests.test1.test_bulk_source" name="test_card_checkbox_value_ignores_number_localization" time="0.278"><failure message="AssertionError: assert [] == ['12345']&#10;  &#10;  Right contains one more item: '12345'&#10;  Use -v to get more diff">client_user_bulk_publisher_view = &lt;django.test.client.Client object at 0x723509e4d880&gt;
+settings = &lt;pytest_django.fixtures.Settings object at 0x723509e4c140&gt;
+
+    def test_card_checkbox_value_ignores_number_localization(client_user_bulk_publisher_view, settings):
+        settings.USE_THOUSAND_SEPARATOR = True
+        Publisher.objects.create(pk=12345, name="Alpha")
+        with override("de"):
+            assert Template("{{ pk }}").render(Context({"pk": 12345})) == "12.345"
+            page = soup(client_user_bulk_publisher_view.get("/bulk-publisher/card/"))
+&gt;           assert [box.get("value") for box in page.cssselect("[data-cv-bulk-item]")] == ["12345"]
+E           AssertionError: assert [] == ['12345']
+E             
+E             Right contains one more item: '12345'
+E             Use -v to get more diff
+
+tests/test1/test_bulk_source.py:356: AssertionError</failure></testcase></testsuite></testsuites>

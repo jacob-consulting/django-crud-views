@@ -19,8 +19,9 @@ def test_table_lists_core_and_registered(asset_registry, pipeline_setting):
     assert any(
         line.split()[:2] == ["dtp", "js"] and "tag (CDN)" in line and "cdn.example.com" in line for line in lines
     )
-    assert len(lines) == 1 + 13 + 2
+    assert len(lines) == 1 + 14 + 2
     assert any(line.split() == ["crud_views", "js", "tag", "crud_views/js/manage.js"] for line in lines)
+    assert any(line.split() == ["crud_views", "js", "tag", "crud_views/js/bulk.js"] for line in lines)
     assert any(line.split() == ["crud_views", "css", "tag", "crud_views/css/manage.css"] for line in lines)
 
 

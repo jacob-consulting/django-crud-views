@@ -1,0 +1,9 @@
+{
+  "gate": 4,
+  "command": "PYTHONPATH=src:. .nox/crispy_floor-3-12-django-4-2/bin/python -m pytest tests/test1/test_bulk_flow.py tests/test1/test_bulk_execution.py tests/test1/test_bulk_source.py tests/test1/test_bulk_scope.py tests/test1/test_bulk_return.py -n 4 -q",
+  "source_revision": "6b236cd2e6e8670005712e0bb79caedd85d22bad",
+  "started_epoch": 1795187618.5057633,
+  "duration_seconds": 10.58,
+  "exit_code": 0,
+  "output": "bringing up nodes...\nbringing up nodes...\n\n........................................................................ [ 41%]\n........................................................................ [ 82%]\n..............................                                           [100%]\n174 passed in 9.54s\n"
+}

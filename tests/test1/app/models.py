@@ -39,6 +39,17 @@ class Publisher(models.Model):
         return self.name
 
 
+class BulkCode(models.Model):
+    code = models.CharField(max_length=20, primary_key=True)
+    label = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        ordering = ["code"]
+
+    def __str__(self):
+        return self.code
+
+
 class PublisherProxy(Publisher):
     """Exercise the proxy-root content-type mode of the Guardian label lookup."""
 

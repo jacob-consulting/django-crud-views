@@ -1,11 +1,11 @@
 ---
-last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
-last_mapped_at: 2026-11-19
+last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_at: 2026-11-21
 ---
-<!-- refreshed: 2026-11-17 -->
+<!-- refreshed: 2026-11-21 -->
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-19
+**Analysis Date:** 2026-11-21
 
 ## Tech Debt
 
@@ -120,6 +120,12 @@ No distinct security defect is confirmed by current evidence. Keep navbar render
 - Safe modification: preserve cleaned-data authority, native choice validation, exact value matching, and query-free metadata. Supported value-driven controls are single `Select` and same-name `RadioSelect`; custom sources/widgets and overlapping or whole-formset activation remain outside the documented contract.
 - Test coverage: `tests/test1/test_conditional_*.py`, `tests/test1/test_conditional_queryset*.py`, `tests/js/toggle.test.js`, `tests/js/formset.test.js`, `tests/browser/conditional-formsets-evidence.test.cjs`, `tests/browser/queryset-conditional.cjs`, and `examples/bootstrap5/conditional/tests.py`.
 
+**Current-page bulk selection and action-form lifecycle:**
+- Files: `src/crud_views/lib/bulk/__init__.py`, `src/crud_views/templates/crud_views/view_bulk_form.content.html`, `src/crud_views/static/crud_views/js/bulk.js`, `docs/reference/bulk_actions.md`
+- Why fragile: submitted identifiers are resolved and rechecked for permission and eligibility at review and again inside the write transaction; the action destination owns the write through `cv_form_valid`. The `cv_bulk_` transport fields and hooks form a public contract, and overriding the ordinary `cv_form_valid_process` hook does not affect this path.
+- Safe modification: retain the maximum-selection check before resolution, fresh scoped resolution at execution, atomic revalidation/write ordering, and the documented `cv_form_valid` override contract. The implementation supports the default database alias and ordinary single-field primary keys; multi-database writes and composite primary keys are unsupported by design.
+- Test coverage: `tests/test1/test_bulk_*.py`, `tests/js/bulk.test.js`, `examples/bootstrap5/bulk_selection/tests.py`, and `tests/test1/test_bulk_docs.py` cover source scope, admission, review, execution, and public documentation.
+
 **Manage authorization and setup command:**
 - Files: `src/crud_views/lib/views/manage.py`, `src/crud_views/management/commands/cv_manage_group.py`, `src/crud_views/lib/settings.py`, `src/crud_views_guardian/lib/views.py`
 - Why fragile: page access and action visibility combine mode, active authentication, group membership, and nested ancestor checks. The setup command creates only the configured group; it does not grant permissions or change memberships. Staff/superusers still need group membership when group-gated mode is active.
@@ -214,6 +220,12 @@ None independently confirmed.
 - Risk: unsupported hooks may fail validation or behave outside contract if a consumer opts into compact mode.
 - Priority: Low; documented support boundary.
 
+**Bulk transaction behavior on PostgreSQL:**
+- What's not tested: PostgreSQL-specific transaction and locking behavior under concurrent updates; no server-side row-lock guarantee is part of the bulk contract.
+- Files: `src/crud_views/lib/bulk/__init__.py`, `docs/reference/bulk_actions.md`, `docs/reference/request_lifecycle.md`, `.planning/phases/06.41-current-page-bulk-selection-and-action-forms-for-table-and-c/06.41-SECURITY.md`
+- Risk: database-specific concurrency behavior beyond the documented re-resolution and transaction boundary is unmeasured. This is an evidence limit, not a defect in the supported contract.
+- Priority: Low; add database-specific measurement only if applications require a stronger concurrency guarantee.
+
 ## Resolved Findings
 
 Phase 06.27's inherited-cleaner and contradictory-browser-observation findings are closed in `src/crud_views/lib/conditional/group.py` and `tests/browser/conditional-formsets.cjs`; evidence is in `.planning/phases/06.27-choice-driven-conditional-groups-354/06.27-REVIEW-DISPOSITION.md` and `06.27-FIXES.md`.
@@ -230,6 +242,8 @@ Phase 06.37 strict TraceUser validation, schema regeneration guidance, registry 
 
 Phase 06.40 passed all ten supported Python/Django runtime cells in installed normal and request-recorder modes, all ten example cells, both crispy floors, the Pydantic floor, distribution, and required tooling. Python 3.14/3.15 with Django 4.2 are explicit unsupported skips. Its source-bound receipts retain failed attempts and distinguish final-revision full runs from earlier full runs plus affected-file reruns after the test-helper-only change; no earlier run is relabeled as a run of the later test revision. Fresh static UI evidence covers six widths, while the prior 345-assertion browser receipt and keyboard interactions remain bound to their recorded earlier product revision. These are evidence boundaries, not product defects (`.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-MATRIX.json`, `06.40-INPUTS.json`, `06.40-ACCEPTANCE.md`, `06.40-UI-REVIEW.md`, `06.40-BROWSER.json`).
 
+Phase 06.41 passed 130/130 verified must-haves and all seven UAT checks. Current retained evidence reports the latest core suite at 16,952 passed, 1 skipped, and the bulk example at 637 passed plus 296 subtests. Human confirmation of installed-distribution/full-recorder CI was recorded without a URL or revision, so that CI result is not independently inspectable here. PostgreSQL concurrency/locking measurement was not performed. These are evidence boundaries; the feature contract remains default-database and single-field-PK only (`.planning/phases/06.41-current-page-bulk-selection-and-action-forms-for-table-and-c/06.41-VERIFICATION.md`, `06.41-UAT.md`, `06.41-REGRESSION.md`, `06.41-SECURITY.md`).
+
 ---
 
-*Concerns audit: 2026-11-19*
+*Concerns audit: 2026-11-21*

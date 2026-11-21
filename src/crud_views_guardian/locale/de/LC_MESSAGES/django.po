@@ -133,3 +133,19 @@ msgstr "nicht anwendbar"
 #: lib/views.py
 msgid "strict"
 msgstr "strikt"
+
+#: checks.py
+msgid ""
+"Bulk action in a GuardianViewSet does not override cv_bulk_has_permission: "
+"every record its queryset shows is treated as permitted."
+msgstr ""
+"Sammelaktion in einem GuardianViewSet überschreibt cv_bulk_has_permission nicht: "
+"Jeder Eintrag, den ihr Queryset zeigt, gilt als erlaubt."
+
+#: checks.py
+msgid ""
+"Implement cv_bulk_has_permission with the object permission check, "
+"or narrow get_queryset() and silence crud_views_guardian.W002."
+msgstr ""
+"cv_bulk_has_permission mit der Objektberechtigungsprüfung implementieren oder get_queryset() "
+"einschränken und crud_views_guardian.W002 stummschalten."

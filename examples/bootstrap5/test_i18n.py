@@ -77,6 +77,7 @@ EXAMPLE_APPS = [
     "formsets_conditional",
     "delete_demo",
     "custom_form",
+    "bulk_selection",
     "label_modes",
     "flash_messages",
     "disabled_actions",
@@ -140,6 +141,146 @@ def test_demo_pages_render_german(client, django_user_model):
     # catalog wins over crud_views' and renders "Sichern"
     html = client.get("/library/author/create/", HTTP_ACCEPT_LANGUAGE="de").content.decode()
     assert 'value="Sichern"' in html
+
+
+def test_bulk_selection_msgids_are_translated():
+    import polib
+
+    msgids = [
+        "document",
+        "documents",
+        "title",
+        "status",
+        "locked",
+        "owner",
+        "Owner",
+        "Draft",
+        "Published",
+        "Archived",
+        "Delete selected documents",
+        "Delete",
+        "Archive selected documents",
+        "Archive",
+        "Assign owner to selected documents",
+        "Assign owner",
+        "Assign",
+        "Locked documents cannot be deleted.",
+        "Locked documents cannot be archived.",
+        "Only drafts can be archived.",
+        "Locked documents cannot be reassigned.",
+    ]
+    catalog = polib.pofile(str(LOCALE_DIR / "de" / "LC_MESSAGES" / "django.po"))
+    for msgid in msgids:
+        entry = catalog.find(msgid)
+        assert entry is not None, f"missing German entry: {msgid}"
+        assert entry.translated() and "fuzzy" not in entry.flags, msgid
+    for singular, plural in (
+        ("%(count)s document deleted.", "%(count)s documents deleted."),
+        ("%(count)s document archived.", "%(count)s documents archived."),
+        ("Owner assigned to %(count)s document.", "Owner assigned to %(count)s documents."),
+    ):
+        entry = catalog.find(singular)
+        assert entry is not None and entry.msgid_plural == plural
+        assert entry.translated() and "fuzzy" not in entry.flags
+        assert set(entry.msgstr_plural) == {0, 1}
+        assert all("%(count)s" in message for message in entry.msgstr_plural.values())
+
+
+@pytest.mark.django_db
+def test_bulk_selection_pages_render_german(client, django_user_model):
+    from bulk_selection.models import Document
+    from django.urls import reverse
+    from lxml import html
+
+    first = Document.objects.create(title="First draft")
+    second = Document.objects.create(title="Second draft")
+    locked = Document.objects.create(title="Locked draft", is_locked=True)
+    client.force_login(django_user_model.objects.create_superuser("bulk-admin-de", password="p"))
+
+    response = client.get(reverse("bulk_document-list"), HTTP_ACCEPT_LANGUAGE="de")
+    assert response.status_code == 200
+    tree = html.fromstring(response.content)
+    destinations = {}
+    for key, label in (("bulk_delete", "Löschen"), ("archive", "Archivieren"), ("assign_owner", "Eigentümer zuweisen")):
+        button = tree.xpath(f'//*[@data-cv-bulk-action="{key}"]')[0]
+        assert button.text_content().strip() == label
+        destinations[key] = button.attrib["formaction"]
+
+    response = client.post(
+        destinations["archive"],
+        {"cv_bulk_stage": "review", "cv_bulk_ids": [first.pk, locked.pk]},
+        HTTP_ACCEPT_LANGUAGE="de",
+    )
+    assert response.status_code == 200
+    assert "Gesperrte Dokumente können nicht archiviert werden." in response.content.decode()
+    assert Document.objects.filter(status="draft").count() == 3
+
+    response = client.post(
+        destinations["archive"],
+        {"cv_bulk_stage": "review", "cv_bulk_ids": [first.pk, second.pk]},
+        follow=True,
+        HTTP_ACCEPT_LANGUAGE="de",
+    )
+    assert response.status_code == 200
+    assert response.redirect_chain
+    assert "2 Dokumente archiviert." in response.content.decode()
+    assert Document.objects.filter(status="archived").count() == 2
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("language", ["en", "de"])
+@pytest.mark.parametrize("count", [1, 2])
+@pytest.mark.parametrize(
+    "action, english, german",
+    [
+        (
+            "bulk_delete",
+            ("1 document deleted.", "2 documents deleted."),
+            ("1 Dokument gelöscht.", "2 Dokumente gelöscht."),
+        ),
+        (
+            "archive",
+            ("1 document archived.", "2 documents archived."),
+            ("1 Dokument archiviert.", "2 Dokumente archiviert."),
+        ),
+        (
+            "assign_owner",
+            ("Owner assigned to 1 document.", "Owner assigned to 2 documents."),
+            ("Eigentümer 1 Dokument zugewiesen.", "Eigentümer 2 Dokumenten zugewiesen."),
+        ),
+    ],
+)
+def test_bulk_success_counts_only_eligible_documents(
+    client, django_user_model, language, count, action, english, german
+):
+    from bulk_selection.models import Document
+    from django.contrib.messages import get_messages
+    from django.urls import reverse
+    from lxml import html
+
+    client.force_login(django_user_model.objects.create_superuser("bulk-admin", password="p"))
+    owner = django_user_model.objects.create_user("owner")
+    selected = [Document.objects.create(title=f"Draft {index}").pk for index in range(count)]
+    locked = Document.objects.create(title="Locked draft", is_locked=True)
+    destination = reverse(f"bulk_document-{action}")
+    review = client.post(
+        destination,
+        {"cv_bulk_stage": "review", "cv_bulk_ids": [*selected, locked.pk]},
+        HTTP_ACCEPT_LANGUAGE=language,
+    )
+    assert review.status_code == 200
+    assert not list(get_messages(review.wsgi_request))
+    tree = html.fromstring(review.content)
+    data = {
+        name: tree.xpath(f'//form//input[@name="{name}"]/@value')
+        for name in ("cv_bulk_stage", "cv_bulk_ids", "cv_bulk_blocked_ids")
+    }
+    response = client.post(destination, {**data, "owner": owner.pk}, HTTP_ACCEPT_LANGUAGE=language)
+    assert response.status_code == 302
+    expected = (german if language == "de" else english)[count - 1]
+    assert [str(message) for message in get_messages(response.wsgi_request)] == [expected]
+    locked.refresh_from_db()
+    assert locked.status == "draft" and locked.owner is None
 
 
 def test_example_table_columns_mark_headers_for_translation():

@@ -152,6 +152,12 @@ django-tables2's `table_page_range` (`DJANGO_TABLES2_PAGE_RANGE`).
 A theme that overrides the table's `pagination.previous` or `pagination.next` block must handle the disabled end
 in that block too. See [Table pagination overrides](../migrating-1.0.md#table-pagination-overrides).
 
+## Bulk selection
+
+Opt a table view into current-page selection with `BulkSelectionMixin` before `ListViewTableMixin` and
+set `cv_bulk_actions` to the registered action-form keys offered by the source.
+See [Bulk actions](bulk_actions.md) for destination permissions, scoped selection and confirmation.
+
 ## Filtering with django-filter
 
 Add `ListViewTableFilterMixin` and configure a filter set and form helper:

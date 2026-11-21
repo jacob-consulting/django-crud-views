@@ -103,6 +103,14 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "navbar:item": "nav-item mw-100",
     "navbar:link": "nav-link mw-100 text-break",
     "navbar:link-active": "active",
+    # Bulk selection toolbar and checkbox utilities.
+    "bulk:toolbar": "mb-3",
+    "bulk:controls": "d-flex align-items-center gap-3 mb-2",
+    "bulk:select-all": "form-check mb-0",
+    "bulk:checkbox": "form-check-input",
+    "bulk:actions": "d-flex flex-wrap gap-2",
+    "bulk:card-cell": "position-relative",
+    "bulk:card-select": "form-check-input position-absolute top-0 start-0 translate-middle z-1",
     # utility slots the leaves used to hard-code (#227): the current page's button, a stretched card action and
     # the screen-reader text of an icon-only button; a theme registers its framework's words here
     "context:active": "active",

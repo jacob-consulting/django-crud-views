@@ -279,8 +279,13 @@ class ObjectNavbarPlacementTest(TestCase):
 
 class SeedCommandTest(TestCase):
     def test_seed_twice_is_idempotent(self):
+        from bulk_selection.models import Document
+
         call_command("seed")
+        documents = list(Document.objects.values())
+        self.assertEqual(len(documents), 24)
         call_command("seed")
+        self.assertEqual(list(Document.objects.values()), documents)
         User = get_user_model()
         self.assertTrue(User.objects.filter(username="alice", is_superuser=False).exists())
         self.assertTrue(User.objects.filter(username="bob", is_superuser=False).exists())
@@ -646,7 +651,14 @@ class FeatureGroupsTest(SimpleTestCase):
             grouped,
             {
                 "basics": ["library", "card_view", "nested", "resources", "delete_demo"],
-                "forms": ["formsets", "queryset_conditional", "conditional", "formsets_conditional", "custom_form"],
+                "forms": [
+                    "formsets",
+                    "queryset_conditional",
+                    "conditional",
+                    "formsets_conditional",
+                    "custom_form",
+                    "bulk_selection",
+                ],
                 "ui": [
                     "breadcrumbs",
                     "context_buttons",

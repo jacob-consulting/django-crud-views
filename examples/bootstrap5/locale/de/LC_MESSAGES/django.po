@@ -1645,3 +1645,76 @@ msgstr "Kampagne »{{ object }}« gelöscht"
 
 #~ msgid "NEW"
 #~ msgstr "NEU"
+
+#: bulk_selection/models.py:13
+msgid "status"
+msgstr "Status"
+
+#: bulk_selection/views.py:105
+msgid "Owner"
+msgstr "Eigentümer"
+
+#: bulk_selection/models.py:9
+msgid "Published"
+msgstr "Veröffentlicht"
+
+#: bulk_selection/models.py:10
+msgid "Archived"
+msgstr "Archiviert"
+
+#: bulk_selection/views.py:66
+msgid "Delete selected documents"
+msgstr "Ausgewählte Dokumente löschen"
+
+#: bulk_selection/views.py:85
+msgid "Archive selected documents"
+msgstr "Ausgewählte Dokumente archivieren"
+
+#: bulk_selection/views.py:117
+msgid "Assign owner to selected documents"
+msgstr "Ausgewählten Dokumenten einen Eigentümer zuweisen"
+
+#: bulk_selection/views.py:118
+msgid "Assign owner"
+msgstr "Eigentümer zuweisen"
+
+#: bulk_selection/views.py:104
+msgid "Assign"
+msgstr "Zuweisen"
+
+#: bulk_selection/views.py:49
+msgid "Locked documents cannot be deleted."
+msgstr "Gesperrte Dokumente können nicht gelöscht werden."
+
+#: bulk_selection/views.py:94
+msgid "Locked documents cannot be archived."
+msgstr "Gesperrte Dokumente können nicht archiviert werden."
+
+#: bulk_selection/views.py:95
+msgid "Only drafts can be archived."
+msgstr "Nur Entwürfe können archiviert werden."
+
+#: bulk_selection/views.py:133
+msgid "Locked documents cannot be reassigned."
+msgstr "Gesperrte Dokumente können nicht neu zugewiesen werden."
+
+#: bulk_selection/views.py:69
+#, python-format
+msgid "%(count)s document deleted."
+msgid_plural "%(count)s documents deleted."
+msgstr[0] "%(count)s Dokument gelöscht."
+msgstr[1] "%(count)s Dokumente gelöscht."
+
+#: bulk_selection/views.py:94
+#, python-format
+msgid "%(count)s document archived."
+msgid_plural "%(count)s documents archived."
+msgstr[0] "%(count)s Dokument archiviert."
+msgstr[1] "%(count)s Dokumente archiviert."
+
+#: bulk_selection/views.py:130
+#, python-format
+msgid "Owner assigned to %(count)s document."
+msgid_plural "Owner assigned to %(count)s documents."
+msgstr[0] "Eigentümer %(count)s Dokument zugewiesen."
+msgstr[1] "Eigentümer %(count)s Dokumenten zugewiesen."

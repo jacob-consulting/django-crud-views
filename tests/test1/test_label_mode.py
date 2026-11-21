@@ -14,7 +14,7 @@ from crud_views.lib.view.label_mode import (
 )
 
 LOGGER = "crud_views.lib.view.label_mode"
-PACKAGE = {"context": "icon", "list": "icon", "card": "both", "form": "label"}
+PACKAGE = {"context": "icon", "list": "icon", "card": "both", "form": "label", "bulk": "both"}
 # the process-lifetime register as seen at collection, before any test-scoped isolation
 PROCESS_WARNED = label_mode._warned
 
@@ -77,6 +77,17 @@ def test_defaults_match_locations():
 
 def test_default_label_mode_absent_setting(no_setting):
     assert _resolved() == PACKAGE
+
+
+def test_bulk_label_mode_floor_and_precedence(no_setting):
+    assert default_label_mode("bulk") == "both"
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"bulk": "icon"}):
+        assert default_label_mode("bulk") == "icon"
+    label_mode.register_label_mode_defaults({"bulk": "label"})
+    assert default_label_mode("bulk") == "label"
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"bulk": "icon"}):
+        assert default_label_mode("bulk") == "icon"
+    assert default_label_mode("bulk") == "label"
 
 
 @pytest.mark.parametrize(
@@ -159,7 +170,7 @@ def test_default_label_mode_invalid_setting_whole(configured, caplog):
         default_label_mode("context")
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured, CRUD_VIEWS_STRICT=False):
         assert _resolved() == PACKAGE
-    assert len(_records(caplog)) == len(LOCATIONS) == 4  # one per location queried
+    assert len(_records(caplog)) == len(LOCATIONS) == 5  # one per location queried
 
 
 @pytest.mark.parametrize("value", PER_LOCATION_INVALID, ids=repr)

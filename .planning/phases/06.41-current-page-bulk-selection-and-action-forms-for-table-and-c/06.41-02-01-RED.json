@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_bulk_flow.py::test_skip_confirmation_executes -q --junitxml=/tmp/06.41-02-01-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.881\" timestamp=\"2026-11-20T12:23:03.045717+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_bulk_flow\" name=\"test_skip_confirmation_executes\" time=\"0.630\"><failure message=\"assert 200 == 302&#10; +  where 200 = &lt;TemplateResponse status_code=200, &quot;text/html; charset=utf-8&quot;&gt;.status_code\">client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x735f6bd47500&gt;\nbulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]\nmonkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x735f6bd44c20&gt;\n\n    def test_skip_confirmation_executes(client_user_bulk_publisher_change, bulk_publishers, monkeypatch):\n        from tests.test1.app.views_bulk import BulkPublisherArchiveView\n    \n        monkeypatch.setattr(BulkPublisherArchiveView, \"cv_bulk_confirm\", False)\n        response = client_user_bulk_publisher_change.post(\n            \"/bulk-publisher/archive/\", {\"cv_bulk_stage\": \"review\", \"cv_bulk_ids\": [bulk_publishers[0].pk]}\n        )\n&gt;       assert response.status_code == 302\nE       assert 200 == 302\nE        +  where 200 = &lt;TemplateResponse status_code=200, \"text/html; charset=utf-8\"&gt;.status_code\n\ntests/test1/test_bulk_flow.py:47: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_skip_confirmation_executes",
+  "targetFile": "tests/test1/test_bulk_flow.py",
+  "expected": "HTTP 302 and archived record",
+  "actual": "HTTP 200 review",
+  "reportPath": "/tmp/06.41-02-01-red.xml",
+  "runStartedAt": "2026-11-20T12:23:03.045717+00:00",
+  "reportModifiedAt": "2026-11-20T12:23:03.926151+00:00",
+  "semanticAssessment": "Target executed and failed on the planned status assertion: skip confirmation still returns the review."
+}

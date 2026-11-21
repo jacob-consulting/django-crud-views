@@ -1,0 +1,9 @@
+{
+  "gate": 8,
+  "command": "D=$(mktemp -d) && uv build --wheel --offline --out-dir \"$D\" . && .venv/bin/python -m zipfile -e \"$D\"/django_crud_views-*.whl \"$D/x\" && T=\"$D/x/crud_views/templates/crud_views\" && ls \"$D/x/crud_views/lib/bulk/__init__.py\" \"$D/x/crud_views/static/crud_views/js/bulk.js\" \"$T/view_bulk_form.html\" \"$T/view_bulk_form.content.html\" \"$T/columns/bulk_select.html\" \"$T/snippets/bulk_toolbar.html\" \"$T/snippets/bulk/blocked.html\" \"$T/snippets/bulk/blocked_items.html\" \"$T/snippets/bulk/eligible.html\" \"$T/snippets/message/bulk.html\" \"$T/snippets/paragraph/bulk.html\" > /dev/null && grep -a -q \"Diese Seite ausw\" \"$D/x/crud_views/locale/de/LC_MESSAGES/django.mo\" && grep -a -q \"cv_bulk_has_permission\" \"$D/x/crud_views_guardian/locale/de/LC_MESSAGES/django.mo\" && rm -rf \"$D\" # [HEAD=absent EXPECT==present @14faa962]",
+  "source_revision": "6b236cd2e6e8670005712e0bb79caedd85d22bad",
+  "started_epoch": 1795187770.9031358,
+  "duration_seconds": 0.47,
+  "exit_code": 0,
+  "output": "Building wheel...\nSuccessfully built /tmp/tmp.hyX4oNzv27/django_crud_views-0.30.0-py3-none-any.whl\n"
+}

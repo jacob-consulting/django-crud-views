@@ -356,7 +356,7 @@ a `.table-responsive` wrapper.
 | `viewset.E208` | a `cv_*_actions_inline` attribute is not `None` or a list of strings |
 | `viewset.W290` | a view's own `cv_*_actions_inline` names a key that is not among that location's actions (typo?) |
 | `crud_views.E106` | a `CRUD_VIEWS_*_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"` (for `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE`, of form kind; an unknown kind is an error) |
-| `crud_views.E108` | error: `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`, `"form"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |
+| `crud_views.E108` | error: `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`, `"form"`, `"bulk"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |
 | `viewset.E211` | a `cv_*_actions_label_mode` attribute is not `None` or such a dict (`cv_card_actions_label_mode` is the string or None default of card views, `cv_context_action_label_mode` the string or None target-view default; both are scalars, not maps); for `cv_form_actions_label_mode` see [Form checks](#form-checks) |
 | `viewset.W291` | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions (typo?); for forms, a key with a valid mode that is not a form kind |
 | `viewset.E210` | a view's own `cv_form_actions_label_mode` maps a form kind to an invalid mode, see [Form checks](#form-checks) |

@@ -215,6 +215,11 @@ def cv_button(context, location, kind="action"):
             "cv_button renders action buttons only; location 'form' is not supported here, form buttons render"
             " through the crispy adapters crud_views.lib.crispy.Submit, Button and Reset"
         )
+    if location == "bulk":
+        raise ValueError(
+            "cv_button does not support location 'bulk'; bulk toolbar buttons render through the form leaf with "
+            'cv_button_data(raw, "form") and the bulk label-mode floor'
+        )
     ctx = cv_resolve_action(context.flatten())
     if ctx is None:
         return ""

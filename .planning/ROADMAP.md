@@ -2308,7 +2308,6 @@ Plans:
 Plans:
 **Wave 1**
 - [ ] 06.44-01-PLAN.md
-- [ ] TBD (run $gsd-plan-phase 06.44 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.44-02-PLAN.md
@@ -2448,5 +2447,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.41. Current-page bulk selection and action forms for table and card views (#387) | 14/14 | Complete | 2026-11-21 |
 | 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 3/3 | Complete | 2026-11-21 |
 | 06.43. Breadcrumb class keys and accessible table sort state (#393) | 2/2 | Complete | 2026-11-21 |
-| 06.44. CSS tokens for manage pages and formsets (#394) | 0/TBD | Not started | - |
+| 06.44. CSS tokens for manage pages and formsets (#394) | 0/2 | Planned | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

@@ -2,14 +2,14 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.42"
-current_phase_name: Theme-registered data-attribute prefix for templates and object-detail JS
+current_phase_name: "Theme-registered data-attribute prefix for templates and object-detail tabs (#391)"
 current_plan: Not started
 status: executing
 stopped_at: Phase 06.42 context gathered
-last_updated: "2026-11-21T09:05:27.535Z"
+last_updated: "2026-11-21T09:35:52.839Z"
 last_activity: 2026-11-21
 last_activity_desc: "Phase 06.42 inserted for issue #391"
-state_head: 4b07cd25fef70e13e992429550bffd52ef6b96bf
+state_head: 26b3ce453253f253b95e19d5f489df28d761f239
 progress:
   total_phases: 48
   completed_phases: 46
@@ -32,7 +32,7 @@ See: .planning/PROJECT.md (updated 2026-11-21)
 
 ## Current Position
 
-Phase: 06.42 (Theme-registered data-attribute prefix for templates and object-detail JS) — READY TO EXECUTE
+Phase: 06.42 (Theme-registered data-attribute prefix for templates and object-detail tabs (#391)) — READY TO EXECUTE
 Current Plan: Not started
 Total Plans in Phase: 3
 Status: Ready to execute

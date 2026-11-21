@@ -394,6 +394,54 @@ _RAW_DEFAULT_COMPONENTS = {
 }
 
 
+# Config captured separately from 04225d344ed3dab9969452a3933960d752536e2a
+# before config edits; the frozen-capture maintenance policy above also applies.
+# Inputs: /prefix/?a=1&b=2 and patched get_token returning fixed-csrf-token.
+_RAW_DEFAULT_CONFIG = (
+    '<div id="cv-config"\n'
+    '     data-request-path="/prefix/"\n'
+    '     data-query-string="a=1&amp;b=2"\n'
+    '     data-csrf-token="fixed-csrf-token"\n'
+    "     hidden></div>\n"
+    '<div class="modal fade" id="cv-modal" tabindex="-1" aria-hidden="true">\n'
+    '    <div class="modal-dialog" id="cv-modal-dialog">\n'
+    '        <div class="modal-content" id="cv-modal-content"></div>\n'
+    "    </div>\n"
+    "</div>\n\n"
+)
+
+
+@pytest.mark.parametrize("alias", ["cv_config", "cv_const_js"])
+def test_data_prefix_config_byte_delta(alias):
+    request = RequestFactory().get("/prefix/?a=1&b=2")
+    with patch("django.middleware.csrf.get_token", return_value="fixed-csrf-token"):
+        rendered = Template("{% load crud_views %}{% " + alias + " %}").render(Context({"request": request}))
+    added_line = '     data-data-prefix="bs"\n'
+    assert rendered.count(added_line) == 1
+    assert rendered.replace(added_line, "", 1) == _RAW_DEFAULT_CONFIG
+
+
+@pytest.mark.parametrize("alias", ["cv_config", "cv_const_js"])
+def test_data_prefix_config_aliases(alias, isolate_data_prefix):
+    from crud_views.lib import register_data_prefix
+
+    request = RequestFactory().get("/prefix/?a=1&b=2")
+    template = Template("{% load crud_views %}{% " + alias + " %}")
+    for prefix in ("bs", "coreui", "theme-next"):
+        if prefix != "bs":
+            register_data_prefix(prefix)
+        with patch("django.middleware.csrf.get_token", return_value="fixed-csrf-token"):
+            rendered = template.render(Context({"request": request}))
+        config = html.fromstring(rendered).get_element_by_id("cv-config")
+        assert config.get("data-data-prefix") == prefix
+        assert config.get("data-request-path") == "/prefix/"
+        assert config.get("data-query-string") == "a=1&b=2"
+        assert config.get("data-csrf-token") == "fixed-csrf-token"
+        added_line = f'     data-data-prefix="{prefix}"\n'
+        assert rendered.count(added_line) == 1
+        assert rendered.replace(added_line, "", 1) == _RAW_DEFAULT_CONFIG
+
+
 @pytest.mark.parametrize("name", _RAW_DEFAULT_COMPONENTS)
 def test_data_prefix_default_component_bytes(name):
     assert render_data_prefix_component(name) == _RAW_DEFAULT_COMPONENTS[name]

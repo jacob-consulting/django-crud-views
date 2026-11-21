@@ -11,10 +11,9 @@
                 <thead {{ table.attrs.thead.as_html }}>
                 <tr>
                 {% for column in table.columns %}
-                    <th {{ column.attrs.th.as_html }} scope="col">
+                    <th {{ column.attrs.th.as_html }} scope="col"{% if column.orderable %} aria-sort="{% if column.is_ordered %}{% if column.order_by_alias.is_descending %}descending{% else %}ascending{% endif %}{% else %}none{% endif %}"{% endif %}>
                         {% if column.orderable %}
-                            {% if request.GET.sort == column.name%}{% cv_icon "table-sort-asc" %}{% endif %}
-                            {% if request.GET.sort == "-"|add:column.name%}{% cv_icon "table-sort-desc" %}{% endif %}
+                            {% if column.is_ordered %}{% if column.order_by_alias.is_descending %}{% cv_icon "table-sort-desc" %}{% else %}{% cv_icon "table-sort-asc" %}{% endif %}{% endif %}
                              <a href="{% cv_querystring table.prefixed_order_by_field=column.order_by_alias.next %}">{{ column.header }}</a>
                         {% else %}
                             {{ column.header }}

@@ -8,5 +8,6 @@
   "actual": "custom-bs-list, custom-bs-tab, custom-bs-pill",
   "reportPath": "/tmp/0642-02-02-red.xml",
   "reportModifiedAt": 1795254647.7884483,
-  "semanticAssessment": "Actual asset executed; expected custom trigger IDs differ from Bootstrap sibling IDs. Existing default cases passed; no setup or collection faults."
+  "semanticAssessment": "Actual asset executed; expected custom trigger IDs differ from Bootstrap sibling IDs. Existing default cases passed; no setup or collection faults.",
+  "runStartedAt": "2026-11-21T09:50:47.777Z"
 }

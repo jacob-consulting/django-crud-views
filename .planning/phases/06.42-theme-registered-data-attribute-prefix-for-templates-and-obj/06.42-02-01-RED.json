@@ -8,5 +8,6 @@
   "actual": "Zero attributes",
   "reportPath": "/tmp/0642-02-01-red.xml",
   "reportModifiedAt": 1795254540.1305912,
-  "semanticAssessment": "Both real aliases executed and failed on missing prefix assertions; no setup or collection failures."
+  "semanticAssessment": "Both real aliases executed and failed on missing prefix assertions; no setup or collection failures.",
+  "runStartedAt": "2026-11-21T09:48:59.920504+00:00"
 }

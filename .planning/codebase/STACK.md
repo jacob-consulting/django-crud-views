@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
+last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
 last_mapped_at: 2026-11-21
 ---
 # Technology Stack
@@ -9,11 +9,11 @@ last_mapped_at: 2026-11-21
 ## Languages
 
 **Primary:**
-- Python >=3.12 (tested on 3.12–3.15) - five installable Django apps under `src/`
+- Python >=3.12 (tested on 3.12–3.15) - five installable Django apps under `src/`: `crud_views`, `crud_views_object_detail`, `crud_views_workflow`, `crud_views_polymorphic`, and `crud_views_guardian`
 - Django templates with Bootstrap 5 markup - theme templates under `src/crud_views/templates/`
 
 **Secondary:**
-- JavaScript (Node >=20) - development-only Vitest harness (`package.json`, `vitest.config.js`, `vitest.integration.config.js`); package scripts in `src/*/static/`
+- JavaScript - browser-side enhancement scripts shipped as Django static files; the optional Node >=20 Vitest/jsdom harness is development-only (`package.json`, `vitest.config.js`, `vitest.integration.config.js`)
 - YAML - CI, task automation, deployment, docs, and dependency update configuration
 
 ## Runtime
@@ -33,9 +33,11 @@ last_mapped_at: 2026-11-21
 
 **Core:**
 - Django >=4.2 - generic class-based views and reusable app integration (`src/crud_views/`)
+- Django app package group: core CRUD views plus object detail, workflow, polymorphic, and guardian extensions (`src/crud_views*/apps.py`)
 - Pydantic >=2.2.1 - ViewSet/settings and typed configuration (`src/crud_views/lib/viewset/`, `src/crud_views/lib/settings.py`)
 - django-tables2 >=2.5.3 and django-filter >=21.1 - table rendering and filtering
 - django-crispy-forms >=2.0 with crispy-bootstrap5 >=2023.10 - Bootstrap form rendering (`src/crud_views/lib/crispy/`)
+- Bootstrap 5-compatible JavaScript adapters - host-supplied UI library components; the package ships adapter code, not Bootstrap itself (`src/crud_views/static/crud_views/js/adapters.js`)
 
 **Testing:**
 - pytest, pytest-django, pytest-xdist, pytest-cov, pytest-mock, pytest-random-order - Python test suite (`pyproject.toml` test extra)
@@ -52,6 +54,7 @@ last_mapped_at: 2026-11-21
 
 **Critical:**
 - `python-box` >=6.0.2 and `typing-extensions` >=4.7.1 - core runtime support (`pyproject.toml`)
+- The five Django apps are built into one distribution; `object_detail` ships in the base install, while `workflow`, `polymorphic`, `ordered`, and `guardian` dependency groups are opt-in extras (`pyproject.toml`)
 - Django, Pydantic, django-tables2, django-filter, django-crispy-forms, crispy-bootstrap5 - core view and form API (`pyproject.toml`)
 - Bulk selection/action support composes Django ORM transactions and querysets, django-tables2 selection columns, Django messages, and the existing Crispy form/theme layer (`src/crud_views/lib/bulk/__init__.py`)
 - Manage pages and formsets consume six optional `--cv-*` CSS custom properties with Bootstrap and literal fallbacks; the package does not define these tokens globally (`src/crud_views/static/crud_views/css/manage.css`, `src/crud_views/static/crud_views/css/formset.css`, `docs/reference/theme.md`)
@@ -74,6 +77,7 @@ last_mapped_at: 2026-11-21
 **Environment:**
 - Library configuration is Django settings with `CRUD_VIEWS_*` names, parsed by `CrudViewsSettings` in `src/crud_views/lib/settings.py`; includes theme/template and manage-view options
 - Compatible theme native data-API attributes use the process-level prefix registry in `src/crud_views/lib/data_prefix.py`, defaulting to `bs`; a theme registers its prefix during `AppConfig.ready()` through the public `crud_views.lib.register_data_prefix` API. This is startup configuration, not a `CRUD_VIEWS_*` setting or runtime theme switch
+- Bootstrap-compatible themes can independently register the JavaScript global namespace and tooltip placement defaults during `AppConfig.ready()` with `register_js_namespace()` and `register_tooltip_placements()` (`src/crud_views/lib/js_config.py`, `src/crud_views/lib/__init__.py`). Defaults are `bootstrap` and `{}`; the three values are rendered on `#cv-config` and consumed by the adapter (`src/crud_views/templates/crud_views/tags/cv_config.html`, `src/crud_views/static/crud_views/js/adapters.js`)
 - Breadcrumb styling uses the existing button-class registry keys `breadcrumb:list`, `breadcrumb:item`, and `breadcrumb:item-active`. Theme startup registration and project `CRUD_VIEWS_BUTTON_CLASSES` overrides share the existing class lookup (`src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/breadcrumb.html`, `docs/reference/theme.md`)
 - Tests set `CV_ACCESS_RECORD_REQUESTS` from `noxfile.py`
 - Local Cloudflare tunnel reads `TUNNEL_TOKEN` from `dev/.env`; only the existence of local env files was checked (`dev/.env.example`, `dev/docker-compose.yaml`)

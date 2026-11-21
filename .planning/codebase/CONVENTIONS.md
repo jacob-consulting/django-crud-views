@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
+last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
 last_mapped_at: 2026-11-21
 ---
 # Coding Conventions
@@ -124,6 +124,33 @@ last_mapped_at: 2026-11-21
 - `tests/js/css-tokens.test.js` checks the documented six `--cv-*` properties, component-to-Bootstrap fallback chains, and rejected/accepted declaration forms. Keep parser expectations tied to the small Node-only sandbox in `tests/js/helpers/load.js`; do not turn this into a general CSS parser or add browser/runtime dependencies.
 - Use `tests/browser/css-tokens.cjs` for computed browser checks across the documented CSS cases. Manage presentation and compact formset browser suites remain separate: `tests/browser/manage-presentation.cjs` checks page smoke states, and `tests/browser/conditional-formsets.cjs` verifies compact layout behavior.
 - For capture tooling changes, preserve default historical capture destinations and isolate phase captures with `--compact-capture-root`. Exercise `compactCapture` and `validateEvidence` together in `tests/browser/conditional-formsets-evidence.test.cjs`; reject outside-root, traversal, missing/stale files, unsafe Git destinations, symlink leaves, and non-file leaves before writing. Validate `--check-evidence` separately from browser capture and preserve historical PNG bytes.
+
+## JavaScript Source and Runtime Boundaries
+
+- Shipped browser code is plain JavaScript under `src/crud_views/static/crud_views/js/` and
+  `src/crud_views_object_detail/static/crud_views_object_detail/js/`. Keep it compatible with the declared Node
+  `>=20` test runtime and browser globals; do not add a framework or transpilation step for a small behavior change.
+- JavaScript tests use ES modules, Vitest `describe`/`it`/`expect`, and jsdom (`package.json`, `vitest.config.js`).
+  Load the actual shipped script with `loadScript()` from `tests/js/helpers/load.js`; fixtures should construct the
+  DOM shape consumed by the public script and assert visible state, events, fetch payloads, or navigation calls.
+  Shared browser globals are initialized and reset in `tests/js/helpers/setup.js`.
+- jsdom cannot perform real navigation. Route navigation through the existing `nav` proxy from
+  `tests/js/helpers/load.js` and assert `nav.assign` / `nav.href`; do not replace jsdom's unforgeable
+  `window.location` or introduce browser-only assumptions into ordinary unit tests.
+- Keep source/runtime boundary checks in `tests/js/runtime-contract.test.js`. That suite launches Vitest in a
+  disposable directory containing only the JS tree and selected docs/goldens, with a PATH containing Node only.
+  It confirms that every ordinary JS test is included, that there are no Python or venv dependencies, and that the
+  integration lane fails explicitly when `CV_FRAGMENT_PYTHON` is absent or invalid. Update the explicit ordinary
+  file inventory there when adding or renaming a test.
+- Put cross-runtime cases in `tests/js-integration/` and configure them through
+  `vitest.integration.config.js`; do not make `npm test` acquire a Python dependency. Select the installed test
+  interpreter explicitly with `CV_FRAGMENT_PYTHON`, and preserve the virtualenv launcher path (`path.resolve`, not
+  realpath) so the intended environment remains selected. See `docs/reference/javascript.md` for runnable commands.
+- For server-configured JS, render configuration through Django's real `{% cv_config %}` tag in
+  `tests/js-integration/js-config.test.js`, pass the rendered element to jsdom, and then execute the shipped JS
+  against that configuration. For generated formset fragments, keep the Django test client/database responsible
+  for rendering and POST validation; pass the actual returned DOM and `FormData` through the disposable Node driver
+  in `tests/js-integration/formset.test.js` and `tests/test1/test_fragment_authorization.py`.
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
+last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
 last_mapped_at: 2026-11-21
 ---
 # External Integrations
@@ -11,6 +11,7 @@ The package makes no outbound network calls during request handling. An explicit
 ## APIs & External Services
 
 **Django ecosystem:**
+- The distribution exposes five Django apps: `crud_views` (core), `crud_views_object_detail`, `crud_views_workflow`, `crud_views_polymorphic`, and `crud_views_guardian` (`pyproject.toml`, `src/crud_views*/apps.py`)
 - django-tables2 and django-filter - list tables and filtering (`src/crud_views/lib/table/`)
 - django-crispy-forms and crispy-bootstrap5 - form rendering and Bootstrap layout integration (`src/crud_views/lib/crispy/`)
 - django-fsm-2 and django-fsm-2-admin - workflow transitions and admin integration (`src/crud_views_workflow/`)
@@ -20,7 +21,10 @@ The package makes no outbound network calls during request handling. An explicit
 - django-pipeline - optional asset bundling through `cv_sources`; exercised by tests (`src/crud_views/lib/assets.py`)
 - Bulk actions use existing Django ORM/queryset/transaction APIs, django-tables2, Django messages, and Crispy forms; the implementation requires no external service or additional package dependency (`src/crud_views/lib/bulk/__init__.py`)
 - Stock table headers consume django-tables2 bound-column `is_ordered` and `order_by_alias` to render sorting icons and `aria-sort` from effective ordering, covering URL, default, constructor, and prefixed ordering. Non-orderable headers omit generated sorting controls; use the `table.thead` block for alternate semantics and avoid caller-supplied `aria-sort` collisions (`src/crud_views/templates/crud_views/table/bootstrap5.html`, `docs/reference/list_view.md`, `tests/test1/test_table_template.py`)
-- Theme native data-API prefix integration is an in-process extension point: `register_data_prefix()` in `src/crud_views/lib/data_prefix.py` validates and stores the prefix, default `bs`; a theme calls it from `AppConfig.ready()` (`docs/reference/theme.md`). Last valid startup registration wins; invalid values raise `ValueError` without changing the prior value. It does not enable runtime theme switching or select a JavaScript adapter.
+- Theme JavaScript integration is an in-process startup extension point. A theme may call `register_data_prefix()`, `register_js_namespace()`, and `register_tooltip_placements()` from `AppConfig.ready()` (`src/crud_views/lib/data_prefix.py`, `src/crud_views/lib/js_config.py`, `docs/reference/theme.md`). Defaults are `bs`, `bootstrap`, and `{}`; each registry is independent, the last valid startup registration wins, and invalid values raise `ValueError` without replacing prior state. These are process-level settings, not request-scoped theme switching.
+- `{% cv_config %}` / `{% cv_const_js %}` writes the registered data prefix, JS namespace, and escaped tooltip-placement JSON to `#cv-config` (`src/crud_views/templates/crud_views/tags/cv_config.html`, `src/crud_views/templatetags/crud_views.py`). Preserve those attributes when overriding the config template.
+- Core browser scripts use `cv.adapters`; `adapters.js` resolves Bootstrap-compatible components from the registered global namespace (default `bootstrap`) and supplies the default tooltip adapter (`src/crud_views/static/crud_views/js/adapters.js`). The host app supplies the UI library bundle or replaces adapter entries; Bootstrap JavaScript is not a package runtime dependency.
+- `tooltip.js` initializes only package-marked `[data-cv-tooltip]` triggers through `cv.adapters.tooltip`, on page readiness and modal/formset insertion. Registered placement defaults are applied only when the trigger has no native `data-{prefix}-placement` attribute; app-owned Bootstrap tooltip triggers are left to the host (`src/crud_views/static/crud_views/js/tooltip.js`, `src/crud_views/static/crud_views/js/adapters.js`, `docs/reference/javascript.md`).
 
 **Host application extension points:**
 - `Resource` lets a host supply non-ORM data (including API or object-store-backed data); the package bundles no S3, HTTP, or cloud SDK (`src/crud_views/lib/resource.py`)

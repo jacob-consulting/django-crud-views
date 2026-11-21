@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
+last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
 last_mapped_at: 2026-11-21
 ---
 # Codebase Structure
@@ -17,11 +17,11 @@ django-crud-views/
 ├── src/
 │   ├── crud_views/                     # Core app (Bootstrap 5 theme)
 │   │   ├── apps.py, checks.py          # AppConfig; Django system checks
-│   │   ├── lib/                        # Runtime library (viewset, request, forms, bulk, diagnostics, theme data-prefix registration, support)
+│   │   ├── lib/                        # Runtime library (viewset, request, forms, bulk, diagnostics, theme JS/data-prefix registration, support)
 │   │   ├── management/commands/        # cv_access, cv_manage_view, cv_manage_group, cv_assets, crud_views_show
 │   │   ├── templatetags/               # crud_views.py, crud_views_formsets.py
 │   │   ├── templates/crud_views/       # view_*.html, snippets/, tags/, formsets/, modal/, includes/ ...
-│   │   ├── static/crud_views/{css,js}/ # core CSS/JS
+│   │   ├── static/crud_views/{css,js}/ # core CSS/JS, including the UI adapter boundary
 │   │   ├── locale/de/                  # translations
 │   │   └── migrations/                 # empty package (no models)
 │   ├── crud_views_guardian/            # django-guardian: lib/{viewset,mixins,views,ancestors}.py, checks.py
@@ -51,6 +51,8 @@ Root also holds untracked/ignored build and report artifacts (`site/`, `dist/`, 
 
 Theme data-prefix registration is in `src/crud_views/lib/data_prefix.py`; four default component templates consume it across the actions menu, language selector, vertical tabs and accordion. `cv_config` supplies the same current value to the object-detail tab selector in `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`.
 
+JavaScript theme defaults are registered independently in `src/crud_views/lib/js_config.py`: `register_js_namespace()` chooses the compatible global namespace and `register_tooltip_placements()` replaces the location map. The public functions are re-exported by `src/crud_views/lib/__init__.py`; a theme registers them in its `AppConfig.ready()`. At request render time, `src/crud_views/templatetags/crud_views.py` fills `#cv-config` via `src/crud_views/templates/crud_views/tags/cv_config.html`. Browser scripts use `src/crud_views/static/crud_views/js/adapters.js` as the UI library boundary; it resolves the selected global from rendered config when adapter methods run, allowing late-loaded config/library state without retrying or rebuilding existing UI instances.
+
 ## `src/crud_views/lib/` Map
 
 ```text
@@ -71,6 +73,7 @@ lib/
 ├── access_trace_export.py  Pydantic v1 wire models, validate_export, export_schema
 ├── navbar.py             NavBar/NavItem declarations, checks, request-local lazy builder and visibility
 ├── data_prefix.py        validated startup scalar for a theme's native data-API attribute prefix
+├── js_config.py          startup JavaScript namespace + tooltip placement defaults for rendered #cv-config
 ├── manage_report.py    Pydantic wire models for cv_manage_view, adapt_section, report_schema
 ├── settings.py         CrudViewsSettings + crud_views_settings singleton
 ├── check.py            Check classes used by CrudView.checks()/ViewSet.checks()
@@ -115,6 +118,12 @@ lib/
 - Four prefix-aware templates: `src/crud_views/templates/crud_views/tags/actions_menu_toggle.html`, `src/crud_views/templates/crud_views/snippets/language_selector.html`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/tabs-vertical/object_detail.html`, and `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`.
 - Owned tab trigger selector: `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`; it reads `#cv-config[data-data-prefix]` at call time and falls back to `bs`.
 - For new prefix-aware markup, use `{% cv_data_prefix %}` in the component template. For JS selectors, read `data-data-prefix` when selecting elements rather than capturing it at module load. Register the prefix in theme `AppConfig.ready()`.
+
+**JavaScript theme configuration and adapter files:**
+- Startup state and validation: `src/crud_views/lib/js_config.py`; public registration functions are re-exported from `src/crud_views/lib/__init__.py`. Register with `register_js_namespace(name)` and `register_tooltip_placements(mapping)` in a theme app's `AppConfig.ready()`; the latter replaces the complete mapping and both values are process-wide startup configuration.
+- Render path: `src/crud_views/templatetags/crud_views.py` builds current values in `_cv_config_context()` for both `{% cv_config %}` and backwards-compatible `{% cv_const_js %}`. `src/crud_views/templates/crud_views/tags/cv_config.html` emits escaped namespace/placement attributes alongside request, CSRF and native-prefix values, then includes `crud_views/modal/shell.html`.
+- Browser boundary: `src/crud_views/static/crud_views/js/adapters.js` initializes defaults on `globalThis.cv.adapters`, preserving earlier custom entries and exposing `cv.bootstrapAdapters(namespaceOrProvider)`. Its namespace provider reads `#cv-config[data-js-namespace]` when a component operation resolves; tooltip placement and native prefix are read at tooltip initialization. Core modules such as `modal.js`, `tooltip.js`, `list.filter.js`, and `viewset.js` use the adapter interface rather than accessing the UI library directly.
+- Keep JS namespace, tooltip placement mapping, and native data prefix independent. A selected namespace with a missing component does not silently fall back to another library. When adding config attributes, update both the context and default config template, then preserve these values in theme overrides. Contract guidance is in `docs/reference/theme.md` and `docs/reference/javascript.md`.
 
 **`src/crud_views/lib/views/`:**
 - Purpose: one module per operation type; each combines `CrudView` with a Django generic view and has a `*PermissionRequired` variant.
@@ -235,6 +244,12 @@ lib/
 - Template tag and config value: `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/cv_config.html`.
 - Component templates and selector: the four paths above and `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`.
 - Contract and focused tests: `docs/reference/theme.md`, `docs/reference/javascript.md`, `docs/reference/object_detail_layout_packs.md`, `tests/test1/test_data_prefix.py`, and `tests/test1/test_data_prefix_docs.py`.
+
+**JavaScript namespace / tooltip defaults:**
+- Registration state and validation: `src/crud_views/lib/js_config.py`; public exports: `src/crud_views/lib/__init__.py`.
+- Rendered configuration: `src/crud_views/templatetags/crud_views.py` and `src/crud_views/templates/crud_views/tags/cv_config.html`; retain all config attributes when overriding the template.
+- Adapter implementation and consuming scripts: `src/crud_views/static/crud_views/js/adapters.js`, `modal.js`, `tooltip.js`, `list.filter.js`, and `viewset.js`. Keep library-specific behavior behind `cv.adapters` and resolve the provider at operation time.
+- Contract and focused tests: `docs/reference/theme.md`, `docs/reference/javascript.md`, `tests/test1/test_js_config.py`, and JavaScript adapter suites under `tests/js/` and `tests/js-integration/`.
 
 **New ViewSet option:**
 - Field on `ViewSet` in `src/crud_views/lib/viewset/__init__.py` (add a validator if constrained), consider a global default in `src/crud_views/lib/settings.py`, expose in manage (`get_manage_facts`/`get_manage_presentation` in `src/crud_views/lib/views/manage.py`) and, if it appears in the report, in `src/crud_views/lib/manage_report.py` plus the committed schema.

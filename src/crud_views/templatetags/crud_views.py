@@ -116,6 +116,7 @@ def _cv_config_context(context):
         "request_path": request.path,
         "request_query_string": request.META.get("QUERY_STRING", ""),
         "csrf_token": get_token(request),
+        "data_prefix": get_data_prefix(),
     }
 
 

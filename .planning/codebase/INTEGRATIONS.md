@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
-last_mapped_at: 2026-11-19
+last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_at: 2026-11-21
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-19
+**Analysis Date:** 2026-11-21
 
 The package itself makes no outbound network calls. It integrates with Django ecosystem packages and leaves application services, database configuration, and resource backends to the host project.
 
@@ -18,11 +18,13 @@ The package itself makes no outbound network calls. It integrates with Django ec
 - django-guardian - per-object permissions (`src/crud_views_guardian/`)
 - django-ordered-model - ordered up/down actions (`src/crud_views/lib/views/action_ordered.py`)
 - django-pipeline - optional asset bundling through `cv_sources`; exercised by tests (`src/crud_views/lib/assets.py`)
+- Phase 06.41 bulk actions use existing Django ORM/queryset/transaction APIs, django-tables2, Django messages, and Crispy forms; the implementation adds no external service or package dependency (`src/crud_views/lib/bulk/__init__.py`)
 
 **Host application extension points:**
 - `Resource` lets a host supply non-ORM data (including API or object-store-backed data); the package bundles no S3, HTTP, or cloud SDK (`src/crud_views/lib/resource.py`)
 - Bootstrap 5 theme templates, a configurable semantic icon registry, and shared ViewSet navbar rendering are package-side UI integration points (`src/crud_views/templates/crud_views/`, `src/crud_views/lib/icons.py`, `src/crud_views/lib/navbar.py`)
 - Navbar declarations are configured on ViewSets and rendered through `cv_navbar`, `cv_navbar_identity`, and `cv_navbar_items` template tags (`src/crud_views/lib/navbar.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/navbar.html`)
+- Bulk actions are opt-in per ORM ViewSet: a table/card list declares destination keys and a permission-required bulk form re-resolves submitted keys in the destination queryset/scope before review and execution (`src/crud_views/lib/bulk/__init__.py`)
 
 ## Data Storage
 
@@ -64,6 +66,7 @@ The package itself makes no outbound network calls. It integrates with Django ec
 **CI Pipeline:**
 - GitHub Actions workflows cover Python/Django tests, linting, JavaScript tests, docs, package publishing, demo deploys, and README examples (`.github/workflows/`)
 - Python test workflow uses nox compatibility sessions and Codecov upload (`.github/workflows/tests.yml`, `noxfile.py`); JavaScript checks use npm/Vitest (`.github/workflows/js.yml`)
+- Nox includes a Crispy dependency-floor matrix for Django 4.2 and 6.0, with bulk flow, execution, source, scope, and return tests included (`noxfile.py`, `tests/test1/test_bulk_flow.py`, `tests/test1/test_bulk_execution.py`, `tests/test1/test_bulk_source.py`, `tests/test1/test_bulk_scope.py`, `tests/test1/test_bulk_return.py`)
 - Demo deploy workflow invokes the Render API (`.github/workflows/demo.yml`); package publishing uses PyPI trusted publishing action (`.github/workflows/publish.yml`)
 
 ## Environment Configuration
@@ -90,4 +93,4 @@ The package itself makes no outbound network calls. It integrates with Django ec
 
 ---
 
-*Integration audit: 2026-11-19*
+*Integration audit: 2026-11-21*

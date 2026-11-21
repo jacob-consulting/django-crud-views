@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
-last_mapped_at: 2026-11-19
+last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_at: 2026-11-21
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-19
+**Analysis Date:** 2026-11-21
 
 ## Test Framework
 
@@ -19,8 +19,8 @@ last_mapped_at: 2026-11-19
 ```bash
 pytest tests -n auto                       # full suite, multicore (preferred)
 pytest tests -n 4                          # broad local run on a shared/resource-bounded machine
-pytest tests/test1/test_basic.py -v        # single file
-pytest tests/test1/test_x.py::test_name    # single test
+pytest tests/test1/test_crud.py -v         # representative single file
+pytest tests/test1/test_crud.py::test_name # single test
 task test                                  # nox matrix: py3.12-3.15 x Django 4.2/5.2/6.0
 pytest tests -n auto --cov                 # coverage (fail_under = 88)
 CV_UPDATE_GOLDEN=1 pytest tests/test1/test_action_menus_golden.py   # regenerate goldens
@@ -32,7 +32,7 @@ Use four pytest-xdist workers for broad local runs when resources are shared; us
 ## Test File Organization
 
 **Location:** Separate from source, under `tests/`:
-- `tests/test1/` - Python tests (291 `test_*.py` files at this map revision, mostly flat) plus test apps `tests/test1/app/` (models Author UUID, Publisher int, Book child, Vehicle polymorphic, Campaign workflow), `tests/test1/od_app/`, `tests/test1/project/` (urls), `tests/test1/golden/` (stored markup).
+- `tests/test1/` - Python tests (285 top-level `test_*.py` files at this map revision, mostly flat) plus test apps `tests/test1/app/` (models Author UUID, Publisher int, Book child, Vehicle polymorphic, Campaign workflow), `tests/test1/od_app/`, `tests/test1/project/` (urls), `tests/test1/golden/` (stored markup).
 - `tests/lib/helper/` - shared helpers: `user.py` (`user_viewset_permission`), `boostrap5.py` (`Table` HTML parser), `golden.py` (`check_golden`), `guardian.py`, `forms.py`, `icons.py`.
 - `tests/browser/` - `*.cjs` scripts, `*.test.cjs` and Python servers for browser tests; `tests/js/`, `tests/js-integration/` - vitest.
 - `tests/check_manage_schema.py` - schema check script.
@@ -60,6 +60,7 @@ def test_debug_view(user_author_view: User, cv_author, author_douglas_adams, aut
 - Check contracts at the layer where they are promised: exact response bytes for compatibility, parsed DOM for structure/accessibility, and `django_assert_num_queries` or `CaptureQueriesContext` for SQL counts/categories. Examples: `tests/test1/test_navbar_costs.py::test_nonparticipant_complete_response_bytes_and_queries` and `::test_navbar_isolated_costs`.
 - Use lazy-object assertions when evaluation timing matters. `tests/test1/test_navbar_templates.py::test_context_copies_and_repeated_calls_reuse_one_lazy_build` covers copied Django contexts, includes, and repeated renders; `::test_omitted_consumers_and_modal_direct_includes_do_no_work` guards zero-work paths; `tests/test1/test_lazy_labels.py` checks lazy translations resolve in the active language.
 - Escaping tests should parse output and assert hostile inputs do not create markup or active attributes. `tests/test1/test_navbar_templates.py::test_plain_labels_and_accessible_names_are_escaped_once` covers raw/safe labels, entity-looking text, and localized accessible names.
+- Bulk action tests separate rendered selection, request validation, lifecycle, and return-navigation contracts. Use `tests/test1/test_bulk_source.py` for table/card selection markup and proof that source rendering does not invoke destination permission/item hooks; use `tests/test1/test_bulk_scope.py` for UUID/integer/string key canonicalization, deduplication, malformed and NUL key rejection, write-database routing, and authorization boundaries; use `tests/test1/test_bulk_flow.py` for review/execute ordering and atomic rollback; use `tests/test1/test_bulk_return.py` for origin preservation. Build requests with the real Django `Client` and assert state, response, or query behavior at the boundary under test.
 
 ## Mocking
 
@@ -96,8 +97,8 @@ pytest tests -n auto --cov --cov-report=term-missing
 **Unit Tests:** helpers, settings validation, checks (`tests/test1/test_ancestor_*.py`).
 **Integration Tests:** Django test-client requests across ViewSets, permissions, nested resources, Guardian, workflow, polymorphic.
 **Docs Tests:** tests such as `test_access_trace_docs.py` and `test_badge_docs.py` verify documentation against the code.
-**E2E / JS:** vitest (`vitest.config.js`, `vitest.integration.config.js`) and browser scripts in `tests/browser/`; CI in `.github/workflows/js.yml`, `tests.yml`.
-**nox:** `noxfile.py` installs the built distribution (asserts `crud_views` is not imported from `src/`), runs the suite with coverage, then reruns the full suite with `--no-cov` and `CV_ACCESS_RECORD_REQUESTS=1` to observe every existing request with the same assertions (first run uses `CV_ACCESS_RECORD_REQUESTS=0`). `.github/workflows/tests.yml` runs Python 3.12–3.15 against Django 4.2/5.2/6.0; Django 4.2 is skipped for Python 3.14/3.15, leaving ten supported combinations. Each runs both recorder modes and the examples suite; coverage reports are `coverage-py<py>-dj<django>.xml`.
+**E2E / JS:** Vitest unit tests (`vitest.config.js`) cover `tests/js/`; Vitest integration tests (`vitest.integration.config.js`) cover `tests/js-integration/`. `npm test` runs the unit suite and `.github/workflows/js.yml` runs it on Node 22. `npm run test:integration` is a separate local command. Purpose-built browser scripts and Django servers live in `tests/browser/`; they are not included in `npm test` or the Python Nox matrix.
+**nox:** `noxfile.py` installs the built distribution (asserts `crud_views` is not imported from `src/`), runs the full Python suite with coverage, then reruns the full suite with `--no-cov` and `CV_ACCESS_RECORD_REQUESTS=1` to observe every existing request with the same assertions (first run uses `CV_ACCESS_RECORD_REQUESTS=0`). `.github/workflows/tests.yml` runs Python 3.12–3.15 against Django 4.2/5.2/6.0; Django 4.2 is skipped for Python 3.14/3.15, leaving ten supported combinations. Each supported row runs both recorder modes and the examples suite; coverage reports are `coverage-py<py>-dj<django>.xml`. `nox -s crispy_floor` separately tests the declared django-crispy-forms/crispy-bootstrap5 floors against Django 4.2 and 6.0 on Python 3.12; `nox -s manage_report_floor` is an opt-in manual Pydantic 2.2.1 compatibility gate.
 
 ## Browser and Revision-Bound Evidence
 
@@ -118,4 +119,4 @@ with pytest.raises(ImproperlyConfigured, match=r"form_tag=False|form_action"):
 
 ---
 
-*Testing analysis: 2026-11-19*
+*Testing analysis: 2026-11-21*

@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
-last_mapped_at: 2026-11-19
+last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_at: 2026-11-21
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-19
+**Analysis Date:** 2026-11-21
 
 ## Languages
 
@@ -21,6 +21,7 @@ last_mapped_at: 2026-11-19
 **Environment:**
 - CPython >=3.12; nox covers 3.12, 3.13, 3.14, and 3.15 (`noxfile.py`)
 - Django >=4.2; CI/nox matrix covers Django 4.2, 5.2, and 6.0 (`pyproject.toml`, `noxfile.py`); Django 4.2 is skipped on Python 3.14+
+- Phase 06.41 bulk action flows are implemented inside the core Python package and use the existing Django ORM and django-tables2 dependencies; no additional runtime dependency was added (`src/crud_views/lib/bulk/`, `noxfile.py`)
 - Demo runs Python 3.13 on Render (`render.yaml`)
 
 **Package Manager:**
@@ -52,6 +53,7 @@ last_mapped_at: 2026-11-19
 **Critical:**
 - `python-box` >=6.0.2 and `typing-extensions` >=4.7.1 - core runtime support (`pyproject.toml`)
 - Django, Pydantic, django-tables2, django-filter, django-crispy-forms, crispy-bootstrap5 - core view and form API (`pyproject.toml`)
+- Bulk selection/action support composes Django ORM transactions and querysets, django-tables2 selection columns, Django messages, and the existing Crispy form/theme layer (`src/crud_views/lib/bulk/__init__.py`)
 
 **Optional extras (one app/feature group each):**
 - `workflow`: django-fsm-2 >=4.0.0 and django-fsm-2-admin >=2.0.1 (`src/crud_views_workflow/`)
@@ -75,6 +77,7 @@ last_mapped_at: 2026-11-19
 **Build:**
 - `pyproject.toml` defines dependencies and wheel/sdist file inclusion; `scripts/check_dist.py` checks the sdist allowlist
 - `noxfile.py`, `taskfile.yaml`, `codecov.yml`, `.sonarcloud.properties`, `mkdocs.yml`, and `vitest.config.js` configure development and CI tooling
+- Demo deployment dependencies are separated into `requirements/demo.txt`; CI, docs, and package publishing dependencies are hash-pinned in `.github/requirements/ci.txt` and `docs/requirements.txt`
 
 ## Platform Requirements
 
@@ -90,4 +93,4 @@ last_mapped_at: 2026-11-19
 
 ---
 
-*Stack analysis: 2026-11-19*
+*Stack analysis: 2026-11-21*

@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
-last_mapped_at: 2026-11-19
+last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_at: 2026-11-21
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-19
+**Analysis Date:** 2026-11-21
 
 Paths were verified to exist at mapping time. Items marked *(inferred)* were not read in detail.
 
@@ -15,7 +15,7 @@ django-crud-views/
 ├── src/
 │   ├── crud_views/                     # Core app (Bootstrap 5 theme)
 │   │   ├── apps.py, checks.py          # AppConfig; Django system checks
-│   │   ├── lib/                        # Runtime library (see below; navbar.py owns opt-in object navigation)
+│   │   ├── lib/                        # Runtime library (viewset, request, forms, bulk, diagnostics, support)
 │   │   ├── management/commands/        # cv_access, cv_manage_view, cv_manage_group, cv_assets, crud_views_show
 │   │   ├── templatetags/               # crud_views.py, crud_views_formsets.py
 │   │   ├── templates/crud_views/       # view_*.html, snippets/, tags/, formsets/, modal/, includes/ ...
@@ -33,7 +33,7 @@ django-crud-views/
 │   ├── lib/helper/                     # shared Python helpers
 │   ├── conftest.py
 │   └── check_manage_schema.py          # standalone validator of cv_manage_view exports
-├── examples/bootstrap5/                # demo project + feature apps, including independent navbar_demo
+├── examples/bootstrap5/                # demo project + feature apps, including bulk_selection and navbar_demo
 ├── docs/                               # MkDocs source (reference/, getting_started/, development/)
 ├── scripts/                            # check_dist.py, generate_screenshots.py, wait_for_server.py
 ├── superpowers/                        # design notes, plans, specs, archives (committed)
@@ -57,6 +57,7 @@ lib/
 │                       variant.py, cancel.py, card.py
 ├── views/              list, detail, create, update, delete, action, action_ordered, card, child,
 │                       form, manage, mixins (+ __init__ re-exports)
+├── bulk/               __init__.py (BulkSelectionMixin, BulkFormViewPermissionRequired, BulkConfirmForm)
 ├── ancestors.py        request-time ancestor authorization and child scoping
 ├── ancestor_policy.py  AncestorPolicy / AncestorPermissions (config values only)
 ├── ancestor_db.py      database-alias handling for ancestor reads
@@ -95,6 +96,13 @@ lib/
 - Purpose: one module per operation type; each combines `CrudView` with a Django generic view and has a `*PermissionRequired` variant.
 - Key files: `src/crud_views/lib/views/list.py`, `src/crud_views/lib/views/create.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/lib/views/mixins.py`.
 - Public exports are listed in `src/crud_views/lib/views/__init__.py` (note: `ManageView`, `CustomFormView*` and the polymorphic/workflow views are imported from their modules or apps *(inferred from `__all__` contents)*).
+
+**`src/crud_views/lib/bulk/`:**
+- Purpose: optional current-page selection controls and a reusable permission-gated bulk action destination.
+- Key file: `src/crud_views/lib/bulk/__init__.py`; exports `BulkSelectionMixin`, `BulkFormViewPermissionRequired`, and `BulkConfirmForm`.
+- Keep selection opt-in on table/card classes. The destination rechecks visibility and object eligibility; put app-specific writes in its `cv_form_valid()` implementation.
+- Rendering lives in `src/crud_views/templates/crud_views/snippets/bulk_toolbar.html`, `columns/bulk_select.html`, `view_bulk_form.content.html`, and `snippets/bulk/`. Progressive enhancement is in `src/crud_views/static/crud_views/js/bulk.js`; list and card content templates include the toolbar when actions are declared.
+- The consumer example is `examples/bootstrap5/bulk_selection/views.py`; its model, routes, seed data and tests are in that app directory.
 
 **Diagnostics files:**
 - `src/crud_views/lib/views/manage.py`: nine `get_manage_*` builders, `manage_export()`, access-trace form query/projection.
@@ -177,6 +185,13 @@ lib/
 - Validation: add `Check` objects in the view's `checks()` (`src/crud_views/lib/check.py`) or a Django check in `src/crud_views/checks.py`.
 - Tests: `tests/test1/test_<feature>.py`.
 
+**Bulk selection/action changes:**
+- Core API and checks: `src/crud_views/lib/bulk/__init__.py`.
+- Shared presentation: `src/crud_views/templates/crud_views/snippets/bulk_toolbar.html`, `columns/bulk_select.html`, `view_bulk_form.content.html`, and `snippets/bulk/`.
+- List/card integration: `src/crud_views/templates/crud_views/view_list_table.content.html` and `view_card.content.html`; table selection is contributed through `BulkSelectionMixin.get_table_kwargs()`.
+- Example consumer and package reference: `examples/bootstrap5/bulk_selection/views.py`, `examples/bootstrap5/bulk_selection/tests.py`, and `docs/reference/bulk_actions.md`.
+- Core test coverage is grouped in `tests/test1/test_bulk_*.py`; browser behavior is in `tests/js/bulk.test.js`.
+
 **Object navbar change:**
 - Declaration, request-local lazy builder, destination validation and admission: `src/crud_views/lib/navbar.py`.
 - Rendering tag changes: `src/crud_views/templatetags/crud_views.py`; theme wrapper/identity/items: `src/crud_views/templates/crud_views/tags/navbar*.html`.
@@ -215,4 +230,4 @@ lib/
 
 ---
 
-*Structure analysis: 2026-11-19*
+*Structure analysis: 2026-11-21*

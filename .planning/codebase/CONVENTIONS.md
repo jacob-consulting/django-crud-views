@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 782d6f34fc2adf2509ab8a8a150e69266a3e7e2a
-last_mapped_at: 2026-11-19
+last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_at: 2026-11-21
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-19
+**Analysis Date:** 2026-11-21
 
 ## Naming Patterns
 
@@ -12,6 +12,7 @@ last_mapped_at: 2026-11-19
 - snake_case modules, one concern per file: `src/crud_views/lib/views/delete.py`, `action_ordered.py`, `label_mode.py`.
 - View modules mirror the view key (`list.py`, `detail.py`, `create.py`, `update.py`, `delete.py`).
 - Tests: `tests/test1/test_<topic>.py`, flat, topic-prefixed families (`test_access_trace_*.py`, `test_ancestor_*.py`, `test_action_menus_*.py`).
+- Keep a feature's tests split by contract where that makes failures easier to locate. Bulk action tests use focused files such as `tests/test1/test_bulk_source.py` (selection UI), `test_bulk_scope.py` (request keys and authorization boundaries), `test_bulk_flow.py` (review/execution lifecycle), and `test_bulk_return.py` (navigation).
 - Navbar contracts are split among `tests/test1/test_navbar.py`, `test_navbar_templates.py`, `test_navbar_costs.py`, `test_navbar_checks.py`, `test_navbar_permissions.py`, and `test_navbar_docs.py`; keep tests beside the behavior they verify.
 
 **Functions:**
@@ -98,9 +99,10 @@ last_mapped_at: 2026-11-19
 ## Project Rules
 
 - Decision rule (`CLAUDE.md`): prefer the simplest bounded solution the maintainer can explain; keep new features opt-in and self-contained; avoid hidden state and extra queries on existing paths.
+- Preserve contracts with focused tests at the public seam. For bulk selection, keep source-page rendering free of destination permission work (`tests/test1/test_bulk_source.py`), validate and canonicalize submitted keys before hooks (`tests/test1/test_bulk_scope.py`), and exercise transaction rollback for multi-record failures (`tests/test1/test_bulk_flow.py`). Avoid duplicating implementation complexity in tests when a small observable contract assertion suffices.
 - Until 1.0.0, a `### Breaking` entry in `CHANGELOG.md` also requires an update to `docs/migrating-1.0.md`.
 - Version bumps go through bump-my-version (`task bump-patch`); never edit version strings by hand.
 
 ---
 
-*Convention analysis: 2026-11-19*
+*Convention analysis: 2026-11-21*

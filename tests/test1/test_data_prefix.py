@@ -174,7 +174,8 @@ _RAW_DEFAULT_COMPONENTS = {
         '    <div class="card-body">\n'
         '        <div class="row">\n'
         '            <div class="col-md-3">\n'
-        '                <div class="nav flex-column nav-pills" id="cvod-c11-prefix-page-tabs" role="tablist" aria-orientation="vertical" data-cv-od-tabs>\n'
+        '                <div class="nav flex-column nav-pills" id="cvod-c11-prefix-page-tabs"'
+        ' role="tablist" aria-orientation="vertical" data-cv-od-tabs>\n'
         "                    \n"
         "                    \n"
         '                    <button class="nav-link active text-start"\n'
@@ -352,7 +353,8 @@ _RAW_DEFAULT_COMPONENTS = {
         "        \n"
         '        <button class="accordion-button" type="button"\n'
         '                id="cvod-c33-g00000000000000000000000000000187-s5-first-control"\n'
-        '                data-bs-toggle="collapse" data-bs-target="#cvod-c33-g00000000000000000000000000000187-s5-first-panel"\n'
+        '                data-bs-toggle="collapse"'
+        ' data-bs-target="#cvod-c33-g00000000000000000000000000000187-s5-first-panel"\n'
         '                aria-expanded="true"\n'
         '                aria-controls="cvod-c33-g00000000000000000000000000000187-s5-first-panel">\n'
         "            \n"
@@ -448,8 +450,8 @@ def test_data_prefix_valid_values(prefix, isolate_data_prefix):
         "a/b",
         "a=b",
         "ä",
-        "a١",
-        "ａ",
+        "a\u0661",
+        "\uff41",
         "a\x00",
         None,
         b"bs",

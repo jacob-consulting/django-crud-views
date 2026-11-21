@@ -41,6 +41,62 @@ A theme app is an ordinary Django app:
 3. Optionally, static assets under `static/` (register JS/CSS via the asset registry — see
    [Assets](assets.md) — if your theme needs its own).
 
+## CSS tokens
+
+Manage pages and formsets consume these six tokens without declaring them upstream,
+including on `:root`. Each use retains its Bootstrap property and literal fallback:
+
+| Token | Required fallback chain |
+|---|---|
+| `--cv-secondary-color` | `var(--cv-secondary-color, var(--bs-secondary-color, #6c757d))` |
+| `--cv-secondary-text-emphasis` | `var(--cv-secondary-text-emphasis, var(--bs-secondary-text-emphasis, #495057))` |
+| `--cv-body-bg` | `var(--cv-body-bg, var(--bs-body-bg, #fff))` |
+| `--cv-border-color` | `var(--cv-border-color, var(--bs-border-color, #dee2e6))` |
+| `--cv-border-radius` | `var(--cv-border-radius, var(--bs-border-radius, .375rem))` |
+| `--cv-tertiary-bg` | `var(--cv-tertiary-bg, var(--bs-tertiary-bg, #f8f9fa))` |
+
+A theme maps all six on its theme roots. For example, a hypothetical library named
+**Demo** with `--demo-*` properties and `data-demo-theme` uses:
+
+```css
+:root, [data-demo-theme] {
+    --cv-secondary-color: var(--demo-secondary-color);
+    --cv-secondary-text-emphasis: var(--demo-secondary-text-emphasis);
+    --cv-body-bg: var(--demo-body-bg);
+    --cv-border-color: var(--demo-border-color);
+    --cv-border-radius: var(--demo-border-radius);
+    --cv-tertiary-bg: var(--demo-tertiary-bg);
+}
+```
+
+Custom-property references resolve at computed-value time **before inheritance**.
+Mapping only on `:root` freezes the aliases to that root's colour mode: a nested
+`data-demo-theme="dark"` section inherits the already resolved outer values.
+Declaring the aliases on every theme root lets them resolve against that root's
+library properties. Upstream keeps its fallbacks at each use site so stock nested
+`data-bs-theme="dark"` sections continue working without a token mapping.
+Existing themes that map Bootstrap properties on upstream elements remain supported
+through the fallback chains and can migrate at their convenience.
+
+The stock help button retains
+`[data-cv-manage] [data-cv-manage-help].btn-outline-secondary` and its contrast
+adjustment to `--bs-btn-color`, using the secondary-text-emphasis chain above.
+A theme retaining that stock class must hand the token-derived value to its own
+button variable; for the hypothetical Demo library, that bridge could be:
+
+```css
+[data-cv-manage] [data-cv-manage-help].btn-outline-secondary {
+    --demo-btn-color: var(--cv-secondary-text-emphasis, var(--bs-secondary-text-emphasis, #495057));
+}
+```
+
+Alternatively, replace the existing `manage:help` class through
+[class registration](#buttons). No additional class key is needed.
+Both compact heading and field grids use `gx-3` with their existing component
+hooks. Its equivalence to the previous `1rem` gutter assumes Bootstrap's standard
+spacing scale; arbitrary customized Sass spacing scales are not covered by that
+equivalence.
+
 ## JavaScript
 
 ViewSet Navigation needs no JavaScript; its ordinary full-page links use the

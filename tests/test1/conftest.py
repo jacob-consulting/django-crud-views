@@ -9,6 +9,14 @@ from tests.lib.helper.user import user_viewset_permission
 
 
 @pytest.fixture
+def isolate_data_prefix(monkeypatch):
+    """Restore the startup prefix after tests that register a theme."""
+    from crud_views.lib import data_prefix
+
+    monkeypatch.setattr(data_prefix, "_data_prefix", data_prefix._data_prefix)
+
+
+@pytest.fixture
 def asset_registry():
     """Snapshot/restore the module-global asset registry around each test."""
     from crud_views.lib import assets

@@ -17,7 +17,6 @@ from django.utils.translation import gettext_lazy, ngettext
 from crud_views.lib.ancestors import _scope_child_queryset
 from crud_views.lib.check import CheckExpression, CheckWarningExpression
 from crud_views.lib.crispy import CrispyForm, CrispyViewMixin
-from crud_views.lib.crispy.buttons import FORM_LEAF_TEMPLATE
 from crud_views.lib.icons import _icon_available
 from crud_views.lib.view.button_data import cv_button_data
 from crud_views.lib.view.cancel import effective_cancel_keys
@@ -120,7 +119,9 @@ class BulkSelectionMixin:
                 "cv_label_mode": mode if _icon_available(destination.cv_icon_action) else "label",
                 "cv_attrs": {"formaction": self.cv_get_link_url(destination, key), "data-cv-bulk-action": key},
             }
-            buttons.append(render_to_string(FORM_LEAF_TEMPLATE, cv_button_data(raw, "form")))
+            data = cv_button_data(raw, "form")
+            data["cv_variant"] = destination.cv_action_variant
+            buttons.append(render_to_string("crud_views/tags/button/bulk.html", data))
         return buttons
 
     def get_table_kwargs(self):

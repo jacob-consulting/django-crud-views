@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
+last_mapped_commit: af5d74efd12e965b432fe30c6044f139b406eafc
 last_mapped_at: 2026-11-21
 ---
 # Testing Patterns
@@ -162,3 +162,5 @@ paths.
 ---
 
 *Testing analysis: 2026-11-21*
+
+Both integration suites import `selectedPython()` from `tests/js-integration/python.js`. This shared test-only helper preserves the selected virtualenv launcher and bounded missing/invalid-interpreter diagnostics.

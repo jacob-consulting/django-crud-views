@@ -41,6 +41,11 @@ Last activity: 2026-11-21 -- Phase 06.45 shipped as PR #401
 
 Next: $gsd-discuss-phase 7
 
+### Phase 06.45 shipping — 2026-11-21
+
+- PR #401 created against main, linked to issue #398 and labeled P06.45/theming. All seven codebase maps refreshed.
+- SonarCloud identified duplicated integration interpreter validation (3.9% new-code duplication). Extracted unchanged shared test helper in af5d74ef; runtime-contract3 and integration3 pass; independent verification/fingerprint refreshed and accepted. Product behavior unchanged. Remote CI remains pending; no merge.
+
 ### Phase 06.45 completion — 2026-11-21
 
 - Both plans/five tasks committed; startup namespace and tooltip-placement registrations, inert config, lazy adapter resolution, executable adoption docs and nonbreaking changelog delivered. D-01–D-05 honored; 9/9 truths independently verified, CLI fingerprint accepted; no manual-only UAT.

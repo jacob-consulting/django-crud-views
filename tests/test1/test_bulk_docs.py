@@ -522,3 +522,11 @@ def test_bulk_modules_remain_in_maintained_crispy_floor_selection():
     assert {f"tests/test1/test_bulk_{name}.py" for name in ("flow", "execution", "source", "scope", "return")} <= set(
         ast.literal_eval(assignment.value)
     )
+
+
+def test_bulk_guide_documents_native_cancel_opt_in():
+    result = section(guide(), "Result message and return")
+    assert 'CRUD_VIEWS_BUTTON_CLASSES = {"form:cancel-tag": "a"}' in result
+    assert "buttons.md#cancel-links" in result
+    assert "Bootstrap example enables this setting" in result
+    assert 'tag="a"' in result

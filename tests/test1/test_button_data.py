@@ -579,7 +579,7 @@ def test_form_location_contract_constants():
     assert set(FORM_TYPES) == FORM_KINDS
     assert VARIANT_LOCATIONS | {"form", "bulk"} == LOCATIONS
     assert set(ACTION_LOCATIONS) == {"context", "list", "card"}
-    assert VARIANT_LOCATIONS == {"context", "list", "card", "bulk"}
+    assert {"context", "list", "card", "bulk"} == VARIANT_LOCATIONS
     assert {
         "cv_location",
         "cv_key",

@@ -45,7 +45,9 @@ def _stock_response(client, settings, monkeypatch, source, mode, icons):
 @pytest.mark.parametrize("source", SOURCE_PATHS)
 @pytest.mark.parametrize("mode", MODES)
 @pytest.mark.parametrize("icons", ICON_CASES)
-def test_stock_toolbar_bytes(client_user_bulk_publisher_view, bulk_publishers, settings, monkeypatch, source, mode, icons):
+def test_stock_toolbar_bytes(
+    client_user_bulk_publisher_view, bulk_publishers, settings, monkeypatch, source, mode, icons
+):
     """Never refresh from bulk.html, normalize whitespace, or remove signed URL bytes.
 
     Future intentional URL/token/icon/label fixture changes must retain the old capture and

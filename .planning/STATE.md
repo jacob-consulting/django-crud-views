@@ -3,12 +3,12 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.41"
 current_phase_name: "Current-page bulk selection and action forms for table and card views (#387)"
-current_plan: 13
+current_plan: 14
 status: awaiting_verification
-stopped_at: Phase 06.41 UAT diagnosed; G-06.41-1 awaiting gap plan 14 execution
+stopped_at: Phase 06.41 plan 14 executed; phase regression and independent re-verification in progress
 last_updated: "2026-11-20T16:16:38.765000+00:00"
 last_activity: 2026-11-20
-last_activity_desc: Phase 06.41 UAT 6 passed, 1 issue; native Cancel opt-in gap plan 14 ready
+last_activity_desc: Phase 06.41 native Cancel gap plan 14 executed; human retest pending
 state_head: 7b291e9eadecbbd932c5fba110704ab5a5a01d1b
 progress:
   total_phases: 48
@@ -33,12 +33,12 @@ See: .planning/PROJECT.md (updated 2026-11-19)
 ## Current Position
 
 Phase: 06.41 (Current-page bulk selection and action forms for table and card views (#387)) — AWAITING ACCEPTANCE
-Current Plan: 13
-Total Plans in Phase: 13
-Status: UAT diagnosed (6 passed, 1 issue); gap plan 14 ready
+Current Plan: 14
+Total Plans in Phase: 14
+Status: Plan 14 executed; regression/re-verification in progress; human UAT retest pending
 Last activity: 2026-11-20 — All 13 plans executed; security and review gates resolved
 
-Next: $gsd-execute-phase 06.41 --gaps-only
+Next: $gsd-verify-work 06.41 after re-verification
 
 ### Phase 06.41 conversational UAT — 2026-11-21
 

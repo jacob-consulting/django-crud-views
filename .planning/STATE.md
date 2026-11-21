@@ -1,26 +1,26 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.43"
-current_phase_name: "Breadcrumb class keys and accessible table sort state (#393)"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
 current_plan: Not started
-status: executing
-stopped_at: Phase 06.43 planning converged; ready to execute
-last_updated: "2026-11-21T10:56:30.369Z"
+status: planning
+stopped_at: Phase 06.43 complete, ready to plan Phase 7
+last_updated: "2026-11-21T11:49:20.876Z"
 last_activity: 2026-11-21
-last_activity_desc: Phase 06.43 planning converged in 4 cycles; 2 plans ready to execute
-state_head: 49c3d2d08bf4179ac9ec907c2cb25a31e3ee8be6
+last_activity_desc: Phase 06.43 complete, transitioned to Phase 7
+state_head: ed3ef7938c5d9142b00dd9718f89409af1f9bcbd
 progress:
   total_phases: 48
-  completed_phases: 46
+  completed_phases: 47
   total_plans: 259
-  completed_plans: 257
-  percent: 96
+  completed_plans: 259
+  percent: 98
 milestone_name: milestone
 ---
 
 Total Phases: 48
-Completed Phases: 46
+Completed Phases: 47
 
 # Project State
 
@@ -29,17 +29,26 @@ Completed Phases: 46
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.43 — Breadcrumb class keys and accessible table sort state (#393)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.43 (Breadcrumb class keys and accessible table sort state (#393)) — READY TO EXECUTE
+Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: 2
-Status: Ready to execute
-Last activity: 2026-11-21 -- Phase 06.43 planning converged in 4 cycles; 2 plans ready to execute
+Total Plans in Phase: 0
+Status: Ready to plan
+Last activity: 2026-11-21 — Phase 06.43 complete, transitioned to Phase 7
 
-Next: $gsd-execute-phase 06.43
+Next: $gsd-discuss-phase 7
+
+### Phase 06.43 completion — 2026-11-21
+
+- Both plans and all four tasks complete. Independent goal verification passed 8/8, decisions 4/4, CLI fingerprint accepted. No required human checks in approved scope.
+- Three ordinary breadcrumb keys preserve default bytes; effective table ordering drives icons and aria-sort. Only twelve approved product/test/doc files changed; golden/migration artifacts unchanged.
+- Combined affected tests 1,513 passed; bounded docs 160 passed; strict MkDocs and all changed-Python Ruff checks passed. Cross-phase Python gate: 11,376 passed, 1 skipped across 138 files. Full dependency matrix and browser/AT behavior unclaimed.
+- Deep independent review: 12 files, zero findings. Nyquist 4/4 tasks covered. Authored-register ASVS L1 security: five distinct threats closed. UI source/rendering audit found no in-scope defect; unobserved visual dimensions explicitly unscored.
+- phase.complete advanced to Phase 7. Reconciled stale dotted progress row/count and separated approved decision labels from the formal Requirements: None field. Restored unrelated derived state.json rewrite byte-identically, as in prior phase handling.
+- No pending parent UAT gaps, matching todos or learning promotion. Global learnings disabled; no LEARNINGS artifacts. Codebase maps remain advisory-stale and refresh after a future gsd-ship. No push, PR, merge or publication.
 
 ### Phase 06.43 planning convergence — 2026-11-21
 
@@ -1605,6 +1614,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.40.1 | 2 | - | - |
 | 06.41 | 14 | - | - |
 | 06.42 | 3 | - | - |
+| 06.43 | 2 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2244,6 +2254,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T08:40:57.879Z
-Stopped at: Phase 06.43 context gathered
-Resume file: .planning/phases/06.43-breadcrumb-class-keys-and-accessible-table-sort-state-393/06.43-CONTEXT.md
+Last session: 2026-11-21T11:50:01.426421+00:00
+Stopped at: Phase 06.43 complete, ready to discuss Phase 7
+Resume file: None

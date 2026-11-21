@@ -69,7 +69,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.40.1: ViewSet Navigation: theme class keys and owner-heading layouts (#384) (INSERTED)** - expose navbar class keys and document theme-owned owner headings. (completed 2026-11-19)
 - [x] **Phase 06.41: Current-page bulk selection and action forms for table and card views (#387) (INSERTED)** - opt-in selection on table and card views, submitted to registered action form views in the same ViewSet. (completed 2026-11-21)
 - [x] **Phase 06.42: Theme-registered data-attribute prefix for templates and object-detail tabs (#391) (INSERTED)** - approved U1/U2 handover; theme prefix registration, four templates and the existing object-detail tabs lifecycle. (completed 2026-11-21)
-- [ ] **Phase 06.43: Breadcrumb class keys and accessible table sort state (#393) (INSERTED)**
+- [x] **Phase 06.43: Breadcrumb class keys and accessible table sort state (#393) (INSERTED)** (completed 2026-11-21)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2275,7 +2275,8 @@ Plans:
 
 **Goal:** Themes can style breadcrumbs through the existing class registry, and the stock table header exposes effective ordering through matching sort icons and `aria-sort`, including default ordering and prefixed tables.
 **Source:** [Issue #393](https://github.com/jacob-consulting/django-crud-views/issues/393), approved `gsd-handover` decisions D-01–D-04 (2026-11-21).
-**Requirements:** Approved issue decisions D-01–D-04; no new requirement IDs assigned.
+**Requirements:** None
+**Approved decisions:** D-01–D-04 from issue #393.
 **Depends on:** Phase 06.40.1 (existing class-registry pattern). No dependency on phase 06.41/06.42 work outside this checkout.
 **Ordering:** Complete before Phase 7 freezes the theme surface; include the three breadcrumb class keys and effective table sort-state behavior in that inventory.
 **Scope:** Template and registry changes through existing mechanisms, regression tests, reference documentation, and CHANGELOG. No new API, setting, or rendering path. Downstream theme cleanup is a release note, not upstream implementation scope.
@@ -2284,14 +2285,14 @@ Plans:
 2. Orderable table headers derive both icons and `aria-sort` from `column.is_ordered` and `column.order_by_alias.is_descending`: ascending, descending, or none. Non-orderable columns retain no sort attribute or icon. Tests cover URL ordering in both directions, default ordering, prefixed tables, and unsorted/non-orderable columns.
 3. Button/theme/breadcrumb references document the keys, table documentation explains effective ordering, and CHANGELOG records Added/Changed/Fixed entries. The default-order icon is an accepted nonbreaking visible change; `docs/migrating-1.0.md` stays untouched.
 4. Breadcrumb content/links and nav label, card sorting, pagination, CSS-property work, and downstream theme implementation remain outside scope.
-**Plans:** 0/2 plans executed in 2 waves; approved D-01–D-04 covered.
+**Plans:** 2/2 plans complete in 2 waves; approved D-01–D-04 covered.
 
 Plans:
 **Wave 1**
-- [ ] 06.43-01-PLAN.md — Breadcrumb registry keys, byte-preserving rendering, override coverage and reference inventories (wave 1).
+- [x] 06.43-01-PLAN.md — Breadcrumb registry keys, byte-preserving rendering, override coverage and reference inventories (wave 1).
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.43-02-PLAN.md — Effective table sort indicators, real ordering matrix, nonbreaking release guidance and combined final verification (wave 2; depends on 06.43-01).
+- [x] 06.43-02-PLAN.md — Effective table sort indicators, real ordering matrix, nonbreaking release guidance and combined final verification (wave 2; depends on 06.43-01).
 
 ### Phase 7: Theme-surface stability policy
 
@@ -2426,5 +2427,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.40.1. ViewSet Navigation: theme class keys and owner-heading layouts (#384) | 2/2 | Complete | 2026-11-19 |
 | 06.41. Current-page bulk selection and action forms for table and card views (#387) | 14/14 | Complete | 2026-11-21 |
 | 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 3/3 | Complete | 2026-11-21 |
-| 06.43. Breadcrumb class keys and accessible table sort state (#393) | 0/TBD | Not planned | - |
+| 06.43. Breadcrumb class keys and accessible table sort state (#393) | 2/2 | Complete | 2026-11-21 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

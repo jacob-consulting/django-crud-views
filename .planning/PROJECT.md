@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ Three existing-registry breadcrumb class keys with byte-identical defaults and matching effective table sort icons/aria-sort — Phase 06.43; verification 8/8, decisions 4/4, security 5/5, four tasks covered and clean 12-file review. Browser/AT and dependency-matrix acceptance unclaimed.
+
 - ✓ Validated startup data-prefix registration, four native component templates, page config and call-time tab discovery with executable theme recipes — Phase 06.42; 22/22 verified, six decisions honored, nine threats closed, deep review clean. Stock component bytes preserved; one approved config attribute added. Native CoreUI/browser/full-matrix acceptance remains outside scope.
 
 - ✓ Current-page table/card bulk selection with permission-gated action forms, scoped eligibility, confirmation and transactional execution; Bootstrap example and guide, including native Cancel opt-in — Phase 06.41; 14 plans complete, 130/130 verification and seven human UAT passes. Installed-distribution/recorder CI pass is user-confirmed; no CI URL/revision was supplied.
@@ -173,6 +175,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Reuse three ordinary breadcrumb class keys and bound-column sort state | Preserve existing template/resolver paths, default breadcrumb bytes and query links while exposing effective ordering | Validated (Phase 06.43; 8/8) |
 | Use six ordinary registry keys and theme-owned owner-heading markup | Reuse existing lookups/context/components without new runtime state, queries or global heading behavior | Validated (Phase 06.40.1; 9/9) |
 | Keep object-navbar behavior opt-in in one module and app-owned template placement | Reuse resolved ancestry and destination hooks once, preserving established context-button and request paths | Validated (Phase 06.40; 38/38) |
 | Stabilize navbar declarations, full/component tags, three templates and documented context at 1.0 | Executable recipes and separately committed companion guidance make the public surface traceable | Validated (Phase 06.40; companion cab8a85a) |
@@ -267,4 +270,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-21 after Phase 06.42 completion*
+*Last updated: 2026-11-21 after Phase 06.43 completion*

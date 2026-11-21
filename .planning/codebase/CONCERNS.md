@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
 last_mapped_at: 2026-11-21
 ---
 <!-- refreshed: 2026-11-21 -->
@@ -10,10 +10,10 @@ last_mapped_at: 2026-11-21
 ## Tech Debt
 
 **Startup-captured settings and template registration:**
-- Issue: `CrudViewsSettings` class defaults and template-tag registration capture some Django settings at import/startup. `override_settings()` does not refresh those values after import; selected label defaults are intentionally read at call time.
-- Files: `src/crud_views/lib/settings.py`, `src/crud_views/templatetags/crud_views.py`
-- Impact: changing startup-captured configuration during a process does not reconfigure the package.
-- Fix approach: treat these as startup configuration. Add lazy evaluation or `setting_changed` handling only for a demonstrated supported runtime-reconfiguration use case.
+- Issue: `CrudViewsSettings` class defaults and template-tag registration capture some Django settings at import/startup. `register_data_prefix()` also keeps a process-global value with default `bs`; the last valid startup call wins. `override_settings()` does not refresh captured values, while selected label defaults are intentionally read at call time.
+- Files: `src/crud_views/lib/settings.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/lib/data_prefix.py`, `src/crud_views/lib/__init__.py`
+- Impact: changing startup configuration during a process does not reconfigure the package; a theme that registers too late or fails to register uses the default prefix. The supported contract is startup registration, not concurrent per-request or runtime theme switching.
+- Fix approach: call `register_data_prefix()` once from the theme's startup hook. Keep configuration startup-only unless a demonstrated use case justifies broader runtime semantics; preserve validation-before-assignment and test isolation in `tests/test1/test_data_prefix.py`.
 
 **Placeholder public management command:**
 - Issue: `crud_views_show` advertises a command but its `handle()` is a no-op.
@@ -107,6 +107,12 @@ No distinct security defect is confirmed by current evidence. Keep navbar render
 - Why fragile: themes consume class keys, button context, icons, template variables, and JavaScript adapters as a connected contract. Empty `cv_icon_header` suppresses inheritance; consumers that need inherited icons use `None` or `Icon.VIEWSET_DEFAULT`, and `Icon.NONE` suppresses explicitly.
 - Safe modification: preserve custom header content independently of icon choice and update `CHANGELOG.md` and `docs/migrating-1.0.md` for contract changes.
 - Test coverage: built-in and example themes are exercised; arbitrary installed third-party themes are not certified (`docs/development/stability.md`). Conditional/formset empty-default hooks and fragment ownership have coverage in `tests/test1/test_conditional_layout.py` and `tests/test1/test_formsets_compact.py`.
+
+**Theme data-prefix adoption and native-library ownership:**
+- Files: `src/crud_views/lib/data_prefix.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/cv_config.html`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`, `docs/reference/theme.md`, `docs/reference/javascript.md`
+- Why fragile: a theme changing the registered native data-attribute prefix must use the shipped templates and copy the current `cv_config` markup so `data-data-prefix` reaches the tabs initializer. Older copied config markup has no prefix attribute and therefore follows the documented `bs` fallback. Registration aligns prefix spelling; it does not configure or certify a different library's JavaScript adapter, lifecycle, or DOM conventions.
+- Safe modification: document startup registration and copied-config adoption together; keep the selector scoped to owned tabs and preserve the absence-only fallback. Treat native CoreUI behavior and other downstream themes as unverified unless separately exercised in their real runtime.
+- Test coverage: registration, copied recipes/config, and adapter selection plumbing are covered by `tests/test1/test_data_prefix.py`, `tests/test1/test_data_prefix_docs.py`, and `tests/js/object-detail-tabs.test.js`; full native CoreUI browser behavior is not established.
 
 **Nested and compact formset rendering/persistence:**
 - Files: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`, `src/crud_views/lib/formsets/inline_formset.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/templates/crud_views/formsets/compact_headings.html`, `src/crud_views/static/crud_views/css/formset.css`, `src/crud_views/static/crud_views/js/formset.js`
@@ -242,7 +248,9 @@ Phase 06.37 strict TraceUser validation, schema regeneration guidance, registry 
 
 Phase 06.40 passed all ten supported Python/Django runtime cells in installed normal and request-recorder modes, all ten example cells, both crispy floors, the Pydantic floor, distribution, and required tooling. Python 3.14/3.15 with Django 4.2 are explicit unsupported skips. Its source-bound receipts retain failed attempts and distinguish final-revision full runs from earlier full runs plus affected-file reruns after the test-helper-only change; no earlier run is relabeled as a run of the later test revision. Fresh static UI evidence covers six widths, while the prior 345-assertion browser receipt and keyboard interactions remain bound to their recorded earlier product revision. These are evidence boundaries, not product defects (`.planning/phases/06.40-object-navbar-opt-in-section-navigation-381/06.40-MATRIX.json`, `06.40-INPUTS.json`, `06.40-ACCEPTANCE.md`, `06.40-UI-REVIEW.md`, `06.40-BROWSER.json`).
 
-Phase 06.41 passed 130/130 verified must-haves and all seven UAT checks. Current retained evidence reports the latest core suite at 16,952 passed, 1 skipped, and the bulk example at 637 passed plus 296 subtests. Human confirmation of installed-distribution/full-recorder CI was recorded without a URL or revision, so that CI result is not independently inspectable here. PostgreSQL concurrency/locking measurement was not performed. These are evidence boundaries; the feature contract remains default-database and single-field-PK only (`.planning/phases/06.41-current-page-bulk-selection-and-action-forms-for-table-and-c/06.41-VERIFICATION.md`, `06.41-UAT.md`, `06.41-REGRESSION.md`, `06.41-SECURITY.md`).
+Phase 06.41 passed 130/130 verified must-haves and all seven UAT checks. Its core-suite and bulk-example results are superseded by the post-06.42 combined acceptance below. Human confirmation of installed-distribution/full-recorder CI was recorded without a URL or revision, so that CI result is not independently inspectable here. PostgreSQL concurrency/locking measurement was not performed. These are evidence boundaries; the feature contract remains default-database and single-field-PK only (`.planning/phases/06.41-current-page-bulk-selection-and-action-forms-for-table-and-c/06.41-VERIFICATION.md`, `06.41-UAT.md`, `06.41-REGRESSION.md`, `06.41-SECURITY.md`).
+
+Phase 06.42 passed 22/22 verified must-haves after integration with merged PR #392. The combined post-06.42 core suite passed 17,057 tests with one skip, JavaScript passed 486 tests, and the bulk example passed 637 tests plus 296 subtests. Strict documentation and Ruff/format checks also passed. Registration is intentionally startup-only; copied templates/config need downstream adoption. These results do not claim a native CoreUI browser run or a fresh full supported Python/Django matrix (`.planning/phases/06.42-theme-registered-data-attribute-prefix-for-templates-and-obj/06.42-VERIFICATION.md`, `06.42-SECURITY.md`).
 
 ---
 

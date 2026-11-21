@@ -145,6 +145,19 @@ Object.assign(cv.adapters, cv.bootstrapAdapters(bootstrap));
 
 ## Object-detail tabs
 
+The shipped `#cv-config` always carries `data-data-prefix`, including the default `bs`, from the theme's
+[startup registration](theme.md#data-attribute-prefix). This added config attribute is the sole default-page byte
+change from prefix support; default component markup stays unchanged. Both `cv_config` and `cv_const_js` supply
+the current `data_prefix` inclusion context.
+
+On each initialization and disposal scan, `tabs.js` reads `data-data-prefix` from the global document's
+`#cv-config`, even when the scanned root is a modal fragment. It matches `data-<prefix>-toggle="tab"`, `"pill"`
+or `"list"`. Lookup happens at call time, not script load. An absent config element or absent attribute falls
+back to `bs` for legacy Bootstrap compatibility; this does not detect custom-prefix triggers automatically.
+Themes copying `crud_views/tags/cv_config.html` must carry the current registered `data-data-prefix` value:
+see the [copied-config adoption note](theme.md#data-attribute-prefix). An older copy without it cannot discover
+`data-coreui-toggle` triggers. This is startup configuration, not a runtime theme-switching guarantee.
+
 `cv.initObjectDetailTabs(root=document)` initializes only triggers owned by `data-cv-od-tabs` tablists,
 including a marked root and respecting nested tablist boundaries. It is repeat-safe. The extension calls it on
 DOMContentLoaded, immediately for an already-ready document, and on `cv:modal:loaded`. On `cv:modal:unload`

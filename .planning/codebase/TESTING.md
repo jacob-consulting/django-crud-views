@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
 last_mapped_at: 2026-11-21
 ---
 # Testing Patterns
@@ -81,8 +81,10 @@ monkeypatch.setattr(PublisherDetailView, "cv_context_actions", ["books"])
 
 - Fixtures live in `tests/test1/conftest.py` (grouped by model with `# --- Publisher fixtures ---` comments); no factory library, objects are created through the ORM inside fixtures.
 - Goldens: normalised markup files under `tests/test1/golden/<area>/`, compared through `tests/lib/helper/golden.py::check_golden`; set `CV_UPDATE_GOLDEN=1` to rewrite.
+- Exact compatibility captures may live as frozen raw strings beside their deterministic rendering helper. `tests/test1/test_data_prefix.py` captures seven component outputs from the pre-edit template revision and two config aliases from their pre-edit revision; compare byte-for-byte, never normalize/regenerate them during ordinary test runs. The phase verifier independently rendered the historical Git templates and matched all seven component captures and both config captures.
 - Real HTTP behavior uses Django `Client` against the in-memory project. Navbar examples include `tests/test1/test_navbar.py::test_real_owner_navbar`, `tests/test1/test_navbar_templates.py::test_component_tags_render_independently_in_real_response`, and `::test_real_response_omits_all_navbar_work_without_consumers_or_in_custom_modal`.
-- Published examples are executable fixtures: `tests/test1/test_navbar_docs.py` extracts navbar recipes and renders them with real context; related harnesses include `tests/test1/test_cancel_docs.py`, `test_object_detail_value_docs.py`, `test_conditional_migration_docs.py`, and `test_theme_adoption_docs.py`. Keep recipe markers/fences stable or update extraction tests with documentation changes.
+- Published examples are executable fixtures: `tests/test1/test_navbar_docs.py` extracts navbar recipes and renders them with real context; related harnesses include `tests/test1/test_cancel_docs.py`, `test_object_detail_value_docs.py`, `test_conditional_migration_docs.py`, `test_theme_adoption_docs.py`, and `tests/test1/test_data_prefix_docs.py`. The latter compiles the exact `AppConfig.ready()` recipe from `docs/reference/theme.md`, calls the real tag, renders copied template recipes against real groups, and parses the output DOM. Keep recipe markers/fences stable or update extraction tests with documentation changes.
+- Mutable theme prefix tests must request `isolate_data_prefix` from `tests/test1/conftest.py`; this fixture restores the shared module scalar via `monkeypatch`. Do not add it as an autouse fixture: tests that never register a theme should not acquire unrelated global-state setup. Registration is startup-only; these tests cover repeated startup registration and late tag reads, not runtime switching guarantees.
 
 ## Coverage
 
@@ -106,6 +108,7 @@ pytest tests -n auto --cov --cov-report=term-missing
 - Browser scripts under `tests/browser/` launch Chromium against purpose-built local Django servers (for example `tests/browser/theme-adoption.cjs`, `queryset-conditional.cjs`, and `cancel-navigation.cjs`). Their receipts are phase-specific: verify recorded source hashes/revision before describing them as current.
 - `.github/workflows/js.yml` runs `npm test` (Vitest); browser scripts are not a blanket part of that command or the Python Nox matrix. Name the script, browser/runtime, target revision, and result when reporting a browser check.
 - `npm run test:integration` uses `vitest.integration.config.js`; it is distinct from Playwright scripts in `tests/browser/`.
+- Phase 06.42's current-tree receipt at `.planning/phases/06.42-theme-registered-data-attribute-prefix-for-templates-and-obj/06.42-VERIFICATION.md` records **17,057 Python passed / 1 skipped**, **486 JavaScript**, and **637 examples with 296 subtests** after rebasing onto merged PR #392. This is acceptance evidence for that recorded tree and its selected Python 3.12 / Django 5.2 environment, not a claim that every supported Python/Django combination or a native CoreUI browser run was verified.
 
 ## Common Patterns
 

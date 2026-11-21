@@ -115,6 +115,8 @@ the stock Bootstrap behavior and use the existing stock property templates. Put 
 fence at `crud_views_object_detail/layouts/<pack>/<part>.html` in your template directory.
 Title buttons own `icon.host_class`; element libraries render `icon.inline_html` once.
 Never derive panel selection from a `forloop` inside the separately rendered group.
+Native toggle, target and parent attributes use `{% cv_data_prefix %}` from `crud_views`, defaulting to `bs`.
+A compatible fork can [register its prefix](theme.md#data-attribute-prefix) without changing these DOM relationships.
 
 Tabs require a Bootstrap-compatible Tab component, the core adapter factory and
 `crud_views_object_detail/js/tabs.js`, registered by the installed extension and emitted by `{% cv_js %}`.
@@ -151,7 +153,7 @@ or persistence. Selection is presentation data, not a group configuration field.
       {% cv_heading_icon entry.group.icon location="group" as icon %}
       <button type="button" role="tab" id="{{ entry.control_id }}"
               class="nav-link{% if entry.selected %} active{% endif %}{% if icon.host_class %} {{ icon.host_class }}{% endif %}"
-              data-bs-toggle="pill" data-bs-target="#{{ entry.panel_id }}"
+              data-{% cv_data_prefix %}-toggle="pill" data-{% cv_data_prefix %}-target="#{{ entry.panel_id }}"
               aria-controls="{{ entry.panel_id }}"
               aria-selected="{% if entry.selected %}true{% else %}false{% endif %}"
               tabindex="{% if entry.selected %}0{% else %}-1{% endif %}">
@@ -201,14 +203,14 @@ or persistence. Selection is presentation data, not a group configuration field.
     {% cv_heading_icon group.icon location="group" as icon %}
     <button type="button" id="{{ presentation.control_id }}"
             class="accordion-button{% if not presentation.selected %} collapsed{% endif %}{% if icon.host_class %} {{ icon.host_class }}{% endif %}"
-            data-bs-toggle="collapse" data-bs-target="#{{ presentation.panel_id }}"
+            data-{% cv_data_prefix %}-toggle="collapse" data-{% cv_data_prefix %}-target="#{{ presentation.panel_id }}"
             aria-controls="{{ presentation.panel_id }}" aria-expanded="{% if presentation.selected %}true{% else %}false{% endif %}">
       {{ icon.inline_html }}{{ group.title }}
     </button>
   {% endcv_heading %}
   <div class="accordion-collapse collapse{% if presentation.selected %} show{% endif %}" id="{{ presentation.panel_id }}"
        aria-labelledby="{{ presentation.control_id }}"
-       {% if component %}data-bs-parent="#{{ component.id }}"{% endif %}>
+       {% if component %}data-{% cv_data_prefix %}-parent="#{{ component.id }}"{% endif %}>
     <div class="accordion-body"><table><tbody>
       {% for prop in group.properties %}{% render_property prop layout=layout %}{% endfor %}
     </tbody></table></div>

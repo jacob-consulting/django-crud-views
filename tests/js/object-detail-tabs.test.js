@@ -26,6 +26,14 @@ function tabs(id = "page", count = 2, selected = 0) {
     `).join("")}</div>`;
 }
 
+function prefixedTabs(id, prefix = "coreui") {
+    return `<div id="${id}" role="tablist" data-cv-od-tabs>${["list", "tab", "pill"].map((kind, index) => `
+        <button id="${id}-${kind}" role="tab" type="button" data-${prefix}-toggle="${kind}"
+            aria-selected="${index === 1}" tabindex="${index === 1 ? 0 : -1}">${kind}</button>
+        <button id="${id}-bs-${kind}" role="tab" data-bs-toggle="${kind}">Bootstrap sibling</button>
+    `).join("")}</div>`;
+}
+
 describe("object-detail tabs real asset", () => {
     let fake, listeners;
 
@@ -315,5 +323,135 @@ describe("object-detail tabs real asset", () => {
         modalEvent(root, "loaded");
         modalEvent(root, "unload");
         expect(document.body.innerHTML).toBe(before);
+    });
+
+    it.each(["manual", "DOMContentLoaded", "ready"])(
+        "selects custom tab/pill/list triggers in DOM order on %s", async entry => {
+            document.body.innerHTML = '<div id="cv-config" data-data-prefix="coreui"></div>' + prefixedTabs("custom");
+            const tab = { init: vi.fn(), dispose: vi.fn() };
+            window.cv = { adapters: { tab } };
+            if (entry === "ready") vi.spyOn(document, "readyState", "get").mockReturnValue("complete");
+            await loadTabs();
+            if (entry === "manual") window.cv.initObjectDetailTabs();
+            if (entry === "DOMContentLoaded") document.dispatchEvent(new Event("DOMContentLoaded"));
+            expect(tab.init.mock.calls.map(([el]) => el.id)).toEqual(["custom-list", "custom-tab", "custom-pill"]);
+            expect(tab.init).toHaveBeenCalledTimes(3);
+            modalEvent(document.getElementById("custom"), "unload");
+            expect(tab.dispose.mock.calls.map(([el]) => el.id)).toEqual(["custom-list", "custom-tab", "custom-pill"]);
+            expect(tab.dispose).toHaveBeenCalledTimes(3);
+            expect(fake.bootstrap.Tab.getOrCreateInstance).not.toHaveBeenCalled();
+        });
+
+    it.each(['role="tablist"', 'class="nav"', 'class="list-group"'])(
+        "keeps custom triggers inside their nearest owned boundary with %s", async boundary => {
+            document.body.innerHTML = '<div id="cv-config" data-data-prefix="coreui"></div>' + prefixedTabs("custom")
+                + prefixedTabs("sibling");
+            const root = document.getElementById("custom");
+            root.insertAdjacentHTML("beforeend", `<div ${boundary}>
+                <button id="foreign" data-coreui-toggle="tab"></button></div>${prefixedTabs("nested")}`);
+            const tab = { init: vi.fn(), dispose: vi.fn() };
+            window.cv = { adapters: { tab } };
+            await loadTabs();
+            window.cv.initObjectDetailTabs(root);
+            const expected = ["custom-list", "custom-tab", "custom-pill", "nested-list", "nested-tab", "nested-pill"];
+            expect(tab.init.mock.calls.map(([el]) => el.id)).toEqual(expected);
+            expect(tab.init).toHaveBeenCalledTimes(6);
+            modalEvent(root, "unload");
+            expect(tab.dispose.mock.calls.map(([el]) => el.id)).toEqual(expected);
+            expect(tab.dispose).toHaveBeenCalledTimes(6);
+        });
+
+    it.each(["element", "attribute"])("falls back to Bootstrap for missing config %s", async missing => {
+        document.body.innerHTML = (missing === "attribute" ? '<div id="cv-config"></div>' : "") + prefixedTabs("custom");
+        await loadTabs();
+        window.cv.initObjectDetailTabs();
+        const expected = ["custom-bs-list", "custom-bs-tab", "custom-bs-pill"];
+        expect([...fake.instances.keys()].map(el => el.id)).toEqual(expected);
+        modalEvent(document.getElementById("custom"), "unload");
+        expect(fake.bootstrap.Tab.getInstance.mock.calls.map(([el]) => el.id)).toEqual(expected);
+        expect(fake.instances.size).toBe(0);
+    });
+
+    it("reads late config and changed config on each separate scan", async () => {
+        document.body.innerHTML = prefixedTabs("custom");
+        const tab = { init: vi.fn(), dispose: vi.fn() };
+        window.cv = { adapters: { tab } };
+        await loadTabs();
+        document.body.insertAdjacentHTML("afterbegin", '<div id="cv-config" data-data-prefix="coreui"></div>');
+        window.cv.initObjectDetailTabs();
+        expect(tab.init.mock.calls.map(([el]) => el.id)).toEqual(["custom-list", "custom-tab", "custom-pill"]);
+        tab.init.mockClear();
+        document.getElementById("cv-config").setAttribute("data-data-prefix", "bs");
+        window.cv.initObjectDetailTabs();
+        expect(tab.init.mock.calls.map(([el]) => el.id)).toEqual(["custom-bs-list", "custom-bs-tab", "custom-bs-pill"]);
+    });
+
+    it("reads global config independently on attached modal disposal after a prefix change", async () => {
+        document.body.innerHTML = '<div id="cv-config" data-data-prefix="coreui"></div>' + prefixedTabs("page")
+            + `<section id="modal">${prefixedTabs("injected")}${prefixedTabs("next", "theme-next")}</section>`;
+        const tab = { init: vi.fn(), dispose: vi.fn(el => expect(el.isConnected).toBe(true)) };
+        window.cv = { adapters: { tab } };
+        await loadTabs();
+        const modal = document.getElementById("modal");
+        modalEvent(modal, "loaded");
+        expect(tab.init.mock.calls.map(([el]) => el.id)).toEqual(["injected-list", "injected-tab", "injected-pill"]);
+        document.getElementById("cv-config").setAttribute("data-data-prefix", "theme-next");
+        modalEvent(modal, "unload");
+        expect(tab.dispose.mock.calls.map(([el]) => el.id)).toEqual(["next-list", "next-tab", "next-pill"]);
+        expect(tab.dispose).toHaveBeenCalledTimes(3);
+    });
+
+    it("skips adapter lookup for custom-prefix empty and no-match roots", async () => {
+        document.body.innerHTML = '<div id="cv-config" data-data-prefix="coreui"></div>'
+            + '<section id="native"></section><div data-cv-od-tabs id="empty"></div>' + tabs("bootstrap-only");
+        await loadTabs();
+        const lookup = vi.fn(() => { throw new Error("lookup"); });
+        Object.defineProperty(window.cv, "adapters", { configurable: true, get: lookup });
+        window.cv.initObjectDetailTabs();
+        for (const id of ["native", "empty", "bootstrap-only"]) {
+            const root = document.getElementById(id);
+            expect(observedError(root, "loaded")).toBeUndefined();
+            expect(observedError(root, "unload")).toBeUndefined();
+        }
+        expect(lookup).not.toHaveBeenCalled();
+    });
+
+    it.each(["page", "modal"])("reuses custom instances without show or focus on repeated %s scans", async entry => {
+        document.body.innerHTML = '<div id="cv-config" data-data-prefix="coreui"></div>' + prefixedTabs("custom");
+        const root = document.getElementById("custom");
+        const selected = document.getElementById("custom-tab");
+        selected.focus();
+        const focus = vi.spyOn(HTMLElement.prototype, "focus");
+        const before = root.innerHTML;
+        await loadTabs();
+        const initialize = () => entry === "page" ? window.cv.initObjectDetailTabs(root) : modalEvent(root, "loaded");
+        initialize();
+        const instances = [...fake.instances.values()];
+        initialize();
+        expect([...fake.instances.keys()].map(el => el.id)).toEqual(["custom-list", "custom-tab", "custom-pill"]);
+        expect([...fake.instances.values()]).toEqual(instances);
+        expect(instances).toHaveLength(3);
+        expect(fake.bootstrap.Tab.getOrCreateInstance).toHaveBeenCalledTimes(6);
+        instances.forEach(instance => expect(instance.show).not.toHaveBeenCalled());
+        expect(focus).not.toHaveBeenCalled();
+        expect(document.activeElement).toBe(selected);
+        expect(root.innerHTML).toBe(before);
+        instances.forEach(instance => {
+            const dispose = instance.dispose.getMockImplementation();
+            instance.dispose.mockImplementation(() => {
+                expect(root.isConnected).toBe(true);
+                dispose();
+            });
+        });
+        fake.bootstrap.Tab.getOrCreateInstance.mockClear();
+        modalEvent(root, "unload");
+        expect(fake.bootstrap.Tab.getInstance.mock.calls.map(([el]) => el.id))
+            .toEqual(["custom-list", "custom-tab", "custom-pill"]);
+        instances.forEach(instance => expect(instance.dispose).toHaveBeenCalledOnce());
+        expect(fake.bootstrap.Tab.getOrCreateInstance).not.toHaveBeenCalled();
+        expect(fake.instances.size).toBe(0);
+        modalEvent(root, "unload");
+        instances.forEach(instance => expect(instance.dispose).toHaveBeenCalledOnce());
+        expect(fake.bootstrap.Tab.getInstance).toHaveBeenCalledTimes(6);
     });
 });

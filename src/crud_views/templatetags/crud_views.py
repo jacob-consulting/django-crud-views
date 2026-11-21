@@ -15,6 +15,7 @@ from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
 from crud_views.lib.button_classes import _heading_class, get_button_class, get_container_layout, get_icon_host_class
+from crud_views.lib.data_prefix import get_data_prefix
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception, is_strict
 from crud_views.lib.icons import render_icon, resolve_icon_name_class
 from crud_views.lib.messages import alert_data, message_alerts
@@ -25,6 +26,13 @@ from crud_views.lib.view.visibility import cv_resolve_action
 
 register = template.Library()
 logger = logging.getLogger(__name__)
+
+
+@register.simple_tag
+def cv_data_prefix() -> str:
+    """Read the theme's native data-API prefix at render time."""
+    return get_data_prefix()
+
 
 # django-tables2 3.0.0 renamed the ``querystring`` tag to ``querystring_replace`` (to avoid shadowing
 # Django 5.1's built-in tag). Resolve whichever the installed version provides; both share the same
@@ -108,6 +116,7 @@ def _cv_config_context(context):
         "request_path": request.path,
         "request_query_string": request.META.get("QUERY_STRING", ""),
         "csrf_token": get_token(request),
+        "data_prefix": get_data_prefix(),
     }
 
 

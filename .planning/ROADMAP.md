@@ -68,6 +68,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.40: Object navbar: opt-in section navigation (#381) (INSERTED)** - all nine plans complete, including independent navbar component tags (plan 09). (completed 2026-11-19)
 - [x] **Phase 06.40.1: ViewSet Navigation: theme class keys and owner-heading layouts (#384) (INSERTED)** - expose navbar class keys and document theme-owned owner headings. (completed 2026-11-19)
 - [x] **Phase 06.41: Current-page bulk selection and action forms for table and card views (#387) (INSERTED)** - opt-in selection on table and card views, submitted to registered action form views in the same ViewSet. (completed 2026-11-21)
+- [x] **Phase 06.42: Theme-registered data-attribute prefix for templates and object-detail tabs (#391) (INSERTED)** - approved U1/U2 handover; theme prefix registration, four templates and the existing object-detail tabs lifecycle. (completed 2026-11-21)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2235,12 +2236,47 @@ Plans:
 **UAT gap closure**
 - [x] 06.41-14-PLAN.md — Enable existing native Cancel link opt-in in the example, document it and retest without JavaScript (G-06.41-1)
 
+### Phase 06.42: Theme-registered data-attribute prefix for templates and object-detail tabs (#391) (INSERTED)
+
+**Goal:** A theme registers its UI library's data-attribute prefix once, removing the need for four template
+overrides and a separate object-detail tabs script while preserving stock Bootstrap rendering and the proven tabs lifecycle.
+**Source:** [Issue #391 and its approved GSD handover](https://github.com/jacob-consulting/django-crud-views/issues/391#gsd-handover), approved 2026-11-21.
+**Requirements:** None
+**Phase-local decisions:** Issue #391 D-01, D-02, D-03, D-04, D-05, D-06; all verified. These are not global REQUIREMENTS.md IDs.
+**Scope:** CoreUI upstream findings U1 and U2 only: actions-menu toggle, language selector, vertical object-detail
+tabs, accordion groups, and the trigger selector in `tabs.js`.
+**Approved contract:**
+- Add `register_data_prefix(prefix: str)` to `crud_views.lib`, called from a theme's `AppConfig.ready()`;
+  default `bs`, last registration wins, validate `^[a-z][a-z0-9]*(-[a-z0-9]+)*$` at call time.
+- Add `{% cv_data_prefix %}` to the `crud_views` tag library and use it for the four templates' data attributes.
+- Expose the prefix through `#cv-config`; resolve it at each tabs init/dispose call, falling back to `bs`.
+  Preserve marked-root/nested-tablist boundaries, repeat safety, modal lifecycle, adapter failure behavior and no show/focus.
+- Preserve default rendering and existing Python/golden/JS tests; add CoreUI template/config/selector coverage
+  and invalid-prefix tests. Update theme, buttons, action-menu and layout-pack documentation plus `CHANGELOG.md` (`### Added`).
+**Out of scope:** Host-app markup, dropdown adapters (U3), adapter namespace changes (U4), CSS properties (U5),
+crispy-bootstrap5 (U6), `register_theme()` (U8), new Django settings, and downstream cleanup. This is nonbreaking.
+**Builder decisions:** Module placement, validation exception type, exact config attribute name and test layout.
+**Depends on:** Phase 06.17 (existing object-detail tab adapter/lifecycle contract).
+**Ordering:** Complete before Phase 7 freezes the prefix registration, template tag and JavaScript configuration contract.
+**Plans:** 3/3 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.42-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.42-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.42-03-PLAN.md
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
 **Additional ordering:** Phases 06.30, 06.31, 06.40, 06.40.1 and 06.41 must settle before this freeze; inventory their final conditional-field, developer-diagnostic, object-navbar and bulk-action contracts, including the navbar class keys and owner-heading theme guidance from #384 and the bulk class keys from #387.
+Phase 06.42 must also settle before this freeze; include the theme data-prefix registration, template tag and JavaScript configuration contract from #391.
 **Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
 bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
@@ -2366,4 +2402,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Complete | 2026-11-19 |
 | 06.40.1. ViewSet Navigation: theme class keys and owner-heading layouts (#384) | 2/2 | Complete | 2026-11-19 |
 | 06.41. Current-page bulk selection and action forms for table and card views (#387) | 14/14 | Complete | 2026-11-21 |
+| 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 3/3 | Complete | 2026-11-21 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

@@ -9,9 +9,10 @@
 
     const ownedList = "[data-cv-od-tabs]";
     const tablist = '[data-cv-od-tabs], [role="tablist"], .nav, .list-group';
-    const trigger = '[data-bs-toggle="tab"], [data-bs-toggle="pill"], [data-bs-toggle="list"]';
 
     function ownedTriggers(root) {
+        const prefix = document.getElementById("cv-config")?.getAttribute("data-data-prefix") ?? "bs";
+        const trigger = `[data-${prefix}-toggle="tab"], [data-${prefix}-toggle="pill"], [data-${prefix}-toggle="list"]`;
         const lists = [...root.querySelectorAll(ownedList)];
         if (root.matches?.(ownedList)) {
             lists.unshift(root);

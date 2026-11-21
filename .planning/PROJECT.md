@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ Validated startup data-prefix registration, four native component templates, page config and call-time tab discovery with executable theme recipes — Phase 06.42; 22/22 verified, six decisions honored, nine threats closed, deep review clean. Stock component bytes preserved; one approved config attribute added. Native CoreUI/browser/full-matrix acceptance remains outside scope.
+
 - ✓ Current-page table/card bulk selection with permission-gated action forms, scoped eligibility, confirmation and transactional execution; Bootstrap example and guide, including native Cancel opt-in — Phase 06.41; 14 plans complete, 130/130 verification and seven human UAT passes. Installed-distribution/recorder CI pass is user-confirmed; no CI URL/revision was supplied.
 
 - ✓ Six existing-registry navbar class keys and executable owner-heading/startup-registration recipes preserve stock rendering, actions, accessibility and lazy runtime behavior — Phase 06.40.1; verification 9/9, decisions 7/7, security 7/7, five tasks covered and all review findings resolved. Source-only UI scope; no new browser/matrix claim.
@@ -265,4 +267,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-21 after Phase 06.41 completion*
+*Last updated: 2026-11-21 after Phase 06.42 completion*

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
 last_mapped_at: 2026-11-21
 ---
 <!-- refreshed: 2026-11-21 -->
@@ -72,6 +72,7 @@ Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, acce
 | System checks | Registered Django checks over the registry, ancestors, conditional, assets, ordering | `src/crud_views/checks.py`, `src/crud_views/lib/check.py` |
 | Assets | Asset registry (`register_assets`), django-pipeline sources (`cv_sources`), vendoring | `src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`, `src/crud_views/lib/vendor.py` |
 | Template tags | `cv_css`, `cv_js`, `cv_config`, action/button/context tags, formset tag | `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templatetags/crud_views_formsets.py` |
+| Native data-API prefix | Startup-registered scalar (default `bs`); read by rendering tags, config context, theme templates, and object-detail tab selector | `src/crud_views/lib/data_prefix.py`, `src/crud_views/lib/__init__.py`, `src/crud_views/templatetags/crud_views.py` |
 | Guardian | `GuardianViewSet`, object/queryset/parent mixins, ancestor provider, `GuardianManageView` | `src/crud_views_guardian/lib/` |
 | Object detail | `ObjectDetailView`, property config/resolvers/presentation, own settings | `src/crud_views_object_detail/lib/` |
 | Workflow | `WorkflowView` (form per transition), `run_transition`, `WorkflowInfo` audit model | `src/crud_views_workflow/lib/`, `src/crud_views_workflow/models.py` |
@@ -127,6 +128,13 @@ Source was read for the ViewSet/CrudView core, ancestors, Resource, manage, acce
 - Purpose: forms, tables, formsets, conditional fields, action rendering, assets.
 - Location: `src/crud_views/lib/{crispy,table,formsets,conditional}/`, `src/crud_views/lib/{breadcrumb,icons,messages,session,deletion,ordered}.py`, `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/`.
 
+**Theme data-API compatibility:**
+- Purpose: let a theme using a compatible native data API choose the attribute prefix without copying prefix-only component templates.
+- Location: scalar and validation in `src/crud_views/lib/data_prefix.py`; public startup hook re-exported from `src/crud_views/lib/__init__.py`; render-time consumers in `src/crud_views/templatetags/crud_views.py` and theme templates.
+- Lifecycle: `_data_prefix` starts as `bs`; a theme `AppConfig.ready()` calls `register_data_prefix(prefix)`. Values must match `^[a-z][a-z0-9]*(-[a-z0-9]+)*$`; last valid call wins and invalid input raises `ValueError` without mutation. This is startup configuration, not runtime switching or a Django setting.
+- Four shipped component templates consume `{% cv_data_prefix %}`: `src/crud_views/templates/crud_views/tags/actions_menu_toggle.html`, `src/crud_views/templates/crud_views/snippets/language_selector.html`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/tabs-vertical/object_detail.html`, and `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`.
+- `cv_config` and `cv_const_js` pass the current prefix to `src/crud_views/templates/crud_views/tags/cv_config.html` as `data-data-prefix` on `#cv-config`. `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` reads it when selecting native tab trigger attributes inside `[data-cv-od-tabs]`, falling back to `bs` if absent. The UI adapter remains separately configured.
+
 **Object navigation:**
 - Purpose: opt-in identity plus links to owner object views and direct child ViewSets.
 - Location: declarations and checks in `src/crud_views/lib/navbar.py`; the three context-preserving rendering tags in `src/crud_views/templatetags/crud_views.py`; theme leaves in `src/crud_views/templates/crud_views/tags/navbar.html`, `navbar_identity.html`, and `navbar_items.html`.
@@ -173,6 +181,15 @@ The default theme contract is split into wrapper/identity/items leaves under `sr
 1. Declare `class R(Resource)` with `Meta` and `cv_get_items`; `ViewSet(model=R, resource_permissions={...})`.
 2. `ResourceViewMixin.get_queryset()`/`get_object()` call the loader hooks and report object lookup to the recorder (`src/crud_views/lib/resource.py`).
 3. Manage page lists declared permission codenames and queries holders; it never calls the loader.
+
+### Theme Data-API Prefix Path
+
+1. `crud_views.lib.data_prefix` initializes `_data_prefix = "bs"`; themes call the public `crud_views.lib.register_data_prefix()` from `AppConfig.ready()`. Registration validates the token and replaces the process-wide scalar; the last valid startup call wins.
+2. `cv_data_prefix()` in `src/crud_views/templatetags/crud_views.py` reads the current scalar at render time. The actions menu, language selector, vertical object-detail tabs, and accordion group templates use it for native toggle/target/parent/Popper attributes.
+3. `cv_config` and `cv_const_js` pass the current scalar through inclusion context to `src/crud_views/templates/crud_views/tags/cv_config.html` as `data-data-prefix`.
+4. The object-detail initializer in `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js` reads that attribute when selecting tab triggers inside `[data-cv-od-tabs]`. It does not select or replace the theme's tab adapter.
+
+The prefix affects framework-owned data attributes and the owned-tabs selector only. It does not rename `data-cv-*` hooks or adapt host markup; structural differences still need template overrides.
 
 ### Access Trace Path (cv_access, Phases 06.34 and 06.37)
 
@@ -241,6 +258,7 @@ The default theme contract is split into wrapper/identity/items leaves under `sr
 ## Entry Points
 
 **App initialization:** `src/crud_views/apps.py` (`ready()` imports `crud_views.checks`); extension `apps.py` files.
+**Theme data-prefix initialization:** theme `AppConfig.ready()` calls `crud_views.lib.register_data_prefix()`; default scalar is initialized in `src/crud_views/lib/data_prefix.py`.
 **URL generation:** `ViewSet.urlpatterns` in `src/crud_views/lib/viewset/__init__.py`.
 **Object navigation:** `CrudViewNavBarMixin` in `src/crud_views/lib/navbar.py`; render through `{% cv_navbar %}`, `{% cv_navbar_identity %}`, `{% cv_navbar_items %}` in `src/crud_views/templatetags/crud_views.py`.
 **Management commands:** `cv_access`, `cv_manage_view`, `cv_manage_group`, `cv_assets`, `crud_views_show` (placeholder, prints nothing) in `src/crud_views/management/commands/`.
@@ -251,6 +269,7 @@ The default theme contract is split into wrapper/identity/items leaves under `sr
 
 - **Threading/context:** `_REGISTRY` is module-level guarded by `_REGISTRY_LOCK` (`threading.Lock`); recorder state is a `ContextVar` (`src/crud_views/lib/access_trace.py`). `ViewSet.default_permissions` caches per process once non-empty (#151 comment in code).
 - **Import-time registration:** view classes register when their module is imported; URLconf discovery must have completed before the registry is complete, which is why `cv_manage_view` and some checks call `_url_configuration_loaded()` (`src/crud_views/checks.py`).
+- **Theme prefix lifecycle:** `register_data_prefix()` mutates one process-wide scalar and is intended for app startup, not request-local or concurrent tenant/theme switching. Tags and config contexts read it when called/rendered (`src/crud_views/lib/data_prefix.py`, `src/crud_views/templatetags/crud_views.py`).
 - **Database effects of traces:** `cv_access` runs in a rolled-back transaction on `default` only; custom gates may still cause other side effects (no general sandbox).
 - **Trace scope:** synthetic GET to `http://localhost`; handler-phase checks, other middleware and decorators not reproduced; recorded under `untraced` in the output.
 - **Pydantic compatibility:** wire modules deliberately use `typing_extensions.TypeAliasType`, `Generic[...]` instead of PEP 695 syntax and validation-mode schema for the trace, noted in comments as Pydantic 2.2 compatibility (`src/crud_views/lib/manage_report.py`, `src/crud_views/lib/access_trace_export.py`).

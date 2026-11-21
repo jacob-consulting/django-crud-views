@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
 last_mapped_at: 2026-11-21
 ---
 # External Integrations
@@ -19,10 +19,12 @@ The package itself makes no outbound network calls. It integrates with Django ec
 - django-ordered-model - ordered up/down actions (`src/crud_views/lib/views/action_ordered.py`)
 - django-pipeline - optional asset bundling through `cv_sources`; exercised by tests (`src/crud_views/lib/assets.py`)
 - Phase 06.41 bulk actions use existing Django ORM/queryset/transaction APIs, django-tables2, Django messages, and Crispy forms; the implementation adds no external service or package dependency (`src/crud_views/lib/bulk/__init__.py`)
+- Theme native data-API prefix integration is an in-process extension point: `register_data_prefix()` in `src/crud_views/lib/data_prefix.py` validates and stores the prefix, default `bs`; a theme calls it from `AppConfig.ready()` (`docs/reference/theme.md`). Last valid startup registration wins; invalid values raise `ValueError` without changing the prior value. It does not enable runtime theme switching or select a JavaScript adapter.
 
 **Host application extension points:**
 - `Resource` lets a host supply non-ORM data (including API or object-store-backed data); the package bundles no S3, HTTP, or cloud SDK (`src/crud_views/lib/resource.py`)
 - Bootstrap 5 theme templates, a configurable semantic icon registry, and shared ViewSet navbar rendering are package-side UI integration points (`src/crud_views/templates/crud_views/`, `src/crud_views/lib/icons.py`, `src/crud_views/lib/navbar.py`)
+- `cv_data_prefix` and `#cv-config` expose the registered prefix to markup and JavaScript (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/cv_config.html`). Prefix-sensitive native attributes are limited to actions-menu toggles, the language selector, vertical object-detail tabs, and accordion groups; object-detail `tabs.js` also discovers prefixed tab triggers only within `data-cv-od-tabs` tablists (`src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`). A theme overriding `cv_config.html` must preserve `data-data-prefix` for custom-prefix tab discovery; absent config/attribute falls back to `bs`. Registration does not change host markup, CSS classes, DOM structure, or the tab adapter (`docs/reference/theme.md`, `docs/reference/javascript.md`)
 - Navbar declarations are configured on ViewSets and rendered through `cv_navbar`, `cv_navbar_identity`, and `cv_navbar_items` template tags (`src/crud_views/lib/navbar.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/navbar.html`)
 - Bulk actions are opt-in per ORM ViewSet: a table/card list declares destination keys and a permission-required bulk form re-resolves submitted keys in the destination queryset/scope before review and execution (`src/crud_views/lib/bulk/__init__.py`)
 

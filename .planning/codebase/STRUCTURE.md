@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: b9c8a9841b8a33aeedbb1aa9d92e04199ef7b424
+last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
 last_mapped_at: 2026-11-21
 ---
 # Codebase Structure
@@ -15,7 +15,7 @@ django-crud-views/
 ├── src/
 │   ├── crud_views/                     # Core app (Bootstrap 5 theme)
 │   │   ├── apps.py, checks.py          # AppConfig; Django system checks
-│   │   ├── lib/                        # Runtime library (viewset, request, forms, bulk, diagnostics, support)
+│   │   ├── lib/                        # Runtime library (viewset, request, forms, bulk, diagnostics, theme data-prefix registration, support)
 │   │   ├── management/commands/        # cv_access, cv_manage_view, cv_manage_group, cv_assets, crud_views_show
 │   │   ├── templatetags/               # crud_views.py, crud_views_formsets.py
 │   │   ├── templates/crud_views/       # view_*.html, snippets/, tags/, formsets/, modal/, includes/ ...
@@ -47,6 +47,8 @@ django-crud-views/
 
 Root also holds untracked/ignored build and report artifacts (`site/`, `dist/`, `node_modules/`, `coverage-*.xml`, `__pycache__/`); do not edit them.
 
+Theme data-prefix registration is in `src/crud_views/lib/data_prefix.py`; four default component templates consume it across the actions menu, language selector, vertical tabs and accordion. `cv_config` supplies the same current value to the object-detail tab selector in `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`.
+
 ## `src/crud_views/lib/` Map
 
 ```text
@@ -66,6 +68,7 @@ lib/
 ├── access_trace_runner.py  synthetic-request runner, _run_trace
 ├── access_trace_export.py  Pydantic v1 wire models, validate_export, export_schema
 ├── navbar.py             NavBar/NavItem declarations, checks, request-local lazy builder and visibility
+├── data_prefix.py        validated startup scalar for a theme's native data-API attribute prefix
 ├── manage_report.py    Pydantic wire models for cv_manage_view, adapt_section, report_schema
 ├── settings.py         CrudViewsSettings + crud_views_settings singleton
 ├── check.py            Check classes used by CrudView.checks()/ViewSet.checks()
@@ -91,6 +94,13 @@ lib/
 - Contains: `NavBar`, `NavItem`, `CrudViewNavBarMixin`, metadata-only `Check` integration and `_build()` destination/admission logic.
 - Rendering is separate: three public tags are in `src/crud_views/templatetags/crud_views.py`; default theme wrapper and leaves are `src/crud_views/templates/crud_views/tags/navbar.html`, `navbar_identity.html`, and `navbar_items.html`.
 - Add navigation behavior here; keep reusable presentation in theme templates and avoid adding navigation work to `CrudView` globally.
+
+**Theme data-API prefix files:**
+- Registration state/default and validation: `src/crud_views/lib/data_prefix.py`; public function: `src/crud_views/lib/__init__.py`.
+- Simple tag, config context, and inclusion-tag wiring: `src/crud_views/templatetags/crud_views.py`; config leaf: `src/crud_views/templates/crud_views/tags/cv_config.html`.
+- Four prefix-aware templates: `src/crud_views/templates/crud_views/tags/actions_menu_toggle.html`, `src/crud_views/templates/crud_views/snippets/language_selector.html`, `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/tabs-vertical/object_detail.html`, and `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html`.
+- Owned tab trigger selector: `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`; it reads `#cv-config[data-data-prefix]` at call time and falls back to `bs`.
+- For new prefix-aware markup, use `{% cv_data_prefix %}` in the component template. For JS selectors, read `data-data-prefix` when selecting elements rather than capturing it at module load. Register the prefix in theme `AppConfig.ready()`.
 
 **`src/crud_views/lib/views/`:**
 - Purpose: one module per operation type; each combines `CrudView` with a Django generic view and has a `*PermissionRequired` variant.
@@ -149,6 +159,7 @@ lib/
 
 **Configuration:**
 - `pyproject.toml` (metadata, ruff 120 cols, hatchling), `src/crud_views/lib/settings.py` (`CRUD_VIEWS_*`), `src/crud_views_object_detail/lib/conf.py`, `noxfile.py`, `taskfile.yaml`, `package.json`, `vitest.config.js`, `mkdocs.yml`, `.pre-commit-config.yaml`.
+- Theme-native data prefix is registered by theme app startup through `crud_views.lib.register_data_prefix()`; it is a process-wide module scalar defaulting to `bs`, not a `CRUD_VIEWS_*` setting.
 
 **Core Logic:**
 - `src/crud_views/lib/view/meta.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/resource.py`, `src/crud_views/lib/access_trace_runner.py`, `src/crud_views/lib/manage_report.py`.
@@ -197,6 +208,12 @@ lib/
 - Rendering tag changes: `src/crud_views/templatetags/crud_views.py`; theme wrapper/identity/items: `src/crud_views/templates/crud_views/tags/navbar*.html`.
 - Consumer composition: `examples/bootstrap5/navbar_demo/views.py` and `templates/navbar_demo/crud_base.html`; package contract reference: `docs/reference/navbar.md`.
 - Focused checks: `tests/test1/test_navbar.py`, `test_navbar_checks.py`, `test_navbar_templates.py`, `test_navbar_permissions.py`, and `test_navbar_costs.py`.
+
+**Theme data-prefix change:**
+- Startup API and validation: `src/crud_views/lib/data_prefix.py`, exported from `src/crud_views/lib/__init__.py`.
+- Template tag and config value: `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/cv_config.html`.
+- Component templates and selector: the four paths above and `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`.
+- Contract and focused tests: `docs/reference/theme.md`, `docs/reference/javascript.md`, `docs/reference/object_detail_layout_packs.md`, `tests/test1/test_data_prefix.py`, and `tests/test1/test_data_prefix_docs.py`.
 
 **New ViewSet option:**
 - Field on `ViewSet` in `src/crud_views/lib/viewset/__init__.py` (add a validator if constrained), consider a global default in `src/crud_views/lib/settings.py`, expose in manage (`get_manage_facts`/`get_manage_presentation` in `src/crud_views/lib/views/manage.py`) and, if it appears in the report, in `src/crud_views/lib/manage_report.py` plus the committed schema.

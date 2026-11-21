@@ -647,6 +647,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Theme data-attribute prefix** (#391): themes can call `register_data_prefix()` from `crud_views.lib` at
+  startup; `{% cv_data_prefix %}` supplies native attributes for actions-menu toggles, language selectors,
+  vertical object-detail tabs and accordion groups. Object-detail tabs discover the registered prefix through
+  `#cv-config`, which always includes it, including the default `bs`. Existing component defaults are unchanged.
+  See [registration and copied-config adoption](docs/reference/theme.md#data-attribute-prefix).
+
 - **Current-page bulk selection and action forms** (#387): table and card views opt in with
   `BulkSelectionMixin` and submit selected records to registered `BulkFormViewPermissionRequired` action
   forms. Destinations own permissions, scoped resolution, eligibility, confirmation and application writes.

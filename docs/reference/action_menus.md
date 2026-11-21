@@ -327,8 +327,8 @@ exactly one inline button — the caret reads as "options for the button on the 
 ```django
 {% load crud_views i18n %}
 <button type="button" class="{% cv_button_class cv_location "menu-toggle" %} dropdown-toggle dropdown-toggle-split"
-        data-bs-toggle="dropdown" aria-expanded="false" aria-label="{% translate 'More actions' %}"
-        {% if cv_location == "list" %}data-bs-popper-config='{"strategy":"fixed"}'{% endif %}>
+        data-{% cv_data_prefix %}-toggle="dropdown" aria-expanded="false" aria-label="{% translate 'More actions' %}"
+        {% if cv_location == "list" %}data-{% cv_data_prefix %}-popper-config='{"strategy":"fixed"}'{% endif %}>
     <span class="{% cv_button_class cv_location 'hidden-label' %}">{% translate "More actions" %}</span>
 </button>
 ```
@@ -342,11 +342,14 @@ menu keep their markup and do not get it.
 
 ## Bootstrap JavaScript and clipping
 
-The menu is a Bootstrap 5 dropdown. The base template must load the Bootstrap **bundle** (`bootstrap.bundle.min.js`,
-Popper included) — modals and the language selector already need it.
+The stock menu is a Bootstrap 5 dropdown. The base template must load the Bootstrap **bundle**
+(`bootstrap.bundle.min.js`, Popper included) — modals and the language selector already need it.
+Compatible forks can [register their native data-attribute prefix](theme.md#data-attribute-prefix) and load their
+matching library; registration does not replace the library or change the dropdown DOM.
 
-Row menus use Popper's fixed strategy (`data-bs-popper-config='{"strategy":"fixed"}'`), so they are not clipped by
-a `.table-responsive` wrapper.
+Row menus use Popper's fixed strategy (`data-{% cv_data_prefix %}-popper-config='{"strategy":"fixed"}'`,
+rendering `data-bs-popper-config` by default), so they are not clipped by a `.table-responsive` wrapper.
+Context and card toggles omit this attribute.
 
 ## System checks
 

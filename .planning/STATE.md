@@ -5,22 +5,22 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.41 complete, ready to plan Phase 7
-last_updated: "2026-11-21T08:20:33.924Z"
+stopped_at: Phase 06.42 complete, ready to plan Phase 7
+last_updated: "2026-11-21T10:23:04.876Z"
 last_activity: 2026-11-21
-last_activity_desc: Phase 06.41 shipped as PR #392
-state_head: 41ee5aabf8b0ebfe7c85af1e098f3a2a91854836
+last_activity_desc: Phase 06.42 shipped as PR #395; codebase maps refreshed
+state_head: c914f31f31da2e0687593fea72e0a67353eace2f
 progress:
-  total_phases: 48
-  completed_phases: 47
-  total_plans: 271
-  completed_plans: 271
+  total_phases: 49
+  completed_phases: 48
+  total_plans: 274
+  completed_plans: 274
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 48
-Completed Phases: 47
+Total Phases: 49
+Completed Phases: 48
 
 # Project State
 
@@ -35,11 +35,49 @@ See: .planning/PROJECT.md (updated 2026-11-21)
 
 Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: Not planned
+Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-21 — Phase 06.41 shipped as PR #392
+Last activity: 2026-11-21 — Phase 06.42 shipped as PR #395; codebase maps refreshed
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.42 integration after PR #392 — 2026-11-21
+
+- PR #392 merged as 75a42851; all 34 phase commits rebased. Product/test patches preserved; changelog and planning conflicts retain both phases. Progress reconciled to 48/49 phases and 274/274 executed plans.
+- Fresh combined checks: 17,057 core tests passed/one expected skip, 486 JS, 637 examples/296 subtests, strict docs and Ruff/format (480 files). Deep integration review clean; refreshed goal verification 22/22, six decisions and canonical fingerprint passed.
+- Pre-rebase backup branch and stash/archive retain original local work during shipping.
+
+### Phase 06.42 completion — 2026-11-21
+
+- All three plans/six tasks complete; independent verification 22/22, decisions 6/6, validation complete, security 9/9 closed. Owner verification.status passed with CLI fingerprint; deep review 20 files, no findings.
+- Full acceptance: 16,650 Python tests passed, one existing Django-6-only skip; 470 JS tests on restored locked dependencies; strict docs and full Ruff/format pass. Independent verifier adds 91 Python/22 JS checks and historical raw-byte baseline comparison. No native CoreUI browser/full matrix claim.
+- Source UI audit 23/24; inherited accordion singular/plural wording advisory is out of frozen-markup scope. Stock component bytes remain unchanged; config adds only data-data-prefix.
+- phase.complete advanced to Phase 7. Reconciled dotted progress row/count and clarified phase-local decisions versus global requirements. CLI summary warning misreads an npm command as a missing file; actual file exists. WINDOWS append remains a preexisting bookkeeping defect.
+- Original unrelated state.json/config.default.json and untracked work preserved. No matching todo, stale handoff or learning promotion. No ship/push/merge; codebase refresh remains scheduled after gsd-ship.
+
+### Phase 06.42 plan 03 execution — 2026-11-21
+
+- Both tasks complete in two RED/GREEN pairs through 6101ecee; SUMMARY committed at 5d438f01 before progress updates.
+- Published registration/action/layout recipes execute; copied-config and existing Bootstrap DOM guidance agree. Added changelog entry; production source, migration guide and dependency manifests unchanged in this plan.
+- Final Python 3.12.3/Django 5.2.19 acceptance: 16,650 passed, one existing Django-6-only skip in 485.72s, four workers. Focused prefix/recipe selection: 135 passed in 5.05s.
+- Locked JS acceptance: 470 passed in 13.01s on Vitest 5.1.0/jsdom 31.0.0 after orchestrator npm ci restoration; manifests unchanged. Strict docs and full Ruff check/format pass. No native CoreUI browser or full matrix claim.
+- ROADMAP SDK records 3/3 executed, complete=false; stale dotted progress-table row reconciled. STATE remains verifying, with 260/260 plans executed. Original state.json bytes preserved; global REQUIREMENTS.md unchanged for phase-local D-01–D-06.
+- Best-effort WINDOWS append for the existing conditional skip failed on preexisting rendered-table/header versus fenced-JSON mismatch; register left unchanged. Independent review/verification remains pending; phase completion is not claimed.
+
+### Phase 06.42 plan 02 execution — 2026-11-21
+
+- Both tasks complete in two RED/GREEN pairs through 7c224425; SUMMARY committed at 9644e405 before progress updates.
+- Config aliases always publish the current prefix, preserving all previous bytes apart from the one approved attribute line. Tabs read global config at each init/dispose scan while retaining ownership and lifecycle behavior.
+- Prefix/modal suite: 130 passed in 7.79s; broad affected Python selection: 246 passed in 9.10s, four workers. JavaScript: 40 passed (27 unchanged plus 13 new), 1.09s. Scoped Ruff/format/whitespace checks pass.
+- JS receipt uses cached Vitest 5.0.5/jsdom 30.1.3; declared-lockfile acceptance remains plan 03. No browser/CoreUI-native or full-matrix acceptance is claimed.
+- ROADMAP SDK records 2/3 executed, complete=false; its stale dotted progress row was reconciled to that result. STATE advanced to plan 3; existing unscoped state.update-progress limitation remains. Original state.json bytes preserved. D-01/D-04/D-05/D-06 are phase-local IDs, so global REQUIREMENTS.md remains unchanged. Phase completion is not claimed.
+
+### Phase 06.42 plan 01 execution — 2026-11-21
+
+- Both tasks complete in two RED/GREEN pairs through 4ab91827; SUMMARY committed at 60d7ab8e before progress updates.
+- Public validated prefix registration and four real component paths delivered. Seven original raw captures remain byte-identical. Prescribed affected suite: 241 passed in 7.62s; final tracer selection: 88 passed in 6.45s, four workers. Scoped Ruff/format/whitespace checks pass.
+- ROADMAP SDK records 1/3 executed, complete=false. Its stale dotted progress-table row and obsolete TBD plan placeholder were reconciled to that result. state.update-progress retains its existing unscoped-phase limitation; state.advance-plan records plan 2 and 258/260 completed plans.
+- Original state.json preserved byte-identically. D-01/D-02/D-03/D-05 are local decision IDs, so global REQUIREMENTS.md remains unchanged. Config/JavaScript and documentation remain plans 02/03; no phase completion is claimed.
 
 ### Phase 06.41 completion — 2026-11-21
 
@@ -1558,6 +1596,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.40 | 9 | - | - |
 | 06.40.1 | 2 | - | - |
 | 06.41 | 14 | - | - |
+| 06.42 | 3 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1747,6 +1786,9 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.40 P09 | 15min | 3 tasks | 10 files |
 | Phase 06.40.1 P01 | 4min | 2 tasks | 9 files |
 | Phase 06.40.1 P02 | 5min | 3 tasks | 7 files |
+| Phase 06.42 P01 | 6min | 2 tasks | 10 files |
+| Phase 06.42 P02 | 6min | 2 tasks | 5 files |
+| Phase 06.42 P03 | 12min | 2 tasks | 7 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2091,6 +2133,11 @@ Recent decisions affecting current work:
 - [Phase 06.40]: Split remaining verification into two disjoint four-worker groups; use ordinary per-test temporary directories for core schema exports.
 - [Phase 06.40.1]: Use the six approved ordinary navbar keys without changing registry algorithms, tags or navigation admission.
 - [Phase 06.40.1]: Owner-heading examples use explicit theme-owned h1/h2 markup; global heading settings do not infer navbar presence.
+- [Phase 06.42]: Keep data-prefix registration stdlib-only and validate before scalar assignment; preserve exact raw component baselines.
+- [Phase 06.42]: Always publish data-data-prefix on cv-config, including bs, as the sole approved default config byte difference.
+- [Phase 06.42]: Read global document config in ownedTriggers on every scan; retain existing ownership and adapter lifecycle.
+- [Phase 06.42]: Keep prefix registration separate from class customization, DOM overrides and adapter selection.
+- [Phase 06.42]: Final JavaScript acceptance uses exact committed dependency versions; cached mismatched results remain development feedback only.
 
 ### Pending Todos
 
@@ -2178,6 +2225,7 @@ None yet.
 - Phase 06.40 inserted after Phase 06.39: Object navbar: opt-in section navigation (#381) (URGENT)
 - Phase 06.40.1 inserted after Phase 06.40: ViewSet Navigation: theme class keys and owner-heading layouts (#384); findings 36 and 38, Guardian finding 37 separate (URGENT)
 - Phase 06.41 inserted after Phase 06.40: Current-page bulk selection and action forms for table and card views (#387); approved D-01–D-10 with the code-examples comment captured as planning proposals; replaces the unmerged phase 06.38 (#378) approach (URGENT)
+- Phase 06.42 inserted after Phase 06.40.1: Theme-registered data-attribute prefix for templates and object-detail tabs (#391); explicitly assigned 06.42, approved U1/U2 handover D-01–D-05, before Phase 7 theme-surface freeze (URGENT)
 
 ## Deferred Items
 
@@ -2187,6 +2235,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T08:21:16.745922+00:00
-Stopped at: Phase 06.41 complete, ready to plan Phase 7
+Last session: 2026-11-21T10:24:00Z
+Stopped at: Phase 06.42 complete, ready to plan Phase 7
 Resume file: None

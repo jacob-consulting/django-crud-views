@@ -2338,11 +2338,11 @@ Plans:
 **Ordering:** Explicitly assigned 06.47 by the maintainer; inserted after Phase 06.45 in this checkout, before Phase 7 freezes the theme surface. Issue #399 is independent, but both touch `BulkSelectionMixin.cv_bulk_buttons` and need integration review if developed concurrently.
 **Scope:** Amend only the variant and toolbar-leaf portions of 06.41 D-19/D-29. Add `bulk:primary`, `bulk:secondary`, `bulk:tertiary`, and `bulk:danger`, all defaulting to `btn btn-primary`; select from the destination's `cv_action_variant` (inherited default `secondary`). Add the dedicated `crud_views/tags/button/bulk.html` native-submit leaf and bulk mode-key support. Reuse `form:hidden-label`, `form:icon-host`, and the existing form tooltip location. Keep the form leaf, `FORM_LEAF_KEYS`, action leaf, review Confirm, all-blocked Cancel, icon/label contracts, and E209 unchanged; no per-action maps or new variant attribute. Data-building helper and exact leaf contract documentation remain implementation choices.
 **Acceptance:** Existing bulk source tests/goldens pass unchanged. Verify all four variant overrides on table and card sources, inherited secondary, icon-mode precedence, isolation from `form:submit` overrides, continued `form:hidden-label` overrides, and W362 acceptance of valid bulk mode keys while rejecting unknown keys. Update key inventories/counts, stability leaf inventory, bulk/button/theme references, the unreleased #387 changelog entry, and the bulk delete example's danger variant. Document that bulk buttons no longer follow `form:submit` overrides. No migration entry for this unreleased feature; downstream theme/demo changes and #399 toolbar selection behavior are outside this phase.
-**Plans:** 0/3 plans executed
+**Plans:** 1/3 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 06.47-01-PLAN.md
+- [x] 06.47-01-PLAN.md
 - [ ] TBD (run $gsd-plan-phase 06.47 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*

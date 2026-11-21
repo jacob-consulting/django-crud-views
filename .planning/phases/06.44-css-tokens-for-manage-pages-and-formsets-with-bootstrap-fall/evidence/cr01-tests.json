@@ -1,0 +1,52 @@
+{
+  "finding": "CR-01",
+  "checkout": "/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views",
+  "fixCommit": "19640864974cc2777ae28acdc91f79004011aab4",
+  "command": "node --test tests/browser/conditional-formsets-evidence.test.cjs",
+  "red": {
+    "exit": 1,
+    "tests": 51,
+    "passed": 45,
+    "failed": 6,
+    "skipped": 0,
+    "runnerSha256": "036a5d1c8dff986495df68b78479f59f1d58d7f0754a1d70c733daa3015da827",
+    "failures": [
+      {
+        "kind": "symlink",
+        "writer": "Missing expected rejection.",
+        "checker": "Missing expected exception."
+      },
+      {
+        "kind": "dangling symlink",
+        "writer": "Missing expected rejection.",
+        "checker": "Expected regular-file rejection; got ENOENT while hashing."
+      },
+      {
+        "kind": "directory",
+        "writer": "Missing expected rejection.",
+        "checker": "Expected regular-file rejection; got EISDIR while hashing."
+      }
+    ]
+  },
+  "green": {
+    "exit": 0,
+    "tests": 51,
+    "passed": 51,
+    "failed": 0,
+    "skipped": 0,
+    "stdout": "✔ accepts the captured choice outcomes (24.149806ms)\n✔ rejects contradictory initial-create-edit observation even with passed=true (13.740957ms)\n✔ rejects contradictory keyboard-change observation even with passed=true (11.457112ms)\n✔ rejects contradictory shared-active-kept observation even with passed=true (11.875782ms)\n✔ rejects contradictory unsaved-away-back observation even with passed=true (11.572666ms)\n✔ rejects contradictory final-inactive-cleared observation even with passed=true (14.076051ms)\n✔ rejects contradictory invalid-controller-zero-save observation even with passed=true (7.175243ms)\n✔ rejects contradictory active-required-redisplay observation even with passed=true (8.357807ms)\n✔ rejects contradictory exact-prefix-two-forms observation even with passed=true (9.325276ms)\n✔ rejects contradictory disabled-trusted observation even with passed=true (9.345556ms)\n✔ rejects contradictory independent-disabled observation even with passed=true (13.101962ms)\n✔ rejects contradictory native-reset observation even with passed=true (18.604492ms)\n✔ rejects contradictory canceled-reset observation even with passed=true (16.03011ms)\n✔ rejects contradictory modal-422-rebind observation even with passed=true (11.041844ms)\n✔ rejects contradictory unload-listener-cleanup observation even with passed=true (7.155103ms)\n✔ rejects contradictory usable-radio-focus observation even with passed=true (7.155764ms)\n✔ rejects contradictory adversarial-token-inert observation even with passed=true (7.377768ms)\n✔ rejects contradictory initial-create-edit: native control count (8.266109ms)\n✔ rejects contradictory final-inactive-cleared: reopened clearing (9.160497ms)\n✔ rejects contradictory invalid-controller-zero-save: native error (9.074578ms)\n✔ rejects contradictory invalid-controller-zero-save: database preservation (9.670036ms)\n✔ rejects contradictory disabled-trusted: disabled controller (9.190533ms)\n✔ rejects contradictory independent-disabled: release on active (9.087908ms)\n✔ rejects contradictory modal-422-rebind: unload timing (8.997692ms)\n✔ rejects contradictory modal-422-rebind: rebound field (17.590323ms)\n✔ rejects contradictory usable-radio-focus: checked radio (7.60426ms)\n✔ rejects contradictory adversarial-token-inert: native control count (7.721017ms)\n✔ compact default accepts historical paths without override (6.36427ms)\n✔ compact override accepts local receipt paths (4.883627ms)\n✔ compact rejects mismatched root {\"destination\":\".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures\"} (5.056848ms)\n✔ compact rejects mismatched root {\"flag\":\".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures\"} (4.810165ms)\n✔ compact rejects outside override ../outside (0.994039ms)\n✔ compact rejects outside override /tmp/cv-outside-captures (0.91523ms)\n✔ compact rejects traversal (24.933799ms)\n✔ compact rejects nested directory (13.168202ms)\n✔ compact rejects missing PNG (6.963614ms)\n✔ compact rejects stale PNG (6.720186ms)\n✔ compact rejects stale source (6.984205ms)\n✔ compact rejects unsafe Git destination {\"ignored\":false} (5.337981ms)\n✔ compact rejects unsafe Git destination {\"flag\":\".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures\",\"destination\":\".planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures\",\"tracked\":true} (4.997808ms)\n✔ compact writer and checker agree for default (5.222417ms)\n✔ compact writer and checker agree for .planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/compact-captures (5.087854ms)\n✔ compact writer rejects unsafe override before screenshot {\"ignored\":false} (3.810959ms)\n✔ compact writer rejects unsafe override before screenshot {\"tracked\":true} (3.512789ms)\n✔ compact default writer preserves tracked historical destination behavior (3.743606ms)\n✔ compact override writer rejects later symlink leaf before writing (6.942662ms)\n✔ compact override checker rejects later symlink leaf before writing (7.530208ms)\n✔ compact override writer rejects later dangling symlink leaf before writing (6.72984ms)\n✔ compact override checker rejects later dangling symlink leaf before writing (7.33884ms)\n✔ compact override writer rejects later directory leaf before writing (6.382868ms)\n✔ compact override checker rejects later directory leaf before writing (8.590097ms)\nℹ tests 51\nℹ suites 0\nℹ pass 51\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 603.060895\n"
+  },
+  "hashes": {
+    "tests/browser/conditional-formsets.cjs": "76d46218b62cb70384ea1f409c208d730f8ec553e645d4798a8d812988fb52cf",
+    "tests/browser/conditional-formsets-evidence.test.cjs": "e98d3e2e034f468a00b0f87fa1b186f031df6ee1def9248622303d83f8d67014"
+  },
+  "syntax": {
+    "commands": [
+      "node --check tests/browser/conditional-formsets.cjs",
+      "node --check tests/browser/conditional-formsets-evidence.test.cjs"
+    ],
+    "exit": 0
+  },
+  "scope": "Real temporary leaf files/symlinks and screenshot write sink; bounded Git ignored/untracked stubs. No browser or historical fixture writes in unit tests.",
+  "hooks": "Normal commit path used, no bypass flags. No installed pre-commit hook exists at the resolved Git hooks path; configured Ruff hooks target Python files, and this fix changes only CJS."
+}

@@ -3,6 +3,57 @@
 Execution date: 2026-11-21. Task 1 base: `17df2d197aaef62335dca81941c1f238d819e50f`.
 This report covers the approved D-01–D-04 delivery. All required execution checks passed; full-suite exit was 0.
 
+## CR-01 review fix — 2026-11-21
+
+Commit `19640864974cc2777ae28acdc91f79004011aab4` adds a shared `lstat` leaf check to the explicit
+compact capture override. Every planned output is checked before the first screenshot. Both writer
+and checker reject symlinks (including dangling links) and existing non-regular files. Absent leaves
+and ordinary files remain allowed; the historical default policy is unchanged. This is a bounded
+local-harness preflight, not protection against concurrent hostile filesystem changes.
+
+All new verification ran sequentially in the existing phase checkout
+`/home/alex/projects/workspaces/cv-phase-06-44/django-crud-views`, with the documented worktree opt-out
+set by the orchestrator. Existing ignored dependency symlinks and exact installed versions were reused
+without installation or shared-environment mutation.
+
+| Fresh check | Exit | Result |
+|---|---|---|
+| Evidence-unit RED before runner fix | 1 | 45 existing passes, 6 new failures, no skips |
+| Evidence-unit GREEN | 0 | 51 passed, no skips |
+| Both changed CJS syntax checks | 0 | Both parsed |
+| Selected compact lifecycle capture | 0 | 19 assertions; 18.863 seconds |
+| Separate compact receipt checker | 0 | CONDITIONAL_EVIDENCE_OK; 0.342 seconds |
+| Exact historical PNG hashes before / after | 0 / 0 | All four fixed hashes unchanged |
+| Manage receipt source comparison | 0 | All recorded fingerprints match; changed runner absent from its inputs |
+| Historical PNG Git diff and capture index | 0 | No historical diff; all four new PNGs ignored and untracked |
+| git diff --check | 0 | No whitespace errors |
+
+The unit regressions use real temporary leaf files/symlinks and a filesystem screenshot sink, with
+bounded Git ignored/untracked stubs. A bad last output prevents the first screenshot, preserves the
+protected target, and leaves dangling targets absent. A matching target digest cannot make the
+checker accept a symlink. [cr01-tests.json](cr01-tests.json) records RED failures, GREEN output and
+changed-source hashes. Commits use the normal Git hook path without bypass; no installed pre-commit
+hook exists in this checkout's shared Git hooks directory (the configured Ruff hooks target Python).
+
+The old passing receipt was copied byte-for-byte to
+[compact-lifecycle-pre-cr01.json](compact-lifecycle-pre-cr01.json) before replacement, retaining original
+revision `f16cb7aa43ee43fede836dd9d564448edc0171de`, source hashes and receipt SHA-256
+`67b2e90f161615a61a8299e4fca70127cb17fc1043127f25bac51b101eaefe56`. It is archived provenance,
+not current-source evidence. The current [compact-lifecycle.json](compact-lifecycle.json) records the
+fix commit and fresh source hashes. Its four PNGs remain at the existing ignored `compact-captures`
+root for rechecking. [cr01-compact-preservation.json](cr01-compact-preservation.json) records exact
+capture/checker commands, both fixed-hash gate outcomes, and the unchanged historical JSON digest.
+The post-capture hash gate ran in a `finally` block, so a failed capture/check would still trigger it.
+This refresh had no capture/check failure.
+
+Fresh runtime: Node 24.21.0, Python 3.12.3 / Django 6.0.10, Playwright 1.64.1 and Chromium
+149.0.7827.55. Owned server and temporary data cleanup passed. Human visual review remains pending.
+The full Django, ordinary Node, integration, CSS browser and manage results below remain their
+original runs against unchanged covered sources; they were not rerun for this harness-only fix.
+Manage source fingerprints were inspected and all matched, so no manage refresh was necessary.
+The following Plan 02 sections retain the pre-fix execution history; their old 45-test/lifecycle-reuse
+statements are superseded for current harness evidence by this section. No phase completion is claimed.
+
 ## Runtime and source selection
 
 - Node 24.21.0; installed jquery 3.7.1, jsdom 31.0.0 and Vitest 5.1.0 exactly match package-lock.json.

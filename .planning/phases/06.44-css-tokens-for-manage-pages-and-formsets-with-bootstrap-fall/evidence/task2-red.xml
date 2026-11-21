@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="9" skipped="0" tests="198" time="3.301" timestamp="2026-11-21T10:46:34.234683+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--True-False]" time="0.392" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_presentation_columns_labels_and_owned_feedback[False]" time="0.390"><failure message="AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}&#10;  &#10;  Extra items in the left set:&#10;  'gx-3'">dense = False
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("dense", [False, True])
+    def test_compact_presentation_columns_labels_and_owned_feedback(dense):
+        from django import forms
+        from django.forms.utils import ErrorList
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout
+    
+        node = _runtime(factory_attrs={"extra": 2})
+        names = ["title", *[f"score_{i}" for i in range(7)]] if dense else ["title"]
+        spans = [3, *([1] * 7)] if dense else [4]
+        for row in node.forms:
+            row.form.fields["title"].label = "&lt;script&gt;Long translated heading&lt;/script&gt;"
+            row.form.fields["title"].help_text = "Detailed help for this field"
+            for name in names[1:]:
+                row.form.fields[name] = forms.DecimalField(label=name, required=False)
+        node.formset.compact_layout = CompactLayout(
+            [CompactColumn(name, span=span) for name, span in zip(names, spans, strict=True)], controls_span=2
+        )
+        first = node.forms[0].form
+        first.is_bound = True
+        first.data = {first.add_prefix("title"): "Kept title"}
+        first.add_error("title", "Owned field error")
+        first.add_error(None, "Owned row error")
+        node.instance._non_form_errors = ErrorList(["Owned formset error"])
+        doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+        headings = doc.cssselect(".cv-formset-compact-headings")
+        assert len(headings) == 1
+        heading = headings[0]
+&gt;       assert {"row", "gx-3", "cv-formset-compact-headings"} &lt;= set(heading.get("class").split())
+E       AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}
+E         
+E         Extra items in the left set:
+E         'gx-3'
+
+tests/test1/test_formsets_compact.py:145: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_compact" name="test_formset_plain_row_only_has_no_outer_legend[True]" time="0.436" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--True-False]" time="0.441" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--False-True]" time="0.013" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--False-False]" time="0.014" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-True-True]" time="0.012" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-True-False]" time="0.013" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_escapes_plain_text_and_classes[False]" time="0.008" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--False-True]" time="0.013" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_escapes_plain_text_and_classes[True]" time="0.005" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-False-True]" time="0.012" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_siblings_keep_headings_helpers_and_error_owners[False]" time="0.014" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--False-False]" time="0.015" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme4-project4-theme-formset-False-False]" time="0.013" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_siblings_keep_headings_helpers_and_error_owners[True]" time="0.013" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-True-True]" time="0.012" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-True-True]" time="0.012" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_presentation_columns_labels_and_owned_feedback[True]" time="0.014"><failure message="AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}&#10;  &#10;  Extra items in the left set:&#10;  'gx-3'">dense = True
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("dense", [False, True])
+    def test_compact_presentation_columns_labels_and_owned_feedback(dense):
+        from django import forms
+        from django.forms.utils import ErrorList
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout
+    
+        node = _runtime(factory_attrs={"extra": 2})
+        names = ["title", *[f"score_{i}" for i in range(7)]] if dense else ["title"]
+        spans = [3, *([1] * 7)] if dense else [4]
+        for row in node.forms:
+            row.form.fields["title"].label = "&lt;script&gt;Long translated heading&lt;/script&gt;"
+            row.form.fields["title"].help_text = "Detailed help for this field"
+            for name in names[1:]:
+                row.form.fields[name] = forms.DecimalField(label=name, required=False)
+        node.formset.compact_layout = CompactLayout(
+            [CompactColumn(name, span=span) for name, span in zip(names, spans, strict=True)], controls_span=2
+        )
+        first = node.forms[0].form
+        first.is_bound = True
+        first.data = {first.add_prefix("title"): "Kept title"}
+        first.add_error("title", "Owned field error")
+        first.add_error(None, "Owned row error")
+        node.instance._non_form_errors = ErrorList(["Owned formset error"])
+        doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+        headings = doc.cssselect(".cv-formset-compact-headings")
+        assert len(headings) == 1
+        heading = headings[0]
+&gt;       assert {"row", "gx-3", "cv-formset-compact-headings"} &lt;= set(heading.get("class").split())
+E       AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}
+E         
+E         Extra items in the left set:
+E         'gx-3'
+
+tests/test1/test_formsets_compact.py:145: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_admission[stock]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_admission[template]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-True-False]" time="0.013" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_admission[input_type]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_admission[subclass]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-True-False]" time="0.013" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_admission[marked]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_admission[inherited]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_semantics[False-False]" time="0.017" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-False-True]" time="0.013" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-False-True]" time="0.013" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme1-project1-theme-formset-False-False]" time="0.015" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_metadata[False-True]" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme5-project5-theme-formset-False-False]" time="0.014" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_metadata[True-False]" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_metadata[True-True]" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_shared_schema_guards[missing]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_presentation_heading_include_is_overridable" time="0.025" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_shared_schema_guards[label]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_shared_schema_guards[required]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-True-True]" time="0.013" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_plain_row_only_has_no_outer_legend[False]" time="0.008" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_shared_schema_guards[blank]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_shared_schema_guards[id]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_shared_schema_guards[publisher]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_shared_schema_guards[ORDER]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_semantics[False-True]" time="0.016" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_labels_resolve_under_each_active_translation" time="0.008" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-True-False]" time="0.014" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_geometry_is_node_local[False-True-True]" time="0.019"><failure message="AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}&#10;  &#10;  Extra items in the left set:&#10;  'gx-3'">parent_compact = True, child_compact = True, show_labels = False
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize("show_labels", [False, True])
+    def test_compact_nested_geometry_is_node_local(parent_compact, child_compact, show_labels):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            form_show_labels=show_labels,
+            children={
+                "notes": FormSet(
+                    key="notes", klass=BookNoteFormSet, compact_layout=child_layout, form_show_labels=show_labels
+                )
+            },
+        )
+        child = node.forms[0].formsets[0]
+        assert (child.has_pre_col, child.col, child.col_pre) == ((False, 12, 0) if child_compact else (True, 11, 1))
+        assert (node.has_pre_col, node.col, node.col_pre) == (False, 12, 0)
+        doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+        child_fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{child.prefix}")
+        assert ("cv-formset-compact-child" in child_fieldset.get("class")) is child_compact
+        owner = child_fieldset.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+        assert owner.get("cv-data-formset-form-prefix") == node.forms[0].prefix
+        assert child_fieldset.getparent().get("class") == ("col-12" if child_compact else "col-11")
+        for current in (node, child):
+            fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            own_content = fieldset.cssselect(".cv-formset-content")[0]
+            own_headings = own_content.xpath('./div[contains(@class, "cv-formset-compact-headings")]')
+            assert len(own_headings) == int(current.formset.compact_layout is not None)
+            for heading in own_headings:
+&gt;               assert {"row", "gx-3", "cv-formset-compact-headings"} &lt;= set(heading.get("class").split())
+E               AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}
+E                 
+E                 Extra items in the left set:
+E                 'gx-3'
+
+tests/test1/test_formsets_compact.py:234: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_semantics[True-False]" time="0.015" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-False-True]" time="0.015" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_semantics[True-True]" time="0.015" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme2-project2-project-formset-False-False]" time="0.017" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_semantics_disabled[False-False]" time="0.016" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme3-project3--True-True]" time="0.014" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_semantics_disabled[False-True]" time="0.015" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_geometry_is_node_local[False-True-False]" time="0.009"><failure message="AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}&#10;  &#10;  Extra items in the left set:&#10;  'gx-3'">parent_compact = True, child_compact = False, show_labels = False
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize("show_labels", [False, True])
+    def test_compact_nested_geometry_is_node_local(parent_compact, child_compact, show_labels):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            form_show_labels=show_labels,
+            children={
+                "notes": FormSet(
+                    key="notes", klass=BookNoteFormSet, compact_layout=child_layout, form_show_labels=show_labels
+                )
+            },
+        )
+        child = node.forms[0].formsets[0]
+        assert (child.has_pre_col, child.col, child.col_pre) == ((False, 12, 0) if child_compact else (True, 11, 1))
+        assert (node.has_pre_col, node.col, node.col_pre) == (False, 12, 0)
+        doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+        child_fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{child.prefix}")
+        assert ("cv-formset-compact-child" in child_fieldset.get("class")) is child_compact
+        owner = child_fieldset.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+        assert owner.get("cv-data-formset-form-prefix") == node.forms[0].prefix
+        assert child_fieldset.getparent().get("class") == ("col-12" if child_compact else "col-11")
+        for current in (node, child):
+            fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            own_content = fieldset.cssselect(".cv-formset-content")[0]
+            own_headings = own_content.xpath('./div[contains(@class, "cv-formset-compact-headings")]')
+            assert len(own_headings) == int(current.formset.compact_layout is not None)
+            for heading in own_headings:
+&gt;               assert {"row", "gx-3", "cv-formset-compact-headings"} &lt;= set(heading.get("class").split())
+E               AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}
+E                 
+E                 Extra items in the left set:
+E                 'gx-3'
+
+tests/test1/test_formsets_compact.py:234: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_shared_schema_guards[DELETE]" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_semantics_disabled[True-False]" time="0.015" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_semantics_disabled[True-True]" time="0.014" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_geometry_is_node_local[False-False-True]" time="0.009"><failure message="AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}&#10;  &#10;  Extra items in the left set:&#10;  'gx-3'">parent_compact = False, child_compact = True, show_labels = False
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize("show_labels", [False, True])
+    def test_compact_nested_geometry_is_node_local(parent_compact, child_compact, show_labels):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            form_show_labels=show_labels,
+            children={
+                "notes": FormSet(
+                    key="notes", klass=BookNoteFormSet, compact_layout=child_layout, form_show_labels=show_labels
+                )
+            },
+        )
+        child = node.forms[0].formsets[0]
+        assert (child.has_pre_col, child.col, child.col_pre) == ((False, 12, 0) if child_compact else (True, 11, 1))
+        assert (node.has_pre_col, node.col, node.col_pre) == (False, 12, 0)
+        doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+        child_fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{child.prefix}")
+        assert ("cv-formset-compact-child" in child_fieldset.get("class")) is child_compact
+        owner = child_fieldset.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+        assert owner.get("cv-data-formset-form-prefix") == node.forms[0].prefix
+        assert child_fieldset.getparent().get("class") == ("col-12" if child_compact else "col-11")
+        for current in (node, child):
+            fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            own_content = fieldset.cssselect(".cv-formset-content")[0]
+            own_headings = own_content.xpath('./div[contains(@class, "cv-formset-compact-headings")]')
+            assert len(own_headings) == int(current.formset.compact_layout is not None)
+            for heading in own_headings:
+&gt;               assert {"row", "gx-3", "cv-formset-compact-headings"} &lt;= set(heading.get("class").split())
+E               AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}
+E                 
+E                 Extra items in the left set:
+E                 'gx-3'
+
+tests/test1/test_formsets_compact.py:234: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_semantics_invalid_redisplay[False]" time="0.021" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_semantics_invalid_redisplay[True]" time="0.022" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_geometry_is_node_local[False-False-False]" time="0.014" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_metadata[False-False]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_optional_disabled_fields_and_safe_text" time="0.057" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_geometry_is_node_local[True-True-True]" time="0.011"><failure message="AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}&#10;  &#10;  Extra items in the left set:&#10;  'gx-3'">parent_compact = True, child_compact = True, show_labels = True
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize("show_labels", [False, True])
+    def test_compact_nested_geometry_is_node_local(parent_compact, child_compact, show_labels):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            form_show_labels=show_labels,
+            children={
+                "notes": FormSet(
+                    key="notes", klass=BookNoteFormSet, compact_layout=child_layout, form_show_labels=show_labels
+                )
+            },
+        )
+        child = node.forms[0].formsets[0]
+        assert (child.has_pre_col, child.col, child.col_pre) == ((False, 12, 0) if child_compact else (True, 11, 1))
+        assert (node.has_pre_col, node.col, node.col_pre) == (False, 12, 0)
+        doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+        child_fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{child.prefix}")
+        assert ("cv-formset-compact-child" in child_fieldset.get("class")) is child_compact
+        owner = child_fieldset.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+        assert owner.get("cv-data-formset-form-prefix") == node.forms[0].prefix
+        assert child_fieldset.getparent().get("class") == ("col-12" if child_compact else "col-11")
+        for current in (node, child):
+            fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            own_content = fieldset.cssselect(".cv-formset-content")[0]
+            own_headings = own_content.xpath('./div[contains(@class, "cv-formset-compact-headings")]')
+            assert len(own_headings) == int(current.formset.compact_layout is not None)
+            for heading in own_headings:
+&gt;               assert {"row", "gx-3", "cv-formset-compact-headings"} &lt;= set(heading.get("class").split())
+E               AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}
+E                 
+E                 Extra items in the left set:
+E                 'gx-3'
+
+tests/test1/test_formsets_compact.py:234: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_geometry_is_node_local[True-True-False]" time="0.010"><failure message="AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}&#10;  &#10;  Extra items in the left set:&#10;  'gx-3'">parent_compact = True, child_compact = False, show_labels = True
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize("show_labels", [False, True])
+    def test_compact_nested_geometry_is_node_local(parent_compact, child_compact, show_labels):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            form_show_labels=show_labels,
+            children={
+                "notes": FormSet(
+                    key="notes", klass=BookNoteFormSet, compact_layout=child_layout, form_show_labels=show_labels
+                )
+            },
+        )
+        child = node.forms[0].formsets[0]
+        assert (child.has_pre_col, child.col, child.col_pre) == ((False, 12, 0) if child_compact else (True, 11, 1))
+        assert (node.has_pre_col, node.col, node.col_pre) == (False, 12, 0)
+        doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+        child_fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{child.prefix}")
+        assert ("cv-formset-compact-child" in child_fieldset.get("class")) is child_compact
+        owner = child_fieldset.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+        assert owner.get("cv-data-formset-form-prefix") == node.forms[0].prefix
+        assert child_fieldset.getparent().get("class") == ("col-12" if child_compact else "col-11")
+        for current in (node, child):
+            fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            own_content = fieldset.cssselect(".cv-formset-content")[0]
+            own_headings = own_content.xpath('./div[contains(@class, "cv-formset-compact-headings")]')
+            assert len(own_headings) == int(current.formset.compact_layout is not None)
+            for heading in own_headings:
+&gt;               assert {"row", "gx-3", "cv-formset-compact-headings"} &lt;= set(heading.get("class").split())
+E               AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}
+E                 
+E                 Extra items in the left set:
+E                 'gx-3'
+
+tests/test1/test_formsets_compact.py:234: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_geometry_is_node_local[True-False-True]" time="0.009"><failure message="AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}&#10;  &#10;  Extra items in the left set:&#10;  'gx-3'">parent_compact = False, child_compact = True, show_labels = True
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("parent_compact,child_compact", [(True, True), (True, False), (False, True), (False, False)])
+    @pytest.mark.parametrize("show_labels", [False, True])
+    def test_compact_nested_geometry_is_node_local(parent_compact, child_compact, show_labels):
+        from django.template.loader import render_to_string
+    
+        from crud_views.lib.formsets import CompactColumn, CompactLayout, FormSet
+        from tests.test1.app.views_formset import BookNoteFormSet
+    
+        child_layout = CompactLayout([CompactColumn("note", span=6)], controls_span=2) if child_compact else None
+        node = _runtime(
+            compact=parent_compact,
+            form_show_labels=show_labels,
+            children={
+                "notes": FormSet(
+                    key="notes", klass=BookNoteFormSet, compact_layout=child_layout, form_show_labels=show_labels
+                )
+            },
+        )
+        child = node.forms[0].formsets[0]
+        assert (child.has_pre_col, child.col, child.col_pre) == ((False, 12, 0) if child_compact else (True, 11, 1))
+        assert (node.has_pre_col, node.col, node.col_pre) == (False, 12, 0)
+        doc = html.fromstring(render_to_string("crud_views/formsets/formset.html", {"x_formset": node}))
+        child_fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{child.prefix}")
+        assert ("cv-formset-compact-child" in child_fieldset.get("class")) is child_compact
+        owner = child_fieldset.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+        assert owner.get("cv-data-formset-form-prefix") == node.forms[0].prefix
+        assert child_fieldset.getparent().get("class") == ("col-12" if child_compact else "col-11")
+        for current in (node, child):
+            fieldset = doc.get_element_by_id(f"cv-formset-fieldset-{current.prefix}")
+            own_content = fieldset.cssselect(".cv-formset-content")[0]
+            own_headings = own_content.xpath('./div[contains(@class, "cv-formset-compact-headings")]')
+            assert len(own_headings) == int(current.formset.compact_layout is not None)
+            for heading in own_headings:
+&gt;               assert {"row", "gx-3", "cv-formset-compact-headings"} &lt;= set(heading.get("class").split())
+E               AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}
+E                 
+E                 Extra items in the left set:
+E                 'gx-3'
+
+tests/test1/test_formsets_compact.py:234: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_compact" name="test_compact_hidden_errors_and_plain_help_are_escaped" time="0.449" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_rendering[en]" time="0.471" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_geometry_is_node_local[True-False-False]" time="0.010" /><testcase classname="tests.test1.test_formsets_compact" name="test_formset_legend_classes_on_full_nested_and_row_only_nodes[theme0-project0--True-True]" time="0.013" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_hidden_policy_errors_and_values_render_once" time="0.010" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_hidden_identity_roles_do_not_depend_on_original_widget" time="0.007" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_empty_and_control_policy_edges[zero]" time="0.004" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_empty_and_control_policy_edges[blank]" time="0.006" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_empty_and_control_policy_edges[existing]" time="0.007" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_empty_and_control_policy_edges[no_controls]" time="0.006" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_empty_and_control_policy_edges[no_extra_delete]" time="0.006" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_management_error_stays_on_zero_total_owner" time="0.343" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_unsupported_widget_shape[radio]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_unsupported_widget_shape[multiple]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_unsupported_widget_shape[multiwidget]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_unsupported_widget_shape[file]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_unsupported_widget_shape[password]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_unsupported_widget_shape[textarea]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_unsupported_widget_shape[subclass]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_unsupported_widget_shape[template]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_unsupported_widget_shape[option]" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_unsupported_widget_shape[input_type]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_unsupported_widget_shape[select_multiple]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[checkbox]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[radio]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[multiple]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[multiwidget]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[file]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[password]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[textarea]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[subclass]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_rejects_empty_effective_label[]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[template]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[option]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_rejects_empty_effective_label[ ]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[input_type]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_admission[select_multiple]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_classic_polymorphic_dispatch_keeps_form_owned_helper" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_inheritance_and_pretty_name" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[field_type]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[widget_type]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[descendant_type]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[required]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[label]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[missing]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[extra]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[column_missing]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[secret]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[id]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[publisher]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[ORDER]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[DELETE]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_widgets_render_with_existing_helper[False]" time="0.021" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_widgets_render_with_existing_helper[True]" time="0.022" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_metadata_has_no_side_effects[False-False]" time="0.005" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_metadata_has_no_side_effects[False-True]" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_metadata_has_no_side_effects[True-False]" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_metadata_has_no_side_effects[True-True]" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_hidden_identity_and_control_columns[missing]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_hidden_identity_and_control_columns[secret]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_hidden_identity_and_control_columns[id]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_hidden_identity_and_control_columns[publisher]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_hidden_identity_and_control_columns[ORDER]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_hidden_identity_and_control_columns[DELETE]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_polymorphic_even_with_uniform_first_row" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_metadata_model_choice_projection_has_no_queries[False]" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_metadata_model_choice_projection_has_no_queries[True]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_metadata_empty_uses_only_detached_constructor[False]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_metadata_empty_uses_only_detached_constructor[True]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_metadata_rejects_live_parent_instance" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_tracer_get_post" time="0.370" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_metadata_preserves_unsaved_uuid_parent" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_stock_widgets_preserve_attributes[TextInput]" time="0.011" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_stock_widgets_preserve_attributes[NumberInput]" time="0.004" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_stock_widgets_preserve_attributes[DateInput]" time="0.004" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_stock_widgets_preserve_attributes[Select]" time="0.004" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_metadata_context_translation_and_fragment_uniformity" time="0.004" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_rendering[de]" time="0.376" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_opt_in_full_page_and_fragment[None]" time="0.336" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_checkbox_hidden_order_remains_outside_columns" time="0.005" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_classic_keeps_custom_helper_and_query_observations[False-False]" time="0.004" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_classic_keeps_custom_helper_and_query_observations[False-True]" time="0.004" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_classic_keeps_custom_helper_and_query_observations[True-False]" time="0.004" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_classic_keeps_custom_helper_and_query_observations[True-True]" time="0.004" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_constructor_labels_are_request_local_and_escaped" time="0.007" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_declarations_are_immutable_and_deepcopy_safe[False]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_declarations_are_immutable_and_deepcopy_safe[True]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_rejects_non_booleans[None]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_rejects_non_booleans[0]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_rejects_non_booleans[1]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_rejects_non_booleans[0.0]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_rejects_non_booleans[1.0]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_rejects_non_booleans[]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_rejects_non_booleans[true]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_rejects_non_booleans[value7]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_rejects_non_booleans[value8]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_rejects_non_booleans[value9]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_is_keyword_only_and_defaults_off" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_spans_are_strict[True]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_spans_are_strict[False]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_spans_are_strict[1]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_spans_are_strict[1.0]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_spans_are_strict[None]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_spans_are_strict[0]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_spans_are_strict[-1]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_spans_are_strict[13]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_names_are_exact[]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_names_are_exact[ title]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_names_are_exact[title ]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_names_are_exact[two words]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_names_are_exact[None]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_names_are_exact[1]" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_layout_rejects_implicit_or_ambiguous_configuration" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_nested_grandchild_and_authorized_fragments" time="0.371"><failure message="AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}&#10;  &#10;  Extra items in the left set:&#10;  'gx-3'">deep_leaf_formset = (&lt;class 'tests.test1.test_fragment_authorization.deep_leaf_formset.&lt;locals&gt;.DeepLeaf'&gt;, &lt;class 'django.forms.formsets.DeepLeafFormSet'&gt;)
+client_user_publisher_formset = &lt;django.test.client.Client object at 0x7d45030c7620&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d45037e5fd0&gt;
+
+    @pytest.mark.django_db(transaction=True)
+    def test_compact_nested_grandchild_and_authorized_fragments(
+        deep_leaf_formset, client_user_publisher_formset, monkeypatch
+    ):
+        from tests.test1.app.models import BookNote
+        from tests.test1.app.views_formset import PublisherFormSetUpdateView
+        from tests.test1.test_fragment_authorization import _assert_raw_wrappers, browser_add_row
+    
+        bc.register_button_classes({"formset:legend": "theme-fragment-legend", "conditional:legend": "theme-conditional"})
+        Leaf, leaf_class = deep_leaf_formset
+        declarations = _nested_declarations(leaf_class=leaf_class)
+        monkeypatch.setattr(PublisherFormSetUpdateView, "cv_formsets", declarations)
+        publisher = Publisher.objects.create(name="Nested")
+        book = Book.objects.create(publisher=publisher, title="Owner")
+        note = BookNote.objects.create(book=book, note="Grandchild owner")
+        Leaf.objects.create(note=note, text="Leaf value")
+        url = f"/publisher-formset/{publisher.pk}/update/"
+        response = client_user_publisher_formset.get(url)
+        assert response.status_code == 200
+        _assert_raw_wrappers(response.content.decode())
+        doc = html.fromstring(response.content)
+    
+        def assert_tree(tree):
+            for kind in ("headings", "fields"):
+                for grid in tree.cssselect(f".cv-formset-compact-{kind}"):
+                    assert {"row", "gx-3", f"cv-formset-compact-{kind}"} &lt;= set(grid.get("class").split())
+            ids = tree.xpath(".//*[@id]/@id")
+            assert len(ids) == len(set(ids))
+            for fieldset in tree.cssselect("fieldset.cv-formset-fieldset"):
+                legends = fieldset.xpath("./legend")
+                assert len(legends) == 1
+                assert legends[0].get("class") == "theme-fragment-legend"
+                compact = "cv-formset-compact" in fieldset.get("class").split()
+                content = fieldset.cssselect(".cv-formset-content")[0]
+                headings = content.xpath('./div[contains(@class, "cv-formset-compact-headings")]')
+                assert len(headings) == int(compact)
+                key = fieldset.get("cv-data-formset-key")
+                if key == "books":
+                    continue
+                owner = fieldset.xpath("ancestor::div[@cv-data-formset-form-prefix][1]")[0]
+                if key == "books-memos-leaf":
+                    assert owner.get("cv-data-formset-form-prefix").startswith("books-memos-")
+                    assert fieldset.getparent().get("class") == "col-12"
+                else:
+                    assert owner.get("cv-data-formset-form-prefix").startswith("books-")
+            for field in tree.cssselect(".cv-formset-compact-fields input:not([type=hidden])"):
+                labels = tree.xpath(".//label[@for=$id]", id=field.get("id"))
+                assert len(labels) == 1
+    
+&gt;       assert_tree(doc)
+
+tests/test1/test_formsets_compact.py:475: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = &lt;Element html at 0x7d45036ac190&gt;
+
+    def assert_tree(tree):
+        for kind in ("headings", "fields"):
+            for grid in tree.cssselect(f".cv-formset-compact-{kind}"):
+&gt;               assert {"row", "gx-3", f"cv-formset-compact-{kind}"} &lt;= set(grid.get("class").split())
+E               AssertionError: assert {'cv-formset-...'gx-3', 'row'} &lt;= {'cv-formset-...dings', 'row'}
+E                 
+E                 Extra items in the left set:
+E                 'gx-3'
+
+tests/test1/test_formsets_compact.py:451: AssertionError</failure></testcase><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_select_requests" time="0.536" /><testcase classname="tests.test1.test_formsets_compact" name="test_public_compact_declarations" time="0.001" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_opt_in_full_page_and_fragment[False]" time="0.347" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_heterogeneous_rows[field_type]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_heterogeneous_rows[widget_type]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_heterogeneous_rows[required]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_heterogeneous_rows[label]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_heterogeneous_rows[missing]" time="0.003" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_schema_rejects_heterogeneous_rows[extra]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_border_opt_in_full_page_and_fragment[True]" time="0.348" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[omitted_optional]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[omitted_disabled]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[effective_none]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[empty_label]" time="0.002" /><testcase classname="tests.test1.test_formsets_compact" name="test_compact_marked_schema_retains_checks[blank_label]" time="0.002" /></testsuite></testsuites>

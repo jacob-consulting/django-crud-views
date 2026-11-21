@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
+last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
 last_mapped_at: 2026-11-21
 ---
 # Testing Patterns
@@ -117,6 +117,14 @@ pytest tests -n auto --cov --cov-report=term-missing
 - `.github/workflows/js.yml` runs `npm test` (Vitest); browser scripts are not a blanket part of that command or the Python Nox matrix. Name the script, browser/runtime, target revision, and result when reporting a browser check.
 - `npm run test:integration` uses `vitest.integration.config.js`; it is distinct from Playwright scripts in `tests/browser/`.
 - Phase 06.42's current-tree receipt at `.planning/phases/06.42-theme-registered-data-attribute-prefix-for-templates-and-obj/06.42-VERIFICATION.md` records **17,057 Python passed / 1 skipped**, **486 JavaScript**, and **637 examples with 296 subtests** after rebasing onto merged PR #392. This is acceptance evidence for that recorded tree and its selected Python 3.12 / Django 5.2 environment, not a claim that every supported Python/Django combination or a native CoreUI browser run was verified.
+
+## CSS Tokens and Compact Formset Browser Checks
+
+- `tests/js/css-tokens.test.js` is the focused source-contract suite for the six documented CRUD Views CSS tokens and fallback chains in `src/crud_views/static/crud_views/css/manage.css` and `formset.css`. It checks bounded declaration parsing, source locations, and rejected/accepted fixtures without adding a CSS parser dependency. Run it through `npm test -- tests/js/css-tokens.test.js`.
+- `tests/browser/css-tokens.cjs --case all --output <receipt.json>` checks computed CSS in six browser cases. `tests/browser/manage-presentation.cjs --case smoke --output <receipt.json>` checks the three manage smoke cases. These purpose-built Chromium scripts are independent of `npm test` and the Python suite.
+- `tests/browser/conditional-formsets.cjs --case compact-lifecycle` records the compact lifecycle browser case; `--compact-capture-root` scopes capture output and evidence paths to a repository-local directory. Follow the source path-safety validation and check that the destination is ignored and untracked before capture.
+- Check capture evidence in a separate invocation with `--check-evidence <receipt.json>`. `tests/browser/conditional-formsets-evidence.test.cjs` runs writer/checker contracts in an isolated VM and covers default/override agreement, unsafe roots, traversal, stale or missing captures, tracked destinations, symlinks, and invalid filesystem leaves. The Phase 06.44 receipt at `.planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/rebase-checks.json` records six CSS cases, three manage cases, 19 compact browser assertions, and 51 capture-validation assertions.
+- Fresh aggregate acceptance evidence in that Phase 06.44 receipt records `17122 passed` for Python with `-n 4`, 512 Vitest unit tests, 2 Vitest integration tests, strict MkDocs build, Ruff lint and format checks, six CSS cases, three manage cases, 19 compact browser assertions, and 51 capture-validation assertions. The receipt identifies its checked revision; consult `checked_revision` before treating it as evidence for another checkout.
 
 ## Common Patterns
 

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
+last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
 last_mapped_at: 2026-11-21
 ---
 # Coding Conventions
@@ -117,6 +117,13 @@ last_mapped_at: 2026-11-21
 - Preserve contracts with focused tests at the public seam. For bulk selection, keep source-page rendering free of destination permission work (`tests/test1/test_bulk_source.py`), validate and canonicalize submitted keys before hooks (`tests/test1/test_bulk_scope.py`), and exercise transaction rollback for multi-record failures (`tests/test1/test_bulk_flow.py`). Avoid duplicating implementation complexity in tests when a small observable contract assertion suffices.
 - Until 1.0.0, a `### Breaking` entry in `CHANGELOG.md` also requires an update to `docs/migrating-1.0.md`.
 - Version bumps go through bump-my-version (`task bump-patch`); never edit version strings by hand.
+
+## CSS Token Contract Tests
+
+- Keep CSS tests bounded to the two owned stylesheets `src/crud_views/static/crud_views/css/manage.css` and `formset.css`; add a stylesheet to the scanner only when ownership is explicitly expanded.
+- `tests/js/css-tokens.test.js` checks the documented six `--cv-*` properties, component-to-Bootstrap fallback chains, and rejected/accepted declaration forms. Keep parser expectations tied to the small Node-only sandbox in `tests/js/helpers/load.js`; do not turn this into a general CSS parser or add browser/runtime dependencies.
+- Use `tests/browser/css-tokens.cjs` for computed browser checks across the documented CSS cases. Manage presentation and compact formset browser suites remain separate: `tests/browser/manage-presentation.cjs` checks page smoke states, and `tests/browser/conditional-formsets.cjs` verifies compact layout behavior.
+- For capture tooling changes, preserve default historical capture destinations and isolate phase captures with `--compact-capture-root`. Exercise `compactCapture` and `validateEvidence` together in `tests/browser/conditional-formsets-evidence.test.cjs`; reject outside-root, traversal, missing/stale files, unsafe Git destinations, symlink leaves, and non-file leaves before writing. Validate `--check-evidence` separately from browser capture and preserve historical PNG bytes.
 
 ---
 

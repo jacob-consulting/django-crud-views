@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
+last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
 last_mapped_at: 2026-11-21
 ---
 # Codebase Structure
@@ -103,6 +103,12 @@ lib/
 - Table wrappers/columns: `src/crud_views/lib/table/`; view integration: `src/crud_views/lib/views/mixins.py`; stock table and `table.thead` override: `src/crud_views/templates/crud_views/table/bootstrap5.html`.
 - The header projects `column.is_ordered` and `column.order_by_alias.is_descending` to icons and `aria-sort`, gated by `column.orderable`. Keep effective state in django-tables2 and preserve prefixed links with `cv_querystring`.
 
+**Theme CSS tokens and compact formsets:**
+- Token consumers: `src/crud_views/static/crud_views/css/manage.css` and `src/crud_views/static/crud_views/css/formset.css`. These use six `--cv-*` properties with Bootstrap-property and literal fallbacks; the package intentionally does not declare the custom properties globally.
+- Theme contract and root-mapping guidance: `docs/reference/theme.md`. Map all six tokens on each theme root to allow nested modes to resolve against their local theme variables. Keep the use-site fallback chains, including the help button's `--bs-btn-color` assignment.
+- Compact row shape and border state: `src/crud_views/static/crud_views/css/formset.css`; rendered headings: `src/crud_views/templates/crud_views/formsets/compact_headings.html`; field-grid declaration: `src/crud_views/lib/formsets/compact.py`.
+- Preserve `gx-3` on both compact headings and field rows alongside `cv-formset-compact-headings` / `cv-formset-compact-fields`. Its 1rem gutter equivalence is specific to Bootstrap's standard spacing scale, not arbitrary customized Sass scales.
+
 **Theme data-API prefix files:**
 - Registration state/default and validation: `src/crud_views/lib/data_prefix.py`; public function: `src/crud_views/lib/__init__.py`.
 - Simple tag, config context, and inclusion-tag wiring: `src/crud_views/templatetags/crud_views.py`; config leaf: `src/crud_views/templates/crud_views/tags/cv_config.html`.
@@ -168,6 +174,7 @@ lib/
 **Configuration:**
 - `pyproject.toml` (metadata, ruff 120 cols, hatchling), `src/crud_views/lib/settings.py` (`CRUD_VIEWS_*`), `src/crud_views_object_detail/lib/conf.py`, `noxfile.py`, `taskfile.yaml`, `package.json`, `vitest.config.js`, `mkdocs.yml`, `.pre-commit-config.yaml`.
 - Theme-native data prefix is registered by theme app startup through `crud_views.lib.register_data_prefix()`; it is a process-wide module scalar defaulting to `bs`, not a `CRUD_VIEWS_*` setting.
+- CSS token values belong to the consumer theme and its theme-root selectors; there is no package setting or global token declaration. See `docs/reference/theme.md` and the stock consumers in `src/crud_views/static/crud_views/css/manage.css` and `formset.css`.
 
 **Core Logic:**
 - `src/crud_views/lib/view/meta.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/resource.py`, `src/crud_views/lib/access_trace_runner.py`, `src/crud_views/lib/manage_report.py`.
@@ -234,6 +241,11 @@ lib/
 
 **New setting:**
 - Field in `CrudViewsSettings` (`src/crud_views/lib/settings.py`); validation goes in `check_messages`; document in `docs/reference/settings.md`.
+
+**Theme palette or compact formset styling:**
+- Stock token consumers: `src/crud_views/static/crud_views/css/manage.css` and `src/crud_views/static/crud_views/css/formset.css`; retain the six documented `--cv-*` fallback chains and existing component selectors.
+- Theme mappings and nested theme-root behavior: `docs/reference/theme.md`. Add mappings in a consumer theme's stylesheet, not package settings or upstream `:root` declarations.
+- Compact headings and field gutters: `src/crud_views/templates/crud_views/formsets/compact_headings.html` and `src/crud_views/lib/formsets/compact.py`; keep `gx-3` on each row plus the existing `cv-formset-*` classes.
 
 **New authorization gate or trace fact:**
 - Record beside the enforcing gate via `get_recorder()` (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views/lib/views/manage.py`); add any new `kind`/`result`/`provider` literal to `src/crud_views/lib/access_trace_export.py`; tests in `tests/test1/test_access_trace_*.py`.

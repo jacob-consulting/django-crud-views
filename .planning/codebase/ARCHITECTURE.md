@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
+last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
 last_mapped_at: 2026-11-21
 ---
 <!-- refreshed: 2026-11-21 -->
@@ -73,6 +73,8 @@ Incremental inspection covers `src/`, `tests/`, `docs/`, and `CHANGELOG.md`, inc
 | Settings | `CrudViewsSettings` Pydantic model reading `CRUD_VIEWS_*`; module singleton `crud_views_settings` | `src/crud_views/lib/settings.py` |
 | System checks | Registered Django checks over the registry, ancestors, conditional, assets, ordering | `src/crud_views/checks.py`, `src/crud_views/lib/check.py` |
 | Assets | Asset registry (`register_assets`), django-pipeline sources (`cv_sources`), vendoring | `src/crud_views/lib/assets.py`, `src/crud_views/lib/pipeline.py`, `src/crud_views/lib/vendor.py` |
+| Theme CSS tokens | Six opt-in `--cv-*` custom-property reads with Bootstrap and literal fallbacks; manage palette and formset surfaces stay themeable without upstream declarations | `src/crud_views/static/crud_views/css/manage.css`, `src/crud_views/static/crud_views/css/formset.css`, `docs/reference/theme.md` |
+| Compact formset gutters | Bootstrap `gx-3` utility on the shared headings row and crispy-generated field row; component hooks remain for layout behavior | `src/crud_views/templates/crud_views/formsets/compact_headings.html`, `src/crud_views/lib/formsets/compact.py` |
 | Template tags | `cv_css`, `cv_js`, `cv_config`, action/button/context tags, formset tag | `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templatetags/crud_views_formsets.py` |
 | Native data-API prefix | Startup-registered scalar (default `bs`); read by rendering tags, config context, theme templates, and object-detail tab selector | `src/crud_views/lib/data_prefix.py`, `src/crud_views/lib/__init__.py`, `src/crud_views/templatetags/crud_views.py` |
 | Guardian | `GuardianViewSet`, object/queryset/parent mixins, ancestor provider, `GuardianManageView` | `src/crud_views_guardian/lib/` |
@@ -129,6 +131,13 @@ Incremental inspection covers `src/`, `tests/`, `docs/`, and `CHANGELOG.md`, inc
 **Presentation and support:**
 - Purpose: forms, tables, formsets, conditional fields, action rendering, assets.
 - Location: `src/crud_views/lib/{crispy,table,formsets,conditional}/`, `src/crud_views/lib/{breadcrumb,icons,messages,session,deletion,ordered}.py`, `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/`.
+
+**Theme styling contract:**
+- Purpose: keep theme-specific palette adaptation declarative while retaining usable stock styling when tokens are not mapped.
+- Location: manage consumers in `src/crud_views/static/crud_views/css/manage.css`; formset cards, compact rows, and nested child surfaces in `src/crud_views/static/crud_views/css/formset.css`; published contract in `docs/reference/theme.md`.
+- The six consumed properties are `--cv-secondary-color`, `--cv-secondary-text-emphasis`, `--cv-body-bg`, `--cv-border-color`, `--cv-border-radius`, and `--cv-tertiary-bg`. Each use falls back through its matching Bootstrap property to a literal value; upstream does not declare these tokens on `:root`.
+- Themes should map all six properties on each theme root so nested color modes resolve against their local theme variables. Keep the fallback chain at each use site. The manage help button retains its stock selector and assigns the token chain to Bootstrap's `--bs-btn-color` variable.
+- Compact shared heading and field rows use `gx-3` in `src/crud_views/templates/crud_views/formsets/compact_headings.html` and `src/crud_views/lib/formsets/compact.py`; preserve both the utility and existing `cv-formset-*` hooks. The documented 1rem gutter equivalence assumes Bootstrap's standard spacing scale.
 
 **Theme data-API compatibility:**
 - Purpose: let a theme using a compatible native data API choose the attribute prefix without copying prefix-only component templates.
@@ -343,6 +352,7 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 **Validation:** ViewSet Pydantic validators; `Check` hierarchy in `src/crud_views/lib/check.py` (`CheckAttribute`, `CheckTemplate`, `CheckExpression`, `CheckUnknownAttributes`, ...) returned from `CrudView.checks()`/`ViewSet.checks()`; Django checks in `src/crud_views/checks.py` (`check_viewsets`, `check_ancestor_declarations`, `check_conditional`, `check_ordered_model_installed`, `check_asset_registry`, `check_asset_pipeline`, plus settings messages); settings messages from `CrudViewsSettings.check_messages`.
 **Settings:** `crud_views_settings` singleton (`src/crud_views/lib/settings.py`): manage mode/group/show-users/access-trace/view-class, theme (`theme_path`, templates under `crud_views/`), session key, origin param (`cv_from`), CSP nonce attr, asset bundling, inaccessible actions (`hide|disable`), inline/label-mode action settings, ancestor cascade/read/write defaults, breadcrumb prefix, filter persistence/pinned, per-view default action lists, delete preview limit.
 **Assets:** `register_assets(key, js, css, emit)` stores `AssetBundle`s (`src/crud_views/lib/assets.py`); `cv_css`/`cv_js` render them with optional CSP nonce and SRI; `cv_sources` (`src/crud_views/lib/pipeline.py`) bundles them for django-pipeline; `cv_assets` command lists delivery.
+**Theme CSS:** six `--cv-*` palette/shape tokens are consumed by `manage.css` and `formset.css` with Bootstrap-property and literal fallbacks; themes own mappings on their theme roots (`docs/reference/theme.md`). Compact headings and fields add the Bootstrap `gx-3` utility at their respective template/helper row declarations.
 **Authentication:** Django auth locally; ancestors via `ancestors.py`; per-object via Guardian.
 **Runtime CLI contracts:** `cv_manage_view` and `cv_access` are independent management-command interfaces. Their versioned Pydantic output boundaries live in `src/crud_views/lib/manage_report.py` and `src/crud_views/lib/access_trace_export.py`; command parsing/rendering/exit codes stay in `src/crud_views/management/commands/`.
 **i18n:** gettext in package code, locale `de` under each `locale/` directory (`src/crud_views/locale/de/LC_MESSAGES/django.po`).

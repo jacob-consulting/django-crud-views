@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
+last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
 last_mapped_at: 2026-11-21
 ---
 # Codebase Structure
@@ -7,6 +7,8 @@ last_mapped_at: 2026-11-21
 **Analysis Date:** 2026-11-21
 
 Paths were verified to exist at mapping time. Items marked *(inferred)* were not read in detail.
+
+Incremental inspection covers `src/`, `tests/`, `docs/`, and `CHANGELOG.md`; descriptions outside those paths retain the existing map's scope.
 
 ## Directory Layout
 
@@ -94,6 +96,12 @@ lib/
 - Contains: `NavBar`, `NavItem`, `CrudViewNavBarMixin`, metadata-only `Check` integration and `_build()` destination/admission logic.
 - Rendering is separate: three public tags are in `src/crud_views/templatetags/crud_views.py`; default theme wrapper and leaves are `src/crud_views/templates/crud_views/tags/navbar.html`, `navbar_identity.html`, and `navbar_items.html`.
 - Add navigation behavior here; keep reusable presentation in theme templates and avoid adding navigation work to `CrudView` globally.
+
+**Breadcrumb and table presentation files:**
+- Hierarchy/context: `src/crud_views/lib/breadcrumb.py`; tag: `src/crud_views/templatetags/crud_views.py`; stock leaf: `src/crud_views/templates/crud_views/tags/breadcrumb.html`.
+- Breadcrumb class defaults and theme registration: `src/crud_views/lib/button_classes.py`. Ordinary keys are `breadcrumb:list`, `breadcrumb:item`, and `breadcrumb:item-active`; use the registry for class-only changes.
+- Table wrappers/columns: `src/crud_views/lib/table/`; view integration: `src/crud_views/lib/views/mixins.py`; stock table and `table.thead` override: `src/crud_views/templates/crud_views/table/bootstrap5.html`.
+- The header projects `column.is_ordered` and `column.order_by_alias.is_descending` to icons and `aria-sort`, gated by `column.orderable`. Keep effective state in django-tables2 and preserve prefixed links with `cv_querystring`.
 
 **Theme data-API prefix files:**
 - Registration state/default and validation: `src/crud_views/lib/data_prefix.py`; public function: `src/crud_views/lib/__init__.py`.
@@ -188,6 +196,12 @@ lib/
 - Importable packages are lowercase; optional integrations are separate `crud_views_<name>` roots under `src/`.
 
 ## Where to Add New Code
+
+**Breadcrumb styling and table-header changes:**
+- Class defaults/registration: `src/crud_views/lib/button_classes.py`; markup: `src/crud_views/templates/crud_views/tags/breadcrumb.html`. Keep trail construction in `src/crud_views/lib/breadcrumb.py` separate from styling. The final item's `aria-current="page"` remains when class contributions are empty.
+- Header presentation: `src/crud_views/templates/crud_views/table/bootstrap5.html`. Use bound-column effective ordering for default/constructor/request/prefixed sorts; the stock header owns `aria-sort`, so remove caller-supplied collisions or override `table.thead`.
+- Tests: `tests/test1/test_breadcrumb.py` (default bytes, class precedence, empty/non-string overrides and semantics), `tests/test1/test_button_classes.py` (defaults), and `tests/test1/test_table_template.py` (effective state, links and escaping).
+- References: `docs/reference/buttons.md`, `docs/reference/breadcrumb.md`, `docs/reference/theme.md`, and `docs/reference/list_view.md`; feature announcement: `CHANGELOG.md`.
 
 **New view type or shared view behavior:**
 - Operation handler: new module in `src/crud_views/lib/views/` plus `*PermissionRequired` variant and export in `__init__.py`.

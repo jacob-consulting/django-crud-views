@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
+last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
 last_mapped_at: 2026-11-21
 ---
 # Coding Conventions
@@ -91,6 +91,13 @@ last_mapped_at: 2026-11-21
 - Avoid navbar permission, action-state, or SQL work when navigation is omitted or a modal suppresses it. Cover both template and real-response layers (`tests/test1/test_navbar_templates.py::test_omitted_consumers_and_modal_direct_includes_do_no_work`, `::test_real_response_omits_all_navbar_work_without_consumers_or_in_custom_modal`).
 - Treat labels and accessible names as plain text, including `SafeString` inputs. Test escaping and one-time entity normalization through `tests/test1/test_navbar_templates.py::test_plain_labels_and_accessible_names_are_escaped_once`; do not mark caller-controlled text safe to bypass escaping.
 - Keep query budgets and categories explicit when cost is contractual. `tests/test1/test_navbar_costs.py::test_navbar_isolated_costs` captures SQL for plain/Guardian/mixed configurations and cold/warm caches, asserting no parent/child-row or deep-object query leaks into rendering. `::test_nonparticipant_complete_response_bytes_and_queries` protects exact response bytes and SQL equality with and without navbar integration.
+
+## Breadcrumb Classes and Table Ordering
+
+- Route breadcrumb styling through the existing class registry in `src/crud_views/lib/button_classes.py`: `breadcrumb:list` styles the `ol`, `breadcrumb:item` every `li`, and `breadcrumb:item-active` the final item. Use `{% cv_button_class "breadcrumb" "list" %}` and equivalent slots in `src/crud_views/templates/crud_views/tags/breadcrumb.html`; theme registration contributes defaults and `CRUD_VIEWS_BUTTON_CLASSES` takes precedence.
+- Preserve structural and accessibility semantics when class contributions are empty, invalid, or hostile. The final breadcrumb item keeps `aria-current="page"` independently of its classes; labels remain escaped, links retain their destinations, and class values cannot introduce attributes. See `tests/test1/test_breadcrumb.py::test_breadcrumb_class_overrides` and `::test_breadcrumb_current_page_independent_of_classes`.
+- Derive stock table sort state from the bound column (`column.is_ordered` and `column.order_by_alias.is_descending`), as in `src/crud_views/templates/crud_views/table/bootstrap5.html`. Use the same effective state for icons and `aria-sort`; this includes constructor ordering, `Meta.order_by`, and prefixed URL ordering. Preserve `table.prefixed_order_by_field` when generating the next sort link.
+- Give orderable headers exactly one `aria-sort` value (`ascending`, `descending`, or `none`); nonorderable headers omit it and the sort link. Preserve custom header attributes, escaped labels, and unrelated query parameters. Use `tests/test1/test_table_template.py::test_table_header_effective_sort_state` and `::test_table_header_attributes_and_links` as the contract.
 
 ## Documentation Test Conventions
 

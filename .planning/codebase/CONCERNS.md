@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: dafbb3a82b700caac8d33a98704a63d3df48f8ee
+last_mapped_commit: 4feb0196e169745b7ec9bf879abfbfa45c647e92
 last_mapped_at: 2026-11-21
 ---
 <!-- refreshed: 2026-11-21 -->
@@ -113,6 +113,12 @@ No distinct security defect is confirmed by current evidence. Keep navbar render
 - Why fragile: a theme changing the registered native data-attribute prefix must use the shipped templates and copy the current `cv_config` markup so `data-data-prefix` reaches the tabs initializer. Older copied config markup has no prefix attribute and therefore follows the documented `bs` fallback. Registration aligns prefix spelling; it does not configure or certify a different library's JavaScript adapter, lifecycle, or DOM conventions.
 - Safe modification: document startup registration and copied-config adoption together; keep the selector scoped to owned tabs and preserve the absence-only fallback. Treat native CoreUI behavior and other downstream themes as unverified unless separately exercised in their real runtime.
 - Test coverage: registration, copied recipes/config, and adapter selection plumbing are covered by `tests/test1/test_data_prefix.py`, `tests/test1/test_data_prefix_docs.py`, and `tests/js/object-detail-tabs.test.js`; full native CoreUI browser behavior is not established.
+
+**Breadcrumb class and table-header contracts:**
+- Files: `src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/breadcrumb.html`, `src/crud_views/templates/crud_views/table/bootstrap5.html`, `docs/reference/buttons.md`, `docs/reference/breadcrumb.md`, `docs/reference/list_view.md`, `docs/reference/theme.md`
+- Why fragile: copied templates can bypass the public class registry or diverge from django-tables2's effective ordering. The stock breadcrumb uses `breadcrumb:list`, `breadcrumb:item`, and `breadcrumb:item-active`; its final item's `aria-current="page"` is independent of those classes. Stock table headers use bound-column ordering for both icons and `aria-sort`, including constructor/default ordering and prefixed query parameters.
+- Safe modification: retain default breadcrumb output, per-key defaults → theme → project precedence, and empty contributions for empty/non-string values. Derive sorting from `column.is_ordered` and `column.order_by_alias.is_descending`; preserve sorting links, ordinary header-attribute escaping, and non-orderable headers. The stock header owns `aria-sort`: caller-supplied same-name attrs are explicitly unsupported, with no deduplication or collision-precedence contract. Use the existing `table.thead` block for different header semantics; this exclusion is not an open defect or a request to expand scope.
+- Test coverage: `tests/test1/test_breadcrumb.py` binds default bytes, class precedence, empty/non-string values, escaping, links, and current-page semantics; `tests/test1/test_button_classes.py` binds registry inventories; `tests/test1/test_table_template.py` covers effective ordering, prefixed links, attribute escaping, and generated attribute counts within the supported contract. `tests/test1/test_theme_adoption_docs.py` checks the documented adoption recipe. Arbitrary downstream copied-template adoption remains consumer-owned.
 
 **Nested and compact formset rendering/persistence:**
 - Files: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/mixins.py`, `src/crud_views/lib/formsets/inline_formset.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/templates/crud_views/formsets/compact_headings.html`, `src/crud_views/static/crud_views/css/formset.css`, `src/crud_views/static/crud_views/js/formset.js`

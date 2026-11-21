@@ -70,6 +70,17 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
 
 ## Table with django-tables2
 
+The stock table header's sort icon and `aria-sort` follow the table's **effective ordering**,
+including URL ordering, `Meta.order_by`, constructor `order_by` and prefixed tables. Default
+ordering therefore displays its icon on the first load without a sort query parameter.
+Orderable headers report `ascending`, `descending` or `none`; unordered headers have no icon,
+and non-orderable headers receive no generated sort attribute, icon or sorting link.
+
+The stock header owns `aria-sort`: remove caller-supplied `aria-sort` from header attrs when using
+stock sorting. Same-name collisions are unsupported; no deduplication or collision precedence
+is promised. Ordinary class/data attrs retain the existing serialization and escaping.
+For different header semantics, use the existing `table.thead` template block override.
+
 Use `ListViewTableMixin` to render the list as a table. Define a table class
 using `Table` (which extends django-tables2's `Table`):
 

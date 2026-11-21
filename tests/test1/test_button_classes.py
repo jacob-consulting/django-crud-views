@@ -33,6 +33,9 @@ EXPECTED_KEYS = {
     "bulk:actions",
     "bulk:card-cell",
     "bulk:card-select",
+    "breadcrumb:list",
+    "breadcrumb:item",
+    "breadcrumb:item-active",
     "navbar:wrapper",
     "navbar:identity",
     "navbar:nav",
@@ -149,7 +152,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 135
+    assert len(EXPECTED_KEYS) == 138
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
@@ -289,7 +292,7 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
 
     core = dict(DEFAULT_BUTTON_CLASSES)
     workflow = dict(CrudViewsWorkflowConfig.crud_views_button_class_defaults)
-    assert len(core) == 135
+    assert len(core) == 138
     assert len(workflow) == 18
     transitions = {key: value for key, value in workflow.items() if key.startswith("workflow:transition-")}
     assert transitions == {
@@ -297,7 +300,7 @@ def test_workflow_app_defaults_lifecycle(monkeypatch):
         for variant in ("primary", "secondary", "success", "danger", "warning", "info", "light", "dark")
     }
     assert bc._get_default_button_classes() == core | workflow
-    assert len(get_button_classes()) == 153
+    assert len(get_button_classes()) == 156
     register_button_classes({"workflow:badge-purple": "theme-purple"})
     seen = []
     original_ready = CrudViewsConfig.ready
@@ -423,7 +426,7 @@ class ThemeConfig(AppConfig):
     name = "badge_theme_probe"
     path = "."
     def ready(self):
-        assert len(bc._get_default_button_classes()) == 153
+        assert len(bc._get_default_button_classes()) == 156
         bc.register_button_classes({"workflow:badge-info": "theme-info"})
         seen.append(bc.get_button_class("workflow", "badge-info"))
 theme.ThemeConfig = ThemeConfig
@@ -436,11 +439,11 @@ settings.configure(
     CRUD_VIEWS_BUTTON_CLASSES={"workflow:badge-light": "project-light"},
 )
 from crud_views.lib import button_classes as bc
-assert len(bc.DEFAULT_BUTTON_CLASSES) == 135
+assert len(bc.DEFAULT_BUTTON_CLASSES) == 138
 assert bc.get_button_classes() == {**bc.DEFAULT_BUTTON_CLASSES, "workflow:badge-light": "project-light"}
 django.setup()
 assert seen == ["theme-info"]
-assert len(bc._get_default_button_classes()) == 153
+assert len(bc._get_default_button_classes()) == 156
 assert bc.get_button_class("workflow", "badge-info") == "theme-info"
 assert bc.get_button_class("workflow", "badge-light") == "project-light"
 """
@@ -791,3 +794,11 @@ def test_cancel_tag_is_not_a_css_class():
     # the CSS accessor never treats the structural key as a class source of any leaf
     assert "form:cancel-tag" not in {f"form:{kind}" for kind in bc.FORM_KINDS}
     assert get_button_class("form", "cancel") == "btn btn-secondary"
+
+
+def test_breadcrumb_class_defaults():
+    assert {key: value for key, value in DEFAULT_BUTTON_CLASSES.items() if key.startswith("breadcrumb:")} == {
+        "breadcrumb:list": "breadcrumb",
+        "breadcrumb:item": "breadcrumb-item",
+        "breadcrumb:item-active": "active",
+    }

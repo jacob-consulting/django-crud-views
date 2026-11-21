@@ -5,22 +5,22 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.42 complete, ready to plan Phase 7
-last_updated: "2026-11-21T10:23:04.876Z"
+stopped_at: Phase 06.43 complete, ready to plan Phase 7
+last_updated: "2026-11-21T12:13:38.749Z"
 last_activity: 2026-11-21
-last_activity_desc: Phase 06.42 shipped as PR #395; codebase maps refreshed
-state_head: c914f31f31da2e0687593fea72e0a67353eace2f
+last_activity_desc: "Phase 06.43 shipped as PR #396 after rebase onto merged PR #395; codebase maps refreshed"
+state_head: b7246b14151f8f4ec6c8eba987df1c277ddd5262
 progress:
-  total_phases: 49
-  completed_phases: 48
-  total_plans: 274
-  completed_plans: 274
+  total_phases: 50
+  completed_phases: 49
+  total_plans: 276
+  completed_plans: 276
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 49
-Completed Phases: 48
+Total Phases: 50
+Completed Phases: 49
 
 # Project State
 
@@ -37,9 +37,26 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-21 — Phase 06.42 shipped as PR #395; codebase maps refreshed
+Last activity: 2026-11-21 -- Phase 06.43 shipped as PR #396 after rebase onto merged PR #395; codebase maps refreshed
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.43 completion — 2026-11-21
+
+- Both plans and all four tasks complete. Independent goal verification passed 8/8, decisions 4/4, CLI fingerprint accepted. No required human checks in approved scope.
+- Three ordinary breadcrumb keys preserve default bytes; effective table ordering drives icons and aria-sort. Only twelve approved product/test/doc files changed; golden/migration artifacts unchanged.
+- Combined affected tests 1,513 passed; bounded docs 160 passed; strict MkDocs and all changed-Python Ruff checks passed. Cross-phase Python gate: 11,376 passed, 1 skipped across 138 files. Full dependency matrix and browser/AT behavior unclaimed.
+- Deep independent review: 12 files, zero findings. Nyquist 4/4 tasks covered. Authored-register ASVS L1 security: five distinct threats closed. UI source/rendering audit found no in-scope defect; unobserved visual dimensions explicitly unscored.
+- phase.complete advanced to Phase 7. Reconciled stale dotted progress row/count and separated approved decision labels from the formal Requirements: None field. Restored unrelated derived state.json rewrite byte-identically, as in prior phase handling.
+- No pending parent UAT gaps, matching todos or learning promotion. Global learnings disabled; no LEARNINGS artifacts. Codebase maps remain advisory-stale and refresh after a future gsd-ship. No push, PR, merge or publication.
+
+### Phase 06.43 planning convergence — 2026-11-21
+
+- Two plans, two waves and four tasks ready; all four approved issue decisions covered. Converged in cycle 4 with the user-raised maximum of 5: zero HIGH, zero actionable non-HIGH, zero open revision conflicts.
+- Final Fable and Gemini reviews each covered both plans; Grok returned progress-only text and supplies no verdict. Review access limitations and prior findings/dispositions remain in 06.43-REVIEWS.md (49c3d2d0).
+- Plan 01 delivers breadcrumb class keys; dependent Plan 02 delivers accessible sort state and owns the final combined verification. Expansion tasks permit immediately passing regression coverage; tracer tasks retain TDD.
+- Planning structure, decision coverage, gap analysis and source grounding passed. Phase-status drift query remained uncheckable (phase_not_in_roadmap); this is not a passing drift result. Validation remains draft until execution; no implementation acceptance claimed.
+- Issue #393 carries P06.43. Product files remain unchanged. The state handler's unrelated derived state.json rewrite was restored byte-identically.
 
 ### Phase 06.42 integration after PR #392 — 2026-11-21
 
@@ -1597,6 +1614,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.40.1 | 2 | - | - |
 | 06.41 | 14 | - | - |
 | 06.42 | 3 | - | - |
+| 06.43 | 2 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2226,6 +2244,7 @@ None yet.
 - Phase 06.40.1 inserted after Phase 06.40: ViewSet Navigation: theme class keys and owner-heading layouts (#384); findings 36 and 38, Guardian finding 37 separate (URGENT)
 - Phase 06.41 inserted after Phase 06.40: Current-page bulk selection and action forms for table and card views (#387); approved D-01–D-10 with the code-examples comment captured as planning proposals; replaces the unmerged phase 06.38 (#378) approach (URGENT)
 - Phase 06.42 inserted after Phase 06.40.1: Theme-registered data-attribute prefix for templates and object-detail tabs (#391); explicitly assigned 06.42, approved U1/U2 handover D-01–D-05, before Phase 7 theme-surface freeze (URGENT)
+- Phase 06.43 inserted after Phase 06.40.1: Issue #393: breadcrumb class keys and accessible table sort state; approved D-01–D-04 handover. Explicitly assigned 06.43 for this workspace, independently deliverable before the Phase 7 freeze. (URGENT)
 
 ## Deferred Items
 
@@ -2235,6 +2254,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T10:24:00Z
-Stopped at: Phase 06.42 complete, ready to plan Phase 7
+Last session: 2026-11-21T11:50:01.426421+00:00
+Stopped at: Phase 06.43 complete, ready to discuss Phase 7
 Resume file: None

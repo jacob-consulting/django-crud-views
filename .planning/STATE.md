@@ -1,26 +1,26 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.45"
-current_phase_name: "Theme-registered JS namespace and tooltip placements (#398)"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
 current_plan: Not started
-status: executing
-stopped_at: Phase 06.45 plan convergence complete; ready to execute
-last_updated: "2026-11-21T18:51:46.252Z"
+status: planning
+stopped_at: Phase 06.45 complete, ready to plan Phase 7
+last_updated: "2026-11-21T20:54:22.638Z"
 last_activity: 2026-11-21
-last_activity_desc: Phase 06.45 plans converged in 4 cycles; all three reviewers closed R1–R8
-state_head: 87287ef2b21aa07b1aeacad847550d90341cc199
+last_activity_desc: Phase 06.45 complete, transitioned to Phase 7
+state_head: e9ce87731f0b05c264d738396eda7483228f39f8
 progress:
   total_phases: 52
-  completed_phases: 50
+  completed_phases: 51
   total_plans: 280
-  completed_plans: 278
-  percent: 96
+  completed_plans: 280
+  percent: 98
 milestone_name: milestone
 ---
 
 Total Phases: 52
-Completed Phases: 50
+Completed Phases: 51
 
 # Project State
 
@@ -29,17 +29,25 @@ Completed Phases: 50
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.45 — Theme-registered JS namespace and tooltip placements (#398)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.45 (Theme-registered JS namespace and tooltip placements (#398)) — READY TO EXECUTE
+Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: 2
-Status: Ready to execute
-Last activity: 2026-11-21 -- Phase 06.45 plans converged in 4 cycles; all three reviewers closed R1–R8
+Total Plans in Phase: TBD
+Status: Ready to plan
+Last activity: 2026-11-21 — Phase 06.45 complete, transitioned to Phase 7
 
-Next: $gsd-execute-phase 06.45
+Next: $gsd-discuss-phase 7
+
+### Phase 06.45 completion — 2026-11-21
+
+- Both plans/five tasks committed; startup namespace and tooltip-placement registrations, inert config, lazy adapter resolution, executable adoption docs and nonbreaking changelog delivered. D-01–D-05 honored; 9/9 truths independently verified, CLI fingerprint accepted; no manual-only UAT.
+- Full Python 3.12/Django 5.2 suite: 17,222 passed, one expected Django6-only CSP skip, four workers. Django4.2/6.0 focused292 each; JS541, integration3, strict docs/Ruff passed. Independent targeted28 Python,9 JS,1 integration passed. Broad regression receipts reused against unchanged product bytes.
+- Deep review17 files, zero findings; validation5/5; authored security9/9 closed. UI source/interaction audit no issues; unchanged visual dimensions unscored, native downstream/library and full installed-distribution matrix certification unclaimed.
+- phase.complete advanced to7; reconciled stale dotted progress row, phase count/focus and session continuity. SUMMARY command-as-path warnings are heuristic false positives. No parent UAT gaps, matching todos, handoffs or learning artifacts. Codebase maps remain advisory-stale and refresh after gsd-ship.
+- Issue398 labeled P06.45 and theming at user request. No ship/push/merge in this execution run; unrelated dirty files preserved.
 
 ### Phase 06.45 planning convergence — 2026-11-21
 
@@ -1581,7 +1589,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 262
+- Total plans completed: 269
 
 - Total plans completed: 186
 - Average duration: -
@@ -1637,6 +1645,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.41 | 14 | - | - |
 | 06.42 | 3 | - | - |
 | 06.43 | 2 | - | - |
+| 06.45 | 2 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2277,6 +2286,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T17:37:02.795Z
-Stopped at: Phase 06.45 plan convergence complete; ready to execute
-Resume file: .planning/phases/06.45-theme-registered-js-namespace-and-tooltip-placements-398/06.45-REVIEWS.md
+Last session: 2026-11-21T20:54:22Z
+Stopped at: Phase 06.45 complete, ready to plan Phase 7
+Resume file: None

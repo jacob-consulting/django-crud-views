@@ -1,3 +1,5 @@
+from urllib.parse import parse_qs, urlsplit
+
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase
@@ -179,6 +181,57 @@ class AssignOwnerTest(BulkSelectionTestCase):
                 response = self.confirm(destination, review, owner=outsider.pk)
                 self.assertTrue(response.context["form"].errors["owner"])
                 self.assert_unchanged()
+
+
+class NativeCancelTest(BulkSelectionTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.Document.objects.bulk_create([cls.Document(title=f"Extra {i:02}") for i in range(20)])
+
+    def test_cancel_links_preserve_source_state_without_mutations(self):
+        before = list(self.Document.objects.order_by("pk").values())
+        for source, query in (
+            ("list", {"page": "2", "sort": "title"}),
+            ("card", {"page": "2", "order": "title", "dir": "asc"}),
+        ):
+            cases = [
+                ("archive", [self.first, self.locked], False),
+                ("archive", [self.locked, self.published], False),
+                ("assign_owner", [self.first], False),
+                ("assign_owner", [self.first], True),
+            ]
+            if source == "list":
+                cases.append(("bulk_delete", [self.first], False))
+            for action, objects, invalid in cases:
+                with self.subTest(source=source, action=action, invalid=invalid, ids=[o.pk for o in objects]):
+                    page = self.client.get(reverse(f"bulk_document-{source}"), query)
+                    self.assertEqual(page.status_code, 200)
+                    tree = html.fromstring(page.content)
+                    destination = tree.xpath(f'//*[@data-cv-bulk-action="{action}"]/@formaction')[0]
+                    review = self.review(destination, objects)
+                    if invalid:
+                        review = self.confirm(destination, review, owner="")
+                        self.assertTrue(review.context["form"].errors["owner"])
+                    self.assertEqual(review.status_code, 200)
+                    tree = html.fromstring(review.content)
+                    links = tree.xpath('//a[normalize-space(.)="Cancel"]')
+                    self.assertEqual(len(links), 1)
+                    href = links[0].get("href")
+                    self.assertTrue(href)
+                    self.assertEqual(urlsplit(href).path, reverse(f"bulk_document-{source}"))
+                    self.assertEqual(parse_qs(urlsplit(href).query), {key: [value] for key, value in query.items()})
+                    # Follow the actual anchor as a native GET, without submitting the owner form.
+                    returned = self.client.get(href)
+                    self.assertEqual(returned.status_code, 200)
+                    if source == "list":
+                        self.assertEqual(returned.context["table"].page.number, 2)
+                        self.assertEqual(str(returned.context["table"].order_by), "title")
+                    else:
+                        self.assertEqual(returned.context["page_obj"].number, 2)
+                        self.assertEqual(returned.wsgi_request.GET["order"], "title")
+                        self.assertEqual(returned.wsgi_request.GET["dir"], "asc")
+                    self.assertEqual(list(self.Document.objects.order_by("pk").values()), before)
 
 
 class SeedTest(TestCase):

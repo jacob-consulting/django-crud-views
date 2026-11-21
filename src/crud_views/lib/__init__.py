@@ -1,1 +1,3 @@
 from .data_prefix import register_data_prefix as register_data_prefix
+from .js_config import register_js_namespace as register_js_namespace
+from .js_config import register_tooltip_placements as register_tooltip_placements

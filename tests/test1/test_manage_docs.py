@@ -33,6 +33,19 @@ ANCHORS = {
 }
 
 
+def test_manage_css_token_documentation_link():
+    text = REFERENCE.read_text()
+    heading = "## Presentation\n"
+    assert text.count(heading) == 1
+    section = text.split(heading, 1)[1].split("\n## ", 1)[0]
+    assert re.search(r"\[[^\]]+\]\(theme\.md#css-tokens\)", section)
+    theme = (REFERENCE.parent / "theme.md").read_text()
+    assert theme.count("\n## CSS tokens\n") == 1
+    tokens = theme.split("\n## CSS tokens\n", 1)[1].split("\n## ", 1)[0]
+    for term in (":root, [data-demo-theme]", "before inheritance", 'data-bs-theme="dark"', "--bs-btn-color", "manage:help"):
+        assert term in tokens
+
+
 @pytest.fixture
 def developer(django_user_model):
     actor = django_user_model.objects.create_user(username="docs-developer")

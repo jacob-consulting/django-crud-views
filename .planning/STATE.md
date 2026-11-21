@@ -5,22 +5,22 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.43 complete, ready to plan Phase 7
+stopped_at: Phase 06.44 complete, ready to plan Phase 7
 last_updated: "2026-11-21T12:13:38.749Z"
 last_activity: 2026-11-21
-last_activity_desc: "Phase 06.43 shipped as PR #396 after rebase onto merged PR #395; codebase maps refreshed"
+last_activity_desc: Phase 06.44 rebased onto main after merging PR 396; verification refresh pending
 state_head: b7246b14151f8f4ec6c8eba987df1c277ddd5262
 progress:
-  total_phases: 50
-  completed_phases: 49
-  total_plans: 276
-  completed_plans: 276
+  total_phases: 51
+  completed_phases: 50
+  total_plans: 278
+  completed_plans: 278
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 50
-Completed Phases: 49
+Total Phases: 51
+Completed Phases: 50
 
 # Project State
 
@@ -37,9 +37,15 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0
 Status: Ready to plan
-Last activity: 2026-11-21 -- Phase 06.43 shipped as PR #396 after rebase onto merged PR #395; codebase maps refreshed
+Last activity: 2026-11-21 -- Phase 06.44 rebased onto main after merging PR #396; verification refresh pending
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.44 completion — 2026-11-21
+
+- User passed the single stock visual/readability UAT. Canonical verification and the combined UAT/verification gate now pass; 9/9 technical truths and D-01–D-04 remain verified.
+- Both plans/five tasks complete, review clean after CR-01 fix, security6/6 closed and validation5/5. Existing full-suite and browser evidence retained; no redundant test runs after a human-only acceptance update.
+- phase.complete advanced to Phase7. Reconciled its stale dotted progress row/count/focus; command-as-path SUMMARY warnings are heuristic false positives, not missing deliverables. No learning artifacts or stale phase handoffs. Derived state.json preserved. No ship/push/merge; required map refresh follows gsd-ship.
 
 ### Phase 06.44 execution — 2026-11-21
 
@@ -2263,5 +2269,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-21T11:50:01.426421+00:00
-Stopped at: Phase 06.43 complete, ready to discuss Phase 7
+Stopped at: Phase 06.44 complete, ready to discuss Phase 7
 Resume file: None

@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ Six manage/formset CSS tokens with exact Bootstrap/literal fallbacks, nested theme-root mappings, gx-3 compact grids and enforceable source/docs contract — Phase 06.44; technical verification9/9, visual UAT1/1, security6/6 and clean independent review after capture-path fix. Supported-runtime full suite16,548 passed; no broader compatibility-matrix or downstream-theme claim.
+
 - ✓ Three existing-registry breadcrumb class keys with byte-identical defaults and matching effective table sort icons/aria-sort — Phase 06.43; verification 8/8, decisions 4/4, security 5/5, four tasks covered and clean 12-file review. Browser/AT and dependency-matrix acceptance unclaimed.
 
 - ✓ Validated startup data-prefix registration, four native component templates, page config and call-time tab discovery with executable theme recipes — Phase 06.42; 22/22 verified, six decisions honored, nine threats closed, deep review clean. Stock component bytes preserved; one approved config attribute added. Native CoreUI/browser/full-matrix acceptance remains outside scope.
@@ -270,4 +272,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-21 after Phase 06.43 completion*
+*Last updated: 2026-11-21 after Phase 06.44 completion*

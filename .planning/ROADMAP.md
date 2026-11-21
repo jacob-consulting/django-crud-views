@@ -70,7 +70,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.41: Current-page bulk selection and action forms for table and card views (#387) (INSERTED)** - opt-in selection on table and card views, submitted to registered action form views in the same ViewSet. (completed 2026-11-21)
 - [x] **Phase 06.42: Theme-registered data-attribute prefix for templates and object-detail tabs (#391) (INSERTED)** - approved U1/U2 handover; theme prefix registration, four templates and the existing object-detail tabs lifecycle. (completed 2026-11-21)
 - [x] **Phase 06.43: Breadcrumb class keys and accessible table sort state (#393) (INSERTED)** (completed 2026-11-21)
-- [ ] **Phase 06.44: CSS tokens for manage pages and formsets with Bootstrap fallbacks (#394)**
+- [x] **Phase 06.44: CSS tokens for manage pages and formsets with Bootstrap fallbacks (#394)** (completed 2026-11-21)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2303,7 +2303,7 @@ Plans:
 **Ordering:** Complete before Phase 7 inventories and freezes the public theme surface.
 **Scope:** Read the six tokens without declaring them; replace the compact-row gutter declaration with `gx-3`; preserve and document the Bootstrap help-button contrast rule; add CSS contract checks, rendering verification, theme/formset/manage documentation and non-breaking changelog entries. No new Python API/settings, class keys, extra tokens, other CSS files or extensions U12 work; the compact layout's `css_class` change is explicitly included by D-03.
 **Acceptance:** Enforce the six approved fallback chains and documented token list; permit only the existing help-button `--bs-btn-color` declaration; verify unchanged stock light/nested-dark computed styles and passing formset/manage tests and goldens apart from `gx-3`; document theme-root mappings and nested-mode behavior.
-**Plans:** 2/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 **Wave 1**
@@ -2447,5 +2447,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.41. Current-page bulk selection and action forms for table and card views (#387) | 14/14 | Complete | 2026-11-21 |
 | 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 3/3 | Complete | 2026-11-21 |
 | 06.43. Breadcrumb class keys and accessible table sort state (#393) | 2/2 | Complete | 2026-11-21 |
-| 06.44. CSS tokens for manage pages and formsets (#394) | 2/2 | Awaiting visual UAT | - |
+| 06.44. CSS tokens for manage pages and formsets (#394) | 2/2 | Complete | 2026-11-21 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

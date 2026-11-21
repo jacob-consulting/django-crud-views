@@ -1,44 +1,52 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.41"
-current_phase_name: "Current-page bulk selection and action forms for table and card views (#387)"
-current_plan: 14
-status: awaiting_verification
-stopped_at: Phase 06.41 gap plan 14 verified; awaiting human no-JavaScript Cancel retest
-last_updated: "2026-11-21T08:05:39.808802+00:00"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.41 complete, ready to plan Phase 7
+last_updated: "2026-11-21T08:20:33.924Z"
 last_activity: 2026-11-21
-last_activity_desc: Phase 06.41 native Cancel gap plan 14 executed; human retest pending
-state_head: 3eabbd4eb33910b9a55916225d244f2c5c6a19f8
+last_activity_desc: Phase 06.41 complete, transitioned to Phase 7
+state_head: 41ee5aabf8b0ebfe7c85af1e098f3a2a91854836
 progress:
   total_phases: 48
-  completed_phases: 46
-  total_plans: 270
-  completed_plans: 270
+  completed_phases: 47
+  total_plans: 271
+  completed_plans: 271
+  percent: 98
 milestone_name: milestone
 ---
 
 Total Phases: 48
-Completed Phases: 46
+Completed Phases: 47
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-19)
+See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.41 — Current-page bulk selection and action forms for table and card views (#387)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.41 (Current-page bulk selection and action forms for table and card views (#387)) — AWAITING ACCEPTANCE
-Current Plan: 14
-Total Plans in Phase: 14
-Status: All 14 plans executed; verification 129/130 human_needed; UAT test 6 retest pending
-Last activity: 2026-11-21 — All 14 plans executed; native Cancel browser retest passes; human acceptance pending
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: Not planned
+Status: Ready to plan
+Last activity: 2026-11-21 — Phase 06.41 complete, transitioned to Phase 7
 
-Next: $gsd-verify-work 06.41
+Next: $gsd-discuss-phase 7
+
+### Phase 06.41 completion — 2026-11-21
+
+- User confirmed the native Cancel retest; all seven UAT tests pass and G-06.41-1 is resolved by plan 14. Original defect report and the missing CI URL/revision limitation remain recorded.
+- Independent report refreshed for the human receipt: 130/130 verified, no remaining human checks. Canonical verification and combined UAT/verification completion predicates pass.
+- All 14 plans complete; phase.complete advances to Phase 7. Reconciled the dotted progress row and completed-phase count. SDK file warnings refer to command fragments/placeholder patterns; actual RED evidence exists. Original derived state.json preserved after its known inaccurate rewrite.
+- No new source changes or repeated broad tests; passing regression/review evidence remains applicable. No learning files or graduation candidates. No ship, push, PR or merge.
 
 ### Phase 06.41 gap plan 14 — 2026-11-21
 
@@ -1496,7 +1504,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 248
+- Total plans completed: 262
 
 - Total plans completed: 186
 - Average duration: -
@@ -1549,6 +1557,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.37 | 4 | - | - |
 | 06.40 | 9 | - | - |
 | 06.40.1 | 2 | - | - |
+| 06.41 | 14 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2178,6 +2187,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-20T10:56:09.095Z
-Stopped at: context exhaustion at 75% (2026-11-20)
-Resume file: .planning/phases/06.41-current-page-bulk-selection-and-action-forms-for-table-and-c/06.41-CONTEXT.md
+Last session: 2026-11-21T08:21:16.745922+00:00
+Stopped at: Phase 06.41 complete, ready to plan Phase 7
+Resume file: None

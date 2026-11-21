@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ Current-page table/card bulk selection with permission-gated action forms, scoped eligibility, confirmation and transactional execution; Bootstrap example and guide, including native Cancel opt-in — Phase 06.41; 14 plans complete, 130/130 verification and seven human UAT passes. Installed-distribution/recorder CI pass is user-confirmed; no CI URL/revision was supplied.
+
 - ✓ Six existing-registry navbar class keys and executable owner-heading/startup-registration recipes preserve stock rendering, actions, accessibility and lazy runtime behavior — Phase 06.40.1; verification 9/9, decisions 7/7, security 7/7, five tasks covered and all review findings resolved. Source-only UI scope; no new browser/matrix claim.
 
 - ✓ Opt-in object navbar declarations, owner-stable descendant links, destination permission/state admission, lazy overridable accessible templates, protected tenant example and companion guidance — Phase 06.40; verification38/38, security22/22, clean deep incremental review. Independent component tags and executable recipes complete D-17. Fresh six-width static UI audit23/24; minor landing-copy typography advisory remains. Full matrix/interaction receipts retain their historical source revisions.
@@ -243,6 +245,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Gate `cv_access` output behind strict internal export models and generate the schema from them; keep the models private and the dataclass `to_dict()` API unchanged | One source of truth for validation and schema without a new public API or changed output bytes | Validated (Phase 06.37) |
 | Keep child-link authorization in the existing destination hook, consult only the supplied immediate parent once, and preserve actor admission even with granting custom backends | Align link visibility with the bounded parent contract without fetching ancestors, duplicating Guardian checks or changing public access APIs | Validated (Phase 06.39) |
 
+| Keep bulk actions as ordinary permission-gated form views and use the existing native Cancel opt-in in examples | Bounded behavior remains traceable without selection storage, new URL protocols or changed package defaults | Validated (Phase 06.41) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -261,4 +265,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-19 after Phase 06.40.1 completion*
+*Last updated: 2026-11-21 after Phase 06.41 completion*

@@ -1,5 +1,5 @@
 ---
-status: diagnosed
+status: resolved
 phase: "06.41"
 gap_id: G-06.41-1
 ---
@@ -41,3 +41,7 @@ Retest in a browser with JavaScript disabled. Do not alter the library default, 
 permission checks, form lifecycle, or introduce another return protocol.
 
 Diagnosis performed inline; no subagents dispatched. Implementation belongs to plan 14.
+
+## Resolution — 2026-11-21
+
+Plan 06.41-14 enabled the existing native Cancel link setting in the Bootstrap example and documented it. Automated regression and 18 browser scenarios pass. The user confirmed the no-JavaScript defect retest with “yes”; UAT G-06.41-1 is resolved.

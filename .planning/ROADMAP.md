@@ -67,7 +67,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.39: Immediate-parent permission checks for child links (#380) (INSERTED)** (completed 2026-11-18)
 - [x] **Phase 06.40: Object navbar: opt-in section navigation (#381) (INSERTED)** - all nine plans complete, including independent navbar component tags (plan 09). (completed 2026-11-19)
 - [x] **Phase 06.40.1: ViewSet Navigation: theme class keys and owner-heading layouts (#384) (INSERTED)** - expose navbar class keys and document theme-owned owner headings. (completed 2026-11-19)
-- [ ] **Phase 06.41: Current-page bulk selection and action forms for table and card views (#387) (INSERTED)** - opt-in selection on table and card views, submitted to registered action form views in the same ViewSet.
+- [x] **Phase 06.41: Current-page bulk selection and action forms for table and card views (#387) (INSERTED)** - opt-in selection on table and card views, submitted to registered action form views in the same ViewSet. (completed 2026-11-21)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2198,7 +2198,7 @@ Starts from the list, card and custom-form views on `main`; the phase 06.38 impl
 **Requirements**: None; the approved issue contract supplies phase acceptance criteria.
 **Depends on:** Phase 06.40
 **Ordering:** Complete before Phase 7 inventories/freezes the bulk classes, attributes, POST field names and class keys.
-**Plans:** 14/14 plans executed; native Cancel gap implemented, human UAT retest pending
+**Plans:** 14/14 plans complete; native Cancel gap implemented, human UAT retest pending
 
 Plans:
 **Wave 1**
@@ -2365,5 +2365,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.34. Access trace: cv_access command and manage page form (#370) | 10/10 | Complete | 2026-11-15 |
 | 06.40. Object navbar: opt-in section navigation (#381) | 9/9 | Complete | 2026-11-19 |
 | 06.40.1. ViewSet Navigation: theme class keys and owner-heading layouts (#384) | 2/2 | Complete | 2026-11-19 |
-| 06.41. Current-page bulk selection and action forms for table and card views (#387) | 14/14 | Awaiting UAT retest | - |
+| 06.41. Current-page bulk selection and action forms for table and card views (#387) | 14/14 | Complete | 2026-11-21 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

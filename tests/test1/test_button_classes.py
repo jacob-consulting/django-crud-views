@@ -791,3 +791,11 @@ def test_cancel_tag_is_not_a_css_class():
     # the CSS accessor never treats the structural key as a class source of any leaf
     assert "form:cancel-tag" not in {f"form:{kind}" for kind in bc.FORM_KINDS}
     assert get_button_class("form", "cancel") == "btn btn-secondary"
+
+
+def test_breadcrumb_class_defaults():
+    assert {key: value for key, value in DEFAULT_BUTTON_CLASSES.items() if key.startswith("breadcrumb:")} == {
+        "breadcrumb:list": "breadcrumb",
+        "breadcrumb:item": "breadcrumb-item",
+        "breadcrumb:item-active": "active",
+    }

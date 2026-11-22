@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
+last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
 last_mapped_at: 2026-11-21
 ---
 <!-- refreshed: 2026-11-21 -->
@@ -196,12 +196,6 @@ None independently confirmed.
 - Risk: lookup/form-selection exceptions can surface as server errors instead of a controlled response.
 - Priority: Medium.
 
-**Custom user model without `username` in legacy permission-holder path:**
-- What's not tested: `CRUD_VIEWS_MANAGE_SHOW_USERS=True` on an email-only user model through `get_permission_holders()`.
-- Files: `src/crud_views/lib/views/manage.py`, `src/crud_views_guardian/lib/views.py`, `tests/test1/test_manage.py`, `tests/test1/test_guardian.py`
-- Risk: the legacy path uses `username` directly in `values_list()` and `order_by()`, which can raise `FieldError`; the structured matrix's `USERNAME_FIELD` support does not cover this separate path.
-- Priority: Medium.
-
 **Third-party theme integration:**
 - What's not tested: arbitrary consumer overrides across template variables, class keys, icons, and JavaScript adapters.
 - Files: `src/crud_views/templates/crud_views/`, `src/crud_views/static/crud_views/js/`, `docs/development/stability.md`
@@ -258,7 +252,9 @@ Phase 06.41 passed 130/130 verified must-haves and all seven UAT checks. Its cor
 
 Phase 06.42 passed 22/22 verified must-haves after integration with merged PR #392. The combined post-06.42 core suite passed 17,057 tests with one skip, JavaScript passed 486 tests, and the bulk example passed 637 tests plus 296 subtests. Strict documentation and Ruff/format checks also passed. Registration is intentionally startup-only; copied templates/config need downstream adoption. These results do not claim a native CoreUI browser run or a fresh full supported Python/Django matrix (`.planning/phases/06.42-theme-registered-data-attribute-prefix-for-templates-and-obj/06.42-VERIFICATION.md`, `06.42-SECURITY.md`).
 
-Phase 06.44's capture override symlink finding CR-01 is fixed and independently re-reviewed: `tests/browser/conditional-formsets.cjs` preflights all planned override leaves with `lstat`/regular-file checks before screenshots, and the evidence checker applies the same policy. Six real-filesystem regressions cover symlinks, dangling links, and non-regular files; the refreshed evidence tests passed 51 cases and the independent lifecycle checker passed. The finding is historical provenance, not an open security concern (`.planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/06.44-REVIEW-DISPOSITION.md`, `06.44-SECURITY.md`, `06.44-VERIFICATION.md`). Phase 06.44's CSS-token source contract is deliberately bounded to six documented tokens and twelve existing reads across the two CSS sheets; the parser guard fails closed on unsupported syntax, so extending CSS syntax requires updating its contract and tests. This adds no runtime registration, settings, or API surface (`src/crud_views/static/crud_views/css/manage.css`, `src/crud_views/static/crud_views/css/formset.css`, `tests/js/css-tokens.test.js`, `docs/reference/theme.md`). Its refreshed combined acceptance passed 17,122 Python and 512 Node tests; PR #397 compatibility CI remains pending, so merge/release validation is not yet evidenced (`.planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/06.44-VERIFICATION.md`).
+Phase 06.44's capture override symlink finding CR-01 is fixed and independently re-reviewed: `tests/browser/conditional-formsets.cjs` preflights all planned override leaves with `lstat`/regular-file checks before screenshots, and the evidence checker applies the same policy. Six real-filesystem regressions cover symlinks, dangling links, and non-regular files; the refreshed evidence tests passed 51 cases and the independent lifecycle checker passed. The finding is historical provenance, not an open security concern (`.planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/06.44-REVIEW-DISPOSITION.md`, `06.44-SECURITY.md`, `06.44-VERIFICATION.md`). Phase 06.44's CSS-token source contract is deliberately bounded to six documented tokens and twelve existing reads across the two CSS sheets; the parser guard fails closed on unsupported syntax, so extending CSS syntax requires updating its contract and tests. This adds no runtime registration, settings, or API surface (`src/crud_views/static/crud_views/css/manage.css`, `src/crud_views/static/crud_views/css/formset.css`, `tests/js/css-tokens.test.js`, `docs/reference/theme.md`). Its refreshed combined acceptance passed 17,122 Python and 512 Node tests (`.planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/06.44-VERIFICATION.md`).
+
+Phase 06.45 shipped through PR #401. Verification passed all 9/9 must-haves, and the deep code review is clean with zero findings. Recorded final acceptance is 17,222 Python tests passed with one expected Django-version skip on Python 3.12.3/Django 5.2.19; focused compatibility selections passed 292 tests each on Django 4.2 and 6.0. JavaScript passed 541 tests and integration passed three tests. This is not a full Python/Django matrix or installed-distribution acceptance. Fake providers prove namespace/placement dispatch only; native CoreUI/Tabler behavior, real-browser certification, and downstream adoption remain unclaimed. The phase adds startup registration for namespace and tooltip placements, and records no defect in the supported contract (`src/crud_views/lib/js_config.py`, `src/crud_views/static/crud_views/js/adapters.js`, `.planning/phases/06.45-theme-registered-js-namespace-and-tooltip-placements-398/06.45-VERIFICATION.md`, `.planning/phases/06.45-theme-registered-js-namespace-and-tooltip-placements-398/06.45-REVIEW.md`).
 
 ---
 

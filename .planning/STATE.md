@@ -5,22 +5,22 @@ current_phase: "06.45"
 current_phase_name: "Theme-registered JS namespace and tooltip placements (#398)"
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.47 complete, ready to plan Phase 06.45
+stopped_at: Phase 06.47 complete, ready to plan Phase 7
 last_updated: "2026-11-21T21:21:01.973Z"
 last_activity: 2026-11-21
 last_activity_desc: Phase 06.47 complete, transitioned to Phase 06.45
 state_head: df9644d7b9591bcfb9f1e6cfc840085e6ec7c237
 progress:
   total_phases: 53
-  completed_phases: 51
-  total_plans: 281
-  completed_plans: 281
-  percent: 96
+  completed_phases: 52
+  total_plans: 283
+  completed_plans: 283
+  percent: 98
 milestone_name: milestone
 ---
 
 Total Phases: 53
-Completed Phases: 51
+Completed Phases: 52
 
 # Project State
 
@@ -29,17 +29,17 @@ Completed Phases: 51
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.45 — Theme-registered JS namespace and tooltip placements (#398)
+**Current focus:** Phase 7 — Theme surface freeze
 
 ## Current Position
 
 Phase: 06.45 — Theme-registered JS namespace and tooltip placements (#398)
 Current Plan: Not started
-Total Plans in Phase: 0
+Total Plans in Phase: TBD
 Status: Ready to plan
 Last activity: 2026-11-21 — Phase 06.47 complete, transitioned to Phase 06.45
 
-Next: $gsd-plan-phase 06.45 (next pending phase in this checkout)
+Next: $gsd-plan-phase 7 (phase 06.45 merged via PR #401)
 
 ### Phase 06.47 completion — 2026-11-21
 
@@ -48,6 +48,27 @@ Next: $gsd-plan-phase 06.45 (next pending phase in this checkout)
 - Source-only UI audit clean; browser/downstream theme and full dependency matrix acceptance remain outside scope. No required human checks. CLI verification fingerprint passed before completion; no warning debt returned.
 - Reconciled CLI's stale dotted progress row and preserved-disagreeing completed-phase count from actual roadmap (51/53). No parent UAT gaps, pending phase todos, learning artifacts or stale handoffs. Derived state.json rewrite restored; codebase-map refresh follows shipping per AGENTS.md.
 - Issue400 now carries P06.47. No push/merge/ship performed. Next pending checkout phase is06.45; independent worktrees may have newer progress.
+
+### Phase 06.45 shipping — 2026-11-21
+
+- PR #401 created against main, linked to issue #398 and labeled P06.45/theming. All seven codebase maps refreshed.
+- SonarCloud identified duplicated integration interpreter validation (3.9% new-code duplication). Extracted unchanged shared test helper in af5d74ef; runtime-contract3 and integration3 pass; independent verification/fingerprint refreshed and accepted. Product behavior unchanged. Remote CI remains pending; no merge.
+
+### Phase 06.45 completion — 2026-11-21
+
+- Both plans/five tasks committed; startup namespace and tooltip-placement registrations, inert config, lazy adapter resolution, executable adoption docs and nonbreaking changelog delivered. D-01–D-05 honored; 9/9 truths independently verified, CLI fingerprint accepted; no manual-only UAT.
+- Full Python 3.12/Django 5.2 suite: 17,222 passed, one expected Django6-only CSP skip, four workers. Django4.2/6.0 focused292 each; JS541, integration3, strict docs/Ruff passed. Independent targeted28 Python,9 JS,1 integration passed. Broad regression receipts reused against unchanged product bytes.
+- Deep review17 files, zero findings; validation5/5; authored security9/9 closed. UI source/interaction audit no issues; unchanged visual dimensions unscored, native downstream/library and full installed-distribution matrix certification unclaimed.
+- phase.complete advanced to7; reconciled stale dotted progress row, phase count/focus and session continuity. SUMMARY command-as-path warnings are heuristic false positives. No parent UAT gaps, matching todos, handoffs or learning artifacts. Codebase maps remain advisory-stale and refresh after gsd-ship.
+- Issue398 labeled P06.45 and theming at user request. No ship/push/merge in this execution run; unrelated dirty files preserved.
+
+### Phase 06.45 planning convergence — 2026-11-21
+
+- Two plans, five tasks and two dependent waves ready. Approved D-01–D-05 coverage is 5/5; no formal project requirement IDs assigned.
+- Converged in cycle 4 of user-authorized maximum 5: zero HIGH, zero actionable non-HIGH and zero open revision conflicts. Fable, Grok and Gemini each reviewed both plans and signed off R1–R8. Final report: 87287ef2; latest plan revision: 670076b2.
+- Revisions cover integration-file inventory, honest characterization tasks, coupled documentation checks, namespace/prefix independence, explicit-factory placement and stale adoption/changelog guidance. Locked scope unchanged.
+- Structural/frontmatter, decision and gap checks passed. Empty intel index/signature coverage and decimal phase-status check remain uncheckable as documented in REVIEWS.md; these are not claimed as passing source-index checks.
+- VALIDATION remains draft pending execution. No product changes, product test runs, downstream-theme certification, execution, ship or merge in this planning run.
 
 ### Phase 06.44 completion — 2026-11-21
 
@@ -1638,6 +1659,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.42 | 3 | - | - |
 | 06.43 | 2 | - | - |
 | 06.47 | 3 | - | - |
+| 06.45 | 2 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2284,5 +2306,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-21T21:21:53.058017+00:00
-Stopped at: Phase 06.47 complete, ready to plan Phase 06.45
+Stopped at: Phase 06.47 complete, ready to plan Phase 7
 Resume file: None

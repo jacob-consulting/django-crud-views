@@ -418,6 +418,9 @@ def test_data_prefix_config_byte_delta(alias):
         rendered = Template("{% load crud_views %}{% " + alias + " %}").render(Context({"request": request}))
     added_line = '     data-data-prefix="bs"\n'
     assert rendered.count(added_line) == 1
+    for line in ('     data-js-namespace="bootstrap"\n', '     data-tooltip-placements="{}"\n'):
+        assert rendered.count(line) == 1
+        rendered = rendered.replace(line, "", 1)
     assert rendered.replace(added_line, "", 1) == _RAW_DEFAULT_CONFIG
 
 
@@ -439,6 +442,9 @@ def test_data_prefix_config_aliases(alias, isolate_data_prefix):
         assert config.get("data-csrf-token") == "fixed-csrf-token"
         added_line = f'     data-data-prefix="{prefix}"\n'
         assert rendered.count(added_line) == 1
+        for line in ('     data-js-namespace="bootstrap"\n', '     data-tooltip-placements="{}"\n'):
+            assert rendered.count(line) == 1
+            rendered = rendered.replace(line, "", 1)
         assert rendered.replace(added_line, "", 1) == _RAW_DEFAULT_CONFIG
 
 

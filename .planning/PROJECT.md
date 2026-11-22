@@ -180,6 +180,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Normalize bulk controls through the existing form path, then add the destination variant for a dedicated leaf | Preserve native submission/escaping and stock bytes while keeping generic action/form dispatch bounded | Validated (Phase 06.47; 16/16) |
+| Register the JS namespace and tooltip placements at theme startup; resolve config at call time | Reuse the existing adapter factory and preserve explicit trigger/factory ownership and Bootstrap defaults without an extra theme script | Validated (Phase 06.45; 9/9); supersedes placement-only wrapper guidance from 06.28 |
 | Reuse three ordinary breadcrumb class keys and bound-column sort state | Preserve existing template/resolver paths, default breadcrumb bytes and query links while exposing effective ordering | Validated (Phase 06.43; 8/8) |
 | Use six ordinary registry keys and theme-owned owner-heading markup | Reuse existing lookups/context/components without new runtime state, queries or global heading behavior | Validated (Phase 06.40.1; 9/9) |
 | Keep object-navbar behavior opt-in in one module and app-owned template placement | Reuse resolved ancestry and destination hooks once, preserving established context-button and request paths | Validated (Phase 06.40; 38/38) |
@@ -275,4 +276,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-21 after Phase 06.47 completion*
+*Last updated: 2026-11-22 after Phase 06.47 shipping integration*

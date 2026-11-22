@@ -480,6 +480,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Modal events on prefixed libraries** (#403): the stock modal adapter observes `hide.{prefix}.modal` /
+  `hidden.{prefix}.modal` with the registered data prefix, so closing a CoreUI modal is seen (session release,
+  focus return, replacement open). `bs` stays the default; the prefix is read once per modal element. The
+  missing-component error no longer names Bootstrap.
+
 - **Prefixed table sort icons** (#393): icons now follow bound-column ordering, matching
   `aria-sort` even when the table uses a prefixed sorting query parameter.
 

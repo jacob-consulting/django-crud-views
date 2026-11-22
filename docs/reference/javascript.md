@@ -71,13 +71,14 @@ See [Bulk actions](bulk_actions.md) for opting in and implementing the registere
 
 `adapters.js` defines `cv.adapters`. Core calls adapters only through `cv.adapters.<name>`, looked up at call time, so an
 assignment before the relevant call takes effect. Wire initialization adapters before initialization, not just before
-the first user action. Stock adapters use the configured compatible namespace (`bootstrap` by default). Registration
-changes component lookup and tooltip placement only; other methods, fixed modal events and lifecycle limits are unchanged.
+the first user action. Stock adapters use the configured compatible namespace (`bootstrap` by default). Namespace
+registration changes component lookup, placement registration changes tooltip placement, and the data prefix names the
+modal events the stock adapter observes (see `onHidden` below). Other methods and lifecycle limits are unchanged.
 
 | Adapter | Method | Called by core when | Stock adapter (configured namespace) |
 |---|---|---|---|
 | `modal` | `show(modalEl)` | the partial is injected | `Modal.getOrCreateInstance(modalEl).show()`; throws a clear error when the namespace has no `Modal` |
-| `modal` | `onHidden(modalEl, callback)` | subscribe before showing; return idempotent unsubscribe | listens to this modal’s `hidden.bs.modal` event after hiding and focus-trap release |
+| `modal` | `onHidden(modalEl, callback)` | subscribe before showing; return idempotent unsubscribe | listens to this modal’s `hidden.{prefix}.modal` event after hiding and focus-trap release; `{prefix}` is the registered [data prefix](theme.md#data-attribute-prefix), so `hidden.bs.modal` by default |
 | `modal` | `hide(modalEl)` | a `[data-cv-modal-dismiss]` element inside the shell is clicked | `Modal.getInstance(modalEl)?.hide()` |
 | `modal` | `setSize(dialogEl, size)` | before `show`, with the view's `cv_modal_size` token | ensures `modal-dialog` and swaps the size class: `modal-sm` / `modal-lg` / `modal-xl` for `sm` / `lg` / `xl`; `""` and unknown tokens remove it. Other classes on the dialog (a shell override's `modal-dialog-centered`) are kept |
 | `tooltip` | `init(el, {location})` | for every `[data-cv-tooltip]` under a root: page load, `cv:modal:loaded`, `cv:formset:row-added`; `location` is the marker's value, see [Tooltips](#tooltips) | passes registered `{placement}` for the location unless the trigger has `data-{prefix}-placement` (even empty); otherwise retains `Tooltip.getOrCreateInstance(el)` with one argument; does nothing without `Tooltip` |
@@ -129,15 +130,19 @@ cv.adapters = {
 For a compatible library exposed as a global, use
 [JavaScript namespace and tooltip placements](theme.md#javascript-namespace-and-tooltip-placements) in
 `AppConfig.ready()`. This is the primary namespace/placement recipe; no theme wiring script is needed.
-The data prefix remains independently registered. This dispatch contract does not certify native CoreUI/Tabler bundles.
-A selected missing bundle does not fall back to Bootstrap; existing missing-component behavior applies, including
-legacy Bootstrap wording in modal/collapse errors. Only absent config/attributes request namespace/prefix defaults;
+The data prefix remains independently registered. It also names the modal events the stock adapter observes,
+`hide.{prefix}.modal` and `hidden.{prefix}.modal`: `bs` for Bootstrap and Tabler, `coreui` for CoreUI. The prefix is
+read from `#cv-config` once per modal element, when the adapter first attaches its listeners (the first `onHidden` or
+`show`); a later change is not followed. A library whose event names differ from its data prefix needs its own
+`cv.adapters.modal`. A selected missing bundle does not fall back to Bootstrap; modal and collapse then throw an error
+naming the missing component. Only absent config/attributes request namespace/prefix defaults;
 present empty values are not valid registration outputs. Missing or malformed placements JSON means `{}`.
 
 `cv.bootstrapAdapters(ns)` builds all five adapters for a Bootstrap-compatible namespace. `ns` is an object or a
 function returning one; a function is resolved on every call. This explicit provider takes precedence over registered
-namespace selection, while its tooltip adapter still reads registered placement defaults. This permits late availability
-on a subsequent call, but does not schedule initialization when a library loads later or reconfigure existing instances.
+namespace selection, while its tooltip adapter still reads registered placement defaults and its modal adapter the
+registered data prefix. This permits late availability on a subsequent call, but does not schedule initialization when
+a library loads later or reconfigure existing instances.
 
 For custom factory wiring to **Tabler**'s `window.tabler`, the following remains supported. Register the script as an
 asset after core (see [Assets](assets.md#object-detail-tab-initialization-order)) and before tab initialization:

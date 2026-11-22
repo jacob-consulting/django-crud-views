@@ -135,6 +135,7 @@ the actions-menu toggle, language selector, vertical object-detail tabs and acco
 target, parent and Popper-config attributes follow the registration. The shipped object-detail `tabs.js`
 selector follows it too, within `data-cv-od-tabs` tablists. Registration does not choose an adapter namespace:
 register that independently using [JavaScript namespace and tooltip placements](#javascript-namespace-and-tooltip-placements).
+The stock modal adapter does follow the prefix: it observes `hide.{prefix}.modal` and `hidden.{prefix}.modal`.
 It does not change host-app markup,
 CSS custom properties, crispy templates or add a dropdown adapter. Class customization remains in the
 [class table](buttons.md); a different DOM structure still needs [template overrides](#templates-that-follow-bootstraps-dom).
@@ -203,8 +204,7 @@ Old copied markup without the namespace or placements attributes uses `bootstrap
 uses `bs`. Missing or malformed placements JSON, including a non-object value, means `{}`. Namespace/prefix defaults
 apply only when the config element or respective attribute is absent. Present empty namespace/prefix values are not
 valid registration outputs and do not request defaults. A selected namespace whose bundle is missing does **not**
-fall back to Bootstrap: existing missing-component behavior applies, including legacy Bootstrap wording in
-modal/collapse errors.
+fall back to Bootstrap: modal and collapse throw an error naming the missing component.
 
 The stock tooltip initializer applies a registered location only when `data-{prefix}-placement` is absent on the
 trigger. An explicit placement attribute wins even when empty; without a matching default the existing one-argument
@@ -214,8 +214,11 @@ placement defaults; custom `cv.adapters` entries retain ownership of their behav
 
 Load the rendered config and selected library before initialization. Call-time lookup allows late config or bundles
 on a subsequent existing call, but schedules no retries and does not recreate or reconfigure existing library instances.
-See [script ordering and adapter ownership](javascript.md#what-the-scripts-need). This is compatible-namespace dispatch,
-not native CoreUI/Tabler certification; other adapter lifecycle contracts, including fixed modal events, are unchanged.
+See [script ordering and adapter ownership](javascript.md#what-the-scripts-need).
+
+The stock modal adapter observes `hide.{prefix}.modal` and `hidden.{prefix}.modal` with the registered data prefix
+(`bs` by default, `coreui` in the example above), read once per modal element at its first use. A library whose
+event names differ from its data prefix must assign its own [`cv.adapters.modal`](javascript.md#cvadapters).
 
 After release, CoreUI and Tabler themes can remove their namespace/placement adapter script
 (`coreui-adapters.js` or `tabler-adapters.js`) and its asset-bundle registration, then add the two new startup calls.

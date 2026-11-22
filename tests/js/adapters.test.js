@@ -545,8 +545,10 @@ describe("adapters.js", () => {
     it("modal.show and collapse.toggle throw a clear error without the namespace", async () => {
         await loadScript("adapters");
         const a = window.cv.bootstrapAdapters(undefined);
-        expect(() => a.modal.show(document.getElementById("m"))).toThrow(/Bootstrap 5 JavaScript not loaded/);
-        expect(() => a.collapse.toggle(document.getElementById("d"))).toThrow(/Bootstrap 5 JavaScript not loaded/);
+        expect(() => a.modal.show(document.getElementById("m")))
+            .toThrow("cv.adapters: UI library JavaScript not loaded (no Modal on the namespace); load the library's bundle or assign cv.adapters.");
+        expect(() => a.collapse.toggle(document.getElementById("d")))
+            .toThrow("cv.adapters: UI library JavaScript not loaded (no Collapse on the namespace); load the library's bundle or assign cv.adapters.");
     });
 
     it("resolves a function namespace at call time", async () => {

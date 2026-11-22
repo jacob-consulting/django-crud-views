@@ -7,7 +7,7 @@ globalThis.cv = globalThis.cv || {};
     function resolve(ns) { return (typeof ns === "function" ? ns() : ns) || null; }
     function component(ns, name) { const n = resolve(ns); return n && n[name] ? n[name] : null; }
     function missing(name) {
-        return new Error(`cv.adapters: Bootstrap 5 JavaScript not loaded (no ${name} on the namespace); load Bootstrap's bundle or assign cv.adapters.`);
+        return new Error(`cv.adapters: UI library JavaScript not loaded (no ${name} on the namespace); load the library's bundle or assign cv.adapters.`);
     }
     // One lifecycle observer per shell, shared by factory instances. Callback subscriptions
     // are removed per session; the WeakMap and shell-owned listeners do not retain detached shells.

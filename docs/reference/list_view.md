@@ -166,7 +166,7 @@ in that block too. See [Table pagination overrides](../migrating-1.0.md#table-pa
 ## Bulk selection
 
 Opt a table view into current-page selection with `BulkSelectionMixin` before `ListViewTableMixin` and
-set `cv_bulk_actions` to the registered action-form keys offered by the source.
+set `cv_bulk_actions` to the registered action-form keys configured for the source.
 See [Bulk actions](bulk_actions.md) for destination permissions, scoped selection and confirmation.
 
 ## Filtering with django-filter

@@ -82,7 +82,13 @@ STABLE_NAMES = (
     "crud_views/tags/button/bulk.html",
     "`bulk`",
 )
-INTERNAL_NAMES = ("cv_bulk_form_id", "cv_bulk_buttons", "blocked_items.html", "snippets/paragraph/bulk.html")
+INTERNAL_NAMES = (
+    "cv_bulk_form_id",
+    "cv_bulk_buttons",
+    "_cv_effective_bulk_actions",
+    "blocked_items.html",
+    "snippets/paragraph/bulk.html",
+)
 
 
 def guide():
@@ -111,7 +117,33 @@ def test_bulk_guide_structure_and_live_link():
     for name in STABLE_NAMES:
         assert name in text, name
     for name in INTERNAL_NAMES:
-        assert name not in text, name
+        if name == "cv_bulk_buttons":
+            integration = template_integration(text)
+            assert name not in text.replace(integration, ""), name
+        else:
+            assert name not in text, name
+
+
+def template_integration(text):
+    selection = section(text, "Selection on tables and cards")
+    assert "### Template integration\n" in selection
+    return selection.split("### Template integration\n", 1)[1].split("\n### ", 1)[0]
+
+
+def test_bulk_guide_names_the_visibility_hooks_and_template_guard():
+    """Pin the names a reader must find, not the prose around them."""
+    text = guide()
+    selection = section(text, "Selection on tables and cards")
+    for name in ("cv_has_access", "cv_action_enabled", "cv_bulk_has_permission", "cv_bulk_check"):
+        assert name in selection, name
+    integration = template_integration(text)
+    for name in ("crud_views/snippets/bulk_toolbar.html", "{% if view.cv_bulk_buttons %}", "view.cv_bulk_actions"):
+        assert name in integration, name
+    scope = section(text, "Scope and permissions")
+    for name in ("has_permission", "cv_has_access", "cv_bulk_has_permission"):
+        assert name in scope, name
+    guardian = section((ROOT / "docs/reference/guardian.md").read_text(), "Bulk actions")
+    assert "model permission" in normalized(guardian)
 
 
 def test_bulk_guide_synchronizes_live_example_recipes():
@@ -559,7 +591,7 @@ def test_bulk_theme_authorization_boundary():
 @pytest.mark.parametrize("icon, disabled", [("delete", False), ("ui:archive", False), ("delete", True)])
 @pytest.mark.parametrize("hostile", [False, True])
 def test_copied_bulk_leaf_contract(
-    client_user_bulk_publisher_view, bulk_publishers, settings, monkeypatch, source, mode, icon, disabled, hostile
+    client_user_bulk_publisher_delete, bulk_publishers, settings, monkeypatch, source, mode, icon, disabled, hostile
 ):
     fields = {
         "cv_id",
@@ -603,7 +635,7 @@ def test_copied_bulk_leaf_contract(
 
     monkeypatch.setattr(bulk, "render_to_string", capture)
     with override("en"):
-        response = client_user_bulk_publisher_view.get(source)
+        response = client_user_bulk_publisher_delete.get(source)
     assert response.status_code == 200
     ((data, stock),) = [(data, stock) for data, stock in payloads if data["cv_id"] == "cv-bulk-archive"]
     projected = {key: value for key, value in data.items() if key in fields}

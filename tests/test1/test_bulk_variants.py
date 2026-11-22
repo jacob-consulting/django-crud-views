@@ -72,7 +72,7 @@ def test_table_variant_native_review(client_user_bulk_publisher_change, bulk_pub
 @pytest.mark.parametrize("mode", MODES)
 @pytest.mark.parametrize("icons", ICON_CASES)
 def test_stock_toolbar_matches_form_leaf(
-    client_user_bulk_publisher_view, bulk_publishers, settings, monkeypatch, source, mode, icons
+    client_user_bulk_publisher_delete, bulk_publishers, settings, monkeypatch, source, mode, icons
 ):
     """The unchanged form leaf independently renders each actual normalized payload."""
     payloads = []
@@ -84,7 +84,7 @@ def test_stock_toolbar_matches_form_leaf(
         return data
 
     monkeypatch.setattr(bulk, "cv_button_data", capture)
-    response = _stock_response(client_user_bulk_publisher_view, settings, monkeypatch, source, mode, icons)
+    response = _stock_response(client_user_bulk_publisher_delete, settings, monkeypatch, source, mode, icons)
     controls = raw_bulk_controls(response.content.decode("utf-8"))
     assert len(payloads) == len(controls)
     with override("en"):
@@ -132,14 +132,14 @@ def test_destination_variant_matrix(
 
 
 @pytest.mark.parametrize("source", SOURCE_PATHS)
-def test_inherited_secondary(client_user_bulk_publisher_view, settings, monkeypatch, source):
+def test_inherited_secondary(client_user_bulk_publisher_delete, settings, monkeypatch, source):
     destination = cv_bulk_publisher.get_view_class("archive")
     assert "cv_action_variant" not in destination.__dict__
     assert destination.cv_action_variant == "secondary"
     source_class = {"table": BulkPublisherListView, "card": BulkPublisherCardView}[source]
     monkeypatch.setattr(source_class, "cv_action_variant", "danger")
     settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:secondary": "inherited-secondary", "bulk:danger": "source-danger"}
-    _, button = _archive_control(client_user_bulk_publisher_view.get(SOURCE_PATHS[source]))
+    _, button = _archive_control(client_user_bulk_publisher_delete.get(SOURCE_PATHS[source]))
     assert button.get("class") == "inherited-secondary"
 
 
@@ -148,7 +148,7 @@ def test_inherited_secondary(client_user_bulk_publisher_view, settings, monkeypa
 @pytest.mark.parametrize("icons", ICON_CASES)
 @pytest.mark.parametrize("override_class", ["mode-specific", "", None])
 def test_effective_mode_precedence(
-    client_user_bulk_publisher_view, settings, monkeypatch, source, mode, icons, override_class
+    client_user_bulk_publisher_delete, settings, monkeypatch, source, mode, icons, override_class
 ):
     settings.CRUD_VIEWS_STRICT = True
     settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"bulk": mode}
@@ -167,7 +167,7 @@ def test_effective_mode_precedence(
         **{f"bulk:danger:{suffix}": f"wrong-{suffix}" for suffix in MODES},
         f"bulk:danger:{effective}": override_class,
     }
-    _, button = _archive_control(client_user_bulk_publisher_view.get(SOURCE_PATHS[source]))
+    _, button = _archive_control(client_user_bulk_publisher_delete.get(SOURCE_PATHS[source]))
     expected = (override_class or "").split()
     if icons == "host" and effective != "label":
         expected.append("icon-archive")
@@ -181,15 +181,15 @@ def test_effective_mode_precedence(
 
 
 @pytest.mark.parametrize("source", SOURCE_PATHS)
-def test_form_style_isolation(client_user_bulk_publisher_view, settings, source):
+def test_form_style_isolation(client_user_bulk_publisher_delete, settings, source):
     settings.CRUD_VIEWS_BUTTON_CLASSES = {"form:submit": "project-form-submit"}
-    _, button = _archive_control(client_user_bulk_publisher_view.get(SOURCE_PATHS[source]))
+    _, button = _archive_control(client_user_bulk_publisher_delete.get(SOURCE_PATHS[source]))
     assert button.get("class") == "btn btn-primary"
 
 
 @pytest.mark.parametrize("source", SOURCE_PATHS)
 @pytest.mark.parametrize("icons", ["available", "host"])
-def test_shared_form_utilities(client_user_bulk_publisher_view, settings, monkeypatch, source, icons):
+def test_shared_form_utilities(client_user_bulk_publisher_delete, settings, monkeypatch, source, icons):
     settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"bulk": "icon"}
     settings.CRUD_VIEWS_ICON_LIBRARIES = HOST_LIBRARY
     settings.CRUD_VIEWS_BUTTON_CLASSES = {
@@ -200,7 +200,7 @@ def test_shared_form_utilities(client_user_bulk_publisher_view, settings, monkey
     monkeypatch.setattr(
         cv_bulk_publisher.get_view_class("archive"), "cv_icon_action", "ui:archive" if icons == "host" else "delete"
     )
-    _, button = _archive_control(client_user_bulk_publisher_view.get(SOURCE_PATHS[source]))
+    _, button = _archive_control(client_user_bulk_publisher_delete.get(SOURCE_PATHS[source]))
     assert button.get("class") == ("btn btn-primary theme-host icon-archive" if icons == "host" else "btn btn-primary")
     assert len(button.cssselect("i")) == (0 if icons == "host" else 1)
     assert button.cssselect("span.theme-hidden")[0].text == "Archive"
@@ -238,7 +238,7 @@ def test_review_controls_unchanged(client_user_bulk_publisher_change, bulk_publi
 @pytest.mark.parametrize("source", SOURCE_PATHS)
 @pytest.mark.parametrize("mode", MODES)
 @pytest.mark.parametrize("text_kind", ["plain", "safe", "lazy"])
-def test_short_labels_and_escaping(client_user_bulk_publisher_view, settings, monkeypatch, source, mode, text_kind):
+def test_short_labels_and_escaping(client_user_bulk_publisher_delete, settings, monkeypatch, source, mode, text_kind):
     text = "<img src=x onerror=\"alert(1)\"> &amp; {{ dangerous }} '✓'"
     label = {"plain": lambda: text, "safe": lambda: mark_safe(text), "lazy": lambda: lazy(lambda: text, str)()}[
         text_kind
@@ -259,7 +259,7 @@ def test_short_labels_and_escaping(client_user_bulk_publisher_view, settings, mo
         ]()
 
     monkeypatch.setattr(source_class, "cv_get_link_url", action_url)
-    raw, button = _archive_control(client_user_bulk_publisher_view.get(SOURCE_PATHS[source]))
+    raw, button = _archive_control(client_user_bulk_publisher_delete.get(SOURCE_PATHS[source]))
     assert button.cssselect("span")[0].text == text
     assert button.text_content() == (" " + text if mode == "both" else text)
     assert not button.cssselect("img, script")
@@ -276,14 +276,14 @@ def test_short_labels_and_escaping(client_user_bulk_publisher_view, settings, mo
 
 
 @pytest.mark.parametrize("source", SOURCE_PATHS)
-def test_bulk_action_key_is_escaped(client_user_bulk_publisher_view, settings, monkeypatch, source):
+def test_bulk_action_key_is_escaped(client_user_bulk_publisher_delete, settings, monkeypatch, source):
     key = 'archive" data-injected="yes"><script>{{ literal }}</script>&'
     destination = cv_bulk_publisher.get_view_class("archive")
     monkeypatch.setitem(cv_bulk_publisher._views, key, destination)
     source_class = {"table": BulkPublisherListView, "card": BulkPublisherCardView}[source]
     monkeypatch.setattr(source_class, "cv_bulk_actions", (key,))
     monkeypatch.setattr(source_class, "cv_get_link_url", lambda self, cls, action, obj=None: "/bulk-publisher/archive/")
-    raw, button = _archive_control(client_user_bulk_publisher_view.get(SOURCE_PATHS[source]), key)
+    raw, button = _archive_control(client_user_bulk_publisher_delete.get(SOURCE_PATHS[source]), key)
     assert f'data-cv-bulk-action="{escape(key)}"' in raw
     assert button.get("data-cv-bulk-action") == key
     assert button.get("id") == "cv-bulk-" + key
@@ -297,21 +297,21 @@ def test_bulk_action_key_is_escaped(client_user_bulk_publisher_view, settings, m
     [(None, "theme-secondary"), ("", "theme-secondary"), (Variant.DANGER, "theme-danger"), ("bogus", "")],
 )
 def test_unset_variant_falls_back_to_secondary(
-    client_user_bulk_publisher_view, settings, monkeypatch, source, variant, expected
+    client_user_bulk_publisher_delete, settings, monkeypatch, source, variant, expected
 ):
     """None and "" mean secondary, as for action buttons; an unknown string has no class and is reported by E209."""
     monkeypatch.setattr(cv_bulk_publisher.get_view_class("archive"), "cv_action_variant", variant)
     settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:secondary": "theme-secondary", "bulk:danger": "theme-danger"}
-    _, button = _archive_control(client_user_bulk_publisher_view.get(SOURCE_PATHS[source]))
+    _, button = _archive_control(client_user_bulk_publisher_delete.get(SOURCE_PATHS[source]))
     assert button.get("class") == expected
 
 
 @pytest.mark.parametrize("source", SOURCE_PATHS)
-def test_unset_variant_honours_mode_key(client_user_bulk_publisher_view, settings, monkeypatch, source):
+def test_unset_variant_honours_mode_key(client_user_bulk_publisher_delete, settings, monkeypatch, source):
     destination = cv_bulk_publisher.get_view_class("archive")
     monkeypatch.setattr(destination, "cv_action_variant", None)
     monkeypatch.setattr(destination, "cv_icon_action", "delete")
     settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"bulk": "icon"}
     settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:secondary": "base", "bulk:secondary:icon": "icon-only"}
-    _, button = _archive_control(client_user_bulk_publisher_view.get(SOURCE_PATHS[source]))
+    _, button = _archive_control(client_user_bulk_publisher_delete.get(SOURCE_PATHS[source]))
     assert button.get("class") == "icon-only"

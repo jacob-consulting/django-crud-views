@@ -5,28 +5,28 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.47 complete, ready to plan Phase 7
-last_updated: "2026-11-22T07:13:15.966Z"
+stopped_at: Phases 06.46 and 06.47 complete, ready to plan Phase 7
+last_updated: "2026-11-22T17:30:49.000Z"
 last_activity: 2026-11-22
-last_activity_desc: "Phase 06.47 shipped as PR #402"
-state_head: 93a28539aea2275158d8f61d45b85114e179aa96
+last_activity_desc: "Phase 06.46 merged with main after Phases 06.45 and 06.47"
+state_head: 3964c4404daa976a211d62fdc40666040a45840e
 progress:
-  total_phases: 53
-  completed_phases: 52
-  total_plans: 283
-  completed_plans: 283
+  total_phases: 54
+  completed_phases: 53
+  total_plans: 285
+  completed_plans: 285
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 53
-Completed Phases: 52
+Total Phases: 54
+Completed Phases: 53
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-21)
+See: .planning/PROJECT.md (updated 2026-11-22)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme surface freeze
@@ -35,11 +35,31 @@ See: .planning/PROJECT.md (updated 2026-11-21)
 
 Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: TBD
+Total Plans in Phase: 0 (not planned)
 Status: Ready to plan
-Last activity: 2026-11-22 -- Phase 06.47 shipped as PR #402
+Last activity: 2026-11-22 — Phase 06.46 merged with main after Phases 06.45 and 06.47
 
-Next: $gsd-plan-phase 7 (phase 06.45 merged via PR #401)
+Next: $gsd-plan-phase 7
+
+### Phase 06.46 integration with Phase 06.47 — 2026-11-22
+
+- Main gained Phase 06.47 (PR #402) and the modal event prefix fix (PR #405) while PR #404 was in review; main was merged into the branch. Tracking reconciled to 54 phases and 285 plans.
+- Both phases touch `BulkSelectionMixin.cv_bulk_buttons`: 06.46 decides which actions are offered, 06.47 how each offered button is styled. The bulk guide's toolbar paragraph keeps 06.47's leaf and variant text with "one button per offered action".
+
+### Phase 06.46 follow-up and rebase — 2026-11-22
+
+- N6-01 / WR-01 is fixed and its acceptance superseded: `get_context_data` evaluates `cv_bulk_buttons` in Python; `test_bulk_button_presentation_errors_are_not_swallowed` covers table/card and empty/populated pages.
+- `bulk_toolbar.html` renders nothing without an offered action. Query-cost tests compare with the no-bulk baseline instead of absolute counts; the documentation test pins names, not prose. Bulk guide, Guardian paragraph and changelog sentence rewritten in plain language.
+- Downstream, run against this branch: CoreUI and Tabler demos offer Kim only "Mark roasted"; direct-POST denial retained. Tabler's copied card template needs the `view.cv_bulk_buttons` condition; prepared on Tabler branch `feature/bulk-toolbar-visibility`, to merge after this phase.
+- Rebased onto main after Phase 06.45 (PR #401); tracking reconciled to 53 phases and 282 plans. Rebased branch: full suite 17,393 passed (Python 3.12 / Django 6.0, six workers, recorder off); strict docs and scoped Ruff passed. Before the rebase: bulk modules 436 passed on Django 4.2, 5.2 and Python 3.14 / Django 6.0; Bootstrap bulk examples 28 plus 50 subtests. JavaScript and the full version matrix were not run locally.
+- `view.cv_bulk_buttons` stays internal; the promote/replace/retain decision remains with Phase 7. The VERIFICATION.md fingerprint predates these changes; see its addendum.
+
+### Phase 06.46 completion — 2026-11-22
+
+- Both plans/six tasks complete; canonical verification passed 7/7, D-01–D-06 honored, no mandatory human checks. Destination-gated table/card controls share request-local caches; submission enforcement remains unchanged.
+- Primary suite 17,281 passed; separate examples 637 plus 300 subtests; recorder bulk 390; strict docs/Ruff passed. Independent verifier 66 tests plus 12 subtests; reviewer Django 4.2 subset 30 passed. No full dependency matrix or new browser capture claimed.
+- Validation six tasks covered; eight authored threats closed. Deep 14-file review has no new findings; WR-01 is the explicitly accepted N6-01 LOW lazy-presentation exception residual, still unresolved. UI 23/24 is code-derived only.
+- Codebase-map drift remains advisory; AGENTS.md requires refresh after gsd-ship. No push, PR, merge or publication. No matching todos, handoffs or learnings to promote.
 
 ### Phase 06.47 completion — 2026-11-21
 
@@ -1660,6 +1680,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.43 | 2 | - | - |
 | 06.47 | 3 | - | - |
 | 06.45 | 2 | - | - |
+| 06.46 | 2 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1852,6 +1873,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.42 P01 | 6min | 2 tasks | 10 files |
 | Phase 06.42 P02 | 6min | 2 tasks | 5 files |
 | Phase 06.42 P03 | 12min | 2 tasks | 7 files |
+| Phase 06.46 P01 | 9min | 3 tasks | 9 files |
+| Phase 06.46 P02 | 16min | 3 tasks | 12 files |
 | Phase 06.47 P01 | 5min | 2 tasks | 14 files |
 | Phase 06.47 P02 | 8min | 2 tasks | 10 files |
 | Phase 06.47 P03 | 16min | 2 tasks | 11 files |
@@ -2204,6 +2227,12 @@ Recent decisions affecting current work:
 - [Phase 06.42]: Read global document config in ownedTriggers on every scan; retain existing ownership and adapter lifecycle.
 - [Phase 06.42]: Keep prefix registration separate from class customization, DOM overrides and adapter selection.
 - [Phase 06.42]: Final JavaScript acceptance uses exact committed dependency versions; cached mismatched results remain development feedback only.
+- [Phase 06.46]: Accepted plans after six review cycles with N6-01 LOW presentation-exception risk outstanding; ready to execute — User explicitly selected option 2 on 2026-11-22. Plan 01 records the deferral; no clean convergence or verified fix claimed.
+- [Phase 06.46]: Plan 01 reuses _cancel_target_available through an instance-local effective tuple and keeps lazy cached button presentation under accepted N6-01 deferral.
+- [Phase 06.46]: Exact-byte fixtures patch both csrf middleware and template context processor get_token because InclusionNode copies the parent token; no response normalization.
+- [Phase 06.46]: Keep production gate and submission policy unchanged; real requests/grants prove rendering and submission boundaries.
+- [Phase 06.46]: Keep the existing template guard internal and defer promote/replace/retain decision to stability work.
+- [Phase 06.46]: Follow-up evaluates bulk buttons in Python before template rendering and guards the toolbar snippet itself; supersedes the N6-01 deferral.
 - [Phase 06.47]: Followed approved local adapter and dedicated bulk leaf; generic action/form dispatch remains bounded.
 
 ### Pending Todos
@@ -2295,6 +2324,7 @@ None yet.
 - Phase 06.42 inserted after Phase 06.40.1: Theme-registered data-attribute prefix for templates and object-detail tabs (#391); explicitly assigned 06.42, approved U1/U2 handover D-01–D-05, before Phase 7 theme-surface freeze (URGENT)
 - Phase 06.43 inserted after Phase 06.40.1: Issue #393: breadcrumb class keys and accessible table sort state; approved D-01–D-04 handover. Explicitly assigned 06.43 for this workspace, independently deliverable before the Phase 7 freeze. (URGENT)
 - Phase 06.45 inserted after Phase 06.44: Theme-registered JS namespace and tooltip placements (#398); approved D-01–D-05, depends on 06.42, before Phase 7 freeze (URGENT)
+- Phase 06.46 inserted after Phase 06.44: Issue #399: bulk toolbar destination entry gates; approved D-01–D-06 handover amends #387. Requested 06.46 retained; 06.45 remains unallocated in this checkout. (URGENT)
 - Phase 06.47 inserted after Phase 06.45: Semantic variants for bulk toolbar buttons (#400); explicitly assigned 06.47 by the maintainer, approved D-01–D-05, depends on 06.41, before Phase 7 freeze (URGENT)
 
 ## Deferred Items
@@ -2305,6 +2335,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T21:21:53.058017+00:00
-Stopped at: Phase 06.47 complete, ready to plan Phase 7
+Last session: 2026-11-22T07:55:34.002638+00:00
+Stopped at: Phases 06.46 and 06.47 complete, ready to plan Phase 7
 Resume file: None

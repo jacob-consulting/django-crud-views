@@ -399,6 +399,9 @@ the order title, which fails if `page_title` is missing.
    `dashboard/templatetags/acme.py` imports `config.icons` (A); `config/login_required.py` carries the literal
    `"config.login_required.LoginRequiredMiddleware"`; `config/templatetags/showcode.py` imports `config.showcode`.
    `FORMAT_MODULE_PATH = ["config.formats"]` in settings changes with them.
+4. It imports no crispy template pack: not a theme's (`django_tabler.crispy`, `django_coreui.crispy`) and not
+   `crispy_bootstrap5` either (5.4). Forms use Django's widgets and fields, `crispy_forms`, `crud_views.lib.crispy`
+   and the widgets of django-crud-views-extensions.
 
 One known reference stays: `dashboard/seed.py` has `OWNER_APPS = ["auth", "catalog", "sales", "roastery",
 "showcase"]` and filters permissions by app label. A label with no installed app matches nothing, so it works with
@@ -423,6 +426,51 @@ and without a showcase app. It gets a comment.
   adminlte-django's own menu format. Two formats, three consumers. Left alone.
 - **Deleting the themes' copies of the behaviour tests at once:** they pass against shared code (3.4), so they stay
   until the shared suite has run for a while (stage 5).
+
+### 5.4 Forms, the crispy pack and its Python classes
+
+Each theme keeps its crispy template pack and selects it in its own settings: `CRISPY_TEMPLATE_PACK` is
+`"crispy_tabler"` (T), `"crispy_coreui"` (C), `"bootstrap5"` (A). The proposal does not touch the packs. The question
+(raised by the maintainer) is the Python a pack brings with it, which shared form code cannot import.
+
+What exists. T and C each ship nine classes under `src/django_<theme>/crispy/`; A ships none.
+
+| Module | Classes | Why they exist |
+|---|---|---|
+| `layout.py` | `FloatingField`, `Switch`, `UneditableField` | `crispy_bootstrap5.bootstrap5.FloatingField` and `Switch` hard-code `bootstrap5/layout/...`; the subclasses set `template = "%s/layout/..."` so the pack is followed. `UneditableField` swaps a Bootstrap 2 class. |
+| `widgets.py` | `RangeInput`, `ColorInput`, `PlaintextInput` | input types the pack's `field.html` recognises (`field\|is_range`, `field\|is_color`) and a display-only widget |
+| `fields.py` | `RangeField`, `ColorField`, `PlaintextField` | form fields that use those widgets |
+
+The two copies are the same code: `fields.py` is byte-identical in T and C, `layout.py` differs in one word of a
+docstring, `widgets.py` in one template path (`crispy_tabler/widget/plaintext.html`).
+
+Who uses them.
+
+- **The five shared apps use none of them.** They instantiate Django's own classes (`forms.NumberInput`,
+  `forms.CheckboxSelectMultiple`, `forms.ModelChoiceField`, ...), `crispy_forms.layout` (`Layout`, `Row`, `Div`,
+  `HTML`), `crispy_forms.bootstrap.InlineCheckboxes` (its template is `%s/layout/...`, so it follows the pack),
+  `crud_views.lib.crispy` (`Column2` to `Column12`, `CrispyModelForm`, ...) and, from
+  django-crud-views-extensions, `DatePickerInput`, `TypeaheadField`, `TypeaheadSelect`. Those are the same classes
+  under every theme.
+- Three of their four form modules are byte-identical in all three repos today and render through three different
+  packs. The fourth, `sales/forms.py`, differs in one heading class (3.3).
+- **`showcase/views.py` is the only user**, and only of the three layout objects. This is why showcase stays with
+  the theme (D3). A's version cannot use them at all: it takes `FloatingField` and `Switch` from
+  `crispy_bootstrap5` and replaces `UneditableField` by `Field("sku", disabled=True)`.
+- No example app uses the packs' widgets or fields. They appear only in the packs' own tests and docs.
+
+What follows.
+
+- Today there is no conflict: nothing that would be shared imports a theme's Python class.
+- It is a standing limit, enforced by rule 4 of 5.1: **a shared Acme form cannot contain a switch, a floating
+  label, or the packs' range, colour and plaintext widgets.** A page that needs one belongs in the theme's showcase.
+- The stock objects are no way around it. `crispy_bootstrap5.bootstrap5.Switch` in shared code would render
+  `bootstrap5/layout/switch.html` under every pack and bypass T's and C's own templates.
+- If the limit ever hurts, the fix is upstream, not a seam in the demo: pack-neutral `FloatingField` and `Switch`
+  (the `"%s/..."` template, which also resolves under the stock `bootstrap5` pack) in `crud_views.lib.crispy`. Core
+  already depends on crispy-bootstrap5, and T and C would drop their two subclasses. That changes core's `src/`,
+  so it is a separate issue and not part of this design. It would not cover range and colour inputs: stock
+  crispy-bootstrap5's `field.html` does not add `form-range`, which is why A sets it on the widget.
 
 ## 6. Home: where the one copy lives
 
@@ -836,7 +884,7 @@ C and A no longer match a file. `task reset` gives a clean state and is the docu
 |---|---|---|---|
 | D1 | Transport | T4, installed package with a pinned git install | T1 if the theme repos must stay self-contained; T3 if the pin must live in git |
 | D2 | Repository, distribution and import name | `django-crud-views-acme`, import package `acme_roasters` | any name; `django-crud-views-bootstrap5` would wrongly suggest a theme package; `acme` is taken on PyPI |
-| D3 | Is `showcase` shared? | No, theme-owned | sharing needs a seam for the crispy layout objects and widget attributes (5.3) |
+| D3 | Is `showcase` shared? | No, theme-owned | sharing needs a seam for the crispy layout objects and widget attributes (5.3), or pack-neutral layout objects in core first (5.4) |
 | D4 | May T's demo use Bootstrap's badge style and six avatar colours (3.5, row 3)? | Yes | 5.2 (c): app-declared class keys that T's example overrides |
 | D5 | Does acme go to PyPI, and does it get its own public demo and docs site? | PyPI before the first theme release that names it; no demo, no docs site | without PyPI, the themes keep acme out of their published metadata (section 7, T4) |
 
@@ -863,6 +911,8 @@ repeated by the reviewer.
 Unsupported, on purpose:
 
 - The showcase app is not shared (D3).
+- Shared forms cannot use a crispy pack's Python classes: no switch, floating label, or range, colour and plaintext
+  widget in a shared Acme form (5.4).
 - No shared settings module and no shared navigation data (5.3).
 - The theming page and the shell and host branches of `showcode` are not tested in the acme repository (section 6).
 - Core's and ext's own examples do not use the shared `showcode`. Their `snippet_panels` stays.

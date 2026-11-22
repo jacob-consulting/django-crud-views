@@ -3,10 +3,12 @@
 from urllib.parse import parse_qs, urlsplit
 
 import pytest
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection
 from django.template import Context, RequestContext, Template
 from django.template.loader import get_template
 from django.test.utils import CaptureQueriesContext
+from django.test import Client
 from django.utils.translation import override
 
 from crud_views.lib.button_classes import get_button_class
@@ -34,6 +36,60 @@ ORIGINAL_CARD_CONTENT = """{% load i18n crud_views %}
 
 {% cv_pagination %}
 """
+
+
+@pytest.mark.parametrize("path", ["/bulk-publisher/", "/bulk-publisher/card/"])
+def test_bulk_visibility_tracer(path, user_bulk_publisher_view, user_bulk_publisher_delete, bulk_publishers):
+    reader, editor = Client(), Client()
+    reader.force_login(user_bulk_publisher_view)
+    editor.force_login(user_bulk_publisher_delete)
+    denied = reader.get(path)
+    assert denied.status_code == 200
+    assert not soup(denied).cssselect("[data-cv-bulk], [data-cv-bulk-action], [data-cv-bulk-item]")
+    admitted = editor.get(path)
+    source = BulkPublisherCardView if "card" in path else BulkPublisherListView
+    assert [button.get("data-cv-bulk-action") for button in soup(admitted).cssselect("[data-cv-bulk-action]")] == list(source.cv_bulk_actions)
+
+
+class SilentGateError(Exception):
+    silent_variable_failure = True
+
+
+@pytest.mark.parametrize("source,path", [(BulkPublisherListView, "/bulk-publisher/"), (BulkPublisherCardView, "/bulk-publisher/card/")])
+@pytest.mark.parametrize("rows", [0, 5])
+@pytest.mark.parametrize("hook", ["cv_has_access", "cv_action_enabled"])
+@pytest.mark.parametrize("error_class", [ObjectDoesNotExist, Publisher.DoesNotExist, SilentGateError, RuntimeError])
+def test_bulk_rendered_gate_exceptions(source, path, rows, hook, error_class, client_user_bulk_publisher_change, monkeypatch):
+    for index in range(rows):
+        Publisher.objects.create(name=f"Publisher {index}")
+    monkeypatch.setattr(source, "paginate_by", 10)
+    monkeypatch.setattr(source, "cv_bulk_actions", ("archive",))
+    destination = cv_bulk_publisher.get_view_class("archive")
+    original_access = destination.cv_has_access
+    error = error_class("destination gate failure")
+    events = []
+
+    def access(cls, user, obj):
+        events.append("access")
+        if hook == "cv_has_access":
+            raise error
+        return original_access(user, obj)
+
+    def state(cls, user, obj):
+        events.append("state")
+        raise error
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Source rendering evaluated an item hook")
+
+    monkeypatch.setattr(destination, "cv_has_access", classmethod(access))
+    monkeypatch.setattr(destination, "cv_action_enabled", classmethod(state))
+    monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden)
+    monkeypatch.setattr(destination, "cv_bulk_check", forbidden)
+    with pytest.raises(error_class) as caught:
+        client_user_bulk_publisher_change.get(path)
+    assert caught.value is error
+    assert events == (["access"] if hook == "cv_has_access" else ["access", "state"])
 
 
 def test_table_toolbar_controls(client_user_bulk_publisher_view, bulk_publishers):

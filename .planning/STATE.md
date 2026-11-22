@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.46"
 current_phase_name: "Bulk toolbar: show only actions the viewer can enter (#399)"
-current_plan: Not started
+current_plan: 2
 status: executing
-stopped_at: Phase 06.46 plans accepted with N6-01 LOW deferred; ready to execute
-last_updated: "2026-11-22T07:00:38.617Z"
+stopped_at: Completed 06.46-01-PLAN.md; combined wave-1 gate 446 passed; ready for 06.46-02
+last_updated: "2026-11-22T07:17:27.472Z"
 last_activity: 2026-11-22
-last_activity_desc: Phase 06.46 plans accepted by user with N6-01 LOW outstanding after six review cycles; ready to execute
-state_head: cfc85d8fb7d0fa8dd8d9dc0c49bc871f86d66ffb
+last_activity_desc: Phase 06.46 execution started
+state_head: cd0da2bee892433cf1df55fd53218fcb17932a0e
 progress:
   total_phases: 52
   completed_phases: 50
   total_plans: 280
-  completed_plans: 278
+  completed_plans: 279
 milestone_name: milestone
 ---
 
@@ -28,15 +28,15 @@ Completed Phases: 50
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.46 — Bulk toolbar destination entry gates (#399)
+**Current focus:** Phase 06.46 — Bulk toolbar: show only actions the viewer can enter (#399)
 
 ## Current Position
 
-Phase: 06.46 (Bulk toolbar: show only actions the viewer can enter (#399)) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.46 (Bulk toolbar: show only actions the viewer can enter (#399)) — EXECUTING
+Current Plan: 2
 Total Plans in Phase: 2
 Status: Ready to execute
-Last activity: 2026-11-22 -- Phase 06.46 plans accepted by user with N6-01 LOW outstanding after six review cycles; ready to execute
+Last activity: 2026-11-22 — Phase 06.46 execution started
 
 Next: $gsd-execute-phase 06.46
 
@@ -1842,6 +1842,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.42 P01 | 6min | 2 tasks | 10 files |
 | Phase 06.42 P02 | 6min | 2 tasks | 5 files |
 | Phase 06.42 P03 | 12min | 2 tasks | 7 files |
+| Phase 06.46 P01 | 9min | 3 tasks | 9 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2192,6 +2193,8 @@ Recent decisions affecting current work:
 - [Phase 06.42]: Keep prefix registration separate from class customization, DOM overrides and adapter selection.
 - [Phase 06.42]: Final JavaScript acceptance uses exact committed dependency versions; cached mismatched results remain development feedback only.
 - [Phase 06.46]: Accepted plans after six review cycles with N6-01 LOW presentation-exception risk outstanding; ready to execute — User explicitly selected option 2 on 2026-11-22. Plan 01 records the deferral; no clean convergence or verified fix claimed.
+- [Phase 06.46]: Plan 01 reuses _cancel_target_available through an instance-local effective tuple and keeps lazy cached button presentation under accepted N6-01 deferral.
+- [Phase 06.46]: Exact-byte fixtures patch both csrf middleware and template context processor get_token because InclusionNode copies the parent token; no response normalization.
 
 ### Pending Todos
 
@@ -2291,6 +2294,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-22T07:00:31.142Z
-Stopped at: Phase 06.46 plans accepted with N6-01 LOW deferred; ready to execute
-Resume file: .planning/phases/06.46-bulk-toolbar-show-only-actions-the-viewer-can-enter-399/06.46-01-PLAN.md
+Last session: 2026-11-22T07:17:19.954Z
+Stopped at: Completed 06.46-01-PLAN.md; combined wave-1 gate 446 passed; ready for 06.46-02
+Resume file: .planning/phases/06.46-bulk-toolbar-show-only-actions-the-viewer-can-enter-399/06.46-02-PLAN.md

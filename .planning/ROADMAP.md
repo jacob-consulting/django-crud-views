@@ -2329,7 +2329,7 @@ Plans:
 4. Admission, scope, review and execution coverage continues to pass, including ordinary denial for a direct POST and unchanged all-blocked review behavior.
 5. Bulk and Guardian references explain visibility, custom gate alignment and submission limits; amend the unreleased #387 changelog entry, with no migration entry. Annotate the superseded Phase 06.41 decisions during implementation.
 
-**Plans**: 1/2 plans executed
+**Plans**: 2/2 plans executed
 
 Plans:
 **Wave 1**
@@ -2337,7 +2337,7 @@ Plans:
 - [ ] TBD (run $gsd-plan-phase 06.46 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.46-02-PLAN.md
+- [x] 06.46-02-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
 

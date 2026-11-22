@@ -273,8 +273,14 @@ theme's environment at the worktree, and restore it afterwards:
 ```bash
 cd /home/alex/projects/alex/django-crud-views-coreui
 uv pip install -e /home/alex/projects/workspaces/cv-issue-403/django-crud-views   # after
-uv pip install -e ../django-crud-views                                            # restore
+UV_NO_SYNC=1 task run                                                             # after: serve without re-syncing
+uv sync                                                                           # restore the sibling checkout
 ```
+
+The theme's `task run` is `uv run python example/manage.py runserver`, and `uv run` re-syncs the environment to
+`[tool.uv.sources]` (`../django-crud-views`) first. Without `UV_NO_SYNC=1` the "after" run would silently serve
+`main` again. Before judging "after", confirm that the served `/static/crud_views/js/adapters.js` contains
+`` `hide.${prefix}.modal` `` and hard-reload the page.
 
 - [ ] **Step 1: Before (main).** `task run`, open a modal view from a keyboard-focused opener, close it. Record:
   which of `hidden.coreui.modal` / `hidden.bs.modal` the console listeners from the issue's reproduction log, and

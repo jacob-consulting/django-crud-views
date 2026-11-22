@@ -136,15 +136,17 @@ target, parent and Popper-config attributes follow the registration. The shipped
 selector follows it too, within `data-cv-od-tabs` tablists. Registration does not choose an adapter namespace:
 register that independently using [JavaScript namespace and tooltip placements](#javascript-namespace-and-tooltip-placements).
 The stock modal adapter does follow the prefix: it observes `hide.{prefix}.modal` and `hidden.{prefix}.modal`.
-It does not change host-app markup,
-CSS custom properties, crispy templates or add a dropdown adapter. Class customization remains in the
+Registration does not change host-app markup, CSS custom properties, crispy templates or add a dropdown adapter.
+Class customization remains in the
 [class table](buttons.md); a different DOM structure still needs [template overrides](#templates-that-follow-bootstraps-dom).
 
 If your theme overrides `crud_views/tags/cv_config.html`, retain the shipped unconditional
 `data-data-prefix="{{ data_prefix }}"` attribute on `#cv-config`, using the current `data_prefix` inclusion context
 supplied by both `cv_config` and `cv_const_js`. Keep its other attributes and modal-shell content too.
 An older copy without the attribute intentionally falls back to `bs`, so custom-prefix triggers such as
-`data-coreui-toggle` will not be discovered until the copy carries the registered prefix. See the
+`data-coreui-toggle` will not be discovered until the copy carries the registered prefix. The stock modal adapter
+then also waits for `*.bs.modal` events, so a library that dispatches `*.coreui.modal` closes its modal unobserved
+(no focus return). See the
 [JavaScript config and fallback contract](javascript.md#object-detail-tabs).
 
 After adopting the released change, a downstream theme can remove its four prefix-only template copies,

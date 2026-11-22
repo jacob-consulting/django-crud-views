@@ -241,7 +241,7 @@ lib/
 - List/card integration: `src/crud_views/templates/crud_views/view_list_table.content.html` and `view_card.content.html`; table selection is contributed through `BulkSelectionMixin.get_table_kwargs()`.
 - Example consumer and package reference: `examples/bootstrap5/bulk_selection/views.py`, `examples/bootstrap5/bulk_selection/tests.py`, and `docs/reference/bulk_actions.md`.
 - Core test coverage is grouped in `tests/test1/test_bulk_*.py`; browser behavior is in `tests/js/bulk.test.js`.
-- Semantic class, normalization boundary, icon and raw-byte compatibility checks: `tests/test1/test_bulk_variants.py`, with fixture `tests/test1/fixtures/bulk_toolbar_pre_variant.json`. ID/stage/review checks: `tests/test1/test_bulk_flow.py`; source markup/localization: `tests/test1/test_bulk_source.py`.
+- Semantic class, normalization boundary, icon and raw-byte compatibility checks: `tests/test1/test_bulk_variants.py` (live comparison with the unchanged form leaf, no fixture). ID/stage/review checks: `tests/test1/test_bulk_flow.py`; source markup/localization: `tests/test1/test_bulk_source.py`.
 
 **Object navbar change:**
 - Declaration, request-local lazy builder, destination validation and admission: `src/crud_views/lib/navbar.py`.

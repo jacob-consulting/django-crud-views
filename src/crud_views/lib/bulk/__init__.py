@@ -120,7 +120,7 @@ class BulkSelectionMixin:
                 "cv_attrs": {"formaction": self.cv_get_link_url(destination, key), "data-cv-bulk-action": key},
             }
             data = cv_button_data(raw, "form")
-            data["cv_variant"] = destination.cv_action_variant
+            data["cv_variant"] = destination.cv_action_variant or "secondary"
             buttons.append(render_to_string("crud_views/tags/button/bulk.html", data))
         return buttons
 

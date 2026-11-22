@@ -13,6 +13,7 @@ from django.utils.translation import override
 from lxml import html
 
 from crud_views.lib import bulk
+from crud_views.lib.view.variant import Variant
 from tests.lib.helper.icons import HOST_LIBRARY
 from tests.test1.app.views_bulk import BulkPublisherCardView, BulkPublisherListView, cv_bulk_publisher
 
@@ -315,3 +316,29 @@ def test_bulk_action_key_is_escaped(client_user_bulk_publisher_view, settings, m
     assert button.get("id") == "cv-bulk-" + key
     assert "data-injected" not in button.attrib
     assert not button.cssselect("script")
+
+
+@pytest.mark.parametrize("source", SOURCE_PATHS)
+@pytest.mark.parametrize(
+    "variant,expected",
+    [(None, "theme-secondary"), ("", "theme-secondary"), (Variant.DANGER, "theme-danger"), ("bogus", "")],
+)
+def test_unset_variant_falls_back_to_secondary(
+    client_user_bulk_publisher_view, settings, monkeypatch, source, variant, expected
+):
+    """None and "" mean secondary, as for action buttons; an unknown string has no class and is reported by E209."""
+    monkeypatch.setattr(cv_bulk_publisher.get_view_class("archive"), "cv_action_variant", variant)
+    settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:secondary": "theme-secondary", "bulk:danger": "theme-danger"}
+    _, button = _archive_control(client_user_bulk_publisher_view.get(SOURCE_PATHS[source]))
+    assert button.get("class") == expected
+
+
+@pytest.mark.parametrize("source", SOURCE_PATHS)
+def test_unset_variant_honours_mode_key(client_user_bulk_publisher_view, settings, monkeypatch, source):
+    destination = cv_bulk_publisher.get_view_class("archive")
+    monkeypatch.setattr(destination, "cv_action_variant", None)
+    monkeypatch.setattr(destination, "cv_icon_action", "delete")
+    settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"bulk": "icon"}
+    settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:secondary": "base", "bulk:secondary:icon": "icon-only"}
+    _, button = _archive_control(client_user_bulk_publisher_view.get(SOURCE_PATHS[source]))
+    assert button.get("class") == "icon-only"

@@ -655,7 +655,7 @@ identity: `type="submit"`, `name="cv_bulk_stage"`, `value="review"`, plus the no
 | Field | Meaning |
 |---|---|
 | `cv_id` | Normalized control ID. |
-| `cv_variant` | Destination semantic variant: primary, secondary, tertiary or danger. |
+| `cv_variant` | Destination semantic variant: primary, secondary, tertiary or danger. An unset variant (`None` or `""`) arrives as secondary; any other value is passed through, resolves to no class and is reported by `viewset.E209`. |
 | `cv_label_mode` | Effective label, icon or both mode, after unavailable-icon fallback. |
 | `cv_label` | Literal short caption text for visible and hidden labels; the full caption stays in the review header. |
 | `cv_icon` | Normalized destination icon string (semantic name, library-prefixed name or raw classes), or `None` for blank/non-string input. The string can remain nonempty when unavailable. |

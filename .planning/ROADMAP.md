@@ -71,7 +71,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.42: Theme-registered data-attribute prefix for templates and object-detail tabs (#391) (INSERTED)** - approved U1/U2 handover; theme prefix registration, four templates and the existing object-detail tabs lifecycle. (completed 2026-11-21)
 - [x] **Phase 06.43: Breadcrumb class keys and accessible table sort state (#393) (INSERTED)** (completed 2026-11-21)
 - [x] **Phase 06.44: CSS tokens for manage pages and formsets with Bootstrap fallbacks (#394)** (completed 2026-11-21)
-- [ ] **Phase 06.46: Bulk toolbar: show only actions the viewer can enter (#399) (INSERTED)** - approved D-01–D-06 handover; destination entry gates govern toolbar visibility before the freeze.
+- [x] **Phase 06.46: Bulk toolbar: show only actions the viewer can enter (#399) (INSERTED)** - approved D-01–D-06 handover; destination entry gates govern toolbar visibility before the freeze. (completed 2026-11-22)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2319,7 +2319,7 @@ Plans:
 **Goal**: Offer only bulk actions whose destination entry gates admit the viewer, consistently across table and card selection controls, without per-row permission work or changes to submission authorization.
 **Source**: [Issue #399](https://github.com/jacob-consulting/django-crud-views/issues/399), approved `gsd-handover` D-01–D-06; amends #387 D-03 and D-19 from Phase 06.41.
 **Depends on**: Phase 06.41
-**Requirements**: TBD during planning from issue #399 acceptance criteria.
+**Requirements**: No formal IDs assigned; approved issue #399 acceptance and D-01–D-06 verified.
 **Scope**: Check each destination's `cv_has_access(user, None)` before its rendering state hook; reuse or share the existing non-object destination gate. Cache one private effective action list per request for every selection consumer while preserving the configured class tuple and system checks. Add no public setting, attribute or opt-out. C11 danger variants and downstream demo implementation are out of scope.
 **Success Criteria**:
 
@@ -2329,14 +2329,13 @@ Plans:
 4. Admission, scope, review and execution coverage continues to pass, including ordinary denial for a direct POST and unchanged all-blocked review behavior.
 5. Bulk and Guardian references explain visibility, custom gate alignment and submission limits; amend the unreleased #387 changelog entry, with no migration entry. Annotate the superseded Phase 06.41 decisions during implementation.
 
-**Plans**: 2/2 plans executed
+**Plans**: 2/2 plans complete
 
 Plans:
 **Wave 1**
 - [x] 06.46-01-PLAN.md
-- [ ] TBD (run $gsd-plan-phase 06.46 to break down)
 
-**Wave 2** *(blocked on Wave 1 completion)*
+**Wave 2**
 - [x] 06.46-02-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
@@ -2476,5 +2475,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 3/3 | Complete | 2026-11-21 |
 | 06.43. Breadcrumb class keys and accessible table sort state (#393) | 2/2 | Complete | 2026-11-21 |
 | 06.44. CSS tokens for manage pages and formsets (#394) | 2/2 | Complete | 2026-11-21 |
-| 06.46. Bulk toolbar destination entry gates (#399) | 0/TBD | Not started | - |
+| 06.46. Bulk toolbar destination entry gates (#399) | 2/2 | Complete | 2026-11-22 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

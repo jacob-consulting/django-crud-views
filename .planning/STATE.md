@@ -1,44 +1,52 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.46"
-current_phase_name: "Bulk toolbar: show only actions the viewer can enter (#399)"
-current_plan: 2
-status: verifying
-stopped_at: Completed 06.46-02-PLAN.md; all execution gates passed; awaiting phase audits and verification
-last_updated: "2026-11-22T07:38:34.461Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.46 complete, ready to plan Phase 7
+last_updated: "2026-11-22T07:54:34.147Z"
 last_activity: 2026-11-22
-last_activity_desc: Phase 06.46 execution started
-state_head: 03c220c1b8d8618997514bf7f5c8655b84f9c034
+last_activity_desc: Phase 06.46 complete, transitioned to Phase 7
+state_head: 9949e79663b0bb4659983a150fff3a81d43ab922
 progress:
   total_phases: 52
-  completed_phases: 50
+  completed_phases: 51
   total_plans: 280
   completed_plans: 280
+  percent: 98
 milestone_name: milestone
 ---
 
 Total Phases: 52
-Completed Phases: 50
+Completed Phases: 51
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-21)
+See: .planning/PROJECT.md (updated 2026-11-22)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.46 — Bulk toolbar: show only actions the viewer can enter (#399)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.46 (Bulk toolbar: show only actions the viewer can enter (#399)) — EXECUTING
-Current Plan: 2
-Total Plans in Phase: 2
-Status: Phase complete — ready for verification
-Last activity: 2026-11-22 — Phase 06.46 execution started
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: 0 (not planned)
+Status: Ready to plan
+Last activity: 2026-11-22 — Phase 06.46 complete, transitioned to Phase 7
 
-Next: $gsd-execute-phase 06.46
+Next: $gsd-plan-phase 7
+
+### Phase 06.46 completion — 2026-11-22
+
+- Both plans/six tasks complete; canonical verification passed 7/7, D-01–D-06 honored, no mandatory human checks. Destination-gated table/card controls share request-local caches; submission enforcement remains unchanged.
+- Primary suite 17,281 passed; separate examples 637 plus 300 subtests; recorder bulk 390; strict docs/Ruff passed. Independent verifier 66 tests plus 12 subtests; reviewer Django 4.2 subset 30 passed. No full dependency matrix or new browser capture claimed.
+- Validation six tasks covered; eight authored threats closed. Deep 14-file review has no new findings; WR-01 is the explicitly accepted N6-01 LOW lazy-presentation exception residual, still unresolved. UI 23/24 is code-derived only.
+- Codebase-map drift remains advisory; AGENTS.md requires refresh after gsd-ship. No push, PR, merge or publication. No matching todos, handoffs or learnings to promote.
 
 ### Phase 06.45 shipping — 2026-11-21
 
@@ -1649,7 +1657,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.41 | 14 | - | - |
 | 06.42 | 3 | - | - |
 | 06.43 | 2 | - | - |
-| 06.45 | 2 | - | - |
+| 06.46 | 2 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2297,6 +2305,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-22T07:38:26.841Z
-Stopped at: Completed 06.46-02-PLAN.md; all execution gates passed; awaiting phase audits and verification
+Last session: 2026-11-22T07:55:34.002638+00:00
+Stopped at: Phase 06.46 complete, ready to plan Phase 7
 Resume file: None

@@ -1,7 +1,7 @@
 # Bulk variants (#400): review fixes before merge
 
 **Date:** 2026-11-22
-**Status:** draft, awaiting maintainer approval
+**Status:** approved by the maintainer on 2026-11-22
 **Scope:** follow-up to phase 06.47 on branch `gsd/phase-06.47` (PR #402, open).
 
 ## Intent
@@ -73,9 +73,14 @@ Rewrap the two 146-character lines (`docs/development/stability.md`, `docs/refer
 
 | | Approach | Trade-off |
 |---|---|---|
-| A | Delete fixture and test now | Removes 366 lines and the ritual; relies on the live form-leaf comparison. **Chosen by the maintainer.** |
-| B | Keep, relax the policy to "regenerate once the form-leaf comparison passes" | Keeps a second oracle that then proves nothing the comparison does not. |
+| A | Delete fixture and test now | Removes 366 lines and the ritual; relies on the live form-leaf comparison and gives up the absolute byte pin (see below). **Chosen by the maintainer.** |
+| B | Keep, relax the policy to "regenerate once the form-leaf comparison passes" | Keeps the absolute byte pin, at the cost of a fixture that is regenerated whenever an upstream input changes. |
 | C | Keep until Phase 7 freezes the surface | Defers the same deletion and keeps the coupling meanwhile. |
+
+What approach A gives up, found by the final review: the comparison is relative to the form leaf. A byte-only
+change upstream of both leaves, such as the attribute order in `cv_attrs` or the `cv_id` format, no longer fails
+`test_bulk_variants.py`. Semantic changes there are still caught by the parsed-markup assertions in
+`test_bulk_source.py`, and absolute form-leaf bytes by `test_form_buttons_golden.py`.
 
 ## Verification
 

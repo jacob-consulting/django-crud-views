@@ -2,11 +2,13 @@
 
 **Date:** 2026-11-22
 **Status:** evaluation complete, recommendation made. **No implementation authorized.** The maintainer decisions in
-[section 11](#11-decisions-the-maintainer-has-to-make) are open; an implementation plan is written only after them.
+[section 12](#12-decisions-the-maintainer-has-to-make) are open; an implementation plan is written only after them.
 **Scope:** the `example/` projects of django-crud-views-tabler, django-crud-views-coreui and
 django-crud-views-adminlte. Nothing in `src/` of django-crud-views changes under the recommended option.
 **Audience:** the maintainer, and an implementer who has not seen the discussion. Everything needed to take over is in
-this file; section 13 says how to recompute every number in it.
+this file; section 14 says how to recompute every number in it.
+**Review:** an independent reviewer checked the first draft (`75467ca`) claim by claim against the five checkouts.
+Its corrections are applied here. What neither the author nor the reviewer could verify is listed in section 13.
 
 Commits analysed (each repo's `main` on 2026-11-22):
 
@@ -33,8 +35,8 @@ Goals, as set by the maintainer:
 Added by this document, from the repos' own rules:
 
 - **G4** One source of truth for whatever is shared: drift must be impossible or caught by a test.
-- **G5** What exists today keeps working: T's sdist ships `example/`, T's nox matrix and CI install the built
-  package, T's public demo deploys to Render.
+- **G5** What exists today keeps working: the sdists ship `example/`, the nox matrices install the built package,
+  T has CI and a public demo on Render.
 - **G6** The project-wide Decision Rule in `CLAUDE.md` (developer maintainability is a hard constraint; prefer the
   simplest bounded solution; document unsupported cases).
 
@@ -44,23 +46,26 @@ app in django-crud-views?"* That is option H5 in section 6, and it became the re
 ## 2. Summary
 
 1. **The app code is already almost one code base.** Of 4,611 lines of app Python (T), 107 lines differ between the
-   two most distant copies, and every one of them is a colour name, a CSS class, a mention of the theme's name, or
-   drift. One copy (A's, the newest) passes the complete example test suites of T (280 tests) and C (263 tests)
-   unchanged. Sharing the app Python needs no abstraction layer.
-2. **Templates and tests are where the themes really differ.** No app template is identical in all three repos, and
-   16% of the test lines differ between T and C. A plan that tries to share these in the first step would be the
-   complex solution G2 rules out.
-3. **The decision has three independent parts**, which the options below keep apart: the *seam* (what is shared,
+   two most distant copies. They are colour names, CSS classes, mentions of the theme's name, one A-only tag
+   library, five additive lines, the showcase app's coupling to the theme's crispy pack, and one behaviour drift
+   (`Order.steps`). One copy (A's, the newest) passes the complete example test suites of T (280 tests) and C (263
+   tests) unchanged. Sharing the app Python needs no abstraction layer.
+2. **The tests of the four crud apps are nearly theme-neutral too:** 2,522 lines in T, 40 of them different in C.
+   The theme-specific test code sits in `dashboard/tests.py` and in `config/`.
+3. **Templates are where the themes really differ.** No app template is identical in all three repos. T's are
+   written in Tabler's own components and differ from C's in every file.
+4. **The decision has three independent parts**, which the options below keep apart: the *seam* (what is shared,
    what stays theme-owned), the *home* (where the shared code lives) and the *transport* (how it reaches a theme
    repo).
-4. **Recommendation:** a fourth repository holds the Acme apps and the "Show code" app as one installable package,
+5. **Recommendation:** a fourth repository holds the Acme apps and the "Show code" app as one installable package,
    together with a stock-Bootstrap 5 project that makes it runnable and testable on its own (the maintainer's idea).
-   The theme repos consume that package the way they already consume django-crud-views and
-   django-crud-views-extensions: a sibling checkout for local development, a pinned install in nox, CI and Render.
-   A theme's `example/` shrinks to what a theme integration consists of: settings, templates, CSS.
-5. **Honest costs:** a fourth skin to build and keep working; app sources no longer sit in the theme repo's working
-   tree; until two themes have switched there is one copy more, not fewer; a theme-driven change to app code becomes
-   a cross-repo change.
+   The theme repos consume that package the way they consume django-crud-views: a sibling checkout for local
+   development, a git install in nox, CI and Render. A theme's `example/` shrinks to what a theme integration
+   consists of: settings, templates, CSS, and the theme's own tests.
+6. **Honest costs:** a fourth skin to build and keep working, with a test suite of its own; app sources no longer
+   sit in the theme repo's working tree; until two themes have switched there is one copy more, not fewer; T shares
+   the Python but keeps every template; a theme-driven change to app code becomes a cross-repo change; a theme's
+   first PyPI release then also needs the shared package on PyPI.
 
 ## 3. Findings
 
@@ -74,17 +79,22 @@ core and ext**, because `[tool.uv.sources]` in each `pyproject.toml` points at `
 inconsistent: its sources point two levels up (`../../django-crud-views`), so in a flat directory of checkouts A's
 `uv sync` fails.
 
-nox, CI and Render cannot see sibling checkouts. They install core from GitHub: T `noxfile.py` (`CRUD_VIEWS = "... @
-git+https://github.com/jacob-consulting/django-crud-views@main"`, always with `--no-sources`), T
-`requirements/demo.txt` (the same line), A `noxfile.py` (a pinned commit, `PIN`).
+nox, CI and Render cannot see sibling checkouts. They get the two upstream packages in two different ways:
+
+- **core, from GitHub.** T and C install the floating branch: `CRUD_VIEWS = "django-crud-views[...] @
+  git+https://github.com/jacob-consulting/django-crud-views@main"` in `noxfile.py`, passed in the same
+  `session.install("--no-sources", ...)` call as `.[examples,test]`; T repeats the line in `requirements/demo.txt`.
+  Only A pins a commit (`PIN = "75a4285..."` in `noxfile.py`).
+- **ext, from PyPI,** through the `examples` extra (`django-crud-views-extensions (>=0.4.0)`).
 
 So "clonable and executable" already means: three clones for local development, or a git install elsewhere. Any
 option below is measured against this baseline, not against a self-contained repo.
 
-Only T has `.github/workflows/`, `render.yaml` and `example/config/settings_demo.py`. C and A have none yet (C's
-spec lists them as a follow-up). None of the three repos has a release tag, and T's `publish.yml` refuses to publish
-until the core floor is `>=1.0.0rc1` (`scripts/check_release_floor.py`). **A restructuring now breaks no released
-artefact.**
+Only T has `.github/workflows/`, `render.yaml` and `example/config/settings_demo.py` (C's spec lists them as a
+follow-up). All three have `noxfile.py` with `examples` and `package` sessions, `scripts/check_dist.py` and
+`scripts/check_release_floor.py`. None of the three has a release tag (`git ls-remote --tags origin` is empty for
+each), and `check_release_floor.py` refuses a release until the core floor is `>=1.0.0rc1`. **A restructuring now
+breaks no released artefact.**
 
 ### 3.2 Size and overlap of `example/`
 
@@ -106,29 +116,32 @@ artefact.**
 
 ### 3.3 Every difference in the app Python, and why it exists
 
-Fifteen of the 61 files differ somewhere. This is the complete list.
+Fifteen of the 61 files differ somewhere (fourteen below, and the empty `dashboard/templatetags/__init__.py` that
+exists in A only). This is the complete list.
 
 | File | Difference | Kind |
 |---|---|---|
 | `catalog/seed.py` | 18 flavour-note colours: T `"red"`, `"lime"`, `"azure"`; C and A `"danger"`, `"success"`, `"info"` | colour vocabulary |
 | `catalog/models.py` | `card_color`, `stock_color` values (same vocabulary split); help text "A Tabler colour name" / "A CoreUI theme colour name" / "A Bootstrap theme colour name" | colour vocabulary, theme name |
-| `sales/models.py` | `AVATAR_COLORS`: T ten Tabler palette names, C and A six Bootstrap theme colours; `Order.steps` in T lacks the `done` key C and A have | colour vocabulary, **drift** |
+| `sales/models.py` | `AVATAR_COLORS`: T ten Tabler palette names, C and A six Bootstrap theme colours; `Order.steps` in T lacks the `done` key C and A have | colour vocabulary; **behaviour, by drift** |
 | `showcase/models.py` | `stock_badge` values; docstring names the theme | colour vocabulary, theme name |
 | `roastery/views.py`, `shipping/views.py`, `sales/views/addresses.py`, `sales/views/subscriptions.py` | badge markup: T `badge bg-{}-lt`, C and A `badge bg-{0}-subtle text-{0}-emphasis`, plus the colour names | CSS classes |
 | `sales/views/customers.py` | the same badge split; avatar: T and C `avatar avatar-sm`, A `acme-avatar` (AdminLTE has no `.avatar`) | CSS classes |
 | `sales/forms.py` | A replaces `<h3 class="card-title">` by `fs-6 fw-semibold mb-3` (AdminLTE floats `.card-title`, A's tracker A17) | CSS classes |
-| `dashboard/views.py` | A adds three context values for its info boxes (5 lines, additive) | additive |
-| `showcase/views.py` | layout objects imported from `django_tabler.crispy.layout` / `django_coreui.crispy.layout` / `crispy_bootstrap5.bootstrap5`; A sets `form-range` and `form-control-color` on widgets and uses `Field("sku", disabled=True)` for `UneditableField` | **real theme coupling** |
+| `dashboard/views.py` | A adds three context values for its info boxes (5 lines) | additive |
+| `showcase/views.py` | layout objects imported from `django_tabler.crispy.layout` / `django_coreui.crispy.layout` / `crispy_bootstrap5.bootstrap5`; A sets `form-range` and `form-control-color` on widgets and uses `Field("sku", disabled=True)` for `UneditableField` (15 lines) | **real theme coupling** |
 | `showcase/management/commands/seed_demo_showcase.py` | help text names the theme | theme name |
-| `dashboard/templatetags/acme.py` | exists only in A (`initials`, `avatar_color`, `icon_class`; T and C get the first two from their shell's tag library) | A only |
+| `dashboard/templatetags/acme.py` | exists only in A, 28 lines (`initials`, `avatar_color`, `icon_class`; T and C get the first two from their shell's tag library) | A only |
 
 Migrations: `catalog/migrations/0003_flavornote_color_help_text.py` exists in C and A, `0004_..._bootstrap.py` in A
-only. Both exist **only because the help text names the theme**. Naming a CSS framework in a model's help text forced
-schema migrations that differ per repo.
+only. Both exist **only because the help text names the theme**. `catalog/migrations/0001_initial.py` line 98 still
+says "A Tabler colour name" in all three repos.
 
 Two conclusions:
 
-- Apart from `showcase/views.py`, nothing here is behaviour. It is vocabulary.
+- Of the 107 lines, 48 are not vocabulary: the A-only tag library (28), `showcase/views.py` (15) and
+  `dashboard/views.py` (5). The one behaviour difference in the five non-showcase apps is `Order.steps`, and C's and
+  A's version is a superset of T's.
 - The showcase app is different in kind. Its purpose is to exercise the theme's crispy pack ("It imports layout
   objects from `django_tabler`'s crispy pack, which this form showcase exists to exercise", T
   `templates/project/code_panel.html`).
@@ -148,8 +161,9 @@ touched. Python files of the six apps were copied from one theme's example into 
 | C | A | 8 | 263 passed, 307 subtests passed |
 
 What this proves: A's app Python is functionally a drop-in for T and C. What it does not prove: that the pages look
-right. No test in T asserts a badge's colour class, which is itself a finding. A's own suite was not run (its path
-sources need a different directory layout, see 3.1).
+right. T asserts four badge colour classes (`dashboard/tests.py` lines 760 and 778 to 779, `sales/tests/
+test_orders.py` line 347), but all four come from theme class keys; **no T test asserts a colour class that app code
+emits**. A's own suite was not run (its path sources need a different directory layout, see 3.1).
 
 ### 3.5 The Bootstrap 5.3 colour vocabulary works in all three CSS frameworks
 
@@ -165,73 +179,123 @@ Rendered with that stylesheet (row 1: T today; row 2: semantic names with Tabler
 ![Badges under Tabler, dark](2026-11-22-shared-acme-demo-badges-dark.png)
 
 Row 3 is readable in both modes. It is heavier than Tabler's own style and the palette shrinks from ten avatar
-colours to six. Whether that is acceptable for the Tabler demo is a taste decision (D4 in section 11).
+colours to six. Whether that is acceptable for the Tabler demo is a taste decision (D4 in section 12).
 
 ### 3.6 Templates
 
-- Ten of the twelve app templates extend `cv_extends` or `crud_views/tags/card.html`, or are snippets. They do not
-  depend on a shell. Only `dashboard/index.html` and `dashboard/user_list.html` extend the shell
-  (`django_tabler/layouts/app.html`, `django_coreui/layouts/app.html`, A: `project/page.html`).
-- T's markup is Tabler's own (`row-deck row-cards`, `subheader`, `card-actions`, `datagrid`). C and A are written in
-  Bootstrap 5.3 utilities. Five of the twelve are byte-identical between C and A; five more differ in at most five
-  lines (a comment, `border-top-3` against `border-3`, `avatar` against `acme-avatar`, the packing slip's print
-  wrapper).
+- Ten of the twelve app templates extend `cv_extends` or `crud_views/tags/card.html`, or are snippets. Only
+  `dashboard/index.html` and `dashboard/user_list.html` extend the shell (`django_tabler/layouts/app.html`,
+  `django_coreui/layouts/app.html`, A: `project/page.html`).
+- **Those ten still depend on blocks that only the themes' pages define.** `sales/order_detail.html` and
+  `shipping/shipment_detail.html` override `{% block page_title %}` to add the state badge. `page_title` exists in
+  `crud_views_<theme>/page.html` of all three themes, not in core's templates and not in
+  `django-crud-views/examples/bootstrap5/project/templates/project/crud_views.html`. Django ignores an override of
+  a block the parent does not define, so the badge would silently disappear. The blocks the app templates override
+  are `title`, `page_title`, `cv_context`, `cv_content`, `content`, `extra_js` (and the `card_*` blocks of
+  `crud_views/tags/card.html`). A's `packing_slip.html` also overrides AdminLTE's `content_header`, to hide the
+  page header in print.
+- T's markup is Tabler's own (`row-deck row-cards`, `subheader`, `card-actions`, `datagrid`, `card-status-top`,
+  `steps steps-counter`). **Every one of T's nine non-dashboard templates of the five apps differs from C's**, by 2
+  to 52 changed lines.
+- C and A are written in Bootstrap 5.3 utilities. Five of the twelve are byte-identical between C and A; five more
+  differ in at most five lines (a comment, `border-top-3` against `border-3`, `avatar` against `acme-avatar`, the
+  packing slip's print wrapper). No `data-bs-` or `data-coreui-` attribute occurs in them outside
+  `dashboard/user_list.html`.
 - Project templates (`templates/project/`, `templates/registration/`, the shell's `includes/`) and `acme.css` are
-  the skin itself. None is identical anywhere.
+  the skin itself. None is identical in all three (`code_panel_shell.html` is identical in C and A, `favicon.svg`
+  in T and C).
 
-### 3.7 Tests
+### 3.7 App static files
 
-- 3 of 18 test files are identical. Outside `dashboard/tests.py` the differences are small and of one kind: where
-  the theme puts things. Examples: `html.index('class="page-header')` against `html.index("<main>")`;
+- `sales/static/sales/sales.js`: identical in all three.
+- `dashboard/static/dashboard/revenue-chart.js`: differs in all three, and not by vocabulary. It reads the theme's
+  CSS variables (`--tblr-*`, `--cui-*`, `--bs-*`), checks the dark-mode attribute (`data-bs-theme`,
+  `data-coreui-theme`) and redraws on a `MutationObserver` (T, A) or on the shell's `ColorSchemeChange` event (C).
+  The CSS variable prefix is not core's data prefix (`tblr` is not `bs`), so no existing hook removes this.
+- `dashboard/static/dashboard/app.css`: T only (a fix for ApexCharts).
+
+The dashboard's static files belong to the skin, like its two templates.
+
+### 3.8 Tests
+
+Tests live **inside the app directories** (`catalog/tests.py`, `sales/tests/test_orders.py`, ...) and in `config/`.
+`example/pytest.ini` collects `tests.py` and `test_*.py`.
+
+| Test group | Files | Lines (T) | Lines (A) | Changed T→C | Changed C→A | Changed T→A |
+|---|---:|---:|---:|---:|---:|---:|
+| `catalog`, `roastery`, `sales`, `shipping` | 11 | 2,522 | 2,582 | 40 | 75 | 96 |
+| `dashboard/tests.py` | 1 | 932 | 1,191 | 344 | 294 | 495 |
+| `showcase/tests.py` | 1 | 186 | 186 | 16 | 19 | 30 |
+| `config/test_*.py` | 5 | 341 | 288 | 228 | 175 | 403 |
+
+- The tests of the four crud apps differ by 1.6% between T and C. The differences are of one kind: where the theme
+  puts things. Examples: `html.index('class="page-body')` (T) against `html.index("<main>")` (C);
   `cv-tabler-section-legend` against `cv-coreui-section-legend` against `class=""`.
 - A already wraps this in a helper, `sales/tests/markup.py` (`header()`, `headings()`, `SUBTITLE`): a per-theme
-  module that tells a test where the header is. That is a ready pattern for sharing tests later.
-- `dashboard/tests.py` (T 932, C 1,113, A 1,191 lines) mixes app behaviour, "Show code" tests and the theme's own
-  integration tests (`test_no_tabler_left`, `test_every_page_uses_coreui_classes_only`, layout switch, navigation).
-  Coverage has drifted: C and A have page sweeps (`test_every_page_renders`) T lacks.
+  module that tells a test where the header is. That is a ready pattern for sharing tests.
+- `dashboard/tests.py` mixes app behaviour, "Show code" tests and the theme's own integration tests
+  (`test_no_tabler_left`, `test_every_page_uses_coreui_classes_only`, layout switch, navigation). Coverage has
+  drifted: C and A have page sweeps (`test_every_page_renders`) T lacks.
+- The `config/` difference is mostly three T-only files for the Render demo (`test_boot.py`, `test_demo.py`,
+  `test_ratelimit.py`, 228 lines).
+- Some tests read files by location: `catalog/tests.py` line 204 (T, C) opens `acme.css` through
+  `Path(__file__).resolve().parents[1]`. Several guards scan `settings.BASE_DIR` for app code:
+  `IconVocabularyTests.test_example_code_names_no_library` (all three), `OriginTests` (C, A), `CoreuiOriginTests`
+  (A), `LayoutBoundaryTests` (T). They see nothing once the apps leave `example/`.
 
-### 3.8 The "Show code" feature
+### 3.9 The "Show code" feature
 
 Per repo: 361 (T), 361 (C), 380 (A) lines of Python, about 150 lines of templates, 38 lines of JavaScript.
 
 | Piece | File | State |
 |---|---|---|
-| Collector (reads files, Pygments) | `config/showcode.py` | differs in constants only, except A |
-| Views (`theming`, `code_panel`, `pygments_stylesheet`) | `config/views.py` | differs in constants and prose |
+| Collector (reads files, Pygments) | `config/showcode.py` | T and C differ in constants only; A replaces `collect_shell_files()` by `host_package()` |
+| Views (`theming`, `code_panel`, `pygments_stylesheet`) | `config/views.py` | T and C differ in constants and prose; A's `theming` passes `host` where the others pass `shell_files` and `shell_lines` |
 | Tags (`code_panel_url`, `code_panel`) | `config/templatetags/showcode.py` | identical |
 | Routes | `config/urls.py` | identical |
 | Panel shell | `templates/project/code_panel_shell.html` | one class differs |
-| Panel content | `templates/project/code_panel.html` | icon tag, `data-*-toggle` prefix, header markup |
+| Panel content | `templates/project/code_panel.html` | icon tag, `data-*-toggle` prefix, header markup, the theme's name in the prose |
 | Button and panel on crud pages | `templates/project/crud_views.html` | extends the theme's page; theme-owned |
 | Theming page | `templates/project/theming.html` | theme markup and prose; theme-owned |
 | Lazy loading | `static/acme/code-panel.js` | one event name differs |
+| Panel CSS (`.code-block`, `.code-files`) | inside `static/acme/acme.css` | uses the theme's CSS variables (`--tblr-font-monospace`, `--cui-...`, `--bs-...`) |
 | Tests | `dashboard/tests.py::ShowCodeTests` (16 tests in T) | in the 900 to 1,200 line file |
 
-What actually varies between the themes:
+What varies between the themes:
 
 1. Paths: `THEME_DIR` (`src/crud_views_<theme>`), `SHELL_DIR` (`src/django_<theme>`; A has no shell package and
-   shows the installed `adminlte-django` version through `host_package()` instead).
+   shows the installed `adminlte-django` version instead).
 2. `THEME_SETTINGS`: the `settings.py` assignments shown on `/theming/` (T and C five names, A twelve).
 3. `THEME_PACKAGES`: names whose appearance in app code would mean the app knows the theme.
-4. `THEME_DOC_URL`, and the prose in `GROUPS`.
-5. The dark-mode attribute: `data-bs-theme` (T, A), `data-coreui-theme` (C).
-6. The collapse event: `show.bs.collapse` (T, A), `show.coreui.collapse` (C); `data-bs-toggle` against
+4. `THEME_DOC_URL`, and the titles and prose in `GROUPS` (A's third group is "CSS", the others' "CSS and
+   JavaScript").
+5. The theme's display name in the panel ("not one line refers to Tabler or the theme").
+6. The dark-mode attribute: `data-bs-theme` (T, A), `data-coreui-theme` (C).
+7. The collapse event: `show.bs.collapse` (T, A), `show.coreui.collapse` (C); `data-bs-toggle` against
    `data-coreui-toggle`.
-7. The icon tag: `{% icon "code" %}` (T), `{% icon "cil-code" %}` (C), `{% cv_icon "code" %}` (A).
+8. The icon tag: `{% icon "code" %}` (T), `{% icon "cil-code" %}` (C), `{% cv_icon "code" %}` (A).
+9. The CSS variables in the panel's CSS.
 
-Items 5 and 6 are one fact, the theme's data-attribute prefix, and **core already exposes it**: `get_data_prefix()`
-in `src/crud_views/lib/data_prefix.py`, `{% cv_data_prefix %}` in `src/crud_views/templatetags/crud_views.py`, and
-`data-data-prefix` on `#cv-config` (`src/crud_views/templates/crud_views/tags/cv_config.html`, read in
-`static/crud_views/js/adapters.js`). Item 7 is solved by `{% cv_icon %}` with semantic names, as A does. That leaves
-items 1 to 4: about ten values, which fit one settings dict.
+Items 6 and 7 are one fact, the theme's data-attribute prefix, and **core already exposes it** (unreleased, since
+`95d40dd`, #395): `get_data_prefix()` in `src/crud_views/lib/data_prefix.py`, `{% cv_data_prefix %}` in
+`src/crud_views/templatetags/crud_views.py`, and `data-data-prefix` on `#cv-config`
+(`src/crud_views/templates/crud_views/tags/cv_config.html`, read in `static/crud_views/js/adapters.js`). Item 8 is
+solved by `{% cv_icon %}` with semantic names, as A does. Items 1 to 5 are about a dozen values. Item 9 stays with
+the theme.
 
-Two properties of the collector must survive any change:
+Four places in the collector are tied to the apps living in `example/` (`T/example/config/showcode.py`):
 
-- It decides what an "example app" is by location: `Path(config.path).resolve().parent == EXAMPLE_DIR`
-  (`_example_app_dir`). Any move of the apps changes this line.
-- It reads `config/settings.py` with `ast` and shows whole top-level assignments (`settings_excerpt`). A
-  `settings.py` that star-imports a shared base would show nothing there. **This is a reason to keep each theme's
-  `settings.py` whole and local.**
+- `_example_app_dir`: an app counts if `Path(config.path).resolve().parent == EXAMPLE_DIR`.
+- `_sources` (line 99): `path.relative_to(EXAMPLE_DIR.parent)` raises `ValueError` for a file outside the theme
+  repo. The panel displays that path.
+- `code_app_label` (line 122): `type(view).__module__.split(".")[0]` is the app label only while apps are top-level
+  modules.
+- `own_module_label` (line 128): builds the label of the page's own module from the module path. If it and the file
+  labels disagree, the panel silently stops opening on the right file.
+
+And one property of its settings excerpt: it reads `config/settings.py` with `ast` and shows whole top-level
+assignments (`settings_excerpt`). A `settings.py` that star-imports a shared base would show nothing there. **This
+is a reason to keep each theme's `settings.py` whole and local.**
 
 Its security posture is stated in its docstring and worth keeping word for word: "The set of files is fixed here,
 never taken from a request", and the app label is checked against the app registry.
@@ -239,7 +303,7 @@ never taken from a request", and the app label is checked against the app regist
 Core's and ext's own examples have a different, simpler feature (`examples/bootstrap5/project/templatetags/
 example_tags.py`, `snippet_panels`). It is out of scope here.
 
-### 3.9 Drift that has already happened
+### 3.10 Drift that has already happened
 
 - T's `Order.steps` lacks `done`; T's dashboard hard-codes `<span class="badge bg-blue-lt">` where C and A render
   `{{ order.state_badge }}`.
@@ -249,30 +313,44 @@ example_tags.py`, `snippet_panels`). It is out of scope here.
   name, A inside its theme plan).
 - The demo-deployment files exist in T only; `boot.py` is a third byte-identical copy of core's and ext's.
 
-C's spec made the copy a conscious, temporary choice: "Sharing code with the Tabler project (no common base
-package). Copy now; tracker U8 records whether a shared abstraction is worth proposing later", and its tracker says
-"revisit when a third theme exists". The third theme exists.
+C's spec made the copy a conscious choice for that build: "Sharing code with the Tabler project (no common base
+package). Copy now" (`superpowers/specs/2026-11-20-coreui-theme-design.md`, non-goals). C's copy is two days old
+(first commit 2026-11-20), A's one day.
 
-### 3.10 Packaging, CI and deployment facts that constrain the options
+### 3.11 Packaging, CI and deployment facts that constrain the options
 
-- T's sdist ships `example/` (`[tool.hatch.build.targets.sdist] only-include`), and `scripts/check_dist.py` checks
-  every archive member against an allowlist.
+- The sdists ship `example/` (`[tool.hatch.build.targets.sdist] only-include`). `scripts/check_dist.py` checks the
+  top-level entries of the sdist and the wheel's packages against an allowlist; it does not look inside `example/`.
 - T's Render build is `pip install ".[examples]" -r requirements/demo.txt`, and `demo.yml` deploys an exact commit.
-- A PyPI upload cannot carry a git URL in its metadata. That is why T keeps the core git URL in `noxfile.py` and
-  `requirements/demo.txt` and not in the `examples` extra.
+- A PyPI upload cannot carry a git URL in its metadata. That is why core's git URL sits in `noxfile.py` and
+  `requirements/demo.txt`, next to the plain requirement in `pyproject.toml`.
+- **`scripts/check_release_floor.py` (identical in T, C, A) matches by substring:** `GIT_SOURCE =
+  "git+https://github.com/jacob-consulting/django-crud-views"`, tested with `GIT_SOURCE in path.read_text()` over
+  `noxfile.py` and `requirements/demo.txt`. A git install line for any repository whose name starts with
+  `django-crud-views` trips it, and `publish.yml` runs it first.
+- **uv ignores a `[tool.uv.sources]` entry for a package that no dependency or extra names** (tested by the
+  reviewer: `uv lock` resolved without it and the source was absent from `uv.lock`).
+- **A's pinned core predates the data-prefix hook.** `PIN` is `75a4285` (#392); `data_prefix.py` arrived one commit
+  later in `95d40dd` (#395).
 - **hatchling and submodules (verified by experiment):** an sdist built from a checkout whose submodule is
   initialised contains the submodule's files. Built from a plain `git clone`, it is silently incomplete: no error,
   the files are just missing.
 - **Render and submodules (not verified):** community posts say Render syncs top-level submodules automatically and
-  does not recurse. No official documentation was found. Treat as unknown until a real deploy shows it.
+  does not recurse. No official documentation was found.
+- Core 0.30.0 and ext 0.4.0 are on PyPI. The name `acme` is taken there (certbot's ACME library).
 
-### 3.11 Precedents in these repos
+### 3.12 Precedents in these repos
 
 - **Semantic names with a per-theme table:** `example/config/icons.py` (`ACME_ICONS`), introduced so that "the two
   Acme copies stay identical" (C's spec, goal 4).
+- **App-declared class keys that a theme or project overrides:** `AppConfig.crud_views_button_class_defaults`,
+  documented in core's `docs/reference/buttons.md` ("button classes = core defaults + installed-app defaults +
+  theme registrations + `CRUD_VIEWS_BUTTON_CLASSES`"). Core's own workflow app declares its badges this way
+  (`src/crud_views_workflow/apps.py`: `workflow:badge-success` and seven more). Lookup: `get_button_class()` and
+  `{% cv_button_class %}`.
 - **Vendoring by script with a parity test:** `scripts/vendor_templates.py`, `HAND_EDITED`, `test_pack_parity.py`
   for the crispy packs.
-- **Pinned git installs of an unreleased dependency:** `CRUD_VIEWS` (T, C), `PIN` (A).
+- **A git install of an unreleased dependency** next to a plain requirement: core (3.1).
 - **Template shadowing as the theme mechanism:** a theme app listed before `crud_views`; a project's `DIRS` before
   app directories.
 - **Read-only upstream checkouts with a tracker** in every theme repo's `CLAUDE.md`.
@@ -294,39 +372,57 @@ transport are logistics.
 
 | Area | Owner | Why |
 |---|---|---|
-| App Python of `catalog`, `dashboard`, `roastery`, `sales`, `shipping`, with migrations and app static | **shared** | 3.3, 3.4: identical apart from vocabulary |
+| App Python of `catalog`, `dashboard`, `roastery`, `sales`, `shipping`, with migrations | **shared** | 3.3, 3.4 |
+| `sales/static/sales/sales.js` | **shared** | 3.7: identical |
 | The nine templates of those apps that do not extend a shell, written in Bootstrap 5.3 | **shared, as defaults** | 3.6: C and A nearly agree already |
 | A theme's own version of one of those nine | **theme**, as an override in `example/templates/<app>/` | Django's `DIRS` wins over app directories; the mechanism the themes already rely on |
-| `dashboard/index.html`, `dashboard/user_list.html` | **project** (every theme, and the Bootstrap project), in `example/templates/dashboard/` | 3.6: they extend the project's shell, so a package cannot ship them |
-| "Show code" collector, views, routes, tags, script, default templates | **shared** | 3.8 |
+| `dashboard/index.html`, `dashboard/user_list.html`, `revenue-chart.js`, T's `app.css` | **project** (every theme, and the Bootstrap project), in `example/templates/dashboard/` and `example/static/dashboard/` | 3.6, 3.7: they extend the project's shell and read its CSS variables |
+| "Show code" collector, views, routes, tags, script, default templates | **shared** | 3.9 |
 | `showcase` app | **theme**, unchanged | 3.3: it exists to exercise that theme's crispy pack |
-| `config/settings.py`, complete | **theme** | 3.8: the theming page shows it; it is the integration recipe |
-| `config/icons.py`, navigation (`acme_nav.py`, `menu.py`), shell includes, `acme.css`, login page | **theme** | they are the skin |
-| Tests of app behaviour | **shared**, run where the shared code lives | 3.7 |
-| Tests of a theme's markup, layout and navigation | **theme** | 3.7 |
+| `config/settings.py`, complete | **theme** | 3.9: the theming page shows it; it is the integration recipe |
+| `config/icons.py`, navigation (`acme_nav.py`, `menu.py`), shell includes, `acme.css` (with the panel's CSS), login page | **theme** | they are the skin |
+| Tests of app behaviour | **shared**, run where the shared code lives | 3.8: 1.6% theme-specific |
+| Tests of a theme's markup, layout and navigation, and its page sweep | **theme**, in `example/tests/` | 3.8 |
 
-Rule for shared code, to be written into its `CLAUDE.md`: **it never names a theme and never emits a class that is
-not Bootstrap 5.3 or `acme-*`.** A theme that needs something else overrides a template or styles `acme-*` in its
-`acme.css`.
+**The page contract.** A project's `CRUD_VIEWS_EXTENDS` template must define the blocks `title`, `page_title`,
+`cv_context`, `cv_content`, `content` and `extra_js` (3.6). All three theme pages do. The Bootstrap project's page
+must too, which core's own example page does not. The shared code's tests assert that the state badge appears in
+the order title, which fails if `page_title` is missing.
+
+**Rules for shared code**, written into its `CLAUDE.md` and enforced by tests there:
+
+1. It never names a theme, in code, help text or comments (ported from the guards in 3.8, which then scan the
+   package instead of `settings.BASE_DIR`).
+2. It emits only Bootstrap 5.3 classes and `acme-*` classes. A theme that needs something else overrides a template
+   or styles `acme-*` in its `acme.css`.
+3. It never imports the project package. Three places do today and are cut when the code moves:
+   `dashboard/templatetags/acme.py` imports `config.icons` (A); `config/login_required.py` carries the literal
+   `"config.login_required.LoginRequiredMiddleware"`; `config/templatetags/showcode.py` imports `config.showcode`.
+   `FORMAT_MODULE_PATH = ["config.formats"]` in settings changes with them.
+
+One known reference stays: `dashboard/seed.py` has `OWNER_APPS = ["auth", "catalog", "sales", "roastery",
+"showcase"]` and filters permissions by app label. A label with no installed app matches nothing, so it works with
+and without a showcase app. It gets a comment.
 
 ### 5.2 Alternatives for the colour and badge differences
 
 | | Approach | Judgment |
 |---|---|---|
-| a | Bootstrap 5.3 semantic colours and `bg-*-subtle text-*-emphasis` everywhere; `acme-avatar` for avatars | **Proposed.** Zero new code. Proven by 3.4 and 3.5. Costs Tabler's ten-colour palette and its lighter badge style. |
-| b | Semantic tones in app code, and a per-project table that maps tone to class, like `ACME_ICONS` | Keeps Tabler's look. Adds a helper and a setting that every badge call goes through. Worth it only if (a) is rejected on sight. |
-| c | App-declared class keys through core's `crud_views_button_class_defaults` on the AppConfig (`src/crud_views/lib/button_classes.py`), overridden by `CRUD_VIEWS_BUTTON_CLASSES` | Rejected. It bends a button registry into a general CSS lookup for a demo. |
+| a | Bootstrap 5.3 semantic colours and `bg-*-subtle text-*-emphasis` everywhere; `acme-avatar` for avatars | **Proposed as the start.** Zero new code. Proven by 3.4 and 3.5. Costs Tabler's ten-colour palette and its lighter badge style. |
+| c | The shared apps declare class keys (`acme:badge-success`, ...) with Bootstrap defaults through `crud_views_button_class_defaults`; T's example overrides them in `CRUD_VIEWS_BUTTON_CLASSES`; app code calls `get_button_class("acme", ...)` | **The upgrade if D4 is "no".** A documented core mechanism that core's workflow app uses for exactly this (3.12). Keeps T's look. Costs one declaration table and an indirection at each of the six badge call sites, visible in "Show code". |
+| b | Semantic tones in app code and a hand-written per-project table that maps tone to class | Rejected: it re-implements (c). |
 
 ### 5.3 Why not share more in the first step
 
-- **Settings base module:** rejected. It breaks the theming page's excerpt (3.8) and hides the one file a reader of a
+- **Settings base module:** rejected. It breaks the theming page's excerpt (3.9) and hides the one file a reader of a
   theme repo most wants to read whole.
 - **Showcase:** sharing it needs a seam for three layout objects plus widget attributes that differ in substance for
-  A. Fifteen differing lines do not pay for that. Documented as not shared; revisit if a fourth theme copies it.
-- **All tests at once:** needs a markup contract per theme before the first shared file exists. The existing suites
-  keep passing against shared app code (3.4), so they can stay where they are and be thinned later.
+  A (the theme packs add `form-range` in `field.html`, stock crispy-bootstrap5 needs it on the widget). Fifteen
+  differing lines do not pay for that. Documented as not shared; revisit if a fourth theme copies it.
 - **Navigation data:** T and C define the menu in `acme_nav.py` (134 and 121 lines), A in `menu.py` for
   adminlte-django's own menu format. Two formats, three consumers. Left alone.
+- **Deleting the themes' copies of the behaviour tests at once:** they pass against shared code (3.4), so they stay
+  until the shared suite has run for a while (stage 5).
 
 ## 6. Home: where the one copy lives
 
@@ -340,10 +436,11 @@ not Bootstrap 5.3 or `acme-*`.** A theme that needs something else overrides a t
 
 ### H5 in detail
 
-A new repository, working name `django-crud-views-acme` (D2). It holds the Acme apps and "Show code" as a package,
-and an `example/` project that runs them on django-crud-views' stock Bootstrap 5 theme, the way
-`django-crud-views/examples/bootstrap5` runs core's feature examples: a small `base.html` that loads Bootstrap from
-the CDN, a navigation, a sign-in page, `CRISPY_TEMPLATE_PACK = "bootstrap5"`.
+A new public repository, working name `django-crud-views-acme` (D2). It holds the Acme apps and "Show code" as a
+package, and an `example/` project that runs them on django-crud-views' stock Bootstrap 5 theme, the way
+`django-crud-views/examples/bootstrap5` runs core's feature examples: a `base.html` that loads Bootstrap from the
+CDN, a navigation, a sign-in page, `CRISPY_TEMPLATE_PACK = "bootstrap5"`. Unlike core's example page it defines the
+page contract of 5.1.
 
 What it buys:
 
@@ -356,14 +453,18 @@ What it buys:
 
 What it costs, judged hard:
 
-- **It is new code.** A Bootstrap shell (base, navigation, sign-in, dashboard, users page), its CSS and its tests.
-  Estimate: 600 to 900 lines of templates, mostly adapted from A, 200 lines of settings, a few hundred lines of
-  tests. It replaces about 5,700 duplicated lines per theme repo (app Python and migrations without `showcase`, and
-  the shared part of "Show code"), but only once the themes switch.
+- **It is new code, and a test suite.** A Bootstrap shell (base, navigation, sign-in, dashboard, users page), its
+  CSS, and tests: 600 to 900 lines of templates, mostly adapted from A, 200 lines of settings. The tests are the
+  larger part: A's tests of the four crud apps (2,582 lines), its "Show code" tests and its page sweep are ported,
+  with a `markup.py` for the Bootstrap page. Without them H5 would be H4 with a nicer front page.
+- **Part of the shared "Show code" app cannot be tested there.** The Bootstrap project has no theme package, so the
+  theming page and the `shell_dir` and `host_package` branches run only in the theme repos. Their tests stay there.
 - **Four skins to keep working instead of three.** Every new demo page needs a Bootstrap version first.
-- **One more repository** with a Taskfile, noxfile, `CLAUDE.md`, linting, and later CI.
-- **Scope creep is the real risk:** its own docs site, its own Render demo, its own PyPI project. None of that is
-  needed for the goal. Section 9 keeps it out.
+- **One more repository** with a Taskfile, noxfile, `CLAUDE.md`, linting, a release-floor guard of its own (it uses
+  core hooks that are not on PyPI yet), and later CI.
+- **Scope creep is the real risk:** its own docs site and its own Render demo. Neither is needed for the goal.
+- It replaces about 5,700 duplicated lines per theme repo (app Python and migrations without `showcase`, and the
+  shared part of "Show code"), and later about 2,500 lines of tests, but only once the themes switch.
 
 H5 does not choose a transport. That is section 7.
 
@@ -373,28 +474,28 @@ Scores: `++` clearly good, `+` fine, `-` a cost, `--` a serious cost.
 
 | | Transport | G1 clone and run | G2 easy to explain | G4 one source | G5 keeps CI, sdist, Render | Verdict |
 |---|---|---|---|---|---|---|
-| T0 | Keep three copies | ++ | ++ | -- | ++ | Rejected: 3.9 |
+| T0 | Keep three copies | ++ | ++ | -- | ++ | Rejected: 3.10 |
 | T1 | Copy by script, parity test | ++ | + | - | ++ | Fallback |
 | T2 | `git subtree` | ++ | - | - | ++ | Rejected |
 | T3 | Git submodule | + | - | ++ | - | Viable, not recommended |
-| T4 | Installed package, sibling checkout plus pin | + | ++ | ++ | + | **Recommended** |
+| T4 | Installed package, sibling checkout plus git install | + | + | ++ | + | **Recommended** |
 | T5 | Monorepo of all themes | -- | + | ++ | -- | Rejected |
 | T6 | Symlinks; copier or cookiecutter | -- | -- | + | -- | Rejected |
 
 ### T0. Keep three copies
 
-Costs nothing today and needs no explanation. But 3.9 is the bill so far, and C's copy is two days old (first commit
-2026-11-20), A's one day: a feature built three times, a behaviour difference in `Order.steps`, diverging migrations,
-diverging test coverage. It gets worse with every feature. Rejected.
+Costs nothing today and needs no explanation. But 3.10 is the bill after two days: a feature built three times, a
+behaviour difference in `Order.steps`, diverging migrations, diverging test coverage. It gets worse with every
+feature. Rejected.
 
 ### T1. Copy by script, with a parity test (vendoring)
 
 Each theme repo keeps real files in `example/`. A script copies them from a checkout of the home repo and writes a
 manifest of hashes. A test fails when a copied file no longer matches its manifest hash. It is the crispy-pack method
-(3.11) applied to the demo.
+(3.12) applied to the demo.
 
-- For: nothing changes for a user, for CI, for the sdist or for Render. A theme repo stays complete by itself. This
-  is the lowest-risk option.
+- For: nothing changes for a user, for CI, for the sdist, for the release-floor guard or for Render. A theme repo
+  stays complete by itself. Tests can stay in the app directories. This is the lowest-risk option.
 - Against: three copies stay in three histories, so every shared change is still three commits with large diffs.
   "Do not edit these files here" is a convention, held up only by the manifest test. An agent fixing a theme bug
   will edit the copy in place and then regenerate the manifest to make the test pass. Drift is detected, not
@@ -412,14 +513,14 @@ copies the files". No advantage over T1 here. Rejected.
 The home repo is mounted inside each theme repo, for example at `example/acme/`. G3 allows it.
 
 - For: one source by construction. The mounted commit is a pin that lives in git, in one place per theme repo. Files
-  are on disk under `example/`.
+  are on disk under `example/`. No git URL in `noxfile.py`, so the release-floor guard is not involved.
 - Against, each point checked against these repos:
-  - A submodule mounts a whole repository. With H5 the mount contains the Bootstrap project as well, so `acme` is
-    not importable from `example/` without a path entry or a path install of the mount. The second variant is T4
+  - A submodule mounts a whole repository. With H5 the mount contains the Bootstrap project as well, so the package
+    is not importable from `example/` without a path entry or a path install of the mount. The second variant is T4
     with a submodule as the delivery vehicle.
-  - T's sdist, built from a checkout without the submodule, is silently incomplete (3.10). `check_dist.py` needs a
-    witness file, and every `actions/checkout` step needs `submodules: true`.
-  - Render's behaviour is unverified (3.10).
+  - An sdist built from a checkout without the submodule is silently incomplete (3.11). `check_dist.py` would need
+    to look inside `example/` for a witness file, and every `actions/checkout` step needs `submodules: true`.
+  - Render's behaviour is unverified (3.11).
   - GitHub's "Download ZIP" contains no submodule content.
   - Local work on all three themes means three working copies of the shared repo, one per mount, plus a fourth for
     its own development. "Which copy did I edit" is a new way to lose an afternoon, and the maintainer's present
@@ -428,47 +529,56 @@ The home repo is mounted inside each theme repo, for example at `example/acme/`.
 - Verdict: workable, and the maintainer said it is acceptable. Not recommended, because it is the more complicated
   of two options that both give one source.
 
-### T4. Installed package: sibling checkout locally, pinned install elsewhere
+### T4. Installed package: sibling checkout locally, git install elsewhere
 
-The home repo builds a distribution (`django-crud-views-acme`) with one import package, `acme`. A theme repo consumes
-it exactly like core and ext:
+The home repo builds a distribution with one import package. A theme repo consumes it the way it consumes core:
+named as a requirement, a path source for local development, a git URL passed alongside in nox and Render.
 
 ```toml
 # <theme>/pyproject.toml
 [project.optional-dependencies]
-examples = ["django-crud-views-acme", ...]        # once it is on PyPI; until then see noxfile.py
+examples = ["django-crud-views-acme", ...]        # named from the day of the switch, or uv ignores the source
 
 [tool.uv.sources]
-django-crud-views-acme = { path = "../django-crud-views-acme", editable = true }
+django-crud-views-acme = { path = "../django-crud-views-acme", editable = true }   # A: ../../
 ```
 
 ```python
-# <theme>/noxfile.py, next to CRUD_VIEWS; the same line goes into requirements/demo.txt
+# <theme>/noxfile.py, passed in the same session.install() as CRUD_VIEWS; the identical line in requirements/demo.txt
 ACME = "django-crud-views-acme @ git+https://github.com/jacob-consulting/django-crud-views-acme@<commit>"
 ```
 
+How this compares with what exists (3.1): it is core's pattern, not ext's (ext comes from PyPI). It differs from T's
+and C's core line in one respect that matters: **it pins a commit, as only A does today.** A theme overrides the
+shared pages, so a theme and the shared code must move together; a floating `@main` would break themes at a
+distance.
+
 - For:
-  - **No new concept.** The maintainer already runs this pattern twice per theme repo, and every theme `CLAUDE.md`
-    documents it. "The demo's apps come from a package, like django-crud-views itself" is one sentence.
+  - **One more instance of a pattern the theme repos already document,** not a new mechanism. "The demo's apps come
+    from a package, like django-crud-views itself" is one sentence.
   - One working copy of the shared code on the machine. An edit is live in all three demos at once, because the
     install is editable.
   - The boundary is structural: there is nothing in a theme repo to edit by mistake. It fits the rule the theme
     repos already have ("both checkouts are read-only for this repo: gaps are worked around here and logged").
   - The theme repo's `example/` becomes exactly what a theme integration consists of. "The app code never imports
-    the theme" is then true by construction, not by a grep test.
-  - "Show code" still works: it reads the app's files from `AppConfig.path`, wherever the package is installed.
+    the theme" is then true by construction.
 - Against:
   - **The app sources are not in the theme repo.** A reader of T on GitHub sees settings and templates, and has to
     follow a link for the models. The running demo's "Show code" panel covers the gap; a ZIP download does not.
+  - **The theme's tests have to leave the app directories** (3.8), and "Show code" has four places to adapt (3.9).
+    Both are spelled out in sections 8 and 10.
+  - **`check_release_floor.py` blocks every theme release as soon as the acme git line exists** (3.11). It must
+    match core's repository exactly. The guard's question, "do the tests run against code PyPI users cannot get",
+    then has to be answered for acme too: see the next point.
+  - **A theme's first PyPI release needs acme on PyPI,** because the published `examples` extra names it. The
+    alternative is to keep it out of published metadata (a dependency group in place of the extra, which changes the
+    Render build command). Either way it is work that T0 and T1 do not have.
   - A third sibling checkout for local development. A stranger's `task up` fails without it, as it already fails
     without the other two (3.1).
   - Local runs use the sibling's HEAD, nox uses the pin. "Green locally, red in the matrix" becomes possible for
     acme as it already is for core. `task test:matrix` is the guard, as today.
-  - A pin to bump in three places per theme repo (`noxfile.py`, `requirements/demo.txt`, later the extra's version)
-    whenever the theme wants newer app code.
-  - Before a theme's first PyPI release with an `examples` extra that names acme, acme must be on PyPI too (3.10),
-    or the extra leaves it out and the git line stays in `requirements/demo.txt`, which is what T does for core
-    today.
+  - The pin lives in two files per theme repo and must be identical in both, or the resolver rejects the install.
+  - The new repository must be public, or CI and Render cannot install from it.
 - Verdict: recommended.
 
 ### T5. Monorepo of all themes
@@ -488,17 +598,18 @@ the canonical source into Jinja-templated Python that cannot run where it lives.
 
 | | Option | Judgment |
 |---|---|---|
-| S1 | An app `acme.showcode` in the shared package, configured by one settings dict | **Recommended.** Same home and transport as the apps: one mechanism for both questions. |
+| S1 | An app `showcode` in the shared package, configured by one settings dict | **Recommended.** Same home and transport as the apps: one mechanism for both questions. |
 | S2 | A new opt-in app in core (`crud_views_showcode`) | Rejected for now. It would put a view that reads source files from disk into a library every user installs, and commit core to its API before 1.0, for a feature only demos need. Under the Decision Rule it can be proposed later, once S1 has proven itself and core's and ext's examples want it. |
 | S3 | An app in django-crud-views-extensions | Rejected. Not a widget, and not an extension of crud_views. |
 | S4 | Three copies made byte-identical, with a parity test | The T1 variant. Only if T1 is chosen for the apps. |
 
-Shape of S1, enough for planning (the plan fixes names):
+Shape of S1 (the plan fixes the names):
 
 ```python
 # <theme>/example/config/settings.py
-INSTALLED_APPS = [..., "acme.showcode", ...]
+INSTALLED_APPS = [..., "acme_roasters.showcode", ...]
 ACME_SHOWCODE = {
+    "theme_name": "Tabler",                                       # the panel's prose; None: no theme sentence
     "theme_dir": BASE_DIR.parent / "src" / "crud_views_tabler",   # listed on /theming/; None: no theming page
     "shell_dir": BASE_DIR.parent / "src" / "django_tabler",       # counted, not shown; None for a third-party shell
     "host_package": None,                                         # A: ("adminlte-django", "django_adminlte4", url)
@@ -509,34 +620,47 @@ ACME_SHOWCODE = {
 }
 ```
 
-- Which apps get a panel: every app inside the `acme` package except `dashboard` and `showcode`, plus
-  `project_apps`. That replaces the `parent == EXAMPLE_DIR` test (3.8).
-- Which templates the panel shows for an app: for each template under the app's `templates/`, the project's override
-  if there is one, otherwise the app's default. That is the file Django renders.
-- Dark-mode selector, toggle attributes and the collapse event come from core's data prefix (3.8). The icon comes
+How the four location-bound places of 3.9 change:
+
+| Today | In the shared app |
+|---|---|
+| An app counts if its directory's parent is `EXAMPLE_DIR` | Every app config inside the shared package except `dashboard` and `showcode`, plus the labels in `project_apps` |
+| App label from `type(view).__module__.split(".")[0]` | `apps.get_containing_app_config(type(view).__module__).label` |
+| File label and own-module label built from module paths | Both built the same way: app label, then the path relative to the app's directory. They must match, and a test asserts that the panel opens on the page's own module |
+| Displayed path relative to the theme repo root | Relative to the theme repo root for project files; for package files, relative to the package's parent (`acme_roasters/sales/views/customers.py`) |
+
+And the rest:
+
+- Templates shown for an app: for each template under the app's `templates/`, the project's override if there is
+  one, otherwise the app's default. That is the file Django renders.
+- Dark-mode selector, toggle attributes and the collapse event come from core's data prefix (3.9). The icon comes
   from `{% cv_icon %}` with the semantic names `code` and `theming`, which T and C add to `ACME_ICONS`.
-- The prose that describes a theme's file groups (`GROUPS` in `config/views.py`) moves into the theme's own
+- The theming page takes the theme's shell files (`shell_dir`) or its host package (`host_package`), whichever is
+  set. Its group titles and prose (`GROUPS` in `config/views.py`) move into the theme's own
   `showcode/theming.html`.
+- The panel's CSS stays in each project's `acme.css` (3.9, item 9).
 - The docstring's guarantee stays: the file set is fixed in code and settings, never taken from a request.
 
 ## 9. Recommendation
 
 **H5 + T4 + S1**, with seam 5.1 and colour approach 5.2 (a).
 
-A fourth repository holds a package `acme` (five apps and `showcode`) and a stock-Bootstrap project that runs it.
-The three theme repos depend on that package like they depend on core and ext, keep `showcase`, `config/` and their
-templates, and override the app pages they restyle.
+A fourth repository holds a package (five apps and `showcode`) and a stock-Bootstrap project that runs and tests it.
+The three theme repos depend on that package like they depend on core, keep `showcase`, `config/`, their templates
+and their own tests, and override the app pages they restyle.
 
 ### 9.1 Target layout
 
 ```
-django-crud-views-acme/                 # working name (D2)
-  pyproject.toml                        # dist django-crud-views-acme; wheel: src/acme
-  src/acme/
+django-crud-views-acme/                 # working name (D2); public
+  pyproject.toml                        # dist django-crud-views-acme; wheel: src/acme_roasters
+  src/acme_roasters/
     catalog/ dashboard/ roastery/ sales/ shipping/
-      apps.py                           # name "acme.sales"; the app label stays "sales"
-      models.py views*.py forms.py seed.py urls.py admin.py migrations/ static/
+      apps.py                           # name "acme_roasters.sales"; the app label stays "sales"
+      models.py views*.py forms.py seed.py urls.py admin.py migrations/
       templates/<app>/*.html            # the pages in plain Bootstrap 5.3 (none for dashboard, see 5.1)
+      static/sales/sales.js             # sales only
+    dashboard/templatetags/acme.py      # initials, avatar_color: no import of the project
     showcode/                           # collector, views, urls, tags, code-panel.js, default templates
     login_required.py  formats/         # identical in all three config/ today
     urls.py                             # the app and showcode includes that config/urls.py repeats today
@@ -545,14 +669,14 @@ django-crud-views-acme/                 # working name (D2)
     config/settings.py urls.py icons.py
     templates/project/base.html nav.html crud_views.html   registration/login.html
     templates/dashboard/index.html user_list.html          # extend project/base.html
-    static/acme/acme.css favicon.svg
-  tests/                                # behaviour tests of the apps and of showcode
+    static/acme/acme.css favicon.svg   static/dashboard/revenue-chart.js
+    tests/                              # behaviour tests of the apps and of showcode, markup.py, the rule guards
   Taskfile.yaml  noxfile.py  CLAUDE.md  README.md
 
 django-crud-views-<theme>/example/      # after the switch
   manage.py  pytest.ini
   config/settings.py urls.py icons.py   # plus acme_nav.py or menu.py; T: settings_demo.py, boot.py, ratelimit.py
-  showcase/                             # theme-owned, unchanged
+  showcase/                             # theme-owned, unchanged, with its tests
   templates/
     project/crud_views.html             # the theme's page plus the "Show code" button
     <shell>/includes/*.html             # branding
@@ -560,41 +684,73 @@ django-crud-views-<theme>/example/      # after the switch
     dashboard/index.html user_list.html # the project's own: they extend the shell
     sales/ catalog/ ...                 # overrides, only for the pages this theme restyles
     showcode/theming.html               # the theme's own prose and markup
-  static/acme/acme.css
-  <tests of this theme's markup, layout and navigation>
+  static/acme/acme.css   static/dashboard/revenue-chart.js
+  tests/                                # this theme's markup, layout, navigation, page sweep, theming page
 ```
 
-Why `acme.sales` and not a top-level `sales`: an installed distribution that puts `sales`, `catalog`, `dashboard`
-and `shipping` at the top of `site-packages` invites name clashes. The app label stays `sales`, so permission names
-(`sales.add_order`), migration dependencies, content types and URL names do not change.
+Why a namespace and not top-level `sales`, `catalog`: an installed distribution that puts `sales`, `catalog`,
+`dashboard` and `shipping` at the top of `site-packages` invites name clashes. Why `acme_roasters` and not `acme`:
+`acme` is certbot's package on PyPI (3.11). Every `apps.py` sets only `name`, so the app label stays `sales`, and
+permission names (`sales.add_order`), migration dependencies, content types and URL names do not change.
 
-### 9.2 What changes for each goal
+### 9.2 What the rename touches
+
+Counted in A for the five shared apps (T and C are within one or two lines):
+
+| What changes | Count |
+|---|---:|
+| Imports of another app by top-level name, in non-test Python (`from sales.models import ...`) | 17 lines in 11 files |
+| The same in tests | 43 lines in 10 files |
+| `roastery/migrations/0001_initial.py`: `import roastery.models` and seven `roastery.models.validate_score_step` | 8 lines |
+| `include("<app>.urls")` in `config/urls.py`; `INSTALLED_APPS` entries | 5 and 5 |
+| `import_module(f"{app}.seed")` in `seed_demo.py` (`SEED_APPS` holds labels) | 1 |
+| `mock.patch("shipping.resources.fetch_shipments")` in `dashboard/tests.py` | 1 |
+| The settings import and the middleware literal of `login_required`; `FORMAT_MODULE_PATH` | 3 |
+
+What does not change: 15 permission strings, 12 migration dependency tuples, about 29 `to="app.model"` strings in
+migrations, the typeahead lookup name `"sales.customers"`, `OWNER_APPS`, URL names, the `dashboard:` namespace.
+
+### 9.3 What each theme keeps of the templates
+
+| Theme | Overrides of the nine default pages | Reason |
+|---|---|---|
+| A | about one (`packing_slip.html`, for AdminLTE's `content_header`) | the defaults are derived from A |
+| C | few; to be found in the browser (candidate: `product_card.html`, for `border-top-3`) | Bootstrap fork, same class names |
+| T | **all nine** | Tabler's own components (3.6) |
+
+Every theme also keeps its two dashboard templates and `revenue-chart.js`. For T, sharing covers the Python, the
+migrations and "Show code". Its templates stay its own. Replacing them by the defaults would give up the Tabler look
+and is not proposed.
+
+### 9.4 What changes for each goal
 
 - **G1:** a theme repo still clones and runs with `task up`, next to three sibling checkouts where it needs two
   today. The new repo clones and runs next to two. Optional and outside this design: once core 1.0 is on PyPI, a
   `uv sync --no-sources` path could give a stranger a run with no sibling at all.
 - **G2:** one sentence per repo. Acme repo: "the demo's apps, and a plain Bootstrap project to run them". Theme repo:
   "`example/` is the skin; the apps come from django-crud-views-acme".
-- **G4:** one copy of app code and of "Show code". A theme cannot drift: it has no copy.
-- **G5:** T's nox, CI and Render gain one pinned line each, the kind they have for core. T's sdist still ships
-  `example/`, which is now the skin.
+- **G4:** one copy of app code and of "Show code". A theme cannot drift: it has no copy. The rules of 5.1 are tests.
+- **G5:** nox and Render gain one git line each, of the kind they have for core; `check_release_floor.py` changes
+  (3.11); the sdists still ship `example/`, which is now the skin; `check_dist.py` does not change.
 
-### 9.3 Where this recommendation is weakest
+### 9.5 Where this recommendation is weakest
 
 1. **It pays off late.** After stage 1 there are four copies. The first saving comes with the first theme's switch,
    the real saving with the second. If the work stops after stage 1, it made things worse.
-2. **The fourth skin is permanent work**, justified only because the alternative is shared code that cannot run
-   where it lives.
-3. **Default templates with overrides can drift**, the documented weakness of copied templates. An override in T
-   keeps rendering when the default gains a field. Guard: each theme keeps its page sweep (`test_every_page_renders`
-   in C and A; T gets one) and a test that every override under `example/templates/<app>/` still has a default to
-   shadow (the two dashboard templates are exempt: they have none).
-4. **Theme-driven app changes cross a repo boundary.** A's `revenue_title` context (3.3) is the example: a theme
+2. **The fourth skin and its test suite are permanent work**, justified only because the alternative is shared code
+   that cannot run where it lives.
+3. **Behaviour tests exist four times until stage 5.** The themes keep their copies after the switch, on purpose.
+4. **Default templates with overrides can drift**, the documented weakness of copied templates. An override keeps
+   rendering when the default gains a field. T carries nine. Guard: each theme has a page sweep
+   (`test_every_page_renders` in C and A; T gets one before its switch) and a test that every override under
+   `example/templates/<app>/` still has a default to shadow (the two dashboard templates are exempt).
+5. **Theme-driven app changes cross a repo boundary.** A's `revenue_title` context (3.3) is the example: a theme
    needs the app to expose one more value. Today that is a local edit. Afterwards it is a change in acme plus a pin
    bump. The evidence says it is rare (107 lines after three independent ports), but it is the standing cost of
    sharing.
-5. **A reader of a theme repo no longer sees the app code there.** If the maintainer wants a theme repo to be a
+6. **A reader of a theme repo no longer sees the app code there.** If the maintainer wants a theme repo to be a
    complete, readable application on GitHub, T1 is the honest answer, and its costs are named in section 7.
+7. **Releases get a new precondition** (acme on PyPI, or out of the published extra).
 
 ## 10. Stages
 
@@ -602,64 +758,118 @@ Each stage ends in a state that works and can be stopped at. Sizes are relative.
 
 | Stage | What | Size | Exit criterion |
 |---|---|---|---|
-| 0 | Decisions D1 to D5; create the repository; write its `CLAUDE.md` with the rule from 5.1 | S | repository exists and is in the theme sessions' access scope |
-| 1 | Build acme from A's example (the newest, already Bootstrap 5.3, `cv_icon`, crispy `bootstrap5`): package layout, `acme.showcode`, neutral wording, one neutral `catalog` migration `0003`, the Bootstrap shell, its tests, a nox matrix Python 3.12 to 3.15 × Django 4.2, 5.2, 6.1 | L | `task up` serves every page; tests and `manage.py check --fail-level WARNING` pass on the whole matrix |
-| 2 | Switch A (closest to the defaults, no CI, no Render) | M | A's example runs on `acme`; A's example tests pass; the pages look as before |
+| 0 | Decisions D1 to D5; create the public repository; write its `CLAUDE.md` with the rules of 5.1 | S | repository exists and is in the theme sessions' access scope |
+| 1 | Build acme from A's example | L | see 10.1 |
+| 2 | Switch A (closest to the defaults, no CI, no Render) | M | see 10.2 |
 | 3 | Switch C | M | as stage 2; no `data-bs-` in any page (C's existing test) |
-| 4 | Switch T: the most overrides, then nox, CI, `check_dist.py`, `requirements/demo.txt`, `render.yaml` | L | as stage 2; `uvx nox` green; a Render deploy from a branch serves the demo |
-| 5 | Thin the tests: move behaviour tests that assert no theme markup into acme, delete the copies | M, optional | each behaviour test exists once |
+| 4 | Switch T: nine overrides, then nox, CI, `requirements/demo.txt`, Render | L | as stage 2; `uvx nox` green; a Render deploy from a branch serves the demo |
+| 5 | Thin the tests: delete from the themes every behaviour test that acme now runs and that asserts no theme markup | M, optional | each behaviour test exists once |
 
-Per-theme switch, in the order that keeps every step testable:
+### 10.1 Stage 1: the acme repository
 
-1. Add the dependency: path source, the pin in `noxfile.py`, the `examples` extra or the requirements line.
-2. `INSTALLED_APPS`: `acme.catalog`, `acme.dashboard`, `acme.roastery`, `acme.sales`, `acme.shipping`,
-   `acme.showcode` in place of the local apps; `ACME_SHOWCODE`; `config/urls.py` includes `acme.urls`.
+Start from A's `example/` (the newest; already Bootstrap 5.3, `{% cv_icon %}`, crispy `bootstrap5`).
+
+1. Package layout `src/acme_roasters/` with the five apps, `showcode`, `login_required.py`, `formats/`, `urls.py`;
+   the renames of 9.2.
+2. Neutral wording. Edit the help text in `catalog/migrations/0001_initial.py` in place and drop `0003` and `0004`:
+   a help text is not stored in the database, so no migration is needed for it.
+3. Cut the three imports of the project package (5.1, rule 3).
+4. `showcode` as specified in section 8.
+5. The Bootstrap project: a page that fulfils the page contract; the two dashboard templates and
+   `revenue-chart.js` on `--bs-*` variables; `acme.css` with `acme-avatar` (A's `acme.css` lines 161 to 172) and
+   the panel's CSS; navigation; sign-in page. No theming page (`theme_dir` is `None`).
+6. Tests in `example/tests/`: A's tests of `catalog`, `roastery`, `sales`, `shipping`; the behaviour and "Show
+   code" parts of A's `dashboard/tests.py`; the page sweep (A's `config/test_pages.py`); `markup.py` for the
+   Bootstrap page; the rule guards of 5.1.
+7. `noxfile.py`: Python 3.12 to 3.15 × Django 4.2, 5.2, 6.0, 6.1 (6.0 because A runs it), core from git (the
+   data-prefix hook is not on PyPI), ext from PyPI. A release-floor guard like the themes'.
+
+Exit: `task up` serves every page; the suite and `manage.py check --fail-level WARNING` pass on the whole matrix.
+
+### 10.2 Stages 2 to 4: switching a theme
+
+Two changes per theme. The first only moves files and keeps the suite green after every step. The second is one
+commit, because its steps do not pass the suite individually.
+
+**Prepare (no dependency change):**
+
+1. Move the tests out of the app directories into `example/tests/<app>/`. Fix tests that locate files through
+   `Path(__file__)` (3.8).
+2. Move the app templates from `example/<app>/templates/<app>/` to `example/templates/<app>/`, and the dashboard's
+   static files to `example/static/dashboard/`.
+3. T only: add a page sweep like C's `test_every_page_renders`.
+4. A only: move `PIN` to a core commit that contains `95d40dd` (#395).
+5. `scripts/check_release_floor.py`: match core's repository exactly, not by prefix.
+
+**Switch (one commit):**
+
+1. Name `django-crud-views-acme` in the `examples` extra; add the path source; add the pinned git line to
+   `noxfile.py` (and `requirements/demo.txt` in T), identical in both.
+2. `INSTALLED_APPS`: `acme_roasters.catalog`, `.dashboard`, `.roastery`, `.sales`, `.shipping`, `.showcode` in
+   place of the local apps; `ACME_SHOWCODE`; the middleware path and `FORMAT_MODULE_PATH`; `config/urls.py`
+   includes `acme_roasters.urls`.
 3. Delete the five local app directories, `config/showcode.py`, `config/views.py`,
    `config/templatetags/showcode.py`, `config/login_required.py` and its test, `config/formats/`. Keep `showcase/`.
-4. Move the theme's app templates from `example/<app>/templates/<app>/` to `example/templates/<app>/`. Delete those
-   that equal the default. The two dashboard templates always stay.
-5. Fix imports in the remaining tests (`from sales.models` becomes `from acme.sales.models`) and add the override
-   guard from 9.3.
-6. Run the example tests, the system check, and a browser pass in light and dark mode over every page: the visual
-   check 3.4 could not make.
-7. Update `README.md`, `docs/`, `CLAUDE.md`, the tracker and, for T, `scripts/check_dist.py`.
+4. Delete the moved templates that equal acme's default. Keep the rest as overrides; keep the dashboard's two
+   templates and its static files.
+5. Tests: the imports of 9.2; the guards that scanned `settings.BASE_DIR` for app code go (acme runs them now); add
+   the override guard of 9.5.
+6. Run the example suite, the system check, the nox `examples` session, and a browser pass in light and dark mode
+   over every page: the visual check that 3.4 could not make.
+7. Update `README.md`, `docs/` (each has pages that name `example/` paths), `CLAUDE.md` and the tracker.
 
-Existing local databases keep working: the migration names of the five apps stay, a help text is not stored in the
-database, and A's applied `0004` becomes an unknown row Django ignores. `task reset` gives a clean state.
+Existing local databases: the migration names that remain are unchanged, and the applied `0003` and `0004` rows of
+C and A no longer match a file. `task reset` gives a clean state and is the documented way after the switch.
 
-## 11. Decisions the maintainer has to make
+## 11. What a shared change looks like afterwards
+
+| Change | Today | After |
+|---|---|---|
+| New behaviour in an app (bulk actions) | three plans, three implementations | one change in acme with its tests; a pin bump per theme; a theme that overrides the affected page updates its override |
+| A theme needs one more context value | local edit | change in acme, pin bump in that theme |
+| A theme restyles a page | local edit | local edit (an override) |
+| A bug in "Show code" | fix three times | fix once, three pin bumps |
+
+## 12. Decisions the maintainer has to make
 
 | | Decision | Recommendation | If decided otherwise |
 |---|---|---|---|
-| D1 | Transport | T4, installed package | T1 if the theme repos must stay self-contained; T3 if the pin must live in git |
-| D2 | Repository and package name | `django-crud-views-acme`, package `acme` | any name; `django-crud-views-bootstrap5` would wrongly suggest a theme package |
-| D3 | Is `showcase` shared? | No, theme-owned | sharing needs a seam for the crispy layout objects (5.3) |
-| D4 | May T's demo use Bootstrap's badge style and six avatar colours (3.5, row 3)? | Yes | 5.2 (b): a tone table per project |
-| D5 | Does acme get its own public demo, docs site and PyPI project? | No demo, no docs site; PyPI only when a theme's first release needs it | each is a separate, later design |
+| D1 | Transport | T4, installed package with a pinned git install | T1 if the theme repos must stay self-contained; T3 if the pin must live in git |
+| D2 | Repository, distribution and import name | `django-crud-views-acme`, import package `acme_roasters` | any name; `django-crud-views-bootstrap5` would wrongly suggest a theme package; `acme` is taken on PyPI |
+| D3 | Is `showcase` shared? | No, theme-owned | sharing needs a seam for the crispy layout objects and widget attributes (5.3) |
+| D4 | May T's demo use Bootstrap's badge style and six avatar colours (3.5, row 3)? | Yes | 5.2 (c): app-declared class keys that T's example overrides |
+| D5 | Does acme go to PyPI, and does it get its own public demo and docs site? | PyPI before the first theme release that names it; no demo, no docs site | without PyPI, the themes keep acme out of their published metadata (section 7, T4) |
 
-## 12. Not verified, and unsupported cases
+## 13. Not verified, and unsupported cases
 
 Not verified:
 
 - **The look of any page after a switch.** 3.4 covers behaviour, 3.5 covers badges under Tabler in a static page.
-  A browser pass per theme is part of every switch (stage step 6).
+  A browser pass per theme is part of every switch.
 - **A's own example suite** against shared code. It could not be installed in a flat checkout layout (3.1).
-- **Render with a submodule** (3.10). Only relevant if D1 is T3.
-- **`acme-avatar` under T and C.** A defines it in `acme.css`; T and C need the same few rules or an override.
-- **Django 4.2 for A's five extra lines** in `dashboard/views.py` and the other A-only deltas. A tests on Django 6.0
+- **Render with a submodule** (3.11). Only relevant if D1 is T3.
+- **That PyPI rejects a direct URL in an extra.** Stated from the packaging rules, not tried.
+- **`acme-avatar` under T and C.** A defines it in `acme.css`; T and C need the same few rules.
+- **Django 4.2 and 5.2 for A's deltas** (`dashboard/views.py` and the other A-only lines). A tests on Django 6.0
   and 6.1 only. Stage 1's matrix settles it.
-- **That five apps is the right cut for `dashboard`.** Its two templates are always overridden, so only its views,
-  seed and commands are shared. The spike supports it; the plan should confirm it file by file.
+- **Which of the nine defaults C overrides** (9.3).
+- **Django's handling of applied migrations whose file is gone.** Expected to be ignored; not run. `task reset`
+  avoids the question.
+- **The size estimates** in section 6.
+
+The spike of 3.4, the screenshots of 3.5 and the hatchling experiment were run once, by the author, and not
+repeated by the reviewer.
 
 Unsupported, on purpose:
 
 - The showcase app is not shared (D3).
 - No shared settings module and no shared navigation data (5.3).
-- Core's and ext's own examples do not use `acme.showcode`. Their `snippet_panels` stays.
+- The theming page and the shell and host branches of `showcode` are not tested in the acme repository (section 6).
+- Core's and ext's own examples do not use the shared `showcode`. Their `snippet_panels` stays.
 - The demo-deployment helpers (`boot.py`, `ratelimit.py`, `settings_demo.py`), copied between core, ext and T, are
   not addressed.
 
-## 13. How to recompute the evidence
+## 14. How to recompute the evidence
 
 With the five repositories checked out next to each other in `<dir>`:
 
@@ -725,6 +935,8 @@ for name in sorted(rows):
 print(f"{'total':28}" + "".join(f"{sum(r[c] for r in rows.values()):>12}" for c in columns))
 ```
 
+The table of 3.8 is the same computation restricted to test files and grouped by the second path segment.
+
 The differences of section 3.3, file by file:
 
 ```bash
@@ -750,11 +962,11 @@ npm pack @tabler/core@1.6.1
 
 Unpack `package/dist/css/tabler.min.css` from the archive and search it for `.bg-success-subtle`.
 
-The hatchling experiment of section 3.10: a repository with `only-include = ["src", "example", "pyproject.toml"]`
+The hatchling experiment of section 3.11: a repository with `only-include = ["src", "example", "pyproject.toml"]`
 and a submodule at `example/acme`; `uv build --sdist` once in that checkout and once in a plain `git clone` of it,
 then compare `tar -tzf` of the two archives.
 
-## 14. External sources
+## 15. External sources
 
 - Render and submodules, community reports only:
   [Git nested submodules not syncing](https://community.render.com/t/git-nested-submodules-not-syncing/7488),

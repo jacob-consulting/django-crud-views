@@ -69,7 +69,13 @@ STABLE_NAMES = (
     "bulk:card-select",
     "`bulk`",
 )
-INTERNAL_NAMES = ("cv_bulk_form_id", "cv_bulk_buttons", "blocked_items.html", "snippets/paragraph/bulk.html")
+INTERNAL_NAMES = (
+    "cv_bulk_form_id",
+    "cv_bulk_buttons",
+    "_cv_effective_bulk_actions",
+    "blocked_items.html",
+    "snippets/paragraph/bulk.html",
+)
 
 
 def guide():
@@ -98,7 +104,72 @@ def test_bulk_guide_structure_and_live_link():
     for name in STABLE_NAMES:
         assert name in text, name
     for name in INTERNAL_NAMES:
-        assert name not in text, name
+        if name == "cv_bulk_buttons":
+            integration = template_integration(text)
+            assert name not in text.replace(integration, ""), name
+        else:
+            assert name not in text, name
+
+
+def template_integration(text):
+    selection = section(text, "Selection on tables and cards")
+    assert "### Template integration\n" in selection
+    return selection.split("### Template integration\n", 1)[1].split("\n### ", 1)[0]
+
+
+def test_bulk_destination_visibility_and_internal_template_guard():
+    text = guide()
+    selection = normalized(section(text, "Selection on tables and cards"))
+    for phrase in (
+        "cv_has_access(user, None)",
+        "rendering state",
+        "parent",
+        "once per configured action",
+        "all actions are denied",
+        "no selection controls",
+        "no selected-record",
+        "stock permission-required",
+    ):
+        assert phrase in selection
+    assert "every configured action is shown" not in selection
+    assert "renders every configured action" not in selection
+    integration = template_integration(text)
+    for phrase in (
+        "{% if view.cv_bulk_buttons %}",
+        "bulk_toolbar.html",
+        "card selection cells",
+        "internal",
+        "non-public",
+        "non-stable",
+        "configured declaration",
+        "not a visibility guard",
+    ):
+        assert phrase in integration
+    assert "cv_bulk_buttons" in INTERNAL_NAMES
+    assert "_cv_effective_bulk_actions" in INTERNAL_NAMES
+    assert "cv_bulk_buttons" not in STABLE_NAMES
+    assert "_cv_effective_bulk_actions" not in STABLE_NAMES
+
+
+def test_bulk_visibility_preserves_custom_and_submission_gates():
+    scope = normalized(section(guide(), "Scope and permissions"))
+    for phrase in (
+        "has_permission",
+        "cv_has_access",
+        "more generous",
+        "no opt-out",
+        "immediate parent",
+        "change",
+        "farther ancestors",
+        "view",
+        "configured",
+        "all-blocked",
+        "selected-object grants",
+    ):
+        assert phrase in scope
+    guardian = normalized(section((ROOT / "docs/reference/guardian.md").read_text(), "Bulk actions"))
+    for phrase in ("model-entry", "visibility", "submission", "not scanned", "all-blocked"):
+        assert phrase in guardian
 
 
 def test_bulk_guide_synchronizes_live_example_recipes():

@@ -86,9 +86,29 @@ Cards receive their checkbox from the grid wrapper, so a custom `cv_card_templat
 Checkbox labels and the review list show `str(record)`; the application loads what `__str__` reads, because
 a deferred field or a relation can cost one query per record.
 
-An overridden list or card content template must include `crud_views/snippets/bulk_toolbar.html` alongside
-its table or grid. Support one bulk source per page. The toolbar renders every configured action without
-scanning the page for eligible objects or issuing bulk-permission queries; admission happens on submission.
+Support one bulk source per page. For each configured destination, the source checks
+`cv_has_access(user, None)`, then its rendering state with `None` at the top level or the actual parent for
+a nested source, passing the source instance to the rendering adapter. This happens once per configured action
+per source instance. Denied or disabled actions disappear; when all actions are denied there are no selection controls.
+There is no page scan and no selected-record permission or business check while rendering.
+For stock permission-required sources, full-response query counts match the same source with no configured actions;
+cold permission caches and custom hooks issuing queries have their own costs.
+
+### Template integration
+
+An overridden list or card content template must guard `crud_views/snippets/bulk_toolbar.html` alongside
+its table or grid with the existing `view.cv_bulk_buttons` condition, following the stock templates:
+
+```django
+{% if view.cv_bulk_buttons %}
+  {% include "crud_views/snippets/bulk_toolbar.html" %}
+{% endif %}
+```
+
+Use the same condition around card selection cells. This guard is an existing internal, non-public and
+non-stable template implementation detail; it adds no configuration or extension point and is excluded
+from the stable 1.0 public inventory. `view.cv_bulk_actions` remains the configured declaration, so it is
+not a visibility guard for this request.
 
 ## How a submission is handled
 
@@ -195,6 +215,12 @@ the server does not prove that the user visited a review page or selected those 
 
 The invariant is **submitted IDs ∩ ViewSet queryset ∩ destination queryset ∩ parent scope**. Parent coordinates
 come from the registered destination URL and the existing ancestor admission rules apply to that endpoint.
+A custom `has_permission` override that is more generous must align `cv_has_access`, following the existing
+context and list-button behavior; there is no opt-out from destination visibility checks.
+An offered action still faces independent ancestor write rules on submission: the immediate parent defaults
+to `change`, while farther ancestors default to `view`. A stricter configured higher write key or per-action
+pair can deny a farther ancestor even when read admission succeeds. Visibility also does not guarantee
+selected-object grants: submission can produce an all-blocked review with Cancel and no writes.
 A filter that exists only on the source list is no authorization gate; shared restrictions belong in the ViewSet
 or an application queryset function used by both source and destination. A destination may narrow its
 `get_queryset()` further, but cannot widen the ViewSet and parent scope.
@@ -220,7 +246,7 @@ authorize every value of a related form field.
 records, on both stages. Empty and oversized selections warn and return without writes; selection is cleared
 on return. Invalid keys, duplicate stage fields or overlapping candidate and excluded lists produce HTTP 400.
 
-`viewset.W274` warns when a declared page size exceeds an offered destination's limit. Raise `cv_bulk_max`
+`viewset.W274` warns when a declared page size exceeds a configured destination's limit. Raise `cv_bulk_max`
 deliberately for larger pages. Above about **990** records, also raise Django's `DATA_UPLOAD_MAX_NUMBER_FIELDS`
 from its default of 1000, allowing room for CSRF, stage and action-form fields. The limit bounds selected
 roots; it does not bound related records loaded by application checks or deletion inspection.
@@ -412,7 +438,7 @@ The result message uses `crud_views/snippets/message/bulk.html`.
 
 ## Toolbar buttons
 
-There is one button per action, with and without JavaScript. These are form submit buttons styled by
+There is one button per offered action, with and without JavaScript. These are form submit buttons styled by
 `form:submit`. Their visible text, hidden text in icon-only mode and tooltip all come from the destination's
 short action label; the icon comes from `cv_icon_action`. The full action label appears only as the header of
 the review page.
@@ -439,7 +465,7 @@ See [Bulk selection toolbar](javascript.md#bulk-selection-toolbar) for script lo
 | `viewset.E271` | Error | `cv_bulk_actions` must be a tuple of unique nonempty strings. |
 | `viewset.E272` | Error | Each action must name a registered bulk destination in the same ViewSet. |
 | `viewset.E273` | Error | Selection requires an ORM table list or card source. |
-| `viewset.W274` | Warning | The declared page size exceeds an offered action's selection limit. |
+| `viewset.W274` | Warning | The declared page size exceeds a configured destination's selection limit. |
 | `viewset.W275` | Warning | The destination does not accept the source's origin key for Cancel. |
 | `viewset.E276` | Error | A destination requires an ORM model with a scalar primary key. |
 | `viewset.E277` | Error | `cv_bulk_max` must be a positive integer, not a boolean. |

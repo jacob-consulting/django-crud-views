@@ -493,6 +493,11 @@ calls; the check does not prove that an application override enforces authorizat
 
 ## Bulk actions
 
+Bulk visibility uses model-entry access, followed by the destination's rendering state. Selected-object grants
+are not scanned by bulk rendering; the item hook checks them on submission. Model admission without those
+grants can therefore offer an action whose submitted selection produces an all-blocked, cancel-only review.
+A host application's Guardian queryset policy still runs independently when loading its source rows.
+
 The default `BulkFormViewPermissionRequired.cv_bulk_has_permission(obj)` returns `True`; it does not add
 an object permission check to endpoint admission and queryset scope. On a Guardian ViewSet,
 `crud_views_guardian.W002` warns when a bulk destination inherits that default. Implement the application's

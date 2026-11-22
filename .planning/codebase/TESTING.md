@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 9034acda91f5af049a0d38f41c84e6bfd1c823f4
+last_mapped_commit: af5d74efd12e965b432fe30c6044f139b406eafc
 last_mapped_at: 2026-11-21
 ---
 # Testing Patterns
@@ -24,15 +24,16 @@ pytest tests/test1/test_crud.py::test_name # single test
 task test                                  # nox matrix: py3.12-3.15 x Django 4.2/5.2/6.0
 pytest tests -n auto --cov                 # coverage (fail_under = 88)
 CV_UPDATE_GOLDEN=1 pytest tests/test1/test_action_menus_golden.py   # regenerate goldens
-npm test                                   # vitest JS unit tests (tests/js)
-npm run test:integration                   # vitest integration (tests/js-integration)
+npm test                                   # Node/jsdom unit + runtime-boundary checks (tests/js)
+npm run test:integration                   # requires CV_FRAGMENT_PYTHON + PYTHONPATH (see below)
+task test-js                              # task wrapper; runs npm test
 ```
 Use four pytest-xdist workers for broad local runs when resources are shared; use `-n auto` on a dedicated machine. CI/Nox uses `-n auto`. Run serially only for a concrete isolation/order/debugging constraint or when worker startup costs more than a tiny selection.
 
 ## Test File Organization
 
 **Location:** Separate from source, under `tests/`:
-- `tests/test1/` - Python tests (287 top-level `test_*.py` files, mostly flat) plus test apps `tests/test1/app/` (models Author UUID, Publisher int, Book child, Vehicle polymorphic, Campaign workflow), `tests/test1/od_app/`, `tests/test1/project/` (urls), `tests/test1/golden/` (stored markup).
+- `tests/test1/` - Python tests (topic-focused `test_*.py` files, mostly flat) plus test apps `tests/test1/app/` (models Author UUID, Publisher int, Book child, Vehicle polymorphic, Campaign workflow), `tests/test1/od_app/`, `tests/test1/project/` (urls), `tests/test1/golden/` (stored markup).
 - `tests/lib/helper/` - shared helpers: `user.py` (`user_viewset_permission`), `boostrap5.py` (`Table` HTML parser), `golden.py` (`check_golden`), `guardian.py`, `forms.py`, `icons.py`.
 - `tests/browser/` - `*.cjs` scripts, `*.test.cjs` and Python servers for browser tests; `tests/js/`, `tests/js-integration/` - vitest.
 - `tests/check_manage_schema.py` - schema check script.
@@ -107,24 +108,23 @@ pytest tests -n auto --cov --cov-report=term-missing
 **Unit Tests:** helpers, settings validation, checks (`tests/test1/test_ancestor_*.py`).
 **Integration Tests:** Django test-client requests across ViewSets, permissions, nested resources, Guardian, workflow, polymorphic.
 **Docs Tests:** tests such as `test_access_trace_docs.py` and `test_badge_docs.py` verify documentation against the code.
-**E2E / JS:** Vitest unit tests (`vitest.config.js`) cover `tests/js/`; Vitest integration tests (`vitest.integration.config.js`) cover `tests/js-integration/`. `npm test` runs the unit suite and `.github/workflows/js.yml` runs it on Node 22. `npm run test:integration` is a separate local command. Purpose-built browser scripts and Django servers live in `tests/browser/`; they are not included in `npm test` or the Python Nox matrix.
-**nox:** `noxfile.py` installs the built distribution (asserts `crud_views` is not imported from `src/`), runs the full Python suite with coverage, then reruns the full suite with `--no-cov` and `CV_ACCESS_RECORD_REQUESTS=1` to observe every existing request with the same assertions (first run uses `CV_ACCESS_RECORD_REQUESTS=0`). `.github/workflows/tests.yml` runs Python 3.12–3.15 against Django 4.2/5.2/6.0; Django 4.2 is skipped for Python 3.14/3.15, leaving ten supported combinations. Each supported row runs both recorder modes and the examples suite; coverage reports are `coverage-py<py>-dj<django>.xml`. `nox -s crispy_floor` separately tests the declared django-crispy-forms/crispy-bootstrap5 floors against Django 4.2 and 6.0 on Python 3.12; `nox -s manage_report_floor` is an opt-in manual Pydantic 2.2.1 compatibility gate.
+**JavaScript:** Vitest unit tests (`vitest.config.js`) cover `tests/js/`; `.github/workflows/js.yml` runs `npm ci --ignore-scripts` and `npm test` on Node 22. The package declares Node `>=20` (`package.json`). `tests/js/runtime-contract.test.js` launches the ordinary suite in a disposable Node-only checkout, verifies every ordinary test file executes, and asserts that integration tests fail explicitly when the selected Python runtime is missing or invalid. The real Django configuration bridge is in `tests/js-integration/js-config.test.js`: it runs `pytest_configure()`, registers a namespace/data prefix/tooltip placement, renders `{% cv_config %}` through Django, then executes `adapters.js` and `tooltip.js` in jsdom and asserts the configured host receives the owned tooltip. `tests/js-integration/formset.test.js` combines actual Django-generated fragment markup and POST validation with a disposable Node driver that loads shipped `formset.js` and submits the DOM's real `FormData`; see `tests/test1/test_fragment_authorization.py::test_server_fragment_dom_round_trip`. Run this separate lane with the documented `CV_FRAGMENT_PYTHON` and `PYTHONPATH` command below. `tests/browser/` contains purpose-built Chromium scripts and Python servers; these do not run via `npm test` or the Nox Python matrix.
+**nox:** `noxfile.py` installs the built distribution (asserts `crud_views` is not imported from `src/`), runs the full Python suite with coverage, then reruns the full suite with `--no-cov` and `CV_ACCESS_RECORD_REQUESTS=1` to observe every existing request with the same assertions (first run uses `CV_ACCESS_RECORD_REQUESTS=0`). `.github/workflows/tests.yml` defines Python 3.12–3.15 against Django 4.2/5.2/6.0; Django 4.2 is skipped for Python 3.14/3.15, leaving ten supported combinations. Each supported row runs both recorder modes and the examples suite; coverage reports are `coverage-py<py>-dj<django>.xml`. `nox -s crispy_floor` separately tests the declared django-crispy-forms/crispy-bootstrap5 floors against Django 4.2 and 6.0 on Python 3.12; `nox -s manage_report_floor` is an opt-in manual Pydantic 2.2.1 compatibility gate. This matrix describes configured Nox/CI coverage; a local run or one selected receipt proves only the rows actually completed.
 
 ## Browser and Revision-Bound Evidence
 
 - Report Python full-suite evidence with the revision and exact matrix rows completed. A prior coverage XML, plan receipt, or partial matrix is not proof of a fresh full run; generated files such as `coverage-py3.12-dj4.2.xml` do not identify a passing current revision by themselves.
 - Browser scripts under `tests/browser/` launch Chromium against purpose-built local Django servers (for example `tests/browser/theme-adoption.cjs`, `queryset-conditional.cjs`, and `cancel-navigation.cjs`). Their receipts are phase-specific: verify recorded source hashes/revision before describing them as current.
-- `.github/workflows/js.yml` runs `npm test` (Vitest); browser scripts are not a blanket part of that command or the Python Nox matrix. Name the script, browser/runtime, target revision, and result when reporting a browser check.
-- `npm run test:integration` uses `vitest.integration.config.js`; it is distinct from Playwright scripts in `tests/browser/`.
-- Phase 06.42's current-tree receipt at `.planning/phases/06.42-theme-registered-data-attribute-prefix-for-templates-and-obj/06.42-VERIFICATION.md` records **17,057 Python passed / 1 skipped**, **486 JavaScript**, and **637 examples with 296 subtests** after rebasing onto merged PR #392. This is acceptance evidence for that recorded tree and its selected Python 3.12 / Django 5.2 environment, not a claim that every supported Python/Django combination or a native CoreUI browser run was verified.
+- `.github/workflows/js.yml` runs `npm test` (Vitest) on Node 22; the Node-only runtime-contract assertion is part of that command. Browser scripts are not a blanket part of it or the Python Nox matrix. Name the script, browser/runtime, target revision, and result when reporting a browser check.
+- `npm run test:integration` uses `vitest.integration.config.js`; it is distinct from the jsdom unit suite and from browser scripts in `tests/browser/`. It requires a selected installed Python environment containing Django test dependencies; no fallback or installation occurs.
 
 ## CSS Tokens and Compact Formset Browser Checks
 
 - `tests/js/css-tokens.test.js` is the focused source-contract suite for the six documented CRUD Views CSS tokens and fallback chains in `src/crud_views/static/crud_views/css/manage.css` and `formset.css`. It checks bounded declaration parsing, source locations, and rejected/accepted fixtures without adding a CSS parser dependency. Run it through `npm test -- tests/js/css-tokens.test.js`.
 - `tests/browser/css-tokens.cjs --case all --output <receipt.json>` checks computed CSS in six browser cases. `tests/browser/manage-presentation.cjs --case smoke --output <receipt.json>` checks the three manage smoke cases. These purpose-built Chromium scripts are independent of `npm test` and the Python suite.
 - `tests/browser/conditional-formsets.cjs --case compact-lifecycle` records the compact lifecycle browser case; `--compact-capture-root` scopes capture output and evidence paths to a repository-local directory. Follow the source path-safety validation and check that the destination is ignored and untracked before capture.
-- Check capture evidence in a separate invocation with `--check-evidence <receipt.json>`. `tests/browser/conditional-formsets-evidence.test.cjs` runs writer/checker contracts in an isolated VM and covers default/override agreement, unsafe roots, traversal, stale or missing captures, tracked destinations, symlinks, and invalid filesystem leaves. The Phase 06.44 receipt at `.planning/phases/06.44-css-tokens-for-manage-pages-and-formsets-with-bootstrap-fall/evidence/rebase-checks.json` records six CSS cases, three manage cases, 19 compact browser assertions, and 51 capture-validation assertions.
-- Fresh aggregate acceptance evidence in that Phase 06.44 receipt records `17122 passed` for Python with `-n 4`, 512 Vitest unit tests, 2 Vitest integration tests, strict MkDocs build, Ruff lint and format checks, six CSS cases, three manage cases, 19 compact browser assertions, and 51 capture-validation assertions. The receipt identifies its checked revision; consult `checked_revision` before treating it as evidence for another checkout.
+- Check capture evidence in a separate invocation with `--check-evidence <receipt.json>`. `tests/browser/conditional-formsets-evidence.test.cjs` runs writer/checker contracts in an isolated VM and covers default/override agreement, unsafe roots, traversal, stale or missing captures, tracked destinations, symlinks, and invalid filesystem leaves. Treat browser receipts as revision-bound: inspect their recorded revision/source hashes before using them as evidence for the current tree.
+- For Python/Django compatibility, the configured matrix is ten supported Python/Django combinations. A single local interpreter, the JavaScript integration bridge, a manual floor session, or a phase receipt does not establish all ten combinations; report the exact rows and revision actually exercised.
 
 ## Common Patterns
 
@@ -136,6 +136,31 @@ with pytest.raises(ImproperlyConfigured, match=r"form_tag=False|form_action"):
 **Warnings:** use `caplog` to assert logged warnings when `CRUD_VIEWS_STRICT` is off.
 **Async:** Not used.
 
+## JavaScript Commands and Cross-Runtime Setup
+
+Ordinary JS checks need Node and installed npm dependencies only. The runtime-contract test copies its bounded JS
+inputs into a temporary directory, links `node_modules`, and exposes only a Node executable on `PATH`; this keeps
+the unit suite independent from Python even when the parent shell is inside a virtualenv. `npm test` includes that
+boundary test.
+
+The integration suite needs an explicit interpreter with the repository's Django test dependencies. From the
+repository root, the documented recipe is:
+
+```bash
+CV_FRAGMENT_PYTHON="$PWD/.nox/crispy_floor-3-12-django-6-0/bin/python" \
+PYTHONPATH="$PWD/src:$PWD" npm run test:integration
+```
+
+The exact `.nox` environment may differ; choose an existing supported runtime. `CV_FRAGMENT_PYTHON` must be
+executable and able to import the test project dependencies. The `PYTHONPATH` pins imports to this checkout. The
+integration harness fails clearly for absent or invalid interpreter selections, and makes no silent skip or package
+installation. `tests/js-integration/js-config.test.js` tests Django settings/config serialization into a DOM element
+and actual JS consumption. `tests/js-integration/formset.test.js` crosses Django-rendered fragments, JS row insertion,
+and a real Django POST/authorization assertion. Passing `npm test` alone says nothing about these Django-backed
+paths.
+
 ---
 
 *Testing analysis: 2026-11-21*
+
+Both integration suites import `selectedPython()` from `tests/js-integration/python.js`. This shared test-only helper preserves the selected virtualenv launcher and bounded missing/invalid-interpreter diagnostics.

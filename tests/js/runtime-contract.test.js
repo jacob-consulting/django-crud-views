@@ -97,12 +97,14 @@ describe("test runtime boundary", () => {
         expect(report.numTotalTests).toBeGreaterThan(0);
         expect(report.numFailedTests).toBeGreaterThan(0);
         expect(report.numPendingTests).toBe(0);
-        const failures = report.testResults.flatMap(file => file.assertionResults)
-            .flatMap(test => test.failureMessages).join("\n");
-        expect(failures).toContain("CV_FRAGMENT_PYTHON");
-        expect(failures).toContain("installed Python interpreter");
-        if (selection === "invalid") expect(failures).toContain(selected);
-        expect(report.testResults.map(file => path.relative(directory, file.name)))
-            .toEqual(["tests/js-integration/formset.test.js"]);
+        const files = report.testResults.map(file => path.relative(directory, file.name).split(path.sep).join("/")).sort();
+        expect(files).toEqual(["tests/js-integration/formset.test.js", "tests/js-integration/js-config.test.js"]);
+        for (const file of report.testResults) {
+            const failures = file.assertionResults.filter(test => test.status === "failed")
+                .flatMap(test => test.failureMessages).join("\n");
+            expect(failures, file.name).toContain("CV_FRAGMENT_PYTHON");
+            expect(failures, file.name).toContain("installed Python interpreter");
+            if (selection === "invalid") expect(failures, file.name).toContain(selected);
+        }
     }, 30000);
 });

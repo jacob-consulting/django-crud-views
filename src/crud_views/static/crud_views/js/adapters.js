@@ -91,9 +91,23 @@ globalThis.cv = globalThis.cv || {};
                 },
             },
             tooltip: {
-                init(el) {
+                init(el, options = {}) {
                     const Tooltip = component(ns, "Tooltip");
-                    if (Tooltip) guardTooltipTransitions(Tooltip, Tooltip.getOrCreateInstance(el), el);
+                    if (!Tooltip) return;
+                    const config = document.getElementById("cv-config");
+                    let placements;
+                    try {
+                        placements = JSON.parse(config?.getAttribute("data-tooltip-placements") ?? "{}");
+                    } catch {
+                        placements = {};
+                    }
+                    if (!placements || typeof placements !== "object" || Array.isArray(placements)) placements = {};
+                    const prefix = config?.getAttribute("data-data-prefix") ?? "bs";
+                    const instance = Object.hasOwn(placements, options.location) &&
+                        !el.hasAttribute(`data-${prefix}-placement`)
+                        ? Tooltip.getOrCreateInstance(el, {placement: placements[options.location]})
+                        : Tooltip.getOrCreateInstance(el);
+                    guardTooltipTransitions(Tooltip, instance, el);
                 },
                 // getInstance, not getOrCreateInstance: a trigger that was never initialised gains nothing here.
                 hide(el) { component(ns, "Tooltip")?.getInstance(el)?.hide(); },
@@ -126,5 +140,8 @@ globalThis.cv = globalThis.cv || {};
             },
         };
     };
-    cv.adapters = Object.assign(cv.bootstrapAdapters(() => globalThis.bootstrap), cv.adapters || {});
+    cv.adapters = Object.assign(cv.bootstrapAdapters(() => {
+        const name = document.getElementById("cv-config")?.getAttribute("data-js-namespace") ?? "bootstrap";
+        return globalThis[name];
+    }), cv.adapters || {});
 })(globalThis.cv);

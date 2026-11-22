@@ -3,5 +3,7 @@
      data-query-string="{{ request_query_string }}"
      data-csrf-token="{{ csrf_token }}"
      data-data-prefix="{{ data_prefix }}"
+     data-js-namespace="{{ js_namespace }}"
+     data-tooltip-placements="{{ tooltip_placements_json|escape }}"
      hidden></div>
 {% include "crud_views/modal/shell.html" %}

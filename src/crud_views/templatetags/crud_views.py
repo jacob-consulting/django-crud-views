@@ -1,3 +1,4 @@
+import json
 import logging
 from dataclasses import dataclass
 
@@ -18,6 +19,7 @@ from crud_views.lib.button_classes import _heading_class, get_button_class, get_
 from crud_views.lib.data_prefix import get_data_prefix
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception, is_strict
 from crud_views.lib.icons import render_icon, resolve_icon_name_class
+from crud_views.lib.js_config import get_js_namespace, get_tooltip_placements
 from crud_views.lib.messages import alert_data, message_alerts
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
@@ -117,6 +119,8 @@ def _cv_config_context(context):
         "request_query_string": request.META.get("QUERY_STRING", ""),
         "csrf_token": get_token(request),
         "data_prefix": get_data_prefix(),
+        "js_namespace": get_js_namespace(),
+        "tooltip_placements_json": json.dumps(get_tooltip_placements()),
     }
 
 

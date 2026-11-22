@@ -102,8 +102,9 @@ equivalence.
 ViewSet Navigation needs no JavaScript; its ordinary full-page links use the
 [navbar template contract](#viewset-navigation-templates).
 
-The scripts call Bootstrap through replaceable adapters (`cv.adapters`), so a theme for a Bootstrap-compatible or
-non-Bootstrap UI library swaps them from its own registered asset. See [JavaScript](javascript.md).
+The scripts call the UI library through replaceable adapters (`cv.adapters`). A Bootstrap-compatible theme can use
+[startup registration](#javascript-namespace-and-tooltip-placements) for its global namespace and tooltip placements.
+Custom behavior and non-Bootstrap libraries can still supply adapters from a registered asset; see [JavaScript](javascript.md).
 
 ### Data-attribute prefix
 
@@ -133,7 +134,8 @@ The `{% cv_data_prefix %}` tag in the `crud_views` library supplies native attri
 the actions-menu toggle, language selector, vertical object-detail tabs and accordion groups. Their toggle,
 target, parent and Popper-config attributes follow the registration. The shipped object-detail `tabs.js`
 selector follows it too, within `data-cv-od-tabs` tablists. Registration does not choose an adapter namespace:
-align your native UI library and the existing tab adapter separately. It does not change host-app markup,
+register that independently using [JavaScript namespace and tooltip placements](#javascript-namespace-and-tooltip-placements).
+It does not change host-app markup,
 CSS custom properties, crispy templates or add a dropdown adapter. Class customization remains in the
 [class table](buttons.md); a different DOM structure still needs [template overrides](#templates-that-follow-bootstraps-dom).
 
@@ -147,6 +149,78 @@ An older copy without the attribute intentionally falls back to `bs`, so custom-
 After adopting the released change, a downstream theme can remove its four prefix-only template copies,
 dedicated tabs script and initialization wrapper, and associated app-order check. Keep any overrides needed
 for other markup differences.
+
+### JavaScript namespace and tooltip placements
+
+For a library with Bootstrap-compatible component APIs under another global, register the namespace and tooltip
+defaults in your theme's `apps.py`. This native-prefix example also registers its independent data prefix:
+
+```python
+from django.apps import AppConfig
+
+from crud_views.lib import register_data_prefix, register_js_namespace, register_tooltip_placements
+
+
+class JsThemeConfig(AppConfig):
+    name = "js_theme"
+
+    def ready(self):
+        register_data_prefix("coreui")
+        register_js_namespace("coreui")
+        register_tooltip_placements({"context": "bottom"})
+```
+
+Replace `js_theme` with your theme app's module and select its `JsThemeConfig` in `INSTALLED_APPS`.
+These calls are repeat-safe and owned by `AppConfig.ready()` startup ordering: a later valid registration wins.
+They do not provide request-scoped themes or concurrent runtime reconfiguration. Namespace and prefix are independent:
+Bootstrap uses `bootstrap` and `bs`; registering one never infers or changes the other.
+
+- `register_js_namespace(name)` defaults to `bootstrap`. Accepts a string matching
+  `^[A-Za-z_$][A-Za-z0-9_$]*$` exactly: one global identifier, not a dotted path. The last valid call wins.
+- `register_tooltip_placements(placements)` defaults to `{}`, leaving the library's default placement in force.
+  Pass a dict whose locations are `context`, `list`, `card`, `card-order`, `formset`, `object-detail`, `form`,
+  or `""` for a bare `data-cv-tooltip` marker. Placements are `top`, `bottom`, `left`, `right`, or `auto`.
+  The input is copied. Each valid call replaces the **whole mapping**, without merging: registering
+  `{"list": "right"}` after the example removes the `context` default. Register `{}` to reset all placements.
+- Invalid types, namespace names, locations or placements raise `ValueError` without changing the previous
+  registration; a mapping with any invalid entry is rejected in full.
+
+Both `{% cv_config %}` and its alias `{% cv_const_js %}` always emit all three registration attributes on
+`#cv-config`. If you copy `crud_views/tags/cv_config.html`, retain these lines, including escaped JSON:
+
+```django
+data-data-prefix="{{ data_prefix }}"
+data-js-namespace="{{ js_namespace }}"
+data-tooltip-placements="{{ tooltip_placements_json|escape }}"
+```
+
+The shared inclusion context supplies `data_prefix`, `js_namespace` and `tooltip_placements_json` at render time.
+Keep the existing request-path, query-string, CSRF, hidden config element and modal-shell content as well.
+The namespace and placements are two additional default config attributes beyond the earlier prefix attribute;
+default component markup and Bootstrap behavior remain unchanged.
+
+Old copied markup without the namespace or placements attributes uses `bootstrap` / `{}`; missing `data-data-prefix`
+uses `bs`. Missing or malformed placements JSON, including a non-object value, means `{}`. Namespace/prefix defaults
+apply only when the config element or respective attribute is absent. Present empty namespace/prefix values are not
+valid registration outputs and do not request defaults. A selected namespace whose bundle is missing does **not**
+fall back to Bootstrap: existing missing-component behavior applies, including legacy Bootstrap wording in
+modal/collapse errors.
+
+The stock tooltip initializer applies a registered location only when `data-{prefix}-placement` is absent on the
+trigger. An explicit placement attribute wins even when empty; without a matching default the existing one-argument
+library call is unchanged. The stock initializer keeps its transition guard and `hide` / `dispose` methods.
+An explicit `cv.bootstrapAdapters(namespaceOrProvider)` still chooses its own provider while using the registered
+placement defaults; custom `cv.adapters` entries retain ownership of their behavior.
+
+Load the rendered config and selected library before initialization. Call-time lookup allows late config or bundles
+on a subsequent existing call, but schedules no retries and does not recreate or reconfigure existing library instances.
+See [script ordering and adapter ownership](javascript.md#what-the-scripts-need). This is compatible-namespace dispatch,
+not native CoreUI/Tabler certification; other adapter lifecycle contracts, including fixed modal events, are unchanged.
+
+After release, CoreUI and Tabler themes can remove their namespace/placement adapter script
+(`coreui-adapters.js` or `tabler-adapters.js`) and its asset-bundle registration, then add the two new startup calls.
+Tabler can register `tabler` with `{"context": "bottom"}` while keeping its own independent prefix choice.
+Retain overrides for other behavior. This is downstream adoption guidance; no downstream theme source is changed here.
 
 ## INSTALLED_APPS ordering (the one rule that matters)
 

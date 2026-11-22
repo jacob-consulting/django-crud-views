@@ -67,6 +67,26 @@ describe("tooltip.js", () => {
         expect(fake.instances.size).toBe(2);
     });
 
+    it.each(["bs", "coreui"])("applies context/bare defaults through the scanner with %s precedence", prefix => {
+        const config = document.createElement("div");
+        config.id = "cv-config";
+        config.setAttribute("data-data-prefix", prefix);
+        config.setAttribute("data-tooltip-placements", JSON.stringify({context: "bottom", "": "left"}));
+        document.body.append(config);
+        const [context, bare] = document.querySelectorAll("[data-cv-tooltip]");
+        domReady();
+        expect(fake.bootstrap.Tooltip.getOrCreateInstance.mock.calls).toEqual([
+            [context, {placement: "bottom"}], [bare, {placement: "left"}],
+        ]);
+        expect(fake.instances.size).toBe(2); // The app-owned trigger remains untouched.
+        context.setAttribute(`data-${prefix}-placement`, "");
+        bare.setAttribute(`data-${prefix}-placement`, "right");
+        fake.bootstrap.Tooltip.getOrCreateInstance.mockClear();
+        window.cv.initTooltips(document);
+        expect(fake.bootstrap.Tooltip.getOrCreateInstance.mock.calls).toEqual([[context], [bare]]);
+        expect(fake.instances.size).toBe(2);
+    });
+
     it("initializes triggers injected into the modal", () => {
         domReady();
         const content = document.getElementById("cv-modal-content");

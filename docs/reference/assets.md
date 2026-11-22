@@ -46,11 +46,13 @@ Rules:
 ## Object-detail tab initialization order
 
 Core `crud_views/js/adapters.js` must load before the registered object-detail `tabs.js` extension.
-Wire the selected theme through `cv.bootstrapAdapters(namespaceOrProvider)` after the factory loads and before
-tab initialization. The library's `Tab` component must also be available by that call. Normal parser-loaded
-scripts can wire the theme before DOMContentLoaded; on an already-ready document the extension initializes
-immediately, so load the theme wiring before the extension. Apply the same ordering in custom bundles and
-filtered asset lists; do not emit only the extension while omitting the core adapter factory.
+For [startup registration](theme.md#javascript-namespace-and-tooltip-placements), render `#cv-config` and make the
+selected library's `Tab` component available before tab initialization; no manual factory wiring is needed.
+For custom factory or ES-module overrides, wire `cv.bootstrapAdapters(namespaceOrProvider)` after the factory loads
+and before initialization. Normal parser-loaded scripts can wire the theme before DOMContentLoaded; on an
+already-ready document the extension initializes immediately, so load custom wiring before the extension.
+Apply the same provider-ready ordering in custom bundles and filtered asset lists; do not emit only the extension
+while omitting the core adapter factory.
 
 Late provider resolution does not schedule a retry. If `Tab` loads after initialization, call
 `cv.initObjectDetailTabs(root)` again once it is available. Custom insertion uses that same initializer;

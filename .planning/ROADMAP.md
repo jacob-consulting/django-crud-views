@@ -71,6 +71,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.42: Theme-registered data-attribute prefix for templates and object-detail tabs (#391) (INSERTED)** - approved U1/U2 handover; theme prefix registration, four templates and the existing object-detail tabs lifecycle. (completed 2026-11-21)
 - [x] **Phase 06.43: Breadcrumb class keys and accessible table sort state (#393) (INSERTED)** (completed 2026-11-21)
 - [x] **Phase 06.44: CSS tokens for manage pages and formsets with Bootstrap fallbacks (#394)** (completed 2026-11-21)
+- [x] **Phase 06.45: Theme-registered JS namespace and tooltip placements (#398) (INSERTED)** (completed 2026-11-21)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2313,6 +2314,24 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.44-02-PLAN.md
 
+### Phase 06.45: Theme-registered JS namespace and tooltip placements (#398) (INSERTED)
+
+**Goal:** A theme registers its JavaScript namespace and per-location tooltip placements in `AppConfig.ready()` and can remove its adapter script, while stock Bootstrap behavior stays unchanged.
+**Source:** [Issue #398](https://github.com/jacob-consulting/django-crud-views/issues/398), approved U4 handover D-01–D-05; snapshot in `06.45-ISSUE-398.md`.
+**Requirements**: None assigned; use the approved issue acceptance criteria.
+**Depends on:** Phase 06.42 (theme data-prefix registration and browser configuration).
+**Ordering:** Inserted after Phase 06.44; complete before Phase 7 inventories and freezes the public theme surface.
+**Scope:** Add `register_js_namespace()` and `register_tooltip_placements()` with atomic validation and last-valid-call replacement; emit both values in `#cv-config`; resolve the namespace and tooltip placements at call time. Explicit trigger placement wins using the registered data prefix. Preserve missing-config defaults, malformed-JSON fallback, existing adapter overrides, transition guards and hide/dispose behavior. No dropdown adapter, theme-registration helper, new Django setting, host-app tooltip ownership or downstream implementation.
+**Acceptance:** Cover both registration contracts and rendered configuration in Python; verify late config, namespace fallback, registered/unregistered locations and explicit `bs`/`coreui` placement precedence in JavaScript. Existing Python, golden and JS tests pass. Update theme/JavaScript references and CHANGELOG Added; stock behavior remains unchanged and no migration entry is needed.
+**Plans:** 2/2 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.45-01-PLAN.md — Register namespace/placements through rendered config and preserve adapter behavior (wave 1).
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.45-02-PLAN.md — Publish executable adoption guidance and run final acceptance (wave 2; depends on 06.45-01).
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -2321,6 +2340,7 @@ from shipping undocumented or being documented without existing.
 **Additional ordering:** Phases 06.30, 06.31, 06.40, 06.40.1 and 06.41 must settle before this freeze; inventory their final conditional-field, developer-diagnostic, object-navbar and bulk-action contracts, including the navbar class keys and owner-heading theme guidance from #384 and the bulk class keys from #387.
 Phase 06.42 must also settle before this freeze; include the theme data-prefix registration, template tag and JavaScript configuration contract from #391.
 Phase 06.44 must also settle before this freeze; include the six CSS tokens with Bootstrap fallback behavior from #394.
+Phase 06.45 must also settle before this freeze; include the namespace and tooltip-placement registrations and browser configuration contract from #398.
 **Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
 bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
@@ -2449,4 +2469,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 3/3 | Complete | 2026-11-21 |
 | 06.43. Breadcrumb class keys and accessible table sort state (#393) | 2/2 | Complete | 2026-11-21 |
 | 06.44. CSS tokens for manage pages and formsets (#394) | 2/2 | Complete | 2026-11-21 |
+| 06.45. Theme-registered JS namespace and tooltip placements (#398) | 2/2 | Complete | 2026-11-21 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

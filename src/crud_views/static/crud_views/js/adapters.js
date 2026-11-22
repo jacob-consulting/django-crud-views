@@ -7,7 +7,7 @@ globalThis.cv = globalThis.cv || {};
     function resolve(ns) { return (typeof ns === "function" ? ns() : ns) || null; }
     function component(ns, name) { const n = resolve(ns); return n && n[name] ? n[name] : null; }
     function missing(name) {
-        return new Error(`cv.adapters: Bootstrap 5 JavaScript not loaded (no ${name} on the namespace); load Bootstrap's bundle or assign cv.adapters.`);
+        return new Error(`cv.adapters: UI library JavaScript not loaded (no ${name} on the namespace); load the library's bundle or assign cv.adapters.`);
     }
     // One lifecycle observer per shell, shared by factory instances. Callback subscriptions
     // are removed per session; the WeakMap and shell-owned listeners do not retain detached shells.
@@ -33,12 +33,14 @@ globalThis.cv = globalThis.cv || {};
         if (state) return state;
         state = {hideEvent: null, pendingShow: null, subscribers: new Set()};
         modalLifecycles.set(modalEl, state);
+        // The library's event names carry its data prefix (bs, coreui); read once per shell.
+        const prefix = document.getElementById("cv-config")?.getAttribute("data-data-prefix") ?? "bs";
         function showPending() {
             const pending = state.pendingShow;
             state.pendingShow = null;
             if (pending && [...pending.subscribers].some(entry => state.subscribers.has(entry))) pending.show();
         }
-        modalEl.addEventListener("hide.bs.modal", event => {
+        modalEl.addEventListener(`hide.${prefix}.modal`, event => {
             if (event.target !== modalEl) return;
             state.hideEvent = event;
             // Later listeners may prevent dismissal. Reconcile only after the full dispatch.
@@ -50,7 +52,7 @@ globalThis.cv = globalThis.cv || {};
                 }
             });
         });
-        modalEl.addEventListener("hidden.bs.modal", event => {
+        modalEl.addEventListener(`hidden.${prefix}.modal`, event => {
             if (event.target !== modalEl) return;
             state.hideEvent = null;
             for (const entry of [...state.subscribers]) {

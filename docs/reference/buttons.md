@@ -3,7 +3,7 @@
 django-crud-views gives every action button a **semantic variant** (`primary`, `secondary`, `tertiary`, `danger`) and
 resolves the CSS classes of every button from one layered table keyed `location:slot`. A theme restyles all buttons by
 registering classes, and only needs a template when the markup itself differs. The button templates are split into
-one-line **logic templates** and three presentation-only **leaves**.
+one-line **logic templates** and presentation-only **leaves**.
 
 The public module is `crud_views.lib.button_classes`.
 
@@ -56,7 +56,7 @@ The classes of a button are looked up by a `location:slot` key. The **location**
 
 | Family | Locations | Second segment | Accepted shape |
 |---|---|---|---|
-| Action variants | `context`, `list`, `card` | `primary`, `secondary`, `tertiary`, `danger` | `location:variant` or `location:variant:mode` |
+| Action variants | `context`, `list`, `card`, `bulk` | `primary`, `secondary`, `tertiary`, `danger` | `location:variant` or `location:variant:mode` |
 | Form kinds | `form` | `submit`, `cancel`, `delete`, `filter-submit`, `filter-reset` | `form:kind` or `form:kind:mode` |
 | Structural and utility slots | locations in the default table below | the listed slot, such as `container`, `active`, or `icon-host` | `location:slot`, with no mode suffix |
 
@@ -66,6 +66,8 @@ The modes are `icon`, `both`, and `label`. Every form kind accepts all three, so
 unknown kind, `form:container:icon` uses `container`, which is not a form kind, and `form:primary:icon` puts an action
 variant where a form kind is required: all receive the unknown-key W362 warning. `form:submit:iconn` has a known
 kind but an unknown mode, so W362 names that mode and lists the valid modes instead.
+Bulk variant keys follow the same grammar: `bulk:danger:icon` is valid; `bulk:unknown:icon`,
+`bulk:danger:unknown` and utility mode keys such as `bulk:toolbar:icon` receive W362.
 
 For how a card button gets its mode, see [Card list view](card-list-view.md); toolbar and row buttons follow
 [Context label-mode resolution](action_menus.md#context-label-mode-resolution) and
@@ -191,14 +193,14 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `manage:trace-not-reached` | `badge bg-secondary` |
 | `manage:trace-not-evaluated` | `badge bg-warning text-dark` |
 
-The default table has 138 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 142 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
 Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
 keys and two dismissal utilities; the two form-group utilities each contribute one key, numbered columns contribute
-twelve width keys, ViewSet Navigation contributes six keys, bulk selection contributes seven keys, breadcrumbs contribute three keys, and manage
-diagnostics contribute twenty keys. Manage values replace complete class strings;
-theme registrations override defaults and project settings override the theme. The `context` and `list`
-buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
+twelve width keys, ViewSet Navigation contributes six keys, bulk selection contributes eleven keys, breadcrumbs
+contribute three keys, and manage diagnostics contribute twenty keys. Manage values replace complete class strings;
+theme registrations override defaults and project settings override the theme. The `context` and `list` buttons
+look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
 
@@ -245,7 +247,8 @@ See [ViewSet Navigation](navbar.md) for the full wrapper and independent compone
 
 ### Bulk selection classes
 
-These seven utility keys replace complete class strings and take no label-mode suffix.
+The eleven bulk keys replace complete class strings. The seven utility keys take no label-mode suffix;
+the four variant keys accept `:label`, `:icon` and `:both`.
 
 | Key | Complete default classes |
 |---|---|
@@ -256,6 +259,10 @@ These seven utility keys replace complete class strings and take no label-mode s
 | `bulk:actions` | `d-flex flex-wrap gap-2` |
 | `bulk:card-cell` | `position-relative` |
 | `bulk:card-select` | `form-check-input position-absolute top-0 start-0 translate-middle z-1` |
+| `bulk:primary` | `btn btn-primary` |
+| `bulk:secondary` | `btn btn-primary` |
+| `bulk:tertiary` | `btn btn-primary` |
+| `bulk:danger` | `btn btn-primary` |
 
 `bulk:toolbar` styles the toolbar form; `bulk:controls` styles the row containing "Select this page" and the count.
 `bulk:select-all` styles the label around the page checkbox, while `bulk:checkbox` styles that checkbox and each
@@ -263,8 +270,13 @@ table row checkbox. `bulk:actions` styles the row of action buttons. `bulk:card-
 context around one card; `bulk:card-select` styles the checkbox at the card's top-left corner.
 
 Theme registrations override defaults and `CRUD_VIEWS_BUTTON_CLASSES` overrides the theme per key; `None` or
-`""` removes the class contribution. The toolbar's action buttons are ordinary form submit buttons styled by
-`form:submit`; their label mode comes from the `bulk` location floor of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`.
+`""` removes the class contribution. The toolbar's native submit buttons use the destination's existing
+`cv_action_variant` (inherited `secondary` by default), through `bulk:<variant>`. Their label mode comes from
+the `bulk` location floor of `CRUD_VIEWS_LABEL_MODE_DEFAULTS` (default `both`), with unavailable icons falling
+back to `label`. A present `bulk:danger:icon` overrides `bulk:danger` in effective icon mode, including an empty
+string or `None` that suppresses classes. Unknown variants/modes and utility mode suffixes remain invalid.
+Bulk buttons no longer inherit `form:submit` overrides; real form controls, review Confirm and all-blocked
+Cancel retain their existing form styling. The four stock bulk defaults deliberately remain identical.
 
 See [Bulk actions](bulk_actions.md#toolbar-buttons) for toolbar labels, selection and review templates.
 
@@ -289,7 +301,7 @@ registry strings lets a theme own their appearance; the default-state JS uses da
 Keep textual labels and focus/help behavior when restyling. The one Show defaults switch hides default rows in
 Views and Presentation only after successful JS setup; without JavaScript all rows are readable. See the
 [theme registration recipe](theme.md#manage-class-registration) and [external asset contract](javascript.md#manage-defaults).
-The exact inventories are 138 core / 156 with workflow, including all twenty manage keys.
+The exact inventories are 142 core / 160 with workflow, including all twenty manage keys.
 
 ### Numbered column classes
 
@@ -313,8 +325,8 @@ an alternate framework's grid.
 
 ### Optional workflow defaults
 
-The 138-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
-for 156 effective default keys with only that contribution. Other installed extensions may add more.
+The 142-key table above is core-only. Installing `crud_views_workflow` adds these eighteen app-owned defaults,
+for 160 effective default keys with only that contribution. Other installed extensions may add more.
 
 | Key | Complete default classes |
 |---|---|
@@ -625,12 +637,45 @@ view data:
 | `crud_views/tags/button/container.html` | the group of buttons plus the menu; receives `cv_buttons`, `cv_group` and `cv_location`, and reads its structure, element and label with `{% cv_container_layout cv_location cv_buttons cv_group %}` (see [Button row as a list](#button-row-as-a-list) and [Container element and label](#container-element-and-label)) |
 | `crud_views/tags/button/menu_item_label.html` | icon and label of a menu item, included by `menu_item.html`; reads `cv_icon` and `cv_short_label` |
 | `crud_views/tags/button/form.html` | one crispy form button in a layout; receives [the form leaf contract](#the-form-leaf-contract), not `LEAF_KEYS` |
+| `crud_views/tags/button/bulk.html` | one native bulk review submit button; receives [the bulk leaf contract](#bulk-button-leaf) |
 
 `crud_views/tags/actions_menu_item_label.html` is kept with its 0.30 body (raw keys `cv_icon_action`,
 `cv_action_short_label`, `cv_action_label`, `cv_label`), minus the `d-inline-block` on its icon placeholder that
 `.cv-icon-fw` already provides, only for 0.30 overrides of `tags/actions_menu_item.html` that include it. The stock
 menu item does not use it, so an override of it no longer changes the stock menu; override
 `tags/button/menu_item_label.html` instead.
+
+### Bulk button leaf
+
+Copy this complete template to `crud_views/tags/button/bulk.html` in your theme. It consumes exactly these nine
+flat fields from the bulk source renderer; the data-building helper remains internal. Bulk is not a supported
+location for the generic action-button tag or normalizer. Keep autoescaping enabled and preserve native submission
+identity: `type="submit"`, `name="cv_bulk_stage"`, `value="review"`, plus the normalized `formaction`.
+
+| Field | Meaning |
+|---|---|
+| `cv_id` | Normalized control ID. |
+| `cv_variant` | Destination semantic variant: primary, secondary, tertiary or danger. A falsy value (`None`, `""`) arrives as secondary. A value outside the four is passed through unchanged and normally resolves to no class. `viewset.E209` reports every value outside the four, including an unset one. |
+| `cv_label_mode` | Effective label, icon or both mode, after unavailable-icon fallback. |
+| `cv_label` | Literal short caption text for visible and hidden labels; the full caption stays in the review header. |
+| `cv_icon` | Normalized destination icon string (semantic name, library-prefixed name or raw classes), or `None` for blank/non-string input. The string can remain nonempty when unavailable. |
+| `cv_icon_class` | Host-icon classes to add to the button, or an empty string. |
+| `cv_icon_inline` | May be False for host icons; do not render an extra inline icon then. |
+| `cv_title` | Optional literal short caption text for the icon-only tooltip; absent in other modes. |
+| `cv_flat_attrs` | Already normalized/escaped attribute output containing formaction and the action marker data-cv-bulk-action. |
+
+```django
+{% load crud_views %}<button type="submit" name="cv_bulk_stage" value="review" id="{{ cv_id }}"
+    class="{% cv_button_class 'bulk' cv_variant cv_label_mode %}{% if cv_icon_class %} {{ cv_icon_class }}{% endif %}"{% if cv_title %} title="{{ cv_title }}" data-cv-tooltip="form"{% endif %}{{ cv_flat_attrs }}>{% if cv_label_mode == "icon" %}{% if cv_icon and cv_icon_inline is not False %}{% cv_icon cv_icon %}{% endif %}<span class="{% cv_button_class 'form' 'hidden-label' %}">{{ cv_label }}</span>{% elif cv_label_mode == "both" %}{% if cv_icon and cv_icon_inline is not False %}{% cv_icon cv_icon %} {% endif %}<span>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</button>
+```
+
+Honor the effective `cv_label_mode` and render icons through the `cv_icon` tag; do not infer availability from
+`cv_icon` truthiness.
+
+Keep the shared `form:hidden-label`, `form:icon-host` and `data-cv-tooltip="form"` conventions. The form tooltip
+adapter handles these buttons too. Do not mark labels or titles safe, escape the already normalized attribute
+output a second time, or replace the native POST controls with links. This dedicated leaf changes bulk styling;
+the action/form leaves and real form controls retain their own contracts.
 
 ### The leaf contract
 
@@ -1064,7 +1109,7 @@ Full-caption APIs and unrelated template helpers remain available. Form buttons 
 | `crud_views.E363` | error | an `*:icon-host` value is not a valid format string with `{name_class}` as its only placeholder |
 | `crud_views.E364` | error | a `*:container-single` value is neither `"container"` nor `"bare"` (`None` and `""` mean `"container"`) |
 | `crud_views.E365` | error | a `form:cancel-tag` str value is neither `"button"` nor `"a"` (`""`, whitespace and other letter cases included); the hint names `'button'`, `'a'` and `None`. A non-str value is `crud_views.E361` only. Reported even when every cancel overrides it with an explicit `tag=` |
-| `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is not in effective core/installed-app defaults, a supported `heading-page`/`heading-modal`/`heading-group` icon slot, a valid `location:variant:mode` at `context`/`list`/`card`, or `form:kind:mode`. With workflow installed, `workflow:badge-colour` also accepts one nonempty colour segment without whitespace or colon; custom colours need not occur in the default table. Workflow keys warn when workflow is absent. Unknown action modes retain their specific mode warning. |
+| `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is not in effective core/installed-app defaults, a supported `heading-page`/`heading-modal`/`heading-group` icon slot, a valid `location:variant:mode` at `context`/`list`/`card`/`bulk`, or `form:kind:mode`. With workflow installed, `workflow:badge-colour` also accepts one nonempty colour segment without whitespace or colon; custom colours need not occur in the default table. Workflow keys warn when workflow is absent. Unknown action modes retain their specific mode warning. |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
 | `crud_views.E106` | error | a `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` or `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"`; `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` is not a dict of form kind → mode (an unknown form kind is an error here, not a W291) |
 | `crud_views.E108` | error | `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`, `"form"`, `"bulk"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |

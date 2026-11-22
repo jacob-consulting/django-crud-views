@@ -5,22 +5,22 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.46 complete, ready to plan Phase 7
+stopped_at: Phases 06.46 and 06.47 complete, ready to plan Phase 7
 last_updated: "2026-11-22T17:30:49.000Z"
 last_activity: 2026-11-22
-last_activity_desc: "Phase 06.46 follow-up fixes; rebased onto main after Phase 06.45"
-state_head: 133b24d1f65589705eda8e66fc5d0ebd24e4e7eb
+last_activity_desc: "Phase 06.46 merged with main after Phases 06.45 and 06.47"
+state_head: 3964c4404daa976a211d62fdc40666040a45840e
 progress:
-  total_phases: 53
-  completed_phases: 52
-  total_plans: 282
-  completed_plans: 282
+  total_phases: 54
+  completed_phases: 53
+  total_plans: 285
+  completed_plans: 285
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 53
-Completed Phases: 52
+Total Phases: 54
+Completed Phases: 53
 
 # Project State
 
@@ -29,7 +29,7 @@ Completed Phases: 52
 See: .planning/PROJECT.md (updated 2026-11-22)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 7 — Theme surface freeze
 
 ## Current Position
 
@@ -37,9 +37,14 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0 (not planned)
 Status: Ready to plan
-Last activity: 2026-11-22 — Phase 06.46 follow-up fixes; rebased onto main after Phase 06.45
+Last activity: 2026-11-22 — Phase 06.46 merged with main after Phases 06.45 and 06.47
 
 Next: $gsd-plan-phase 7
+
+### Phase 06.46 integration with Phase 06.47 — 2026-11-22
+
+- Main gained Phase 06.47 (PR #402) and the modal event prefix fix (PR #405) while PR #404 was in review; main was merged into the branch. Tracking reconciled to 54 phases and 285 plans.
+- Both phases touch `BulkSelectionMixin.cv_bulk_buttons`: 06.46 decides which actions are offered, 06.47 how each offered button is styled. The bulk guide's toolbar paragraph keeps 06.47's leaf and variant text with "one button per offered action".
 
 ### Phase 06.46 follow-up and rebase — 2026-11-22
 
@@ -55,6 +60,14 @@ Next: $gsd-plan-phase 7
 - Primary suite 17,281 passed; separate examples 637 plus 300 subtests; recorder bulk 390; strict docs/Ruff passed. Independent verifier 66 tests plus 12 subtests; reviewer Django 4.2 subset 30 passed. No full dependency matrix or new browser capture claimed.
 - Validation six tasks covered; eight authored threats closed. Deep 14-file review has no new findings; WR-01 is the explicitly accepted N6-01 LOW lazy-presentation exception residual, still unresolved. UI 23/24 is code-derived only.
 - Codebase-map drift remains advisory; AGENTS.md requires refresh after gsd-ship. No push, PR, merge or publication. No matching todos, handoffs or learnings to promote.
+
+### Phase 06.47 completion — 2026-11-21
+
+- All three plans/six tasks complete; independent verification16/16, validation6/6, security9/9. Dedicated bulk leaf and four semantic class keys preserve frozen stock bytes and existing native review/confirmation behavior.
+- Deep review21files warning WR-01 fixed in8ea60499 (unavailable icon contract); independent re-review clean. Full Python suite17,264 passed; focused2,467, JS512, integration2, strict docs, Ruff and wheel/sdist validation passed. Post-fix104 affected tests plus independent copied-leaf36 and verifier268 targeted checks passed; no redundant full-suite rerun.
+- Source-only UI audit clean; browser/downstream theme and full dependency matrix acceptance remain outside scope. No required human checks. CLI verification fingerprint passed before completion; no warning debt returned.
+- Reconciled CLI's stale dotted progress row and preserved-disagreeing completed-phase count from actual roadmap (51/53). No parent UAT gaps, pending phase todos, learning artifacts or stale handoffs. Derived state.json rewrite restored; codebase-map refresh follows shipping per AGENTS.md.
+- Issue400 now carries P06.47. No push/merge/ship performed. Next pending checkout phase is06.45; independent worktrees may have newer progress.
 
 ### Phase 06.45 shipping — 2026-11-21
 
@@ -1609,7 +1622,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 269
+- Total plans completed: 270
 
 - Total plans completed: 186
 - Average duration: -
@@ -1665,6 +1678,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.41 | 14 | - | - |
 | 06.42 | 3 | - | - |
 | 06.43 | 2 | - | - |
+| 06.47 | 3 | - | - |
 | 06.45 | 2 | - | - |
 | 06.46 | 2 | - | - |
 
@@ -1861,6 +1875,9 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.42 P03 | 12min | 2 tasks | 7 files |
 | Phase 06.46 P01 | 9min | 3 tasks | 9 files |
 | Phase 06.46 P02 | 16min | 3 tasks | 12 files |
+| Phase 06.47 P01 | 5min | 2 tasks | 14 files |
+| Phase 06.47 P02 | 8min | 2 tasks | 10 files |
+| Phase 06.47 P03 | 16min | 2 tasks | 11 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2216,6 +2233,7 @@ Recent decisions affecting current work:
 - [Phase 06.46]: Keep production gate and submission policy unchanged; real requests/grants prove rendering and submission boundaries.
 - [Phase 06.46]: Keep the existing template guard internal and defer promote/replace/retain decision to stability work.
 - [Phase 06.46]: Follow-up evaluates bulk buttons in Python before template rendering and guards the toolbar snippet itself; supersedes the N6-01 deferral.
+- [Phase 06.47]: Followed approved local adapter and dedicated bulk leaf; generic action/form dispatch remains bounded.
 
 ### Pending Todos
 
@@ -2307,6 +2325,7 @@ None yet.
 - Phase 06.43 inserted after Phase 06.40.1: Issue #393: breadcrumb class keys and accessible table sort state; approved D-01–D-04 handover. Explicitly assigned 06.43 for this workspace, independently deliverable before the Phase 7 freeze. (URGENT)
 - Phase 06.45 inserted after Phase 06.44: Theme-registered JS namespace and tooltip placements (#398); approved D-01–D-05, depends on 06.42, before Phase 7 freeze (URGENT)
 - Phase 06.46 inserted after Phase 06.44: Issue #399: bulk toolbar destination entry gates; approved D-01–D-06 handover amends #387. Requested 06.46 retained; 06.45 remains unallocated in this checkout. (URGENT)
+- Phase 06.47 inserted after Phase 06.45: Semantic variants for bulk toolbar buttons (#400); explicitly assigned 06.47 by the maintainer, approved D-01–D-05, depends on 06.41, before Phase 7 freeze (URGENT)
 
 ## Deferred Items
 
@@ -2317,5 +2336,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-11-22T07:55:34.002638+00:00
-Stopped at: Phase 06.46 complete, ready to plan Phase 7
+Stopped at: Phases 06.46 and 06.47 complete, ready to plan Phase 7
 Resume file: None

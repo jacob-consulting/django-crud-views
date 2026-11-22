@@ -315,17 +315,92 @@ describe("adapters.js", () => {
         expect(typeof window.cv.adapters.alert.close).toBe("function");
     });
 
-    it.each(["default", "object", "function"])("%s modal lifecycle waits for its own completed hide and unsubscribes idempotently", async kind => {
-        await loadScript("adapters");
-        const adapter = kind === "default" ? window.cv.adapters.modal : window.cv.bootstrapAdapters(kind === "object" ? fakeNamespace() : () => fakeNamespace()).modal;
+    // Event names follow data-data-prefix on #cv-config (#403); an absent element or attribute means bs.
+    const MODAL_EVENT_CASES = [
+        ["no #cv-config", () => {}, "bs"],
+        ["#cv-config without data-data-prefix", () => pageConfig().removeAttribute("data-data-prefix"), "bs"],
+        ["prefix bs", () => pageConfig({prefix: "bs"}), "bs"],
+        ["prefix coreui", () => pageConfig({prefix: "coreui"}), "coreui"],
+        ["hyphenated prefix", () => pageConfig({prefix: "my-lib"}), "my-lib"],
+    ];
+    describe.each(MODAL_EVENT_CASES)("modal lifecycle events, %s", (_label, configure, key) => {
+        const hide = `hide.${key}.modal`, hidden = `hidden.${key}.modal`;
+
+        it.each(["default", "object", "function"])("%s modal lifecycle waits for its own completed hide and unsubscribes idempotently", async kind => {
+            await loadScript("adapters"); configure();
+            const adapter = kind === "default" ? window.cv.adapters.modal : window.cv.bootstrapAdapters(kind === "object" ? fakeNamespace() : () => fakeNamespace()).modal;
+            const modal = document.getElementById("m"), callback = vi.fn();
+            const unsubscribe = adapter.onHidden(modal, callback);
+            expect(callback).not.toHaveBeenCalled();
+            modal.dispatchEvent(new Event(hide));
+            document.getElementById("d").dispatchEvent(new Event(hidden, {bubbles: true}));
+            expect(callback).not.toHaveBeenCalled();
+            modal.dispatchEvent(new Event(hidden)); expect(callback).toHaveBeenCalledTimes(1);
+            unsubscribe(); unsubscribe(); modal.dispatchEvent(new Event(hidden)); expect(callback).toHaveBeenCalledTimes(1);
+        });
+
+        it("queues a replacement open during hide and does not deliver the old hidden event to it", async () => {
+            await loadScript("adapters"); configure(); const ns = fakeNamespace(), adapter = window.cv.bootstrapAdapters(ns).modal;
+            const modal = document.getElementById("m"), first = vi.fn(), second = vi.fn();
+            const unsubscribe = adapter.onHidden(modal, first); adapter.show(modal); ns.instance.show.mockClear();
+            modal.dispatchEvent(new Event(hide, {cancelable: true})); unsubscribe();
+            const stopSecond = adapter.onHidden(modal, second); adapter.show(modal);
+            expect(ns.instance.show).not.toHaveBeenCalled();
+            modal.dispatchEvent(new Event(hidden));
+            expect(first).not.toHaveBeenCalled(); expect(second).not.toHaveBeenCalled(); expect(ns.instance.show).toHaveBeenCalledTimes(1);
+            modal.dispatchEvent(new Event(hide)); modal.dispatchEvent(new Event(hidden));
+            expect(second).toHaveBeenCalledTimes(1); stopSecond();
+        });
+
+        it("cancels pending shows on unsubscribe and handles a later listener preventing hide", async () => {
+            await loadScript("adapters"); configure(); const ns = fakeNamespace(), adapter = window.cv.bootstrapAdapters(ns).modal;
+            const modal = document.getElementById("m"), callback = vi.fn();
+            let stop = adapter.onHidden(modal, callback);
+            modal.dispatchEvent(new Event(hide)); stop(); stop = adapter.onHidden(modal, callback);
+            adapter.show(modal); stop(); modal.dispatchEvent(new Event(hidden)); expect(ns.instance.show).not.toHaveBeenCalled();
+            stop = adapter.onHidden(modal, callback);
+            modal.addEventListener(hide, event => event.preventDefault(), {once: true});
+            modal.dispatchEvent(new Event(hide, {cancelable: true}));
+            adapter.show(modal); await Promise.resolve();
+            expect(ns.instance.show).toHaveBeenCalledTimes(1); expect(callback).not.toHaveBeenCalled(); stop();
+        });
+    });
+
+    it("observes only the registered prefix's modal events", async () => {
+        await loadScript("adapters"); pageConfig({prefix: "coreui"});
+        const ns = fakeNamespace(), adapter = window.cv.bootstrapAdapters(ns).modal;
         const modal = document.getElementById("m"), callback = vi.fn();
-        const unsubscribe = adapter.onHidden(modal, callback);
-        expect(callback).not.toHaveBeenCalled();
+        adapter.onHidden(modal, callback);
         modal.dispatchEvent(new Event("hide.bs.modal"));
-        document.getElementById("d").dispatchEvent(new Event("hidden.bs.modal", {bubbles: true}));
+        adapter.show(modal);
+        expect(ns.instance.show).toHaveBeenCalledTimes(1); // not queued behind another library's hide
+        modal.dispatchEvent(new Event("hidden.bs.modal"));
         expect(callback).not.toHaveBeenCalled();
-        modal.dispatchEvent(new Event("hidden.bs.modal")); expect(callback).toHaveBeenCalledTimes(1);
-        unsubscribe(); unsubscribe(); modal.dispatchEvent(new Event("hidden.bs.modal")); expect(callback).toHaveBeenCalledTimes(1);
+        modal.dispatchEvent(new Event("hide.coreui.modal")); modal.dispatchEvent(new Event("hidden.coreui.modal"));
+        expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    it("reads the prefix once per modal element", async () => {
+        await loadScript("adapters"); const config = pageConfig({prefix: "coreui"});
+        const adapter = window.cv.bootstrapAdapters(fakeNamespace()).modal;
+        const first = document.getElementById("m"), second = document.getElementById("t");
+        const firstCallback = vi.fn(), secondCallback = vi.fn();
+        adapter.onHidden(first, firstCallback);
+        config.setAttribute("data-data-prefix", "bs");
+        adapter.onHidden(second, secondCallback);
+        first.dispatchEvent(new Event("hidden.bs.modal")); expect(firstCallback).not.toHaveBeenCalled();
+        first.dispatchEvent(new Event("hidden.coreui.modal")); expect(firstCallback).toHaveBeenCalledTimes(1);
+        second.dispatchEvent(new Event("hidden.coreui.modal")); expect(secondCallback).not.toHaveBeenCalled();
+        second.dispatchEvent(new Event("hidden.bs.modal")); expect(secondCallback).toHaveBeenCalledTimes(1);
+    });
+
+    it("tolerates a present but empty prefix without falling back to bs", async () => {
+        await loadScript("adapters"); pageConfig({prefix: ""});
+        const ns = fakeNamespace(), adapter = window.cv.bootstrapAdapters(ns).modal;
+        const modal = document.getElementById("m"), callback = vi.fn();
+        expect(() => adapter.onHidden(modal, callback)).not.toThrow();
+        adapter.show(modal); expect(ns.instance.show).toHaveBeenCalledTimes(1);
+        modal.dispatchEvent(new Event("hidden.bs.modal")); expect(callback).not.toHaveBeenCalled();
     });
 
     it("published native-dialog adapter reports only its completed close and cleans up", () => {
@@ -344,31 +419,6 @@ describe("adapters.js", () => {
         unsubscribe(); unsubscribe(); dialog.dispatchEvent(new Event("close")); expect(callback).toHaveBeenCalledTimes(1);
     });
 
-    it("queues a replacement open during hide and does not deliver the old hidden event to it", async () => {
-        await loadScript("adapters"); const ns = fakeNamespace(), adapter = window.cv.bootstrapAdapters(ns).modal;
-        const modal = document.getElementById("m"), first = vi.fn(), second = vi.fn();
-        const unsubscribe = adapter.onHidden(modal, first); adapter.show(modal); ns.instance.show.mockClear();
-        modal.dispatchEvent(new Event("hide.bs.modal", {cancelable: true})); unsubscribe();
-        const stopSecond = adapter.onHidden(modal, second); adapter.show(modal);
-        expect(ns.instance.show).not.toHaveBeenCalled();
-        modal.dispatchEvent(new Event("hidden.bs.modal"));
-        expect(first).not.toHaveBeenCalled(); expect(second).not.toHaveBeenCalled(); expect(ns.instance.show).toHaveBeenCalledTimes(1);
-        modal.dispatchEvent(new Event("hide.bs.modal")); modal.dispatchEvent(new Event("hidden.bs.modal"));
-        expect(second).toHaveBeenCalledTimes(1); stopSecond();
-    });
-
-    it("cancels pending shows on unsubscribe and handles a later listener preventing hide", async () => {
-        await loadScript("adapters"); const ns = fakeNamespace(), adapter = window.cv.bootstrapAdapters(ns).modal;
-        const modal = document.getElementById("m"), callback = vi.fn();
-        let stop = adapter.onHidden(modal, callback);
-        modal.dispatchEvent(new Event("hide.bs.modal")); stop(); stop = adapter.onHidden(modal, callback);
-        adapter.show(modal); stop(); modal.dispatchEvent(new Event("hidden.bs.modal")); expect(ns.instance.show).not.toHaveBeenCalled();
-        stop = adapter.onHidden(modal, callback);
-        modal.addEventListener("hide.bs.modal", event => event.preventDefault(), {once: true});
-        modal.dispatchEvent(new Event("hide.bs.modal", {cancelable: true}));
-        adapter.show(modal); await Promise.resolve();
-        expect(ns.instance.show).toHaveBeenCalledTimes(1); expect(callback).not.toHaveBeenCalled(); stop();
-    });
 
     it("modal.show / hide drive Modal.getOrCreateInstance / getInstance", async () => {
         await loadScript("adapters");
@@ -495,8 +545,10 @@ describe("adapters.js", () => {
     it("modal.show and collapse.toggle throw a clear error without the namespace", async () => {
         await loadScript("adapters");
         const a = window.cv.bootstrapAdapters(undefined);
-        expect(() => a.modal.show(document.getElementById("m"))).toThrow(/Bootstrap 5 JavaScript not loaded/);
-        expect(() => a.collapse.toggle(document.getElementById("d"))).toThrow(/Bootstrap 5 JavaScript not loaded/);
+        expect(() => a.modal.show(document.getElementById("m")))
+            .toThrow("cv.adapters: UI library JavaScript not loaded (no Modal on the namespace); load the library's bundle or assign cv.adapters.");
+        expect(() => a.collapse.toggle(document.getElementById("d")))
+            .toThrow("cv.adapters: UI library JavaScript not loaded (no Collapse on the namespace); load the library's bundle or assign cv.adapters.");
     });
 
     it("resolves a function namespace at call time", async () => {

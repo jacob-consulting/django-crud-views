@@ -331,16 +331,17 @@ def test_workflow_presentation_docs():
     }
     bulk_defaults = dict(re.findall(r"^\| `(bulk:[^`]+)` \| `([^`]+)` \|$", text, re.M))
     assert bulk_defaults == {key: value for key, value in bc.DEFAULT_BUTTON_CLASSES.items() if key.startswith("bulk:")}
-    assert len(bulk_defaults) == 7
-    assert len(bc.DEFAULT_BUTTON_CLASSES) == 138
-    assert len(bc._get_default_button_classes()) == 156
-    assert "156 effective default keys" in section
+    assert len(bulk_defaults) == 11
+    assert len(bc.DEFAULT_BUTTON_CLASSES) == 142
+    assert len(bc._get_default_button_classes()) == 160
+    assert "160 effective default keys" in section
     precedence = text.split("### Precedence\n", 1)[1].split("\n## ", 1)[0]
     assert "core defaults + installed-app defaults + theme registrations + CRUD_VIEWS_BUTTON_CLASSES" in precedence
     assert "collisions with core or another app's defaults are rejected" in precedence
     row = next(line for line in text.splitlines() if line.startswith("| `crud_views.W362` |"))
     for phrase in (
         "effective core/installed-app defaults",
+        "`context`/`list`/`card`/`bulk`",
         "With workflow installed",
         "one nonempty colour segment without whitespace or colon",
         "custom colours need not occur in the default table",

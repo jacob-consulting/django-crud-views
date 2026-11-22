@@ -363,7 +363,7 @@ def test_form_utility_keys_and_finite_grammar():
     assert DEFAULT_BUTTON_CLASSES["form:hidden-label"] == "visually-hidden"
     assert DEFAULT_BUTTON_CLASSES["form:icon-host"] == "{name_class}"
     assert {"submit", "cancel", "delete", "filter-submit", "filter-reset"} == FORM_KINDS
-    assert {"context", "list", "card"} == VARIANT_LOCATIONS
+    assert {"context", "list", "card", "bulk"} == VARIANT_LOCATIONS
     for kind in FORM_KINDS:
         assert all(_is_action_mode_key(f"form:{kind}:{mode}") for mode in ("label", "both", "icon"))
     for key in (

@@ -20,6 +20,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ Bulk toolbar destination entry gates shared by table/card controls, request-local effective actions, bounded rendering costs and unchanged submission authorization — Phase 06.46; verified 7/7, all six decisions honored, eight threats closed. Full suite17,281 and examples637+300 subtests passed; the N6-01 LOW presentation exception residual was fixed in the follow-up (buttons evaluated before template rendering).
 
+- ✓ Destination-driven bulk semantic variants, four theme keys and dedicated nine-field leaf with byte-identical stock controls — Phase 06.47; 16/16 verified, six tasks covered, security9/9 and clean independent review after icon-contract documentation fix. Full Python suite17,264, JavaScript512 and integration2 passed; downstream/browser/full-matrix claims excluded.
+
 - ✓ Six manage/formset CSS tokens with exact Bootstrap/literal fallbacks, nested theme-root mappings, gx-3 compact grids and enforceable source/docs contract — Phase 06.44; technical verification9/9, visual UAT1/1, security6/6 and clean independent review after capture-path fix. Supported-runtime full suite16,548 passed; no broader compatibility-matrix or downstream-theme claim.
 
 - ✓ Three existing-registry breadcrumb class keys with byte-identical defaults and matching effective table sort icons/aria-sort — Phase 06.43; verification 8/8, decisions 4/4, security 5/5, four tasks covered and clean 12-file review. Browser/AT and dependency-matrix acceptance unclaimed.
@@ -180,6 +182,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Reuse the existing non-object destination gate and cache effective bulk actions per request | Keep access/state policy aligned with Cancel without scanning selected rows or changing POST enforcement | Validated Phase 06.46; N6-01 fixed in follow-up: buttons are evaluated before template rendering |
+| Normalize bulk controls through the existing form path, then add the destination variant for a dedicated leaf | Preserve native submission/escaping and stock bytes while keeping generic action/form dispatch bounded | Validated (Phase 06.47; 16/16) |
 | Register the JS namespace and tooltip placements at theme startup; resolve config at call time | Reuse the existing adapter factory and preserve explicit trigger/factory ownership and Bootstrap defaults without an extra theme script | Validated (Phase 06.45; 9/9); supersedes placement-only wrapper guidance from 06.28 |
 | Reuse three ordinary breadcrumb class keys and bound-column sort state | Preserve existing template/resolver paths, default breadcrumb bytes and query links while exposing effective ordering | Validated (Phase 06.43; 8/8) |
 | Use six ordinary registry keys and theme-owned owner-heading markup | Reuse existing lookups/context/components without new runtime state, queries or global heading behavior | Validated (Phase 06.40.1; 9/9) |
@@ -276,4 +279,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-22 after Phase 06.46 completion*
+*Last updated: 2026-11-22 after integrating Phase 06.46 with Phase 06.47*

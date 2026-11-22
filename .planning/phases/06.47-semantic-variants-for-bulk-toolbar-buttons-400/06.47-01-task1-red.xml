@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.814" timestamp="2026-11-21T20:21:29.672880+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_bulk_variants" name="test_table_variant_native_review" time="0.651"><failure message="AssertionError: assert 'btn btn-primary' == 'theme-bulk-danger'&#10;  &#10;  - theme-bulk-danger&#10;  + btn btn-primary">client_user_bulk_publisher_change = &lt;django.test.client.Client object at 0x7a0c66b90d40&gt;
+bulk_publishers = [&lt;Publisher: Alpha&gt;, &lt;Publisher: Beta&gt;, &lt;Publisher: Locked Gamma&gt;]
+settings = &lt;pytest_django.fixtures.Settings object at 0x7a0c66d104a0&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7a0c66b91280&gt;
+
+    def test_table_variant_native_review(client_user_bulk_publisher_change, bulk_publishers, settings, monkeypatch):
+        destination = cv_bulk_publisher.get_view_class("archive")
+        monkeypatch.setattr(destination, "cv_action_variant", "danger")
+        settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:danger": "theme-bulk-danger"}
+        response = client_user_bulk_publisher_change.get(SOURCE_PATHS["table"])
+        assert response.status_code == 200
+        controls = [html.fragment_fromstring(control) for control in raw_bulk_controls(response.content.decode("utf-8"))]
+        (button,) = [control for control in controls if control.get("data-cv-bulk-action") == "archive"]
+&gt;       assert button.get("class") == "theme-bulk-danger"
+E       AssertionError: assert 'btn btn-primary' == 'theme-bulk-danger'
+E         
+E         - theme-bulk-danger
+E         + btn btn-primary
+
+tests/test1/test_bulk_variants.py:75: AssertionError</failure></testcase></testsuite></testsuites>

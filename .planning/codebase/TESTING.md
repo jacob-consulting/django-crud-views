@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: af5d74efd12e965b432fe30c6044f139b406eafc
-last_mapped_at: 2026-11-21
+last_mapped_commit: f8825c0279d95f4270447505f8dff5fe766d5c8d
+last_mapped_at: 2026-11-22
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-21
+**Analysis Date:** 2026-11-22
 
 ## Test Framework
 
@@ -161,6 +161,31 @@ paths.
 
 ---
 
-*Testing analysis: 2026-11-21*
-
 Both integration suites import `selectedPython()` from `tests/js-integration/python.js`. This shared test-only helper preserves the selected virtualenv launcher and bounded missing/invalid-interpreter diagnostics.
+
+## Bulk Variant and Copied Leaf Contracts
+
+- `tests/test1/test_bulk_variants.py` exercises table/card sources, `label`/`icon`/`both` modes, available/missing/disabled/host icons, four destination variants, inherited secondary styling, explicit empty/None class overrides, form-style isolation, and native review POSTs. Preserve real request/state assertions alongside parsed markup checks.
+- `tests/test1/test_bulk_variants.py::test_stock_toolbar_matches_form_leaf` captures each actual normalized payload, independently renders `crud_views/tags/button/form.html`, and compares it byte for byte with both the raw response control and the bulk leaf under the default secondary variant, across 24 source/mode/icon combinations. Raw extraction retains each terminal newline and the full signed URL. The comparison is computed live, has no stored fixture and is relative to the form leaf; absolute form-leaf bytes are pinned by `tests/test1/test_form_buttons_golden.py`.
+- `tests/test1/test_bulk_docs.py::test_copied_bulk_leaf_contract` extracts the exact nine-field Django recipe from `docs/reference/buttons.md`, renders it and the shipped bulk leaf against the actual projected payload, and compares both with the stock control. Its 36 cases cover table/card, three modes, inline/host/disabled icons and hostile labels. Missing `cv_title` is permitted outside icon mode; the original icon key remains available when disabled.
+- The copied-leaf test instruments `Variable.resolve` and checks recorded reads after rendering, since Django conditionals can suppress exceptions. It proves the guard with false/missing/truthy synthetic undeclared input, then asserts that form-only keys do not affect either template. Use this pattern to detect ambient-context dependencies rather than relying on output equality alone (`tests/test1/test_bulk_docs.py::test_copied_bulk_leaf_contract`).
+- `tests/test1/test_bulk_variants.py::test_short_labels_and_escaping` and `::test_bulk_action_key_is_escaped` exercise plain, safe and lazy hostile text, escaped action URLs/keys, accessible labels, and native submit attributes. Test DOM semantics and exact escaping together.
+- `tests/test1/test_bulk_docs.py::test_bulk_modules_remain_in_maintained_crispy_floor_selection` parses `noxfile.py` to keep bulk flow/execution/source/scope/return/variants in `CRISPY_FLOOR_TESTS`. A passing local selection does not establish that the floor sessions or full supported matrix ran.
+
+## Recorded Phase 06.47 Shipping Evidence
+
+Use `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-REGRESSION.md`, `06.47-03-SUMMARY.md`, and `06.47-VERIFICATION.md` for the source/revision attribution of these recorded results. Mapping performs no test reruns.
+
+| Evidence scope | Recorded result | Interpretation |
+| --- | --- | --- |
+| Original full `tests/test1 -n 4 -q` | 17,264 passed in 574.38s; Python 3.12.3 / Django 6.0.10 | Original phase acceptance; not a full run after the Phase 06.45 integration merge |
+| Original combined focused selection | 2,467 passed | Original focused gate; separately attributed from full-suite evidence |
+| Shipping integration refresh | 470 affected Python passed in 25.55s | Bulk/theme/JS-config/data-prefix coverage following the integration merge |
+| Shipping Node/jsdom lane | 541 tests across 13 files | Ordinary JavaScript suite, including runtime-contract checks |
+| Shipping Django/JS lane | 3 tests across 2 files | Separate integration command and explicitly selected Python runtime |
+
+The shipping verification addendum in `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-VERIFICATION.md` also records a two-alias probe using actual bulk control output plus `cv_config`/`cv_const_js`, namespace `tabler`, independent prefix `coreui`, and form tooltip placement. The probe checks native submit identity and placement precedence through the shipped adapters/scanner. This recorded jsdom/stub-provider probe supplements the maintained context-tooltip bridge in `tests/js-integration/js-config.test.js`; it is not a committed bulk browser test or a downstream library certification. No full dependency matrix or fresh postmerge full-suite result is established by those focused checks.
+
+---
+
+*Testing analysis: 2026-11-22*

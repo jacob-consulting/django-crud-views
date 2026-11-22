@@ -107,6 +107,10 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "navbar:link": "nav-link mw-100 text-break",
     "navbar:link-active": "active",
     # Bulk selection toolbar and checkbox utilities.
+    "bulk:primary": "btn btn-primary",
+    "bulk:secondary": "btn btn-primary",
+    "bulk:tertiary": "btn btn-primary",
+    "bulk:danger": "btn btn-primary",
     "bulk:toolbar": "mb-3",
     "bulk:controls": "d-flex align-items-center gap-3 mb-2",
     "bulk:select-all": "form-check mb-0",
@@ -331,7 +335,7 @@ def get_container_layout(location: str, item_count: int) -> ContainerLayout:
     )
 
 
-VARIANT_LOCATIONS: frozenset[str] = frozenset({"context", "list", "card"})
+VARIANT_LOCATIONS: frozenset[str] = frozenset({"context", "list", "card", "bulk"})
 FORM_KINDS: frozenset[str] = frozenset({"submit", "cancel", "delete", "filter-submit", "filter-reset"})
 
 # the elements a form button may render as (Phase 6.1): exactly these strings, never stripped or case-folded

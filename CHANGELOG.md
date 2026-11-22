@@ -480,6 +480,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Modal events on prefixed libraries** (#403): the stock modal adapter observes `hide.{prefix}.modal` /
+  `hidden.{prefix}.modal` with the registered data prefix, so closing a CoreUI modal is seen (session release,
+  focus return, replacement open). `bs` stays the default; the prefix is read once per modal element. The
+  missing-component error no longer names Bootstrap.
+
 - **Prefixed table sort icons** (#393): icons now follow bound-column ordering, matching
   `aria-sort` even when the table uses a prefixed sorting query parameter.
 
@@ -685,6 +690,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   forms. Destinations own permissions, scoped resolution, eligibility, confirmation and application writes.
   The toolbar shows a user only the actions they may enter, and no selection controls when there is none (#399);
   the destination still checks every submission.
+  Destination semantic variants style toolbar controls through four `bulk:<variant>` keys and the dedicated
+  `crud_views/tags/button/bulk.html` leaf (#400), preserving stock Bootstrap output and native submission.
   See [Bulk actions](docs/reference/bulk_actions.md) for the stable API, deletion and row-locking recipes.
 
 - **ViewSet Navigation theme support** (#384): six ordinary navbar class keys allow theme registration and

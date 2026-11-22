@@ -358,7 +358,8 @@ def spy_bulk_gates(monkeypatch, keys, viewset=cv_bulk_publisher):
     for key, destination, original_access, original_state in originals:
 
         def access(cls, user, obj, key=key, original=original_access, destination=destination):
-            assert cls is destination and obj is None
+            assert cls is destination
+            assert obj is None
             events.append((key, "access", user, obj))
             return original(user, obj)
 
@@ -549,9 +550,10 @@ def test_bulk_source_query_cost(nested, card, rows, actions, monkeypatch, record
     assert all(user is response.wsgi_request.user for _, _, user, _ in events)
     assert all(obj is view for _, stage, _, obj in events if stage == "state")
     before = list(events)
+    buttons = view.cv_bulk_buttons
     for _ in range(2):
         view.get_context_data()
-        assert view.cv_bulk_buttons == view.cv_bulk_buttons
+        assert view.cv_bulk_buttons is buttons
         if not card:
             view.get_table_kwargs()
     assert events == before
@@ -620,14 +622,16 @@ def test_bulk_nested_custom_resolver_failure_after_admission(
     def resolver(self):
         if events:
             events.append("resolver")
-            assert admitted and original_resolver(self) is admitted[-1]
+            assert admitted
+            assert original_resolver(self) is admitted[-1]
             raise error
         obj = original_resolver(self)
         admitted.append(obj)
         return obj
 
     def access(cls, user, obj):
-        assert obj is None and admitted
+        assert obj is None
+        assert admitted
         assert original_access(user, obj)
         events.append("access")
         return True

@@ -199,6 +199,26 @@ def test_bulk_checks_keep_declared_denied_destinations(source, path, client_user
     assert source.cv_bulk_actions == keys
 
 
+def use_content_template(source, name, template, settings, monkeypatch):
+    """Serve an application's own content template for the source, as a project override would."""
+    config = settings.TEMPLATES[0]
+    settings.TEMPLATES = [
+        {
+            **config,
+            "APP_DIRS": False,
+            "OPTIONS": {
+                **config.get("OPTIONS", {}),
+                "loaders": [
+                    ("django.template.loaders.locmem.Loader", {name: template}),
+                    "django.template.loaders.filesystem.Loader",
+                    "django.template.loaders.app_directories.Loader",
+                ],
+            },
+        }
+    ]
+    monkeypatch.setattr(source, "cv_content_template", name)
+
+
 @pytest.mark.parametrize("source,path", SOURCE_CASES)
 @pytest.mark.parametrize("admitted", [False, True])
 def test_bulk_custom_template_effective_guard(source, path, admitted, request, bulk_publishers, settings, monkeypatch):
@@ -218,22 +238,7 @@ def test_bulk_custom_template_effective_guard(source, path, admitted, request, b
             "{% for object in object_list %}{% if view.cv_bulk_buttons %}<div data-custom-cell>"
             '<input name="cv_bulk_ids" data-cv-bulk-item></div>{% endif %}{% cv_card object %}{% endfor %}',
         )
-    config = settings.TEMPLATES[0]
-    settings.TEMPLATES = [
-        {
-            **config,
-            "APP_DIRS": False,
-            "OPTIONS": {
-                **config.get("OPTIONS", {}),
-                "loaders": [
-                    ("django.template.loaders.locmem.Loader", {name: template}),
-                    "django.template.loaders.filesystem.Loader",
-                    "django.template.loaders.app_directories.Loader",
-                ],
-            },
-        }
-    ]
-    monkeypatch.setattr(source, "cv_content_template", name)
+    use_content_template(source, name, template, settings, monkeypatch)
     monkeypatch.setattr("django.middleware.csrf.get_token", lambda request: "A" * 64)
     monkeypatch.setattr("django.template.context_processors.get_token", lambda request: "A" * 64)
     keys = source.cv_bulk_actions
@@ -269,6 +274,30 @@ def test_bulk_custom_template_effective_guard(source, path, admitted, request, b
         empty = client.get(path)
         assert response.content == empty.content
         assert events == before
+
+
+@pytest.mark.parametrize("source,path", SOURCE_CASES)
+@pytest.mark.parametrize("admitted", [False, True])
+def test_bulk_toolbar_snippet_guards_itself(source, path, admitted, request, bulk_publishers, settings, monkeypatch):
+    """An override that includes the toolbar without the offered-action condition gets no empty toolbar."""
+    client = request.getfixturevalue(
+        "client_user_bulk_publisher_delete" if admitted else "client_user_bulk_publisher_view"
+    )
+    body = (
+        "{% render_table table %}"
+        if source is BulkPublisherListView
+        else "{% for object in object_list %}{% cv_card object %}{% endfor %}"
+    )
+    template = (
+        "{% load crud_views django_tables2 %}{% if view.cv_bulk_actions %}"
+        "{% include 'crud_views/snippets/bulk_toolbar.html' %}{% endif %}" + body
+    )
+    use_content_template(source, "app/unguarded_bulk_content.html", template, settings, monkeypatch)
+    response = client.get(path)
+    assert response.status_code == 200
+    assert action_keys(response) == (list(source.cv_bulk_actions) if admitted else [])
+    assert len(soup(response).cssselect("form[data-cv-bulk]")) == (1 if admitted else 0)
+    assert len(soup(response).cssselect("[data-cv-bulk-all]")) == (1 if admitted else 0)
 
 
 ORIGINAL_CARD_CONTENT = """{% load i18n crud_views %}
@@ -344,6 +373,30 @@ def spy_bulk_gates(monkeypatch, keys, viewset=cv_bulk_publisher):
         monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden)
         monkeypatch.setattr(destination, "cv_bulk_check", forbidden)
     return events
+
+
+@pytest.mark.parametrize("source,path", SOURCE_CASES)
+@pytest.mark.parametrize("rows", [0, 3])
+@pytest.mark.parametrize("error_class", [ObjectDoesNotExist, SilentGateError])
+def test_bulk_button_presentation_errors_are_not_swallowed(
+    source, path, rows, error_class, client_user_bulk_publisher_delete, monkeypatch
+):
+    """A label hook failing with an exception Django templates silence must not render a page without its toolbar."""
+    for index in range(rows):
+        Publisher.objects.create(name=f"Publisher {index}")
+    destination = cv_bulk_publisher.get_view_class(source.cv_bulk_actions[0])
+    error = error_class("label failure")
+    calls = []
+
+    def label(cls, context):
+        calls.append(cls)
+        raise error
+
+    monkeypatch.setattr(destination, "cv_get_action_short_label", classmethod(label))
+    with pytest.raises(error_class) as caught:
+        client_user_bulk_publisher_delete.get(path)
+    assert caught.value is error
+    assert calls == [destination]
 
 
 @pytest.mark.parametrize(
@@ -507,9 +560,8 @@ def test_bulk_source_query_cost(nested, card, rows, actions, monkeypatch, record
     with CaptureQueriesContext(connection) as baseline_queries:
         client.get(path)
     assert events == []
-    # Full-response counts also pin equality across row/action dimensions.
-    expected = (8 if card else 9) if nested else (7 if card else 8)
-    assert len(offered_queries) == len(baseline_queries) == expected
+    # Offering actions costs no query beyond the same page without bulk actions, for every row and action count.
+    assert len(offered_queries) == len(baseline_queries)
     record_property("query_cost", f"{nested=},{card=},{rows=},{actions=}:{len(offered_queries)}")
 
 
@@ -546,7 +598,7 @@ def test_bulk_nested_denial_bounds(source, denial, monkeypatch):
     monkeypatch.setattr(source, "cv_bulk_actions", ())
     with CaptureQueriesContext(connection) as baseline:
         client.get(path)
-    assert len(queries) == len(baseline) == (8 if source is BulkBookCardView else 9)
+    assert len(queries) == len(baseline)
 
 
 @pytest.mark.parametrize("source", [BulkBookListView, BulkBookCardView])

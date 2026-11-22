@@ -115,8 +115,9 @@ class BulkSelectionMixin:
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Evaluate gates in Python before template lookup can suppress hook exceptions.
-        _ = self._cv_effective_bulk_actions
+        # Evaluate the gates and the buttons in Python: a template lookup would swallow some hook exceptions
+        # (ObjectDoesNotExist, for one) and render the page without its toolbar.
+        _ = self.cv_bulk_buttons
         return context
 
     @cached_property

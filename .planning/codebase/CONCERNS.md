@@ -1,19 +1,19 @@
 ---
-last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
-last_mapped_at: 2026-11-21
+last_mapped_commit: f8825c0279d95f4270447505f8dff5fe766d5c8d
+last_mapped_at: 2026-11-22
 ---
-<!-- refreshed: 2026-11-21 -->
+<!-- refreshed: 2026-11-22 -->
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-21
+**Analysis Date:** 2026-11-22
 
 ## Tech Debt
 
 **Startup-captured settings and template registration:**
-- Issue: `CrudViewsSettings` class defaults and template-tag registration capture some Django settings at import/startup. `register_data_prefix()` also keeps a process-global value with default `bs`; the last valid startup call wins. `override_settings()` does not refresh captured values, while selected label defaults are intentionally read at call time.
-- Files: `src/crud_views/lib/settings.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/lib/data_prefix.py`, `src/crud_views/lib/__init__.py`
+- Issue: `CrudViewsSettings` class defaults and template-tag registration capture some Django settings at import/startup. `register_data_prefix()` and `register_js_namespace()` keep independent process-global values with defaults `bs` and `bootstrap`; the last valid call wins. `register_tooltip_placements()` replaces its whole mapping after validation. `override_settings()` does not refresh these registries or captured values, while selected label defaults are intentionally read at call time.
+- Files: `src/crud_views/lib/settings.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/lib/data_prefix.py`, `src/crud_views/lib/js_config.py`, `src/crud_views/lib/__init__.py`
 - Impact: changing startup configuration during a process does not reconfigure the package; a theme that registers too late or fails to register uses the default prefix. The supported contract is startup registration, not concurrent per-request or runtime theme switching.
-- Fix approach: call `register_data_prefix()` once from the theme's startup hook. Keep configuration startup-only unless a demonstrated use case justifies broader runtime semantics; preserve validation-before-assignment and test isolation in `tests/test1/test_data_prefix.py`.
+- Fix approach: register prefix, namespace, and placements from the theme's startup hook. Keep configuration startup-only unless a demonstrated use case justifies broader runtime semantics; preserve validation-before-assignment, independent placement snapshots, and test isolation in `tests/test1/test_data_prefix.py` and `tests/test1/test_js_config.py`.
 
 **Placeholder public management command:**
 - Issue: `crud_views_show` advertises a command but its `handle()` is a no-op.
@@ -108,11 +108,11 @@ No distinct security defect is confirmed by current evidence. Keep navbar render
 - Safe modification: preserve custom header content independently of icon choice and update `CHANGELOG.md` and `docs/migrating-1.0.md` for contract changes.
 - Test coverage: built-in and example themes are exercised; arbitrary installed third-party themes are not certified (`docs/development/stability.md`). Conditional/formset empty-default hooks and fragment ownership have coverage in `tests/test1/test_conditional_layout.py` and `tests/test1/test_formsets_compact.py`.
 
-**Theme data-prefix adoption and native-library ownership:**
-- Files: `src/crud_views/lib/data_prefix.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/cv_config.html`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`, `docs/reference/theme.md`, `docs/reference/javascript.md`
-- Why fragile: a theme changing the registered native data-attribute prefix must use the shipped templates and copy the current `cv_config` markup so `data-data-prefix` reaches the tabs initializer. Older copied config markup has no prefix attribute and therefore follows the documented `bs` fallback. Registration aligns prefix spelling; it does not configure or certify a different library's JavaScript adapter, lifecycle, or DOM conventions.
-- Safe modification: document startup registration and copied-config adoption together; keep the selector scoped to owned tabs and preserve the absence-only fallback. Treat native CoreUI behavior and other downstream themes as unverified unless separately exercised in their real runtime.
-- Test coverage: registration, copied recipes/config, and adapter selection plumbing are covered by `tests/test1/test_data_prefix.py`, `tests/test1/test_data_prefix_docs.py`, and `tests/js/object-detail-tabs.test.js`; full native CoreUI browser behavior is not established.
+**Theme configuration adoption and native-library ownership:**
+- Files: `src/crud_views/lib/data_prefix.py`, `src/crud_views/lib/js_config.py`, `src/crud_views/templatetags/crud_views.py`, `src/crud_views/templates/crud_views/tags/cv_config.html`, `src/crud_views/static/crud_views/js/adapters.js`, `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`, `docs/reference/theme.md`, `docs/reference/javascript.md`
+- Why fragile: copied config markup must carry `data-data-prefix`, `data-js-namespace`, and escaped `data-tooltip-placements`. Missing attributes use the documented `bs`/`bootstrap`/empty-map defaults; present empty namespace/prefix values do not request fallback. Namespace registration selects the global provider independently of prefix spelling. It does not adapt native lifecycle events or certify another library's DOM/API conventions; the default modal adapter still observes `hide.bs.modal` and `hidden.bs.modal`.
+- Safe modification: keep startup registration and copied-config adoption together, preserve both `cv_config` and `cv_const_js` context contracts, and retain absence-only prefix/namespace fallback. Trigger placement attributes, including empty ones, override registered location defaults. Bulk buttons retain the existing `form` tooltip location. Custom adapters retain ownership of their replaced entries; themes needing different lifecycle events must supply the appropriate adapter.
+- Test coverage: registration, copied recipes/config, and namespace/placement dispatch are covered by `tests/test1/test_data_prefix.py`, `tests/test1/test_data_prefix_docs.py`, `tests/test1/test_js_config.py`, `tests/js/adapters.test.js`, and `tests/js/object-detail-tabs.test.js`. The two-config-alias bulk integration probes are recorded in `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-VERIFICATION.md`; stub-provider/jsdom evidence does not establish native CoreUI/Tabler browser behavior.
 
 **Breadcrumb class and table-header contracts:**
 - Files: `src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/breadcrumb.html`, `src/crud_views/templates/crud_views/table/bootstrap5.html`, `docs/reference/buttons.md`, `docs/reference/breadcrumb.md`, `docs/reference/list_view.md`, `docs/reference/theme.md`
@@ -137,6 +137,12 @@ No distinct security defect is confirmed by current evidence. Keep navbar render
 - Why fragile: submitted identifiers are resolved and rechecked for permission and eligibility at review and again inside the write transaction; the action destination owns the write through `cv_form_valid`. The `cv_bulk_` transport fields and hooks form a public contract, and overriding the ordinary `cv_form_valid_process` hook does not affect this path.
 - Safe modification: retain the maximum-selection check before resolution, fresh scoped resolution at execution, atomic revalidation/write ordering, and the documented `cv_form_valid` override contract. The implementation supports the default database alias and ordinary single-field primary keys; multi-database writes and composite primary keys are unsupported by design.
 - Test coverage: `tests/test1/test_bulk_*.py`, `tests/js/bulk.test.js`, `examples/bootstrap5/bulk_selection/tests.py`, and `tests/test1/test_bulk_docs.py` cover source scope, admission, review, execution, and public documentation.
+
+**Bulk toolbar variant and copied-leaf contracts:**
+- Files: `src/crud_views/lib/bulk/__init__.py`, `src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/button/bulk.html`, `docs/reference/buttons.md`, `docs/reference/bulk_actions.md`, `docs/reference/theme.md`
+- Why fragile: toolbar classes come from the destination's `cv_action_variant` and `bulk:*` keys, independently of `form:submit`. All four stock variant defaults remain `btn btn-primary`; `danger` metadata alone does not change stock appearance. Themes customizing only `form:submit` must explicitly configure bulk keys. Copied leaves must preserve native submit identity, destination `formaction`, short action labels, escaping, and the published nine-field payload.
+- Safe modification: preserve effective-mode lookup and empty/`None` mode-key suppression. Unavailable icons select label mode, while normalized `cv_icon` can remain nonblank. Reuse `form:hidden-label`, `form:icon-host`, and the `form` tooltip location; retain Confirm/Cancel's existing form rendering. Keep bulk out of generic button-data/tag dispatch; no per-action label-mode map is part of this contract.
+- Test coverage: `tests/test1/test_bulk_variants.py` checks destination variants, native source-to-review submission, frozen stock bytes, form-style isolation, short labels, escaping, and effective-mode precedence. `tests/test1/test_bulk_docs.py` executes the copied leaf with projected fields and rejects undeclared variable dependencies. Downstream copied-template adoption remains consumer-owned, not an unresolved package finding.
 
 **Manage authorization and setup command:**
 - Files: `src/crud_views/lib/views/manage.py`, `src/crud_views/management/commands/cv_manage_group.py`, `src/crud_views/lib/settings.py`, `src/crud_views_guardian/lib/views.py`
@@ -256,6 +262,8 @@ Phase 06.44's capture override symlink finding CR-01 is fixed and independently 
 
 Phase 06.45 shipped through PR #401. Verification passed all 9/9 must-haves, and the deep code review is clean with zero findings. Recorded final acceptance is 17,222 Python tests passed with one expected Django-version skip on Python 3.12.3/Django 5.2.19; focused compatibility selections passed 292 tests each on Django 4.2 and 6.0. JavaScript passed 541 tests and integration passed three tests. This is not a full Python/Django matrix or installed-distribution acceptance. Fake providers prove namespace/placement dispatch only; native CoreUI/Tabler behavior, real-browser certification, and downstream adoption remain unclaimed. The phase adds startup registration for namespace and tooltip placements, and records no defect in the supported contract (`src/crud_views/lib/js_config.py`, `src/crud_views/static/crud_views/js/adapters.js`, `.planning/phases/06.45-theme-registered-js-namespace-and-tooltip-placements-398/06.45-VERIFICATION.md`, `.planning/phases/06.45-theme-registered-js-namespace-and-tooltip-placements-398/06.45-REVIEW.md`).
 
+Phase 06.47 shipped through PR #402 with 16/16 verified must-haves and zero open review findings. WR-01's incorrect promise that an unavailable icon becomes empty is corrected in the copied-leaf documentation and regression checks; it is not an open concern. The security register closes all nine entries. Recorded original acceptance passed 17,264 Python tests on Python 3.12.3/Django 6.0.10; the merged phase 06.45 integration has 470 affected Python passes, 541 JavaScript passes, three Django/JS integration passes, and independent rendered-config/jsdom checks for both config aliases. The broad Python result remains attributed to its original revision, rather than relabeled as a combined full-suite run. Native bulk submission and form tooltip dispatch remain intact; no fresh browser, downstream-theme, full dependency-matrix, or installed-distribution runtime acceptance is claimed. The source/template scope explicitly requires no additional human verification (`src/crud_views/lib/bulk/__init__.py`, `src/crud_views/templates/crud_views/tags/button/bulk.html`, `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-VERIFICATION.md`, `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-REVIEW-DISPOSITION.md`, `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-SECURITY.md`).
+
 ---
 
-*Concerns audit: 2026-11-21*
+*Concerns audit: 2026-11-22*

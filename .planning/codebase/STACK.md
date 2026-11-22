@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
-last_mapped_at: 2026-11-21
+last_mapped_commit: f8825c0279d95f4270447505f8dff5fe766d5c8d
+last_mapped_at: 2026-11-22
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-21
+**Analysis Date:** 2026-11-22
 
 ## Languages
 
@@ -14,7 +14,7 @@ last_mapped_at: 2026-11-21
 
 **Secondary:**
 - JavaScript - browser-side enhancement scripts shipped as Django static files; the optional Node >=20 Vitest/jsdom harness is development-only (`package.json`, `vitest.config.js`, `vitest.integration.config.js`)
-- YAML - CI, task automation, deployment, docs, and dependency update configuration
+- YAML - CI, task automation, deployment, docs, and dependency update configuration (`.github/workflows/`, `taskfile.yaml`, `render.yaml`, `mkdocs.yml`, `.github/dependabot.yml`)
 
 ## Runtime
 
@@ -25,9 +25,9 @@ last_mapped_at: 2026-11-21
 - Demo runs Python 3.13 on Render (`render.yaml`)
 
 **Package Manager:**
-- uv for Python environments and lockfile (`uv.lock`); nox uses its uv backend (`noxfile.py`)
+- uv for Python environments, installs, and builds (`taskfile.yaml`); nox uses its uv backend (`noxfile.py`)
 - npm for JavaScript checks (`package-lock.json`)
-- Lockfiles: `uv.lock`, `package-lock.json`; docs and CI dependencies are hash-pinned in `docs/requirements.txt` and `.github/requirements/ci.txt`
+- Lockfiles: `package-lock.json` present; no `uv.lock` present. Docs and CI dependencies are hash-pinned in `docs/requirements.txt` and `.github/requirements/ci.txt`; runtime Python dependencies use lower bounds in `pyproject.toml`
 
 ## Frameworks
 
@@ -35,14 +35,15 @@ last_mapped_at: 2026-11-21
 - Django >=4.2 - generic class-based views and reusable app integration (`src/crud_views/`)
 - Django app package group: core CRUD views plus object detail, workflow, polymorphic, and guardian extensions (`src/crud_views*/apps.py`)
 - Pydantic >=2.2.1 - ViewSet/settings and typed configuration (`src/crud_views/lib/viewset/`, `src/crud_views/lib/settings.py`)
-- django-tables2 >=2.5.3 and django-filter >=21.1 - table rendering and filtering
+- django-tables2 >=2.5.3 and django-filter >=21.1 - table rendering and filtering (`pyproject.toml`, `src/crud_views/lib/views/mixins.py`)
 - django-crispy-forms >=2.0 with crispy-bootstrap5 >=2023.10 - Bootstrap form rendering (`src/crud_views/lib/crispy/`)
 - Bootstrap 5-compatible JavaScript adapters - host-supplied UI library components; the package ships adapter code, not Bootstrap itself (`src/crud_views/static/crud_views/js/adapters.js`)
+- jQuery is required for the optional formset enhancement; the script reports a missing library and does not initialize formsets without it. The development harness declares jQuery ~3.7.1 (`src/crud_views/static/crud_views/js/formset.js`, `package.json`)
 
 **Testing:**
 - pytest, pytest-django, pytest-xdist, pytest-cov, pytest-mock, pytest-random-order - Python test suite (`pyproject.toml` test extra)
 - nox - Python/Django compatibility matrix and installed-distribution checks (`noxfile.py`)
-- Vitest 5, jsdom 31, and jQuery 3.7 - static JavaScript unit and integration tests (`package.json`)
+- Vitest ^5.1.0, jsdom ^31.0.0, and jQuery ~3.7.1 - static JavaScript unit and integration tests (`package.json`, `vitest.config.js`, `vitest.integration.config.js`)
 
 **Build/Dev:**
 - hatchling - wheel and sdist backend; package allowlist in `pyproject.toml`, verified by `scripts/check_dist.py`
@@ -57,6 +58,8 @@ last_mapped_at: 2026-11-21
 - The five Django apps are built into one distribution; `object_detail` ships in the base install, while `workflow`, `polymorphic`, `ordered`, and `guardian` dependency groups are opt-in extras (`pyproject.toml`)
 - Django, Pydantic, django-tables2, django-filter, django-crispy-forms, crispy-bootstrap5 - core view and form API (`pyproject.toml`)
 - Bulk selection/action support composes Django ORM transactions and querysets, django-tables2 selection columns, Django messages, and the existing Crispy form/theme layer (`src/crud_views/lib/bulk/__init__.py`)
+- Bulk toolbar variants use a dedicated template leaf and existing semantic class registry. Read the variant from each destination's `cv_action_variant` (inherited default `secondary`), and configure `bulk:primary`, `bulk:secondary`, `bulk:tertiary`, or `bulk:danger`; all stock values are `btn btn-primary`. Review Confirm retains the separate `form:submit` contract (`src/crud_views/templates/crud_views/tags/button/bulk.html`, `src/crud_views/lib/button_classes.py`, `docs/reference/bulk_actions.md`)
+- Bulk label mode uses the lazy `bulk` location floor (default `both`) in `CRUD_VIEWS_LABEL_MODE_DEFAULTS`. Mode-specific class keys such as `bulk:danger:icon` use the effective mode after missing/disabled icons fall back to `label`; the leaf reuses form tooltip, hidden-label, and host-icon conventions (`src/crud_views/lib/bulk/__init__.py`, `src/crud_views/lib/view/label_mode.py`, `src/crud_views/templates/crud_views/tags/button/bulk.html`)
 - Manage pages and formsets consume six optional `--cv-*` CSS custom properties with Bootstrap and literal fallbacks; the package does not define these tokens globally (`src/crud_views/static/crud_views/css/manage.css`, `src/crud_views/static/crud_views/css/formset.css`, `docs/reference/theme.md`)
 - The classic `bulk.js` script enhances current-page table/card selection through native form controls, without jQuery, a UI adapter, a network request, or persistent storage; the core JavaScript settings include it (`src/crud_views/static/crud_views/js/bulk.js`, `src/crud_views/lib/settings.py`, `docs/reference/javascript.md`)
 - Stock table sorting uses django-tables2 bound-column effective ordering for icons and `aria-sort`, including default and prefixed ordering; preserve the existing `table.thead` override for custom header semantics (`src/crud_views/templates/crud_views/table/bootstrap5.html`, `docs/reference/list_view.md`)
@@ -80,18 +83,19 @@ last_mapped_at: 2026-11-21
 - Bootstrap-compatible themes can independently register the JavaScript global namespace and tooltip placement defaults during `AppConfig.ready()` with `register_js_namespace()` and `register_tooltip_placements()` (`src/crud_views/lib/js_config.py`, `src/crud_views/lib/__init__.py`). Defaults are `bootstrap` and `{}`; the three values are rendered on `#cv-config` and consumed by the adapter (`src/crud_views/templates/crud_views/tags/cv_config.html`, `src/crud_views/static/crud_views/js/adapters.js`)
 - Breadcrumb styling uses the existing button-class registry keys `breadcrumb:list`, `breadcrumb:item`, and `breadcrumb:item-active`. Theme startup registration and project `CRUD_VIEWS_BUTTON_CLASSES` overrides share the existing class lookup (`src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/breadcrumb.html`, `docs/reference/theme.md`)
 - Tests set `CV_ACCESS_RECORD_REQUESTS` from `noxfile.py`
-- Local Cloudflare tunnel reads `TUNNEL_TOKEN` from `dev/.env`; only the existence of local env files was checked (`dev/.env.example`, `dev/docker-compose.yaml`)
+- Local Cloudflare tunnel setup uses a local `dev/.env` file; `task cf` checks that it exists before Docker Compose starts. `dev/.env.example` is tracked; environment-file contents are not read (`taskfile.yaml`, `dev/docker-compose.yaml`)
 - Demo uses `DJANGO_SETTINGS_MODULE=project.settings_demo` and a generated `SECRET_KEY` (`render.yaml`)
 
 **Build:**
 - `pyproject.toml` defines dependencies and wheel/sdist file inclusion; `scripts/check_dist.py` checks the sdist allowlist
 - `noxfile.py`, `taskfile.yaml`, `codecov.yml`, `.sonarcloud.properties`, `mkdocs.yml`, and `vitest.config.js` configure development and CI tooling
 - Demo deployment dependencies are separated into `requirements/demo.txt`; CI, docs, and package publishing dependencies are hash-pinned in `.github/requirements/ci.txt` and `docs/requirements.txt`
+- Package version is `0.30.0`; bump-my-version synchronizes `pyproject.toml`, `src/crud_views/__init__.py`, `docs/index.md`, and `README.md`. Wheel contents contain five `src/` apps; sdist uses an explicit allowlist (`pyproject.toml`)
 
 ## Platform Requirements
 
 **Development:**
-- uv, go-task, Python 3.12+, and Node >=20 for JavaScript tests
+- uv, go-task, Python 3.12+, and Node >=20 for JavaScript tests (`taskfile.yaml`, `pyproject.toml`, `package.json`); JavaScript CI selects Node 22 (`.github/workflows/js.yml`)
 - Optional Docker for Cloudflare tunnel in `dev/docker-compose.yaml`
 - Example application lives in `examples/bootstrap5/` and uses SQLite (`examples/bootstrap5/project/settings.py`)
 
@@ -102,4 +106,4 @@ last_mapped_at: 2026-11-21
 
 ---
 
-*Stack analysis: 2026-11-21*
+*Stack analysis: 2026-11-22*

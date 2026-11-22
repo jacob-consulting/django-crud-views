@@ -1,12 +1,12 @@
 ---
-last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
-last_mapped_at: 2026-11-21
+last_mapped_commit: f8825c0279d95f4270447505f8dff5fe766d5c8d
+last_mapped_at: 2026-11-22
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-21
+**Analysis Date:** 2026-11-22
 
-The package makes no outbound network calls during request handling. An explicit asset-vendoring management command may download configured files from a supplied URL using the Python standard library; integrations, database configuration, and resource backends otherwise belong to the host project (`src/crud_views/lib/vendor.py`, `docs/reference/assets.md`).
+No third-party service client is bundled for server request handling. The reusable `vendor(spec)` helper downloads explicitly configured assets using `urllib.request`; extension apps can wrap it in a management command. Browser filter and modal scripts use `fetch()` against host application endpoints. Integrations, database configuration, and resource backends otherwise belong to the host project (`src/crud_views/lib/vendor.py`, `src/crud_views/static/crud_views/js/list.filter.js`, `src/crud_views/static/crud_views/js/modal.js`, `docs/reference/assets.md`).
 
 ## APIs & External Services
 
@@ -34,32 +34,36 @@ The package makes no outbound network calls during request handling. An explicit
 - Manage pages and formsets use six optional `--cv-*` CSS custom properties, each with Bootstrap-property and literal fallbacks. Themes may map these aliases on every theme root for nested color modes; the package does not declare global token values (`src/crud_views/static/crud_views/css/manage.css`, `src/crud_views/static/crud_views/css/formset.css`, `docs/reference/theme.md`)
 - Bulk actions are opt-in per ORM ViewSet: a table/card list declares destination keys and a permission-required bulk form re-resolves submitted keys in the destination queryset/scope before review and execution (`src/crud_views/lib/bulk/__init__.py`)
 - `bulk.js` enhances the native bulk form with current-page selection, selected count, and disabled action buttons for empty selections. It initializes once per form at document readiness and refreshes browser-restored selections on `pageshow`; record ownership comes from the native `form` association. It has no third-party dependency, persistence, or requests. Without JavaScript or required enhancement controls, native submission remains available (`src/crud_views/static/crud_views/js/bulk.js`, `docs/reference/javascript.md`, `tests/js/bulk.test.js`)
+- Theme bulk action styling uses `crud_views/tags/button/bulk.html`, whose native POST fields and `formaction` preserve the selection/review transport. Each destination supplies `cv_action_variant` (default `secondary`); configure `bulk:primary`, `bulk:secondary`, `bulk:tertiary`, and `bulk:danger` through `register_button_classes()` or project `CRUD_VIEWS_BUTTON_CLASSES`. All stock variant classes are `btn btn-primary`; set theme classes explicitly for a distinct danger appearance (`src/crud_views/lib/bulk/__init__.py`, `src/crud_views/templates/crud_views/tags/button/bulk.html`, `src/crud_views/lib/button_classes.py`)
+- Bulk buttons use `CRUD_VIEWS_LABEL_MODE_DEFAULTS['bulk']` (default `both`), with effective-mode class overrides such as `bulk:danger:label` taking precedence over base variant keys, including empty or `None` values. Missing/disabled icons fall back to label mode. Preserve the shared `form:hidden-label`, `form:icon-host`, and `data-cv-tooltip="form"` conventions when overriding the bulk leaf. Review Confirm remains governed by `form:submit`; toolbar buttons use the bulk keys (`src/crud_views/lib/view/label_mode.py`, `src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/button/bulk.html`, `docs/reference/bulk_actions.md`)
+- The bulk default per-object permission hook returns `True`. Guardian hosts must implement `cv_bulk_has_permission(obj)` for their policy; system check `crud_views_guardian.W002` warns about an inherited default. Bulk actions accept unsliced model querysets with scalar primary keys on the default database only; application writes must honor `cv_get_db_alias()` (`src/crud_views/lib/bulk/__init__.py`, `src/crud_views_guardian/checks.py`, `docs/reference/guardian.md`, `docs/reference/bulk_actions.md`)
+- Formset browser enhancement requires host-supplied jQuery. Bootstrap-compatible adapters and `bulk.js` use native browser APIs; do not infer a jQuery requirement for every script from the test harness (`src/crud_views/static/crud_views/js/formset.js`, `src/crud_views/static/crud_views/js/adapters.js`, `src/crud_views/static/crud_views/js/bulk.js`, `package.json`)
 - The stock breadcrumb template resolves `breadcrumb:list`, `breadcrumb:item`, and `breadcrumb:item-active` through `cv_button_class`. Register theme defaults with `register_button_classes()` during startup; project `CRUD_VIEWS_BUTTON_CLASSES` values override them. Class overrides preserve breadcrumb escaping, links, and current-page semantics (`src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/breadcrumb.html`, `docs/reference/theme.md`, `tests/test1/test_breadcrumb.py`)
 
 ## Data Storage
 
 **Databases:**
-- Uses any database configured by the host Django project; the library provides no database connection configuration
+- Ordinary ORM views use database configuration supplied by the host Django project; the package defines no connection credentials. Bulk actions specifically require the default database (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/bulk/__init__.py`)
 - Example project uses SQLite (`examples/bootstrap5/project/settings.py`); package tests configure in-memory Django test databases (`tests/test1/conftest.py`)
 - django-guardian stores object permission grants through its Django models when the optional integration is installed (`src/crud_views_guardian/`)
 
 **File Storage:**
-- No package-managed file/object storage. Demo static files are served with whitenoise (`requirements/demo.txt`, `examples/bootstrap5/project/settings_demo.py`)
+- No package-managed object-storage service. Asset vendoring writes downloaded static files and a `.vendored` stamp into a project-owned target directory; demo static files are served with whitenoise (`src/crud_views/lib/vendor.py`, `requirements/demo.txt`, `examples/bootstrap5/project/settings_demo.py`)
 
 **Caching:**
-- No external cache service configured by the package
+- No external cache service configured by the package; the demo uses Django's process-local `LocMemCache` for rate limiting (`examples/bootstrap5/project/settings_demo.py`)
 
 ## Authentication & Identity
 
 **Auth Provider:**
 - Django `django.contrib.auth` users and model permissions are the core permission integration (`src/crud_views/lib/`)
 - django-guardian adds optional per-object permission checks (`src/crud_views_guardian/`)
-- No third-party identity provider is bundled; authentication setup belongs to the host project
+- No third-party identity provider is bundled; authentication setup belongs to the host project (`examples/bootstrap5/project/settings.py`)
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- No runtime error-tracking service integrated
+- No runtime error-tracking service detected in package dependencies (`pyproject.toml`)
 
 **Logs:**
 - Python/Django logging and Django system checks (`src/crud_views/checks.py`)
@@ -76,7 +80,8 @@ The package makes no outbound network calls during request handling. An explicit
 **CI Pipeline:**
 - GitHub Actions workflows cover Python/Django tests, linting, JavaScript tests, docs, package publishing, demo deploys, and README examples (`.github/workflows/`)
 - Python test workflow uses nox compatibility sessions and Codecov upload (`.github/workflows/tests.yml`, `noxfile.py`); JavaScript checks use npm/Vitest (`.github/workflows/js.yml`)
-- Nox includes a Crispy dependency-floor matrix for Django 4.2 and 6.0, with bulk flow, execution, source, scope, and return tests included (`noxfile.py`, `tests/test1/test_bulk_flow.py`, `tests/test1/test_bulk_execution.py`, `tests/test1/test_bulk_source.py`, `tests/test1/test_bulk_scope.py`, `tests/test1/test_bulk_return.py`)
+- Nox defines a Crispy dependency-floor matrix for Django 4.2 and 6.0, including bulk variant, flow, execution, source, scope, and return tests. The main Python workflow invokes the normal compatibility and example sessions; floor sessions require a separate nox invocation (`noxfile.py`, `.github/workflows/tests.yml`, `tests/test1/test_bulk_variants.py`)
+- JavaScript CI installs the npm lock with scripts disabled and runs the unit configuration on Node 22. `npm run test:integration` selects the separate integration configuration; the JS workflow does not invoke that script (`.github/workflows/js.yml`, `package.json`, `vitest.config.js`, `vitest.integration.config.js`)
 - Demo deploy workflow invokes the Render API (`.github/workflows/demo.yml`); package publishing uses PyPI trusted publishing action (`.github/workflows/publish.yml`)
 
 ## Environment Configuration
@@ -85,11 +90,11 @@ The package makes no outbound network calls during request handling. An explicit
 - Runtime library: values are optional Django settings prefixed `CRUD_VIEWS_` (`src/crud_views/lib/settings.py`)
 - Demo: `DJANGO_SETTINGS_MODULE` and generated `SECRET_KEY` (`render.yaml`)
 - Cloudflare tunnel: `TUNNEL_TOKEN` when starting `task cf` (`dev/docker-compose.yaml`)
-- CI/deploy credentials are configured as GitHub Actions secrets for relevant workflows; names are referenced in workflow configuration and values are not documented here
+- CI/deploy credentials: `CODECOV_TOKEN`, `RENDER_API_KEY`, and `RENDER_SERVICE_ID` are GitHub Actions secret references; `DEMO_URL` is a repository variable. PyPI uses OIDC trusted publishing with `id-token: write` (`.github/workflows/tests.yml`, `.github/workflows/demo.yml`, `.github/workflows/publish.yml`)
 
 **Secrets location:**
-- GitHub Actions secrets for CI and Render deployment
-- Local tunnel token in `dev/.env` (file existence only; template: `dev/.env.example`)
+- GitHub Actions secrets for CI and Render deployment (`.github/workflows/tests.yml`, `.github/workflows/demo.yml`)
+- Local tunnel configuration is expected in `dev/.env`; a tracked `dev/.env.example` template exists. Environment-file contents are not read (`taskfile.yaml`)
 - Render generates the demo `SECRET_KEY` from its blueprint (`render.yaml`)
 
 ## Webhooks & Callbacks
@@ -99,8 +104,8 @@ The package makes no outbound network calls during request handling. An explicit
 
 **Outgoing:**
 - Demo deployment workflow calls Render's API (`.github/workflows/demo.yml`)
-- No outbound service callbacks from the library runtime
+- No third-party outbound service callbacks detected in the package; UI fetch calls target host application endpoints (`src/crud_views/static/crud_views/js/modal.js`, `src/crud_views/static/crud_views/js/list.filter.js`)
 
 ---
 
-*Integration audit: 2026-11-21*
+*Integration audit: 2026-11-22*

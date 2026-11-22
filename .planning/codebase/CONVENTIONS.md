@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
-last_mapped_at: 2026-11-21
+last_mapped_commit: f8825c0279d95f4270447505f8dff5fe766d5c8d
+last_mapped_at: 2026-11-22
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-21
+**Analysis Date:** 2026-11-22
 
 ## Naming Patterns
 
@@ -154,4 +154,19 @@ last_mapped_at: 2026-11-21
 
 ---
 
-*Convention analysis: 2026-11-21*
+## Bulk Button Presentation Contracts
+
+- Keep bulk submission on the dedicated `src/crud_views/templates/crud_views/tags/button/bulk.html` leaf. `src/crud_views/lib/bulk/__init__.py::BulkSelectionMixin.cv_bulk_buttons` reads the destination's `cv_action_variant` and short action label; the source view's variant does not style destination controls. Use `bulk:<variant>` and optional `bulk:<variant>:<effective-mode>` classes through `src/crud_views/lib/button_classes.py`. Generic action tags reject the bulk location (`tests/test1/test_button_classes_templates.py::test_cv_button_tag_rejects_bulk_location`).
+- Resolve unavailable or disabled icons to effective `label` mode before normalization and class lookup. Preserve the original `cv_icon` value in the payload; presentation fallback must not erase this documented input. See `tests/test1/test_bulk_variants.py::test_effective_mode_precedence` and `tests/test1/test_bulk_docs.py::test_copied_bulk_leaf_contract`.
+- Treat the nine documented fields as the complete leaf input contract: `cv_id`, `cv_variant`, `cv_label_mode`, `cv_label`, `cv_icon`, `cv_icon_class`, `cv_icon_inline`, `cv_title`, and `cv_flat_attrs` (`docs/reference/buttons.md`, `tests/test1/test_bulk_docs.py`). `cv_title` may be absent outside icon mode. Do not require form-only payload keys or silently depend on ambient context.
+- Preserve native submit identity (`cv_bulk_stage=review`), action URL and selection attributes in `src/crud_views/templates/crud_views/tags/button/bulk.html`. Bulk variant classes are independent of `form:submit`; hidden-label and host-icon utilities remain shared with the form location. Icon tooltips retain `data-cv-tooltip="form"` (`tests/test1/test_bulk_variants.py`).
+- Protect exact default toolbar bytes, including the terminal newline and signed URL bytes, with the immutable `tests/test1/fixtures/bulk_toolbar_pre_variant.json`. For intentional fixture-input changes retain the capture/provenance and add a separately identified capture from the unchanged form leaf; do not normalize whitespace or regenerate from the bulk renderer (`tests/test1/test_bulk_variants.py::test_stock_toolbar_bytes`).
+
+## JavaScript Configuration Registries
+
+- Register namespace and tooltip defaults at startup through `src/crud_views/lib/js_config.py`, publicly exported by `src/crud_views/lib/__init__.py`. Validate the entire registration before replacing state; copy placement mappings on input and output. Namespace and data prefix are independent registrations (`tests/test1/test_js_config.py`).
+- Keep `cv_config` and `cv_const_js` on the shared serialization context in `src/crud_views/templatetags/crud_views.py`. The adapter in `src/crud_views/static/crud_views/js/adapters.js` consumes the registered provider namespace and location defaults; an explicit prefix-specific placement attribute, including an empty value, takes precedence (`tests/js/adapters.test.js`, `tests/js/tooltip.test.js`).
+
+---
+
+*Convention analysis: 2026-11-22*

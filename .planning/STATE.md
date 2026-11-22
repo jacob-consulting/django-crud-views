@@ -6,21 +6,21 @@ current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
 stopped_at: Phase 06.46 complete, ready to plan Phase 7
-last_updated: "2026-11-22T07:54:34.147Z"
+last_updated: "2026-11-22T17:30:49.000Z"
 last_activity: 2026-11-22
-last_activity_desc: Phase 06.46 complete, transitioned to Phase 7
-state_head: 9949e79663b0bb4659983a150fff3a81d43ab922
+last_activity_desc: "Phase 06.46 follow-up fixes; rebased onto main after Phase 06.45"
+state_head: 133b24d1f65589705eda8e66fc5d0ebd24e4e7eb
 progress:
-  total_phases: 52
-  completed_phases: 51
-  total_plans: 280
-  completed_plans: 280
+  total_phases: 53
+  completed_phases: 52
+  total_plans: 282
+  completed_plans: 282
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 52
-Completed Phases: 51
+Total Phases: 53
+Completed Phases: 52
 
 # Project State
 
@@ -37,9 +37,17 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0 (not planned)
 Status: Ready to plan
-Last activity: 2026-11-22 — Phase 06.46 complete, transitioned to Phase 7
+Last activity: 2026-11-22 — Phase 06.46 follow-up fixes; rebased onto main after Phase 06.45
 
 Next: $gsd-plan-phase 7
+
+### Phase 06.46 follow-up and rebase — 2026-11-22
+
+- N6-01 / WR-01 is fixed and its acceptance superseded: `get_context_data` evaluates `cv_bulk_buttons` in Python; `test_bulk_button_presentation_errors_are_not_swallowed` covers table/card and empty/populated pages.
+- `bulk_toolbar.html` renders nothing without an offered action. Query-cost tests compare with the no-bulk baseline instead of absolute counts; the documentation test pins names, not prose. Bulk guide, Guardian paragraph and changelog sentence rewritten in plain language.
+- Downstream, run against this branch: CoreUI and Tabler demos offer Kim only "Mark roasted"; direct-POST denial retained. Tabler's copied card template needs the `view.cv_bulk_buttons` condition; prepared on Tabler branch `feature/bulk-toolbar-visibility`, to merge after this phase.
+- Rebased onto main after Phase 06.45 (PR #401); tracking reconciled to 53 phases and 282 plans. Rebased branch: full suite 17,393 passed (Python 3.12 / Django 6.0, six workers, recorder off); strict docs and scoped Ruff passed. Before the rebase: bulk modules 436 passed on Django 4.2, 5.2 and Python 3.14 / Django 6.0; Bootstrap bulk examples 28 plus 50 subtests. JavaScript and the full version matrix were not run locally.
+- `view.cv_bulk_buttons` stays internal; the promote/replace/retain decision remains with Phase 7. The VERIFICATION.md fingerprint predates these changes; see its addendum.
 
 ### Phase 06.46 completion — 2026-11-22
 
@@ -1657,6 +1665,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.41 | 14 | - | - |
 | 06.42 | 3 | - | - |
 | 06.43 | 2 | - | - |
+| 06.45 | 2 | - | - |
 | 06.46 | 2 | - | - |
 
 | 06.31 | 6 | - | - |
@@ -2206,6 +2215,7 @@ Recent decisions affecting current work:
 - [Phase 06.46]: Exact-byte fixtures patch both csrf middleware and template context processor get_token because InclusionNode copies the parent token; no response normalization.
 - [Phase 06.46]: Keep production gate and submission policy unchanged; real requests/grants prove rendering and submission boundaries.
 - [Phase 06.46]: Keep the existing template guard internal and defer promote/replace/retain decision to stability work.
+- [Phase 06.46]: Follow-up evaluates bulk buttons in Python before template rendering and guards the toolbar snippet itself; supersedes the N6-01 deferral.
 
 ### Pending Todos
 
@@ -2295,6 +2305,7 @@ None yet.
 - Phase 06.41 inserted after Phase 06.40: Current-page bulk selection and action forms for table and card views (#387); approved D-01–D-10 with the code-examples comment captured as planning proposals; replaces the unmerged phase 06.38 (#378) approach (URGENT)
 - Phase 06.42 inserted after Phase 06.40.1: Theme-registered data-attribute prefix for templates and object-detail tabs (#391); explicitly assigned 06.42, approved U1/U2 handover D-01–D-05, before Phase 7 theme-surface freeze (URGENT)
 - Phase 06.43 inserted after Phase 06.40.1: Issue #393: breadcrumb class keys and accessible table sort state; approved D-01–D-04 handover. Explicitly assigned 06.43 for this workspace, independently deliverable before the Phase 7 freeze. (URGENT)
+- Phase 06.45 inserted after Phase 06.44: Theme-registered JS namespace and tooltip placements (#398); approved D-01–D-05, depends on 06.42, before Phase 7 freeze (URGENT)
 - Phase 06.46 inserted after Phase 06.44: Issue #399: bulk toolbar destination entry gates; approved D-01–D-06 handover amends #387. Requested 06.46 retained; 06.45 remains unallocated in this checkout. (URGENT)
 
 ## Deferred Items

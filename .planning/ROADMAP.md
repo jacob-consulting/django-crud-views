@@ -71,6 +71,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.42: Theme-registered data-attribute prefix for templates and object-detail tabs (#391) (INSERTED)** - approved U1/U2 handover; theme prefix registration, four templates and the existing object-detail tabs lifecycle. (completed 2026-11-21)
 - [x] **Phase 06.43: Breadcrumb class keys and accessible table sort state (#393) (INSERTED)** (completed 2026-11-21)
 - [x] **Phase 06.44: CSS tokens for manage pages and formsets with Bootstrap fallbacks (#394)** (completed 2026-11-21)
+- [x] **Phase 06.45: Theme-registered JS namespace and tooltip placements (#398) (INSERTED)** (completed 2026-11-21)
 - [x] **Phase 06.46: Bulk toolbar: show only actions the viewer can enter (#399) (INSERTED)** - approved D-01–D-06 handover; destination entry gates govern toolbar visibility before the freeze. (completed 2026-11-22)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
@@ -2314,6 +2315,24 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.44-02-PLAN.md
 
+### Phase 06.45: Theme-registered JS namespace and tooltip placements (#398) (INSERTED)
+
+**Goal:** A theme registers its JavaScript namespace and per-location tooltip placements in `AppConfig.ready()` and can remove its adapter script, while stock Bootstrap behavior stays unchanged.
+**Source:** [Issue #398](https://github.com/jacob-consulting/django-crud-views/issues/398), approved U4 handover D-01–D-05; snapshot in `06.45-ISSUE-398.md`.
+**Requirements**: None assigned; use the approved issue acceptance criteria.
+**Depends on:** Phase 06.42 (theme data-prefix registration and browser configuration).
+**Ordering:** Inserted after Phase 06.44; complete before Phase 7 inventories and freezes the public theme surface.
+**Scope:** Add `register_js_namespace()` and `register_tooltip_placements()` with atomic validation and last-valid-call replacement; emit both values in `#cv-config`; resolve the namespace and tooltip placements at call time. Explicit trigger placement wins using the registered data prefix. Preserve missing-config defaults, malformed-JSON fallback, existing adapter overrides, transition guards and hide/dispose behavior. No dropdown adapter, theme-registration helper, new Django setting, host-app tooltip ownership or downstream implementation.
+**Acceptance:** Cover both registration contracts and rendered configuration in Python; verify late config, namespace fallback, registered/unregistered locations and explicit `bs`/`coreui` placement precedence in JavaScript. Existing Python, golden and JS tests pass. Update theme/JavaScript references and CHANGELOG Added; stock behavior remains unchanged and no migration entry is needed.
+**Plans:** 2/2 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.45-01-PLAN.md — Register namespace/placements through rendered config and preserve adapter behavior (wave 1).
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.45-02-PLAN.md — Publish executable adoption guidance and run final acceptance (wave 2; depends on 06.45-01).
+
 ### Phase 06.46: Bulk toolbar: show only actions the viewer can enter (#399) (INSERTED)
 
 **Goal**: Offer only bulk actions whose destination entry gates admit the viewer, consistently across table and card selection controls, without per-row permission work or changes to submission authorization.
@@ -2475,5 +2494,6 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.42. Theme-registered data-attribute prefix for templates and object-detail tabs (#391) | 3/3 | Complete | 2026-11-21 |
 | 06.43. Breadcrumb class keys and accessible table sort state (#393) | 2/2 | Complete | 2026-11-21 |
 | 06.44. CSS tokens for manage pages and formsets (#394) | 2/2 | Complete | 2026-11-21 |
+| 06.45. Theme-registered JS namespace and tooltip placements (#398) | 2/2 | Complete | 2026-11-21 |
 | 06.46. Bulk toolbar destination entry gates (#399) | 2/2 | Complete | 2026-11-22 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

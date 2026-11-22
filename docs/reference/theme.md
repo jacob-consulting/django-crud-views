@@ -282,14 +282,16 @@ markup differs. Project settings (`CRUD_VIEWS_BUTTON_CLASSES`) still win over a 
 def ready(self):
     from crud_views.lib.button_classes import register_button_classes
 
-    register_button_classes({
-        "card:primary": "button is-primary is-small",
-        "form:submit": "button is-primary",
-        "bulk:primary": "button is-primary",
-        "bulk:secondary": "button is-secondary",
-        "bulk:tertiary": "button is-light",
-        "bulk:danger": "button is-danger",
-    })
+    register_button_classes(
+        {
+            "card:primary": "button is-primary is-small",
+            "form:submit": "button is-primary",
+            "bulk:primary": "button is-primary",
+            "bulk:secondary": "button is-secondary",
+            "bulk:tertiary": "button is-light",
+            "bulk:danger": "button is-danger",
+        }
+    )
 ```
 
 See [Buttons](buttons.md#registering-classes-from-a-theme).

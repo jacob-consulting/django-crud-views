@@ -493,10 +493,12 @@ calls; the check does not prove that an application override enforces authorizat
 
 ## Bulk actions
 
-Bulk visibility uses model-entry access, followed by the destination's rendering state. Selected-object grants
-are not scanned by bulk rendering; the item hook checks them on submission. Model admission without those
-grants can therefore offer an action whose submitted selection produces an all-blocked, cancel-only review.
-A host application's Guardian queryset policy still runs independently when loading its source rows.
+The bulk toolbar shows an action to a user who holds the destination's **model permission**. Object grants play
+no part while the list renders. They matter on submission, where `cv_bulk_has_permission` decides for each
+selected record; implement it as shown below. A user with the model permission but no grant on the selected
+records therefore sees the button and gets a review page where every record is blocked and only Cancel is
+offered. A user who holds object grants but not the model permission does not see the button and cannot submit
+the action. The source list itself is still filtered by its own Guardian queryset rules.
 
 The default `BulkFormViewPermissionRequired.cv_bulk_has_permission(obj)` returns `True`; it does not add
 an object permission check to endpoint admission and queryset scope. On a Guardian ViewSet,

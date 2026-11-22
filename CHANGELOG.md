@@ -683,8 +683,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - **Current-page bulk selection and action forms** (#387): table and card views opt in with
   `BulkSelectionMixin` and submit selected records to registered `BulkFormViewPermissionRequired` action
   forms. Destinations own permissions, scoped resolution, eligibility, confirmation and application writes.
-  The #399 amendment offers only destinations passing access and rendering-state gates, omitting all selection
-  controls when none pass, while preserving independent submission and selected-object authorization.
+  The toolbar shows a user only the actions they may enter, and no selection controls when there is none (#399);
+  the destination still checks every submission.
   See [Bulk actions](docs/reference/bulk_actions.md) for the stable API, deletion and row-locking recipes.
 
 - **ViewSet Navigation theme support** (#384): six ordinary navbar class keys allow theme registration and

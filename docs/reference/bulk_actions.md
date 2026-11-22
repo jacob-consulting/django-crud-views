@@ -86,29 +86,51 @@ Cards receive their checkbox from the grid wrapper, so a custom `cv_card_templat
 Checkbox labels and the review list show `str(record)`; the application loads what `__str__` reads, because
 a deferred field or a relation can cost one query per record.
 
-Support one bulk source per page. For each configured destination, the source checks
-`cv_has_access(user, None)`, then its rendering state with `None` at the top level or the actual parent for
-a nested source, passing the source instance to the rendering adapter. This happens once per configured action
-per source instance. Denied or disabled actions disappear; when all actions are denied there are no selection controls.
-There is no page scan and no selected-record permission or business check while rendering.
-For stock permission-required sources, full-response query counts match the same source with no configured actions;
-cold permission caches and custom hooks issuing queries have their own costs.
+Support one bulk source per page.
+
+### Which actions a user sees
+
+The toolbar offers an action only to a user who can enter its destination. In the example project, archiving
+needs the `change` permission and deleting needs `delete`. A user who may change documents but not delete them
+sees the archive button and no delete button. A user who may only view documents sees no toolbar, no selection column
+and no card checkboxes: the page looks like a list without bulk actions.
+
+For each key in `cv_bulk_actions`, in the configured order, the source asks the destination two questions:
+
+1. `cv_has_access(user, None)`: does the user hold the destination's permission?
+2. `cv_action_enabled(user, obj)`: is the action available right now? This is asked only when the first answer
+   is yes. `obj` is `None`, or the parent object in a nested ViewSet.
+
+An action that fails either question leaves no markup, not a disabled button. This decides what is displayed;
+it does not authorize anything. The destination checks the user again on every submission, see
+[Scope and permissions](#scope-and-permissions).
+
+Both questions are asked once per action and request, never once per record. Rendering the list does not look
+at the records on the page, so `cv_bulk_has_permission` and `cv_bulk_check` are not called. When the source is a
+permission-required view, this adds no database query, because Django has already loaded the user's
+permissions to admit the list request. A source without a permission check, or a hook of your own that queries
+the database, pays that cost on each list request.
 
 ### Template integration
 
-An overridden list or card content template must guard `crud_views/snippets/bulk_toolbar.html` alongside
-its table or grid with the existing `view.cv_bulk_buttons` condition, following the stock templates:
+The stock list and card content templates place the toolbar and the card checkboxes. A project that overrides
+one of them includes the toolbar next to its table or grid:
+
+```django
+{% include "crud_views/snippets/bulk_toolbar.html" %}
+```
+
+The snippet renders nothing when no action is offered. A card template that draws its own selection cell wraps
+the cell in the condition the stock template uses, so the checkboxes disappear together with the toolbar:
 
 ```django
 {% if view.cv_bulk_buttons %}
-  {% include "crud_views/snippets/bulk_toolbar.html" %}
+  <input type="checkbox" name="cv_bulk_ids" ...>
 {% endif %}
 ```
 
-Use the same condition around card selection cells. This guard is an existing internal, non-public and
-non-stable template implementation detail; it adds no configuration or extension point and is excluded
-from the stable 1.0 public inventory. `view.cv_bulk_actions` remains the configured declaration, so it is
-not a visibility guard for this request.
+Do not test `view.cv_bulk_actions` for this. It is the configured tuple and stays truthy for a user who is
+offered nothing. `view.cv_bulk_buttons` is an internal name: it is not in the stable 1.0 inventory and may change.
 
 ## How a submission is handled
 
@@ -215,15 +237,21 @@ the server does not prove that the user visited a review page or selected those 
 
 The invariant is **submitted IDs ∩ ViewSet queryset ∩ destination queryset ∩ parent scope**. Parent coordinates
 come from the registered destination URL and the existing ancestor admission rules apply to that endpoint.
-A custom `has_permission` override that is more generous must align `cv_has_access`, following the existing
-context and list-button behavior; there is no opt-out from destination visibility checks.
-An offered action still faces independent ancestor write rules on submission: the immediate parent defaults
-to `change`, while farther ancestors default to `view`. A stricter configured higher write key or per-action
-pair can deny a farther ancestor even when read admission succeeds. Visibility also does not guarantee
-selected-object grants: submission can produce an all-blocked review with Cancel and no writes.
 A filter that exists only on the source list is no authorization gate; shared restrictions belong in the ViewSet
 or an application queryset function used by both source and destination. A destination may narrow its
 `get_queryset()` further, but cannot widen the ViewSet and parent scope.
+
+The toolbar decides what to show from `cv_has_access`, not from `has_permission`. A destination that overrides
+`has_permission` to admit more users than its model permission must override `cv_has_access` the same way;
+otherwise those users can submit the action but never see its button. Context and list buttons follow the same
+rule. There is no setting that turns the toolbar check off.
+
+A visible button does not promise that the submission succeeds. Two checks run only on submission:
+
+- **Ancestor write rules** in a nested ViewSet. By default the immediate parent needs `change` and farther
+  ancestors need `view`. A stricter rule configured for an ancestor answers 403, although the list was readable.
+- **Per-record permission** through `cv_bulk_has_permission`. A user who holds the model permission but no
+  grant on any selected record gets the review page with every record blocked and only Cancel.
 
 The default `cv_bulk_has_permission` returns `True`, so it adds no per-object policy. With Guardian, implement
 the application policy explicitly, for example:

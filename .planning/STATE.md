@@ -5,22 +5,22 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.45 complete, ready to plan Phase 7
-last_updated: "2026-11-21T20:58:09.310Z"
-last_activity: 2026-11-21
-last_activity_desc: "Phase 06.45 shipped as PR #401"
-state_head: 59b4b859da09602c996969d6bb5e52ce896ee781
+stopped_at: Phase 06.47 complete, ready to plan Phase 7
+last_updated: "2026-11-22T07:13:15.966Z"
+last_activity: 2026-11-22
+last_activity_desc: "Phase 06.47 shipped as PR #402"
+state_head: 93a28539aea2275158d8f61d45b85114e179aa96
 progress:
-  total_phases: 52
-  completed_phases: 51
-  total_plans: 280
-  completed_plans: 280
+  total_phases: 53
+  completed_phases: 52
+  total_plans: 283
+  completed_plans: 283
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 52
-Completed Phases: 51
+Total Phases: 53
+Completed Phases: 52
 
 # Project State
 
@@ -29,7 +29,7 @@ Completed Phases: 51
 See: .planning/PROJECT.md (updated 2026-11-21)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 7 — Theme surface freeze
 
 ## Current Position
 
@@ -37,9 +37,17 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: TBD
 Status: Ready to plan
-Last activity: 2026-11-21 -- Phase 06.45 shipped as PR #401
+Last activity: 2026-11-22 -- Phase 06.47 shipped as PR #402
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 7 (phase 06.45 merged via PR #401)
+
+### Phase 06.47 completion — 2026-11-21
+
+- All three plans/six tasks complete; independent verification16/16, validation6/6, security9/9. Dedicated bulk leaf and four semantic class keys preserve frozen stock bytes and existing native review/confirmation behavior.
+- Deep review21files warning WR-01 fixed in8ea60499 (unavailable icon contract); independent re-review clean. Full Python suite17,264 passed; focused2,467, JS512, integration2, strict docs, Ruff and wheel/sdist validation passed. Post-fix104 affected tests plus independent copied-leaf36 and verifier268 targeted checks passed; no redundant full-suite rerun.
+- Source-only UI audit clean; browser/downstream theme and full dependency matrix acceptance remain outside scope. No required human checks. CLI verification fingerprint passed before completion; no warning debt returned.
+- Reconciled CLI's stale dotted progress row and preserved-disagreeing completed-phase count from actual roadmap (51/53). No parent UAT gaps, pending phase todos, learning artifacts or stale handoffs. Derived state.json rewrite restored; codebase-map refresh follows shipping per AGENTS.md.
+- Issue400 now carries P06.47. No push/merge/ship performed. Next pending checkout phase is06.45; independent worktrees may have newer progress.
 
 ### Phase 06.45 shipping — 2026-11-21
 
@@ -1594,7 +1602,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 269
+- Total plans completed: 270
 
 - Total plans completed: 186
 - Average duration: -
@@ -1650,6 +1658,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.41 | 14 | - | - |
 | 06.42 | 3 | - | - |
 | 06.43 | 2 | - | - |
+| 06.47 | 3 | - | - |
 | 06.45 | 2 | - | - |
 
 | 06.31 | 6 | - | - |
@@ -1843,6 +1852,9 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.42 P01 | 6min | 2 tasks | 10 files |
 | Phase 06.42 P02 | 6min | 2 tasks | 5 files |
 | Phase 06.42 P03 | 12min | 2 tasks | 7 files |
+| Phase 06.47 P01 | 5min | 2 tasks | 14 files |
+| Phase 06.47 P02 | 8min | 2 tasks | 10 files |
+| Phase 06.47 P03 | 16min | 2 tasks | 11 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2192,6 +2204,7 @@ Recent decisions affecting current work:
 - [Phase 06.42]: Read global document config in ownedTriggers on every scan; retain existing ownership and adapter lifecycle.
 - [Phase 06.42]: Keep prefix registration separate from class customization, DOM overrides and adapter selection.
 - [Phase 06.42]: Final JavaScript acceptance uses exact committed dependency versions; cached mismatched results remain development feedback only.
+- [Phase 06.47]: Followed approved local adapter and dedicated bulk leaf; generic action/form dispatch remains bounded.
 
 ### Pending Todos
 
@@ -2282,6 +2295,7 @@ None yet.
 - Phase 06.42 inserted after Phase 06.40.1: Theme-registered data-attribute prefix for templates and object-detail tabs (#391); explicitly assigned 06.42, approved U1/U2 handover D-01–D-05, before Phase 7 theme-surface freeze (URGENT)
 - Phase 06.43 inserted after Phase 06.40.1: Issue #393: breadcrumb class keys and accessible table sort state; approved D-01–D-04 handover. Explicitly assigned 06.43 for this workspace, independently deliverable before the Phase 7 freeze. (URGENT)
 - Phase 06.45 inserted after Phase 06.44: Theme-registered JS namespace and tooltip placements (#398); approved D-01–D-05, depends on 06.42, before Phase 7 freeze (URGENT)
+- Phase 06.47 inserted after Phase 06.45: Semantic variants for bulk toolbar buttons (#400); explicitly assigned 06.47 by the maintainer, approved D-01–D-05, depends on 06.41, before Phase 7 freeze (URGENT)
 
 ## Deferred Items
 
@@ -2291,6 +2305,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-21T20:54:22Z
-Stopped at: Phase 06.45 complete, ready to plan Phase 7
+Last session: 2026-11-21T21:21:53.058017+00:00
+Stopped at: Phase 06.47 complete, ready to plan Phase 7
 Resume file: None

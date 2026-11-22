@@ -683,6 +683,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - **Current-page bulk selection and action forms** (#387): table and card views opt in with
   `BulkSelectionMixin` and submit selected records to registered `BulkFormViewPermissionRequired` action
   forms. Destinations own permissions, scoped resolution, eligibility, confirmation and application writes.
+  Destination semantic variants style toolbar controls through four `bulk:<variant>` keys and the dedicated
+  `crud_views/tags/button/bulk.html` leaf (#400), preserving stock Bootstrap output and native submission.
   See [Bulk actions](docs/reference/bulk_actions.md) for the stable API, deletion and row-locking recipes.
 
 - **ViewSet Navigation theme support** (#384): six ordinary navbar class keys allow theme registration and

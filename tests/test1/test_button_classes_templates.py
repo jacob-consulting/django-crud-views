@@ -20,6 +20,8 @@ from crud_views.lib.view.label_mode import LABEL_MODES
 from crud_views_workflow.apps import CrudViewsWorkflowConfig
 from tests.lib.helper.user import user_viewset_permission
 
+ACTION_LOCATIONS = frozenset({"context", "list", "card"})
+
 
 @pytest.mark.django_db
 def test_manage_default_rows_and_help_resolve_project_classes(client, cv_author, user_author_view):
@@ -404,10 +406,11 @@ def test_button_chain_renders_only_table_classes(monkeypatch):
         offenders[name] = _offenders(doc)
         styled[name] = len(_styled(doc))
 
-    # the action and menu leaves serve the variant locations; the form location has its own leaf, checked below
-    assert LOCATIONS - {"form", "bulk"} == VARIANT_LOCATIONS
+    # Generic actions exclude the dedicated form and bulk leaves.
+    assert VARIANT_LOCATIONS - {"bulk"} == ACTION_LOCATIONS
+    assert LOCATIONS - {"form", "bulk"} == ACTION_LOCATIONS
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES=SENTINEL_CLASSES):
-        for location in sorted(VARIANT_LOCATIONS):
+        for location in sorted(ACTION_LOCATIONS):
             for mode in sorted(LABEL_MODES):
                 markup = render_to_string("crud_views/tags/button/action.html", _leaf_contract(location, mode))
                 check(f"action.html:{location}:{mode}", html.fromstring(f"<div>{markup}</div>"))
@@ -510,7 +513,7 @@ def test_cv_button_tag_rejects_bulk_location(tag_spies, tag, ctx, strict):
     with override_settings(CRUD_VIEWS_STRICT=strict), pytest.raises(ValueError, match="cv_button") as excinfo:
         template.render(Context(dict(ctx)))
     assert "'bulk'" in str(excinfo.value)
-    assert "form leaf" in str(excinfo.value)
+    assert "dedicated bulk leaf" in str(excinfo.value)
     assert tag_spies == []
 
 
@@ -534,7 +537,7 @@ _ACTION_TAG_CONTEXT = {
 
 
 @pytest.mark.parametrize("strict", [True, False])
-@pytest.mark.parametrize("location", sorted(VARIANT_LOCATIONS))
+@pytest.mark.parametrize("location", sorted(ACTION_LOCATIONS))
 def test_cv_button_tag_keeps_action_and_menu_item(tag_spies, location, strict):
     with override_settings(CRUD_VIEWS_STRICT=strict):
         action = Template('{% load crud_views %}{% cv_button "' + location + '" %}').render(

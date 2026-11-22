@@ -63,6 +63,7 @@ class DeleteDocumentsView(BreadcrumbMixin, BulkFormViewPermissionRequired):
     cv_path = "bulk-delete"
     cv_permission = "delete"
     cv_icon_action = "delete"
+    cv_action_variant = "danger"
     cv_action_label_template_code = _("Delete selected documents")
     cv_action_short_label_template_code = _("Delete")
     cv_success_key = "list"

@@ -5,6 +5,14 @@ import re
 from pathlib import Path
 
 import pytest
+from django.template import Context, Template, Variable
+from django.utils.translation import override
+from lxml import html
+
+from crud_views.lib import bulk
+from crud_views.lib.view.button_data import FORM_LEAF_KEYS
+from tests.lib.helper.icons import HOST_LIBRARY
+from tests.test1.app.views_bulk import cv_bulk_publisher
 
 ROOT = Path(__file__).resolve().parents[2]
 GUIDE = ROOT / "docs/reference/bulk_actions.md"
@@ -67,6 +75,11 @@ STABLE_NAMES = (
     "bulk:actions",
     "bulk:card-cell",
     "bulk:card-select",
+    "bulk:primary",
+    "bulk:secondary",
+    "bulk:tertiary",
+    "bulk:danger",
+    "crud_views/tags/button/bulk.html",
     "`bulk`",
 )
 INTERNAL_NAMES = ("cv_bulk_form_id", "cv_bulk_buttons", "blocked_items.html", "snippets/paragraph/bulk.html")
@@ -308,6 +321,28 @@ def test_bulk_locking_recipe_rejects_missing_and_changed_records_before_write():
         assert name in normalized(locking)
 
 
+def test_bulk_delete_example_variant():
+    source = (ROOT / "examples/bootstrap5/bulk_selection/views.py").read_text()
+    recipe = next(
+        block for block in python_blocks(section(guide(), "Bulk delete")) if "class DeleteDocumentsView" in block
+    )
+    for text in (source, recipe):
+        destination = next(
+            node
+            for node in ast.parse(text).body
+            if isinstance(node, ast.ClassDef) and node.name == "DeleteDocumentsView"
+        )
+        attributes = {
+            target.id: ast.literal_eval(node.value)
+            for node in destination.body
+            if isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant)
+            for target in node.targets
+            if isinstance(target, ast.Name)
+        }
+        assert attributes.get("cv_action_variant") == "danger"
+        assert attributes["cv_icon_action"] == "delete"
+
+
 def test_bulk_review_and_toolbar_public_contract():
     review = section(guide(), "Review templates")
     for name in ("bulk_review", "objects", "blocked", "pk", "label", "reasons", "hidden", "every record"):
@@ -327,7 +362,25 @@ def test_bulk_review_and_toolbar_public_contract():
         "both",
         "CRUD_VIEWS_LABEL_MODE_DEFAULTS",
         "no per-action map",
-        "no variant",
+        "cv_action_variant",
+        "inherited `secondary`",
+        "bulk:primary",
+        "bulk:secondary",
+        "bulk:tertiary",
+        "bulk:danger",
+        "btn btn-primary",
+        "bulk:danger:icon",
+        "effective label mode",
+        "empty string",
+        "None",
+        "no longer inherit",
+        "review Confirm",
+        "all-blocked Cancel",
+        "crud_views/tags/button/bulk.html",
+        "form:hidden-label",
+        "form:icon-host",
+        'data-cv-tooltip="form"',
+        "buttons.md#bulk-button-leaf",
         "buttons.md#bulk-selection-classes",
     ):
         assert name in toolbar
@@ -483,6 +536,121 @@ def test_bulk_theme_and_script_links_are_in_bulk_sections():
     assert "bulk_actions.md" in script
 
 
+def test_bulk_theme_authorization_boundary():
+    text = (ROOT / "docs/reference/theme.md").read_text()
+    authorized = normalized(section(text, "Authorized data in overridden templates"))
+    for phrase in (
+        "permission-filtered action/menu leaves",
+        "configured bulk destinations",
+        "without destination access or item checks during source rendering",
+        "destination POST enforces permissions and admission",
+        "Styling or hiding a bulk button grants no authority",
+    ):
+        assert phrase in authorized
+    buttons = section(text, "Buttons")
+    assert "buttons.md#bulk-button-leaf" in buttons
+    for name in ("form:hidden-label", "form:icon-host", 'data-cv-tooltip="form"'):
+        assert name in buttons
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("source", ["/bulk-publisher/", "/bulk-publisher/card/"])
+@pytest.mark.parametrize("mode", ["label", "icon", "both"])
+@pytest.mark.parametrize("icon, disabled", [("delete", False), ("ui:archive", False), ("delete", True)])
+@pytest.mark.parametrize("hostile", [False, True])
+def test_copied_bulk_leaf_contract(
+    client_user_bulk_publisher_view, bulk_publishers, settings, monkeypatch, source, mode, icon, disabled, hostile
+):
+    fields = {
+        "cv_id",
+        "cv_variant",
+        "cv_label_mode",
+        "cv_label",
+        "cv_icon",
+        "cv_icon_class",
+        "cv_icon_inline",
+        "cv_title",
+        "cv_flat_attrs",
+    }
+    text = (ROOT / "docs/reference/buttons.md").read_text()
+    assert "### Bulk button leaf\n" in text, "Publish the complete nine-field bulk leaf recipe"
+    contract = text.split("### Bulk button leaf\n", 1)[1].split("\n### ", 1)[0]
+    (copied,) = re.findall(r"```django\n(.*?)```", contract, re.S)
+    assert copied.endswith("\n")  # Preserve the stock leaf's terminal newline.
+    assert set(re.findall(r"^\| `(cv_\w+)` \|", contract, re.M)) == fields
+    templates = [
+        Template(copied),
+        Template((ROOT / "src/crud_views/templates/crud_views/tags/button/bulk.html").read_text()),
+    ]
+    settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"bulk": mode}
+    settings.CRUD_VIEWS_ICON_LIBRARIES = HOST_LIBRARY
+    settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:danger:icon": "theme-danger-icon"}
+    if disabled:
+        settings.CRUD_VIEWS_ICONS = {"delete": None}
+    effective_mode = "label" if disabled else mode
+    destination = cv_bulk_publisher.get_view_class("archive")
+    monkeypatch.setattr(destination, "cv_action_variant", "danger")
+    monkeypatch.setattr(destination, "cv_icon_action", icon)
+    label = '<img src=x onerror="bad"> & {{ literal }}' if hostile else "Archive"
+    monkeypatch.setattr(destination, "cv_get_action_short_label", lambda context: label)
+    payloads = []
+    render = bulk.render_to_string
+
+    def capture(template, data):
+        if template == "crud_views/tags/button/bulk.html":
+            payloads.append((dict(data), render(template, data)))
+        return render(template, data)
+
+    monkeypatch.setattr(bulk, "render_to_string", capture)
+    with override("en"):
+        response = client_user_bulk_publisher_view.get(source)
+    assert response.status_code == 200
+    ((data, stock),) = [(data, stock) for data, stock in payloads if data["cv_id"] == "cv-bulk-archive"]
+    projected = {key: value for key, value in data.items() if key in fields}
+    assert set(projected) == fields - ({"cv_title"} if effective_mode != "icon" else set())
+    assert projected["cv_icon"] == icon
+    assert projected["cv_label_mode"] == effective_mode
+    resolve = Variable.resolve
+    unexpected = []
+
+    def record(variable, context):
+        if variable.lookups and variable.lookups[0] not in fields | {"True", "False", "None"}:
+            unexpected.append(variable.lookups[0])
+        return resolve(variable, context)
+
+    def guarded(template, context):
+        unexpected.clear()
+        with monkeypatch.context() as guard:
+            guard.setattr(Variable, "resolve", record)
+            output = template.render(Context(context))
+        # Assert outside Django's conditional evaluator, which can suppress exceptions.
+        assert not unexpected, f"Undeclared bulk leaf inputs: {unexpected}"
+        return output
+
+    synthetic = Template("{% if cv_key %}undeclared{% endif %}")
+    for context in ({}, {"cv_key": False}, {"cv_key": "truthy"}):
+        with pytest.raises(AssertionError, match=r"Undeclared bulk leaf inputs.*cv_key"):
+            guarded(synthetic, context)
+    for template in templates:
+        assert guarded(template, projected) == stock
+        for extra in FORM_LEAF_KEYS - fields:
+            for sentinel in (False, "undeclared-sentinel"):
+                assert guarded(template, {**projected, extra: sentinel}) == stock
+    button = html.fragment_fromstring(stock)
+    assert (button.get("type"), button.get("name"), button.get("value")) == ("submit", "cv_bulk_stage", "review")
+    assert button.get("formaction") and button.get("data-cv-bulk-action") == "archive"
+    assert button.text_content().strip() == label
+    assert not button.cssselect("img, [onerror]")
+    if disabled:
+        assert not button.cssselect("i, svg")
+        assert button.get("title") is None
+    if effective_mode == "icon":
+        assert "theme-danger-icon" in button.classes
+        assert button.get("title") == label
+    if icon == "ui:archive" and mode != "label":
+        assert projected["cv_icon_inline"] is False
+
+
 def test_bulk_section_78_deliverables():
     assert GUIDE.is_file()
     for page in (
@@ -519,9 +687,19 @@ def test_bulk_modules_remain_in_maintained_crispy_floor_selection():
         and any(isinstance(target, ast.Name) and target.id == "CRISPY_FLOOR_TESTS" for target in node.targets)
     )
     assert isinstance(assignment.value, ast.List)
-    assert {f"tests/test1/test_bulk_{name}.py" for name in ("flow", "execution", "source", "scope", "return")} <= set(
-        ast.literal_eval(assignment.value)
-    )
+    assert {
+        f"tests/test1/test_bulk_{name}.py" for name in ("flow", "execution", "source", "scope", "return", "variants")
+    } <= set(ast.literal_eval(assignment.value))
+
+
+def test_bulk_variant_release_note():
+    unreleased = section((ROOT / "CHANGELOG.md").read_text(), "Unreleased")
+    added = unreleased.split("### Added\n", 1)[1].split("\n### ", 1)[0]
+    entries = re.split(r"\n(?=- \*\*)", added)
+    (entry,) = [entry for entry in entries if "**Current-page bulk selection and action forms** (#387)" in entry]
+    for phrase in ("Destination semantic variants", "bulk:<variant>", "crud_views/tags/button/bulk.html", "#400"):
+        assert phrase in entry
+    assert "#400" not in unreleased.split("### Breaking\n", 1)[1].split("\n### ", 1)[0]
 
 
 def test_bulk_guide_documents_native_cancel_opt_in():

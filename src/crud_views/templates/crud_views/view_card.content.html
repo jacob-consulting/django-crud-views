@@ -1,11 +1,11 @@
 {% load i18n l10n crud_views %}
 
-{% include "crud_views/snippets/card_order.html" %}{% if view.cv_bulk_actions %}{% include "crud_views/snippets/bulk_toolbar.html" %}{% endif %}
+{% include "crud_views/snippets/card_order.html" %}{% if view.cv_bulk_buttons %}{% include "crud_views/snippets/bulk_toolbar.html" %}{% endif %}
 
 <div class="row">
     {% for object in object_list %}
         <div class="{{ view.cv_card_container_class }}">
-            {% if view.cv_bulk_actions %}<div class="{% cv_button_class 'bulk' 'card-cell' %}">
+            {% if view.cv_bulk_buttons %}<div class="{% cv_button_class 'bulk' 'card-cell' %}">
                 <input type="checkbox" name="cv_bulk_ids" value="{{ object.pk|unlocalize }}" form="{{ view.cv_bulk_form_id }}" data-cv-bulk-item class="{% cv_button_class 'bulk' 'card-select' %}" aria-label="{% blocktranslate with name=object %}Select {{ name }}{% endblocktranslate %}">
                 {% cv_card object %}
             </div>{% else %}{% cv_card object %}{% endif %}

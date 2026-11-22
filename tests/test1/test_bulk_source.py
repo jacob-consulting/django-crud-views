@@ -1,4 +1,4 @@
-"""Rendered table and card selection, without permission work on source pages."""
+"""Rendered table and card selection through destination entry gates."""
 
 from urllib.parse import parse_qs, urlsplit
 
@@ -7,8 +7,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection
 from django.template import Context, RequestContext, Template
 from django.template.loader import get_template
-from django.test.utils import CaptureQueriesContext
 from django.test import Client
+from django.test.utils import CaptureQueriesContext
 from django.utils.translation import override
 
 from crud_views.lib.button_classes import get_button_class
@@ -48,18 +48,94 @@ def test_bulk_visibility_tracer(path, user_bulk_publisher_view, user_bulk_publis
     assert not soup(denied).cssselect("[data-cv-bulk], [data-cv-bulk-action], [data-cv-bulk-item]")
     admitted = editor.get(path)
     source = BulkPublisherCardView if "card" in path else BulkPublisherListView
-    assert [button.get("data-cv-bulk-action") for button in soup(admitted).cssselect("[data-cv-bulk-action]")] == list(source.cv_bulk_actions)
+    assert [button.get("data-cv-bulk-action") for button in soup(admitted).cssselect("[data-cv-bulk-action]")] == list(
+        source.cv_bulk_actions
+    )
 
 
 class SilentGateError(Exception):
     silent_variable_failure = True
 
 
-@pytest.mark.parametrize("source,path", [(BulkPublisherListView, "/bulk-publisher/"), (BulkPublisherCardView, "/bulk-publisher/card/")])
+def spy_bulk_gates(monkeypatch, keys):
+    """Bind all inherited originals before patching any of their parent classes."""
+    originals = [
+        (
+            key,
+            cv_bulk_publisher.get_view_class(key),
+            cv_bulk_publisher.get_view_class(key).cv_has_access,
+            cv_bulk_publisher.get_view_class(key)._cv_action_enabled_for_rendering,
+        )
+        for key in keys
+    ]
+    events = []
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Source rendering evaluated an item hook")
+
+    for key, destination, original_access, original_state in originals:
+
+        def access(cls, user, obj, key=key, original=original_access, destination=destination):
+            assert cls is destination and obj is None
+            events.append((key, "access", user, obj))
+            return original(user, obj)
+
+        def state(cls, user, obj, source, key=key, original=original_state, destination=destination):
+            assert cls is destination and obj is None
+            events.append((key, "state", user, source))
+            return original(user, obj, source)
+
+        monkeypatch.setattr(destination, "cv_has_access", classmethod(access))
+        monkeypatch.setattr(destination, "_cv_action_enabled_for_rendering", classmethod(state))
+        monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden)
+        monkeypatch.setattr(destination, "cv_bulk_check", forbidden)
+    return events
+
+
+@pytest.mark.parametrize(
+    "source,path,actor",
+    [
+        (BulkPublisherListView, "/bulk-publisher/", "client_user_bulk_publisher_delete"),
+        (BulkPublisherCardView, "/bulk-publisher/card/", "client_user_bulk_publisher_change"),
+    ],
+)
+def test_source_destination_gate_cost(source, path, actor, request, bulk_publishers, monkeypatch):
+    client = request.getfixturevalue(actor)
+    keys = source.cv_bulk_actions
+    events = spy_bulk_gates(monkeypatch, keys)
+
+    def assert_events(response):
+        assert [(key, stage) for key, stage, *_ in events] == [
+            (key, stage) for key in keys for stage in ("access", "state")
+        ]
+        assert all(user == response.wsgi_request.user for _, _, user, _ in events)
+        assert all(obj is response.context_data["view"] for _, stage, _, obj in events if stage == "state")
+
+    response = client.get(path)
+    assert response.status_code == 200
+    assert len(soup(response).cssselect("[data-cv-bulk-action]")) == len(keys)
+    assert_events(response)
+    events.clear()
+    with CaptureQueriesContext(connection) as bulk_queries:
+        response = client.get(path)
+    assert_events(response)
+    events.clear()
+    monkeypatch.setattr(source, "cv_bulk_actions", ())
+    with CaptureQueriesContext(connection) as plain_queries:
+        client.get(path)
+    assert not events
+    assert len(bulk_queries) == len(plain_queries)
+
+
+@pytest.mark.parametrize(
+    "source,path", [(BulkPublisherListView, "/bulk-publisher/"), (BulkPublisherCardView, "/bulk-publisher/card/")]
+)
 @pytest.mark.parametrize("rows", [0, 5])
 @pytest.mark.parametrize("hook", ["cv_has_access", "cv_action_enabled"])
 @pytest.mark.parametrize("error_class", [ObjectDoesNotExist, Publisher.DoesNotExist, SilentGateError, RuntimeError])
-def test_bulk_rendered_gate_exceptions(source, path, rows, hook, error_class, client_user_bulk_publisher_change, monkeypatch):
+def test_bulk_rendered_gate_exceptions(
+    source, path, rows, hook, error_class, client_user_bulk_publisher_change, monkeypatch
+):
     for index in range(rows):
         Publisher.objects.create(name=f"Publisher {index}")
     monkeypatch.setattr(source, "paginate_by", 10)
@@ -92,8 +168,8 @@ def test_bulk_rendered_gate_exceptions(source, path, rows, hook, error_class, cl
     assert events == (["access"] if hook == "cv_has_access" else ["access", "state"])
 
 
-def test_table_toolbar_controls(client_user_bulk_publisher_view, bulk_publishers):
-    response = client_user_bulk_publisher_view.get("/bulk-publisher/")
+def test_table_toolbar_controls(client_user_bulk_publisher_delete, bulk_publishers):
+    response = client_user_bulk_publisher_delete.get("/bulk-publisher/")
     assert response.status_code == 200
     page = soup(response)
     form = page.cssselect("form[data-cv-bulk]")[0]
@@ -145,10 +221,10 @@ def test_table_toolbar_controls(client_user_bulk_publisher_view, bulk_publishers
 
 
 @pytest.mark.parametrize("mode", ["both", "icon", "label"])
-def test_bulk_label_floor(client_user_bulk_publisher_view, settings, mode):
+def test_bulk_label_floor(client_user_bulk_publisher_delete, settings, mode):
     settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"bulk": mode}
     settings.CRUD_VIEWS_STRICT = True
-    page = soup(client_user_bulk_publisher_view.get("/bulk-publisher/"))
+    page = soup(client_user_bulk_publisher_delete.get("/bulk-publisher/"))
     delete = page.cssselect('[data-cv-bulk-action="bulk_delete"]')[0]
     archive = page.cssselect('[data-cv-bulk-action="archive"]')[0]
     assert bool(delete.cssselect("i, svg")) == (mode != "label")
@@ -165,10 +241,10 @@ def test_bulk_label_floor(client_user_bulk_publisher_view, settings, mode):
     assert archive.get("class") == get_button_class("form", "submit", "label")
 
 
-def test_bulk_floor_is_independent_of_form(client_user_bulk_publisher_view, settings):
+def test_bulk_floor_is_independent_of_form(client_user_bulk_publisher_delete, settings):
     settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"form": "icon"}
     settings.CRUD_VIEWS_STRICT = True
-    page = soup(client_user_bulk_publisher_view.get("/bulk-publisher/"))
+    page = soup(client_user_bulk_publisher_delete.get("/bulk-publisher/"))
     delete = page.cssselect('[data-cv-bulk-action="bulk_delete"]')[0]
     assert delete.cssselect("i, svg")
     assert delete.cssselect("span")[0].get("class") is None
@@ -176,11 +252,11 @@ def test_bulk_floor_is_independent_of_form(client_user_bulk_publisher_view, sett
 
 
 @pytest.mark.parametrize("mode", ["icon", "both"])
-def test_disabled_action_icon_uses_visible_label(client_user_bulk_publisher_view, settings, mode):
+def test_disabled_action_icon_uses_visible_label(client_user_bulk_publisher_delete, settings, mode):
     settings.CRUD_VIEWS_ICONS = {"delete": None}
     settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"bulk": mode}
     settings.CRUD_VIEWS_STRICT = True
-    response = client_user_bulk_publisher_view.get("/bulk-publisher/")
+    response = client_user_bulk_publisher_delete.get("/bulk-publisher/")
     assert response.status_code == 200
     button = soup(response).cssselect('[data-cv-bulk-action="bulk_delete"]')[0]
     assert not button.cssselect("i, svg")
@@ -189,8 +265,8 @@ def test_disabled_action_icon_uses_visible_label(client_user_bulk_publisher_view
     assert button.get("class") == get_button_class("form", "submit", "label")
 
 
-def test_table_checkboxes_and_structure(client_user_bulk_publisher_view, bulk_publishers):
-    response = client_user_bulk_publisher_view.get("/bulk-publisher/")
+def test_table_checkboxes_and_structure(client_user_bulk_publisher_delete, bulk_publishers):
+    response = client_user_bulk_publisher_delete.get("/bulk-publisher/")
     page = soup(response)
     boxes = page.cssselect("[data-cv-bulk-item]")
     assert len(boxes) == len(bulk_publishers)
@@ -208,40 +284,16 @@ def test_table_checkboxes_and_structure(client_user_bulk_publisher_view, bulk_pu
     assert max_form_depth(response.content.decode()) == 1
 
 
-def test_table_page_renders_actions_without_permission_work(
-    client_user_bulk_publisher_view, bulk_publishers, monkeypatch
-):
-    client = client_user_bulk_publisher_view
-
-    def forbidden(*args, **kwargs):
-        pytest.fail("Source rendering called a destination permission or item hook")
-
-    for key in BulkPublisherListView.cv_bulk_actions:
-        destination = cv_bulk_publisher.get_view_class(key)
-        monkeypatch.setattr(destination, "cv_has_access", classmethod(forbidden))
-        monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden)
-        monkeypatch.setattr(destination, "cv_bulk_check", forbidden)
-    response = client.get("/bulk-publisher/")
-    assert response.status_code == 200
-    assert len(soup(response).cssselect("[data-cv-bulk-action]")) == 4
-    with CaptureQueriesContext(connection) as bulk_queries:
-        client.get("/bulk-publisher/")
-    monkeypatch.setattr(BulkPublisherListView, "cv_bulk_actions", ())
-    with CaptureQueriesContext(connection) as plain_queries:
-        client.get("/bulk-publisher/")
-    assert len(bulk_queries) == len(plain_queries)
-
-
-def test_table_checkbox_label_escapes_record_name(client_user_bulk_publisher_view):
+def test_table_checkbox_label_escapes_record_name(client_user_bulk_publisher_delete):
     Publisher.objects.create(name='<b>Bold</b> & "Co"')
-    response = client_user_bulk_publisher_view.get("/bulk-publisher/")
+    response = client_user_bulk_publisher_delete.get("/bulk-publisher/")
     markup = response.content.decode()
     assert 'aria-label="Select &lt;b&gt;Bold&lt;/b&gt; &amp; &quot;Co&quot;"' in markup
     assert "<b>Bold</b>" not in markup
 
 
 @pytest.mark.parametrize("value", ["custom-bulk-slot", None])
-def test_toolbar_class_overrides(client_user_bulk_publisher_view, bulk_publishers, settings, value):
+def test_toolbar_class_overrides(client_user_bulk_publisher_delete, bulk_publishers, settings, value):
     slots = {
         "toolbar": "form[data-cv-bulk]",
         "controls": "[data-cv-bulk-enhanced] > div",
@@ -250,15 +302,15 @@ def test_toolbar_class_overrides(client_user_bulk_publisher_view, bulk_publisher
         "actions": "form[data-cv-bulk] > div:last-child",
     }
     settings.CRUD_VIEWS_BUTTON_CLASSES = {f"bulk:{slot}": value for slot in slots}
-    page = soup(client_user_bulk_publisher_view.get("/bulk-publisher/"))
+    page = soup(client_user_bulk_publisher_delete.get("/bulk-publisher/"))
     for selector in slots.values():
         elements = page.cssselect(selector)
         assert elements
         assert all(element.get("class", "") == (value or "") for element in elements)
 
 
-def test_card_selection_and_form_structure(client_user_bulk_publisher_view, bulk_publishers):
-    response = client_user_bulk_publisher_view.get("/bulk-publisher/card/")
+def test_card_selection_and_form_structure(client_user_bulk_publisher_change, bulk_publishers):
+    response = client_user_bulk_publisher_change.get("/bulk-publisher/card/")
     assert response.status_code == 200
     page = soup(response)
     assert len(page.cssselect("form#cv-card-order-form")) == 1
@@ -290,9 +342,9 @@ def test_card_selection_and_form_structure(client_user_bulk_publisher_view, bulk
     ]
 
 
-def test_card_selection_survives_custom_template(client_user_bulk_publisher_view, bulk_publishers, monkeypatch):
+def test_card_selection_survives_custom_template(client_user_bulk_publisher_change, bulk_publishers, monkeypatch):
     monkeypatch.setattr(BulkPublisherCardView, "cv_card_template", "app/bulk_card.html")
-    response = client_user_bulk_publisher_view.get("/bulk-publisher/card/")
+    response = client_user_bulk_publisher_change.get("/bulk-publisher/card/")
     boxes = soup(response).cssselect("[data-cv-bulk-item]")
     assert len(boxes) == 2
     for box, record in zip(boxes, bulk_publishers[:2], strict=True):
@@ -303,9 +355,9 @@ def test_card_selection_survives_custom_template(client_user_bulk_publisher_view
 
 
 @pytest.mark.parametrize("value", ["custom-card-slot", None])
-def test_card_class_overrides(client_user_bulk_publisher_view, bulk_publishers, settings, value):
+def test_card_class_overrides(client_user_bulk_publisher_change, bulk_publishers, settings, value):
     settings.CRUD_VIEWS_BUTTON_CLASSES = {"bulk:card-cell": value, "bulk:card-select": value}
-    boxes = soup(client_user_bulk_publisher_view.get("/bulk-publisher/card/")).cssselect("[data-cv-bulk-item]")
+    boxes = soup(client_user_bulk_publisher_change.get("/bulk-publisher/card/")).cssselect("[data-cv-bulk-item]")
     assert len(boxes) == 2
     for box in boxes:
         assert box.get("class", "") == (value or "")
@@ -326,8 +378,8 @@ def test_nonparticipant_card_content_is_byte_identical(
     assert new == old
 
 
-def test_card_toolbar_carries_card_origin(client_user_bulk_publisher_view, bulk_publishers):
-    page = soup(client_user_bulk_publisher_view.get("/bulk-publisher/card/"))
+def test_card_toolbar_carries_card_origin(client_user_bulk_publisher_change, bulk_publishers):
+    page = soup(client_user_bulk_publisher_change.get("/bulk-publisher/card/"))
     buttons = page.cssselect("[data-cv-bulk-action]")
     assert len(buttons) == 2
     for button in buttons:
@@ -360,57 +412,25 @@ def test_shared_action_confirmation_from_both_sources(
             assert "Locked Gamma" in soup(response).cssselect('[role="alert"]')[0].text_content()
 
 
-def test_empty_card_page_keeps_toolbar(client_user_bulk_publisher_view):
-    page = soup(client_user_bulk_publisher_view.get("/bulk-publisher/card/"))
+def test_empty_card_page_keeps_toolbar(client_user_bulk_publisher_change):
+    page = soup(client_user_bulk_publisher_change.get("/bulk-publisher/card/"))
     assert len(page.cssselect("[data-cv-bulk]")) == 1
     assert not page.cssselect("[data-cv-bulk-item]")
     assert "No items found." in page.text_content()
 
 
-def test_card_page_renders_actions_without_permission_work(
-    client_user_bulk_publisher_view, bulk_publishers, monkeypatch
-):
-    calls = []
-
-    def record_call(*args, **kwargs):
-        calls.append((args, kwargs))
-        return True
-
-    for key in BulkPublisherCardView.cv_bulk_actions:
-        destination = cv_bulk_publisher.get_view_class(key)
-        monkeypatch.setattr(destination, "cv_has_access", classmethod(record_call))
-        monkeypatch.setattr(destination, "cv_bulk_has_permission", record_call)
-        monkeypatch.setattr(destination, "cv_bulk_check", record_call)
-    client = client_user_bulk_publisher_view
-    response = client.get("/bulk-publisher/card/")
-    assert response.status_code == 200
-    assert not response.wsgi_request.user.has_perm("app.change_publisher")
-    page = soup(response)
-    for key in ("archive", "archive_now"):
-        assert len(page.cssselect(f'[data-cv-bulk-action="{key}"]')) == 1
-    assert len(page.cssselect("[data-cv-bulk-item]")) == 2
-    assert calls == []
-    with CaptureQueriesContext(connection) as bulk_queries:
-        client.get("/bulk-publisher/card/")
-    monkeypatch.setattr(BulkPublisherCardView, "cv_bulk_actions", ())
-    with CaptureQueriesContext(connection) as plain_queries:
-        client.get("/bulk-publisher/card/")
-    assert len(bulk_queries) == len(plain_queries)
-    assert calls == []
-
-
-def test_card_checkbox_label_escapes_record_name(client_user_bulk_publisher_view):
+def test_card_checkbox_label_escapes_record_name(client_user_bulk_publisher_change):
     Publisher.objects.create(name='<b>Bold</b> & "Co"')
-    response = client_user_bulk_publisher_view.get("/bulk-publisher/card/")
+    response = client_user_bulk_publisher_change.get("/bulk-publisher/card/")
     markup = response.content.decode()
     assert 'aria-label="Select &lt;b&gt;Bold&lt;/b&gt; &amp; &quot;Co&quot;"' in markup
     assert "<b>Bold</b>" not in markup
 
 
-def test_card_checkbox_value_ignores_number_localization(client_user_bulk_publisher_view, settings):
+def test_card_checkbox_value_ignores_number_localization(client_user_bulk_publisher_change, settings):
     settings.USE_THOUSAND_SEPARATOR = True
     Publisher.objects.create(pk=12345, name="Alpha")
     with override("de"):
         assert Template("{{ pk }}").render(Context({"pk": 12345})) == "12.345"
-        page = soup(client_user_bulk_publisher_view.get("/bulk-publisher/card/"))
+        page = soup(client_user_bulk_publisher_change.get("/bulk-publisher/card/"))
         assert [box.get("value") for box in page.cssselect("[data-cv-bulk-item]")] == ["12345"]

@@ -54,17 +54,21 @@ class DeveloperSeedTest(TestCase):
 
         call_command("seed", stdout=StringIO())
         self.client.force_login(get_user_model().objects.get(username="developer"))
-        response = self.client.get(reverse("bulk_document-list"))
-        self.assertEqual(response.status_code, 200)
-        tree = html.fromstring(response.content)
+        for source in ("list", "card"):
+            response = self.client.get(reverse(f"bulk_document-{source}"))
+            self.assertEqual(response.status_code, 200)
+            tree = html.fromstring(response.content)
+            self.assertFalse(tree.xpath('//*[@data-cv-bulk or @data-cv-bulk-action] | //input[@name="cv_bulk_ids"]'))
         document = Document.objects.first()
         self.assertIsNotNone(document)
         before = list(Document.objects.values())
         for key in ("bulk_delete", "archive", "assign_owner"):
-            with self.subTest(action=key):
-                destination = tree.xpath(f'//*[@data-cv-bulk-action="{key}"]/@formaction')[0]
-                response = self.client.post(destination, {"cv_bulk_stage": "review", "cv_bulk_ids": [document.pk]})
-                self.assertEqual(response.status_code, 403)
+            for stage in ("review", "execute"):
+                with self.subTest(action=key, stage=stage):
+                    response = self.client.post(
+                        reverse(f"bulk_document-{key}"), {"cv_bulk_stage": stage, "cv_bulk_ids": [document.pk]}
+                    )
+                    self.assertEqual(response.status_code, 403)
         self.assertEqual(list(Document.objects.values()), before)
 
     def test_custom_group_preserves_members_and_legitimate_reads(self):

@@ -85,18 +85,23 @@ class SourceTest(BulkSelectionTestCase):
             ["title", "status"],
         )
 
-    def test_view_only_user_sees_toolbar_but_cannot_enter_actions(self):
+    def test_view_only_user_has_no_bulk_controls_and_cannot_enter_actions(self):
         reader = get_user_model().objects.create_user(username="reader", password="pw")
         grant_model_perms(reader, self.Document, actions=("view",))
         self.client.force_login(reader)
-        for source, actions in (
-            ("list", ("bulk_delete", "archive", "assign_owner")),
-            ("card", ("archive", "assign_owner")),
-        ):
-            for action in actions:
-                with self.subTest(source=source, action=action):
-                    response = self.review(self.destination(action, source), [self.first])
+        before = list(self.Document.objects.values())
+        for source in ("list", "card"):
+            tree = html.fromstring(self.source(source).content)
+            self.assertFalse(tree.xpath('//*[@data-cv-bulk or @data-cv-bulk-action] | //input[@name="cv_bulk_ids"]'))
+        for action in ("bulk_delete", "archive", "assign_owner"):
+            for stage in ("review", "execute"):
+                with self.subTest(action=action, stage=stage):
+                    response = self.client.post(
+                        reverse(f"bulk_document-{action}"),
+                        {"cv_bulk_stage": stage, "cv_bulk_ids": [self.first.pk]},
+                    )
                     self.assertEqual(response.status_code, 403)
+        self.assertEqual(list(self.Document.objects.values()), before)
         self.assert_unchanged()
 
 

@@ -197,10 +197,10 @@ The default table has 142 keys: the rows with four variants stand for four keys 
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
 Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
 keys and two dismissal utilities; the two form-group utilities each contribute one key, numbered columns contribute
-twelve width keys, ViewSet Navigation contributes six keys, bulk selection contributes eleven keys, breadcrumbs contribute three keys, and manage
-diagnostics contribute twenty keys. Manage values replace complete class strings;
-theme registrations override defaults and project settings override the theme. The `context` and `list`
-buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
+twelve width keys, ViewSet Navigation contributes six keys, bulk selection contributes eleven keys, breadcrumbs
+contribute three keys, and manage diagnostics contribute twenty keys. Manage values replace complete class strings;
+theme registrations override defaults and project settings override the theme. The `context` and `list` buttons
+look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
 

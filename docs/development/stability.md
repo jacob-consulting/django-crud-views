@@ -80,9 +80,9 @@ deprecation and migration policy below.
 The POST fields are `cv_bulk_ids`, `cv_bulk_blocked_ids` and `cv_bulk_stage`; the `cv_bulk_` prefix is reserved.
 The override contract includes `crud_views/view_bulk_form.html`, `crud_views/view_bulk_form.content.html`,
 `crud_views/snippets/bulk_toolbar.html`, `crud_views/columns/bulk_select.html`,
-`crud_views/snippets/message/bulk.html`, `crud_views/snippets/bulk/blocked.html` and
-`crud_views/snippets/bulk/eligible.html` and `crud_views/tags/button/bulk.html`. The two review snippets receive `bulk_review` with `objects` and
-`blocked`; each blocked item has `pk`, `label` and `reasons`.
+`crud_views/snippets/message/bulk.html`, `crud_views/snippets/bulk/blocked.html`,
+`crud_views/snippets/bulk/eligible.html` and `crud_views/tags/button/bulk.html`. The two review snippets receive
+`bulk_review` with `objects` and `blocked`; each blocked item has `pk`, `label` and `reasons`.
 The six data attributes are `data-cv-bulk`, `data-cv-bulk-item`, `data-cv-bulk-all`, `data-cv-bulk-count`,
 `data-cv-bulk-action` and `data-cv-bulk-enhanced`. The seven class keys are `bulk:toolbar`, `bulk:controls`,
 `bulk:select-all`, `bulk:checkbox`, `bulk:actions`, `bulk:card-cell` and `bulk:card-select`, with the

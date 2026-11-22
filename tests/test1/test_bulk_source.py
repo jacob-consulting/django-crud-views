@@ -9,11 +9,20 @@ from django.template import Context, RequestContext, Template
 from django.template.loader import get_template
 from django.test import Client
 from django.test.utils import CaptureQueriesContext
+from django.urls import reverse
 from django.utils.translation import override
 
 from crud_views.lib.button_classes import get_button_class
-from tests.test1.app.models import Publisher
-from tests.test1.app.views_bulk import BulkPublisherCardView, BulkPublisherListView, cv_bulk_publisher
+from tests.test1.app.models import Book, Publisher
+from tests.test1.app.views_bulk import (
+    BulkBookCardView,
+    BulkBookListView,
+    BulkPublisherCardView,
+    BulkPublisherListView,
+    cv_bulk_book,
+    cv_bulk_publisher,
+)
+from tests.test1.test_ancestor_authorization import _client, _user
 from tests.test1.test_bulk_flow import max_form_depth, soup
 
 pytestmark = pytest.mark.django_db
@@ -301,14 +310,14 @@ class SilentGateError(Exception):
     silent_variable_failure = True
 
 
-def spy_bulk_gates(monkeypatch, keys):
+def spy_bulk_gates(monkeypatch, keys, viewset=cv_bulk_publisher):
     """Bind all inherited originals before patching any of their parent classes."""
     originals = [
         (
             key,
-            cv_bulk_publisher.get_view_class(key),
-            cv_bulk_publisher.get_view_class(key).cv_has_access,
-            cv_bulk_publisher.get_view_class(key)._cv_action_enabled_for_rendering,
+            viewset.get_view_class(key),
+            viewset.get_view_class(key).cv_has_access,
+            viewset.get_view_class(key)._cv_action_enabled_for_rendering,
         )
         for key in keys
     ]
@@ -325,7 +334,8 @@ def spy_bulk_gates(monkeypatch, keys):
             return original(user, obj)
 
         def state(cls, user, obj, source, key=key, original=original_state, destination=destination):
-            assert cls is destination and obj is None
+            assert cls is destination
+            assert obj is source.cv_get_parent_object() if viewset.has_parent else obj is None
             events.append((key, "state", user, source))
             return original(user, obj, source)
 
@@ -372,19 +382,32 @@ def test_source_destination_gate_cost(source, path, actor, request, bulk_publish
 
 
 @pytest.mark.parametrize(
-    "source,path", [(BulkPublisherListView, "/bulk-publisher/"), (BulkPublisherCardView, "/bulk-publisher/card/")]
+    "source,path",
+    [
+        (BulkPublisherListView, "/bulk-publisher/"),
+        (BulkPublisherCardView, "/bulk-publisher/card/"),
+        (BulkBookListView, None),
+        (BulkBookCardView, None),
+    ],
 )
 @pytest.mark.parametrize("rows", [0, 5])
 @pytest.mark.parametrize("hook", ["cv_has_access", "cv_action_enabled"])
 @pytest.mark.parametrize("error_class", [ObjectDoesNotExist, Publisher.DoesNotExist, SilentGateError, RuntimeError])
 def test_bulk_rendered_gate_exceptions(
-    source, path, rows, hook, error_class, client_user_bulk_publisher_change, monkeypatch
+    source, path, rows, hook, error_class, client_user_bulk_publisher_change, client_user_bulk_book_change, monkeypatch
 ):
-    for index in range(rows):
-        Publisher.objects.create(name=f"Publisher {index}")
+    nested = source.cv_viewset.has_parent
+    if nested:
+        parent = Publisher.objects.create(name="Parent")
+        for index in range(rows):
+            Book.objects.create(publisher=parent, title=f"Book {index}")
+        path = reverse(source.cv_viewset.get_router_name(source.cv_key), kwargs={"bulk_publisher_pk": parent.pk})
+    else:
+        for index in range(rows):
+            Publisher.objects.create(name=f"Publisher {index}")
     monkeypatch.setattr(source, "paginate_by", 10)
-    monkeypatch.setattr(source, "cv_bulk_actions", ("archive",))
-    destination = cv_bulk_publisher.get_view_class("archive")
+    monkeypatch.setattr(source, "cv_bulk_actions", ("mark" if nested else "archive",))
+    destination = source.cv_viewset.get_view_class(source.cv_bulk_actions[0])
     original_access = destination.cv_has_access
     error = error_class("destination gate failure")
     events = []
@@ -396,6 +419,8 @@ def test_bulk_rendered_gate_exceptions(
         return original_access(user, obj)
 
     def state(cls, user, obj):
+        if nested:
+            assert obj.pk == parent.pk
         events.append("state")
         raise error
 
@@ -407,9 +432,178 @@ def test_bulk_rendered_gate_exceptions(
     monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden)
     monkeypatch.setattr(destination, "cv_bulk_check", forbidden)
     with pytest.raises(error_class) as caught:
-        client_user_bulk_publisher_change.get(path)
+        (client_user_bulk_book_change if nested else client_user_bulk_publisher_change).get(path)
     assert caught.value is error
     assert events == (["access"] if hook == "cv_has_access" else ["access", "state"])
+
+
+@pytest.mark.parametrize("nested", [False, True], ids=["top", "nested"])
+@pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
+@pytest.mark.parametrize("rows", [1, 5])
+@pytest.mark.parametrize("actions", [0, 1, 4])
+def test_bulk_source_query_cost(nested, card, rows, actions, monkeypatch, record_property):
+    viewset = cv_bulk_book if nested else cv_bulk_publisher
+    source = (
+        (BulkBookCardView if card else BulkBookListView)
+        if nested
+        else (BulkPublisherCardView if card else BulkPublisherListView)
+    )
+    parent = Publisher.objects.create(name="Parent") if nested else None
+    for index in range(rows):
+        if nested:
+            Book.objects.create(publisher=parent, title=f"Book {index}")
+        else:
+            Publisher.objects.create(name=f"Publisher {index}")
+    actor = _user(
+        "matrix",
+        (Publisher, "view"),
+        (Publisher, "change"),
+        (Publisher, "delete"),
+        (Book, "view"),
+        (Book, "change"),
+        (Book, "delete"),
+    )
+    client = _client(actor)
+    path = reverse(viewset.get_router_name(source.cv_key), kwargs={"bulk_publisher_pk": parent.pk} if nested else {})
+    keys = (
+        ("mark", "mark_second", "mark_third", "mark_fourth")
+        if nested
+        else ("archive", "archive_now", "rename", "bulk_delete")
+    )[:actions]
+    monkeypatch.setattr(source, "paginate_by", 10)
+    monkeypatch.setattr(source, "cv_bulk_actions", keys)
+    for key in keys:
+        monkeypatch.setattr(viewset.get_view_class(key), "cv_cancel_keys", ["list", "card"])
+    assert not [
+        m
+        for check in source.checks()
+        for m in check.messages()
+        if m.id in {"viewset.E271", "viewset.E272", "viewset.E273", "viewset.W274", "viewset.W275"}
+    ]
+    events = spy_bulk_gates(monkeypatch, keys, viewset)
+    client.get(path)  # Only URL/template caches survive; the next GET loads a fresh request actor.
+    events.clear()
+    with CaptureQueriesContext(connection) as offered_queries:
+        response = client.get(path)
+    view = response.context_data["view"]
+    assert response.status_code == 200
+    assert action_keys(response) == list(keys)
+    assert len(response.context_data["object_list"]) == rows
+    assert len(soup(response).cssselect("[data-cv-bulk-item]")) == (rows if keys else 0)
+    assert [(key, stage) for key, stage, *_ in events] == [
+        (key, stage) for key in keys for stage in ("access", "state")
+    ]
+    assert all(user is response.wsgi_request.user for _, _, user, _ in events)
+    assert all(obj is view for _, stage, _, obj in events if stage == "state")
+    before = list(events)
+    for _ in range(2):
+        view.get_context_data()
+        assert view.cv_bulk_buttons == view.cv_bulk_buttons
+        if not card:
+            view.get_table_kwargs()
+    assert events == before
+    monkeypatch.setattr(source, "cv_bulk_actions", ())
+    events.clear()
+    with CaptureQueriesContext(connection) as baseline_queries:
+        client.get(path)
+    assert events == []
+    # Full-response counts also pin equality across row/action dimensions.
+    expected = (8 if card else 9) if nested else (7 if card else 8)
+    assert len(offered_queries) == len(baseline_queries) == expected
+    record_property("query_cost", f"{nested=},{card=},{rows=},{actions=}:{len(offered_queries)}")
+
+
+@pytest.mark.parametrize("source", [BulkBookListView, BulkBookCardView])
+@pytest.mark.parametrize("denial", ["partial", "total", "state"])
+def test_bulk_nested_denial_bounds(source, denial, monkeypatch):
+    parent = Publisher.objects.create(name="Parent")
+    Book.objects.create(publisher=parent, title="Child")
+    permissions = [(Publisher, "view"), (Book, "view")]
+    if denial != "total":
+        permissions.append((Book, "change"))
+    if denial == "state":
+        permissions.append((Book, "delete"))
+    client = _client(_user("nested_denial", *permissions))
+    keys = ("mark", "mark_second", "mark_third", "mark_fourth")
+    monkeypatch.setattr(source, "cv_bulk_actions", keys)
+    if denial == "state":
+        for key in keys:
+            monkeypatch.setattr(cv_bulk_book.get_view_class(key), "cv_action_enabled", classmethod(lambda *args: False))
+    events = spy_bulk_gates(monkeypatch, keys, cv_bulk_book)
+    path = reverse(cv_bulk_book.get_router_name(source.cv_key), kwargs={"bulk_publisher_pk": parent.pk})
+    client.get(path)
+    events.clear()
+    with CaptureQueriesContext(connection) as queries:
+        response = client.get(path)
+    assert action_keys(response) == (list(keys[:3]) if denial == "partial" else [])
+    assert [(key, stage) for key, stage, *_ in events] == [
+        (key, stage)
+        for key in keys
+        for stage in (
+            ("access",) if denial == "total" or (denial == "partial" and key == "mark_fourth") else ("access", "state")
+        )
+    ]
+    monkeypatch.setattr(source, "cv_bulk_actions", ())
+    with CaptureQueriesContext(connection) as baseline:
+        client.get(path)
+    assert len(queries) == len(baseline) == (8 if source is BulkBookCardView else 9)
+
+
+@pytest.mark.parametrize("source", [BulkBookListView, BulkBookCardView])
+@pytest.mark.parametrize("error_class", [ObjectDoesNotExist, Publisher.DoesNotExist, SilentGateError, RuntimeError])
+@pytest.mark.parametrize("rows", [0, 5])
+def test_bulk_nested_custom_resolver_failure_after_admission(
+    source, error_class, rows, client_user_bulk_book_change, monkeypatch
+):
+    parent = Publisher.objects.create(name="Parent")
+    for index in range(rows):
+        Book.objects.create(publisher=parent, title=f"Book {index}")
+    original_resolver = source.cv_get_parent_object
+    destination = cv_bulk_book.get_view_class("mark")
+    original_access = destination.cv_has_access
+    error = error_class("bulk parent resolver failure")
+    events = []
+    admitted = []
+
+    def resolver(self):
+        if events:
+            events.append("resolver")
+            assert admitted and original_resolver(self) is admitted[-1]
+            raise error
+        obj = original_resolver(self)
+        admitted.append(obj)
+        return obj
+
+    def access(cls, user, obj):
+        assert obj is None and admitted
+        assert original_access(user, obj)
+        events.append("access")
+        return True
+
+    monkeypatch.setattr(source, "cv_get_parent_object", resolver)
+    monkeypatch.setattr(source, "cv_bulk_actions", ("mark",))
+    monkeypatch.setattr(destination, "cv_has_access", classmethod(access))
+    for hook in ("cv_action_enabled", "cv_bulk_has_permission", "cv_bulk_check"):
+        monkeypatch.setattr(destination, hook, lambda *args: pytest.fail("Resolver failure reached state/item hooks"))
+    path = reverse(cv_bulk_book.get_router_name(source.cv_key), kwargs={"bulk_publisher_pk": parent.pk})
+    with pytest.raises(error_class) as caught:
+        client_user_bulk_book_change.get(path)
+    assert caught.value is error
+    assert events == ["access", "resolver"]
+
+
+@pytest.mark.parametrize("source", [BulkBookListView, BulkBookCardView])
+def test_bulk_stock_missing_parent_denies(source, user_bulk_book_change, rf, monkeypatch):
+    view = source()
+    request = rf.get("/")
+    request.user = user_bulk_book_change
+    view.setup(request, bulk_publisher_pk=999999)
+    monkeypatch.setattr(source, "cv_bulk_actions", ("mark",))
+    destination = cv_bulk_book.get_view_class("mark")
+    monkeypatch.setattr(
+        destination, "cv_action_enabled", classmethod(lambda *args: pytest.fail("Missing parent state"))
+    )
+    assert view._cv_effective_bulk_actions == ()
 
 
 def test_table_toolbar_controls(client_user_bulk_publisher_delete, bulk_publishers):

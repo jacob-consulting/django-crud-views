@@ -154,6 +154,34 @@ class BulkBookMarkView(BulkFormViewPermissionRequired):
             obj.save(using=self.cv_get_db_alias())
 
 
+class BulkBookCardView(BulkSelectionMixin, CardListViewPermissionRequired):
+    cv_viewset = cv_bulk_book
+    cv_bulk_actions = ("mark",)
+    cv_context_actions = ["home"]
+    cv_card_actions = []
+    cv_order_fields = ["title"]
+    paginate_by = 10
+
+
+class BulkBookMarkSecondView(BulkBookMarkView):
+    cv_viewset = cv_bulk_book
+    cv_key = "mark_second"
+    cv_path = "mark_second"
+
+
+class BulkBookMarkThirdView(BulkBookMarkView):
+    cv_viewset = cv_bulk_book
+    cv_key = "mark_third"
+    cv_path = "mark_third"
+
+
+class BulkBookMarkFourthView(BulkBookMarkView):
+    cv_viewset = cv_bulk_book
+    cv_key = "mark_fourth"
+    cv_path = "mark_fourth"
+    cv_permission = "delete"
+
+
 class BulkTenantViewSet(ViewSet):
     def get_queryset(self, view):
         return super().get_queryset(view).exclude(name__startswith="Foreign")

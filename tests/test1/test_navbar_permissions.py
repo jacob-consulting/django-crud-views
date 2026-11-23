@@ -101,11 +101,11 @@ def test_rendered_admission_order_and_exact_owner(composition, key, outcome, dja
         actor = django_user_model.objects.create_user(username="reader")
         grant(ns, actor, owner, owner_access=outcome != "denied")
         events = []
-        original = ns.target._cv_child_link_has_access
-        access = Mock(side_effect=lambda *args: (events.append("access"), original(*args))[1])
+        original = ns.target._cv_link_permission
+        access = Mock(side_effect=lambda *args, **kwargs: (events.append("access"), original(*args, **kwargs))[1])
         state = Mock(side_effect=lambda *args: (events.append("state"), outcome != "disabled")[1])
-        monkeypatch.setattr(ns.target, "_cv_child_link_has_access", access)
-        monkeypatch.setattr(ns.target, "_cv_action_enabled_for_rendering", state)
+        monkeypatch.setattr(ns.target, "_cv_link_permission", access)
+        monkeypatch.setattr(ns.target, "cv_action_enabled", state)
         gate = parent_spy(monkeypatch, ns.target)
         own = Mock(wraps=ns.detail.cv_has_access)
         monkeypatch.setattr(ns.detail, "cv_has_access", own)
@@ -116,17 +116,17 @@ def test_rendered_admission_order_and_exact_owner(composition, key, outcome, dja
         view = response.context["view"]
         request_actor = view.request.user
         original_owner = view.object
-        access.assert_called_once_with(request_actor, original_owner)
+        access.assert_called_once_with(request_actor, None, original_owner, rendering_view=None)
         own.assert_called_once_with(request_actor, original_owner)
         gate.assert_called_once_with(request_actor, original_owner)
-        assert access.call_args.args[1] is original_owner
+        assert access.call_args.args[2] is original_owner
         if outcome == "denied":
             state.assert_not_called()
             extras.assert_not_called()
             assert events == ["access"]
             assert not response.context["cv_navbar"]
         else:
-            state.assert_called_once_with(request_actor, original_owner, view)
+            state.assert_called_once_with(request_actor, original_owner)
             assert state.call_args.args[1] is original_owner
             assert events == ["access", "state"]
             items = response.context["cv_navbar"]["items"]
@@ -191,18 +191,17 @@ def test_reached_policy_errors_propagate(error, allowed, django_user_model, monk
                     return "shard" if model is Permission else None
 
             monkeypatch.setattr(router, "routers", [AuthRouter()])
-        monkeypatch.setattr(ns.target, "cv_has_access", Mock(return_value=allowed))
+        access = Mock(return_value=allowed)
+        monkeypatch.setattr(ns.target, "cv_has_access", access)
         state = Mock(side_effect=AssertionError("state ran after denial/error"))
-        monkeypatch.setattr(ns.target, "_cv_action_enabled_for_rendering", state)
+        monkeypatch.setattr(ns.target, "cv_action_enabled", state)
         _, data = lazy_host(ns, actor, owner)
-        if allowed:
-            with pytest.raises(
-                ImproperlyConfigured,
-                match={"mapping": "undeclared", "operation": "operation|actions", "database": "shard"}[error],
-            ):
-                Template(TAG).render(Context(data))
-        else:
-            assert Template(TAG).render(Context(data)) == ""
+        with pytest.raises(
+            ImproperlyConfigured,
+            match={"mapping": "undeclared", "operation": "operation|actions", "database": "shard"}[error],
+        ):
+            Template(TAG).render(Context(data))
+        access.assert_not_called()
         state.assert_not_called()
 
 

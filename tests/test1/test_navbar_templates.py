@@ -218,6 +218,7 @@ def test_omitted_consumers_and_modal_direct_includes_do_no_work(modal, monkeypat
     with navbar_routes(owner_routes) as ns:
         monkeypatch.setattr(ns.view, "cv_has_access", forbidden)
         monkeypatch.setattr(ns.view, "_cv_action_enabled_for_rendering", forbidden)
+        monkeypatch.setattr(ns.view, "cv_action_enabled", forbidden)
         view, data = view_context(ns, modal=modal)
         assert render("Page without navigation", data) == "Page without navigation"
         view.get_context_data()
@@ -338,11 +339,11 @@ def test_zero_one_many_and_partial_links_have_static_navigation_semantics(hidden
             item = ns.bar.items[index]
             target = (ns.child if item.child else ns.owner).get_view_class(item.key or "list")
             method = (
-                ("_cv_child_link_has_access" if item.child else "cv_has_access")
+                ("_cv_link_permission" if item.child else "cv_has_access")
                 if reason == "access"
-                else ("_cv_action_enabled_for_rendering")
+                else ("cv_action_enabled" if item.child else "_cv_action_enabled_for_rendering")
             )
-            monkeypatch.setattr(target, method, lambda *args: False)
+            monkeypatch.setattr(target, method, lambda *args, **kwargs: False)
         # A nonparticipating destination avoids confusing request permission with
         # link admission; the same owner/detail key is still the current section.
         view = ns.views[(ns.owner.name, "detail")]()
@@ -443,6 +444,7 @@ def test_real_response_omits_all_navbar_work_without_consumers_or_in_custom_moda
         ns.view.cv_extends_template = "navbar/without.html"
         monkeypatch.setattr(ns.view, "cv_has_access", forbidden)
         monkeypatch.setattr(ns.view, "_cv_action_enabled_for_rendering", forbidden)
+        monkeypatch.setattr(ns.view, "cv_action_enabled", forbidden)
         custom_modal = (
             IDENTITY + ITEMS + "".join('{% include "crud_views/tags/' + name + '.html" %}' for name in TEMPLATES)
         )

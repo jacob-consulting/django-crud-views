@@ -471,6 +471,89 @@ What follows.
   already depends on crispy-bootstrap5, and T and C would drop their two subclasses. That changes core's `src/`,
   so it is a separate issue and not part of this design. It would not cover range and colour inputs: stock
   crispy-bootstrap5's `field.html` does not add `form-range`, which is why A sets it on the widget.
+- The maintainer proposed a seam in the demo after all, and it is better than the ones rejected in 5.3: see 5.5.
+
+### 5.5 The adapter port (`acme_adapter`): the maintainer's proposal
+
+**The proposal.** Every project (the three themes and the Bootstrap project) has a package
+`example/acme_adapter/` with the modules `fields`, `widgets` and `layout`. A shared form takes every
+theme-dependent class from there and nowhere else: `from acme_adapter.fields import DateField`. A theme's adapter
+re-exports the theme's classes; the Bootstrap project's adapter maps the same names to Django, crispy-bootstrap5
+and django-crud-views-extensions. The scenario behind it: each theme ships its own `DateField` and `DateTimeField`
+in `django_<theme>`, each with a different JavaScript backend and its own assets.
+
+**What the code says.**
+
+- *The import works wherever `config` does.* `example/` is on the import path in every entry point: the Taskfile
+  runs `uv run python example/manage.py`, `example/pytest.ini` has `pythonpath = .`, the nox `examples` session
+  does `session.chdir("example")`, Render runs `cd example && ... gunicorn config.wsgi`. The sdist ships it with
+  `example/`.
+- *Spike, on the one case that exists today (the showcase, 5.4).* In scratch copies of T and C: an `acme_adapter`
+  with `layout.py` (re-exporting the pack's `FloatingField`, `Switch`, `UneditableField`) and `widgets.py`
+  (`RangeInput`, `ColorInput`); `showcase/views.py` switched to import from it and to use the two widgets. T's and
+  C's `showcase/views.py` then differ only in a docstring's file reference and in the badge classes, the same
+  vocabulary difference as everywhere else (3.3). The showcase tests (11) and the whole example suites (280 and
+  263) pass in both. A was not run; its adapter would define `UneditableField` as `Field(name, disabled=True)` and
+  give `RangeInput` and `ColorInput` the classes stock crispy-bootstrap5 does not add.
+- *The date scenario is not in the code.* No theme ships a date field or widget. The five apps use the extension's
+  `DatePickerInput()` in nine places, every time without an argument: six in a ModelForm's `Meta.widgets`, three as
+  `forms.DateField(widget=DatePickerInput())`. No theme has a single CSS rule for that picker. The tests post dates
+  as ISO strings (`"2026-11-04"`) and as `""`.
+- *What a date widget has to do in this ecosystem,* read off the extension's
+  `crud_views_widget_datetimepicker` (300 lines of Python, plus JavaScript): deliver its assets through core's
+  asset registry and not through `Media`, because modal content is injected after the page loads; initialise on
+  document ready, on `cv:modal:loaded` and on `cv:formset:row-added` (core also fires `cv:modal:unload`); keep
+  "what the picker writes, the form accepts" in every locale (`formats.py`); vendoring command and system checks
+  (`crud_views.E332`, `E333`, `W330`, `W331`).
+- *Nothing would notice a picker that skips those hooks.* The demo's modal views are delete confirmations and no
+  formset row has a date, and the theme repos have no JavaScript test tooling (core has vitest).
+
+**Judgment.**
+
+- **The seam is right.** It is a plain import: greppable, navigable in an editor, traceable. It is how Django's own
+  reusable apps reach the project (`settings`, `ROOT_URLCONF`), and it is the icon table of `config/icons.py`
+  (fixed keys, per-project values) applied to classes. It replaces rule 3 of 5.1 by "shared code reaches the
+  project only through `acme_adapter`" and makes rule 4 livable.
+- **It pays today, for the showcase.** With the port, the showcase's Python can be shared (D3 flips), and A's
+  widget-attribute difference becomes A's adapter instead of an `if` in shared code. The showcase's template and
+  tests stay per theme (3.6, 3.8).
+- **For dates it answers a question the code has not asked.** The expensive decision is not the adapter. It is
+  three date implementations, each repeating what the extension's app does, with no automated check of the
+  JavaScript. That runs against the direction taken so far: one widget in the extensions repo, themed through
+  `--cv-*` tokens (the typeahead). Nobody has yet tried the cheap thing for the date picker, which is to style it.
+
+**What the proposal leaves open.** None of this is a reason against it; all of it has to be decided before code.
+
+1. **The contract is implicit and has four implementations.** One written definition belongs in the shared
+   package: the names, their constructor arguments and what they guarantee. A system check shipped by the shared
+   package verifies at startup that `acme_adapter` exports them, so a missing name is a clear error and not an
+   `ImportError` in a form module (the themes have such checks: `crud_views_coreui.E002`).
+2. **Guarantees the code already relies on:** usable in a ModelForm; ISO input accepted, whatever the picker
+   displays; no backend-specific constructor argument (a dict of xdsoft options cannot cross the port; today there
+   is none).
+3. **Widget level, not field level.** Six of the nine uses are `Meta.widgets` entries: Django builds the field
+   from the model (label, `required`, help text, validators) and the form only swaps the widget. A port of fields
+   forces `Meta.field_classes` on every ModelForm. `from acme_adapter.widgets import DateInput` leaves the forms
+   as they are, and the extension shows that the format invariant can live in the widget. `fields` then holds only
+   what really is a field (`RangeField`, `ColorField`).
+4. **Forms only.** A model field from the adapter would put `acme_adapter.fields...` into shared migrations.
+5. **Leaf widgets only.** `TypeaheadField` is a field, a widget, a lookup registry, signed tokens and an endpoint
+   (`/_typeahead/`). A theme's own select cannot be swapped in through a re-export.
+6. **The shared suite sees one adapter.** It runs against the Bootstrap project's. A theme's adapter is tested only
+   in that theme. So the shared package ships a contract test (render, submit ISO, submit empty, initial value,
+   ModelForm) that every repo runs against its own adapter, and "each behaviour test exists once" (stage 5) does
+   not hold for forms that use the port.
+7. **The demo's message changes.** The panel says "Plain django-crud-views: not one line refers to Tabler or the
+   theme". A form that imports `acme_adapter` is not what a user would write: they import the theme's class
+   directly. "Show code" has to show the adapter module with the app, and the sentence has to say so.
+8. **The port is the intersection.** A shared form can use only what all four adapters export. Adding a name is a
+   change in four repositories. What only one theme can do stays in that theme's own pages.
+
+**Recommendation.** Adopt the port for what needs it today: `layout` (`FloatingField`, `Switch`, `UneditableField`)
+and `widgets` (`RangeInput`, `ColorInput`), with points 1, 4, 6 and 7. Leave dates on the extension's picker; add
+`DateInput` to the port when the first theme really ships one. If the port proves itself, it is the downstream
+prototype of a core hook (a widget registry next to `register_icons` and `register_button_classes`), after which
+app code would be plain django-crud-views again. That is D6.
 
 ## 6. Home: where the one copy lives
 
@@ -887,6 +970,8 @@ C and A no longer match a file. `task reset` gives a clean state and is the docu
 | D3 | Is `showcase` shared? | No, theme-owned | sharing needs a seam for the crispy layout objects and widget attributes (5.3), or pack-neutral layout objects in core first (5.4) |
 | D4 | May T's demo use Bootstrap's badge style and six avatar colours (3.5, row 3)? | Yes | 5.2 (c): app-declared class keys that T's example overrides |
 | D5 | Does acme go to PyPI, and does it get its own public demo and docs site? | PyPI before the first theme release that names it; no demo, no docs site | without PyPI, the themes keep acme out of their published metadata (section 7, T4) |
+| D6 | Adopt the adapter port `acme_adapter` (5.5)? | Yes, for `layout` and the range and colour widgets, which makes the showcase shareable and turns D3 into "shared"; dates stay on the extension's picker until a theme ships its own | without it, D3 stays "theme-owned" and the limit of 5.4 stands |
+| D7 | Do the themes get their own date fields with their own JavaScript backends? | Not decided here, and not needed for sharing; first try styling the extension's picker | each theme then repeats the extension's app (5.5) |
 
 ## 13. Not verified, and unsupported cases
 
@@ -894,7 +979,7 @@ Not verified:
 
 - **The look of any page after a switch.** 3.4 covers behaviour, 3.5 covers badges under Tabler in a static page.
   A browser pass per theme is part of every switch.
-- **A's own example suite** against shared code. It could not be installed in a flat checkout layout (3.1).
+- **A's own example suite** against shared code, and A's adapter (5.5). It could not be installed in a flat checkout layout (3.1).
 - **Render with a submodule** (3.11). Only relevant if D1 is T3.
 - **That PyPI rejects a direct URL in an extra.** Stated from the packaging rules, not tried.
 - **`acme-avatar` under T and C.** A defines it in `acme.css`; T and C need the same few rules.
@@ -910,9 +995,12 @@ repeated by the reviewer.
 
 Unsupported, on purpose:
 
-- The showcase app is not shared (D3).
-- Shared forms cannot use a crispy pack's Python classes: no switch, floating label, or range, colour and plaintext
-  widget in a shared Acme form (5.4).
+- The showcase app is not shared (D3), unless the adapter port is adopted (D6).
+- Shared forms cannot import a crispy pack's Python classes (5.4). With the port they reach them through
+  `acme_adapter`; without it there is no switch, floating label, or range, colour and plaintext widget in a shared
+  Acme form.
+- The port, if adopted, carries leaf form classes only: no model fields, nothing with a server protocol such as
+  the typeahead (5.5).
 - No shared settings module and no shared navigation data (5.3).
 - The theming page and the shell and host branches of `showcode` are not tested in the acme repository (section 6).
 - Core's and ext's own examples do not use the shared `showcode`. Their `snippet_panels` stays.

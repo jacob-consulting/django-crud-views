@@ -29,9 +29,12 @@ You are not unifying the copies. What a theme does differently because it is tha
 that holds this file. Pass `--tabler`, `--coreui`, `--adminlte` for any other layout. If a checkout is missing, ask
 for its path; do not clone anything.
 
-Before you start: each of the three must have a clean working tree and be on the branch whose state should be
-compared, normally an up-to-date `main`. `drift.py` only sees committed state. Read each repo's `CLAUDE.md` first;
-its rules apply to everything you do there.
+`drift.py` compares what is committed at `HEAD` of each checkout, whatever branch that is. Use the checkouts as you
+find them: do not switch branches and do not fetch unless told to. The report names each branch and commit; repeat
+them at the top of your plan, so the maintainer sees which state was compared. A checkout with uncommitted changes
+under `example/` is a reason to ask before going on.
+
+Read each repo's `CLAUDE.md` first; its rules apply to everything you do there.
 
 ## What belongs to whom
 
@@ -54,15 +57,19 @@ How the same thing is written in each theme:
 
 | | Tabler | CoreUI | AdminLTE |
 |---|---|---|---|
-| Colour names in Python and seed data | Tabler palette: `green`, `lime`, `azure`, `orange`, `yellow`, `red`, `pink`, `purple`, `indigo`, `brown` | Bootstrap theme colours: `success`, `info`, `warning`, `danger`, `primary`, `secondary`, `dark` | as CoreUI |
+| Colour names in Python and seed data | Tabler palette: `green`, `lime`, `teal`, `cyan`, `azure`, `blue`, `indigo`, `purple`, `pink`, `red`, `orange`, `yellow`, `brown`, `secondary` | Bootstrap theme colours: `success`, `info`, `warning`, `danger`, `primary`, `secondary`, `dark` | as CoreUI |
 | Badge | `badge bg-<colour>-lt` | `badge bg-<colour>-subtle text-<colour>-emphasis` | as CoreUI |
 | Avatar | `avatar avatar-sm bg-<colour>-lt` | `avatar avatar-sm bg-<colour>-subtle text-<colour>-emphasis fw-semibold` | `acme-avatar` with the same colour classes |
 | Data attributes in templates | `data-bs-*` | `data-coreui-*` | `data-bs-*` |
 | Crispy pack objects (showcase only) | `django_tabler.crispy.layout` | `django_coreui.crispy.layout` | `crispy_bootstrap5.bootstrap5`; `Field(name, disabled=True)` for an uneditable field |
 | Locating the page header in a test | from `class="page-header` to `class="page-body` | from `class="page-header` to `<main>` | `sales/tests/markup.py` |
 
-When a ported line needs a colour or a class, write it as the lines around it in the target file do. The existing
-code is the reference, this table is a reminder.
+When a ported line needs a colour or a class, write it as the target's own code does for the same kind of thing.
+The existing code is the reference, this table is a reminder. Tabler's palette has more colours than Bootstrap has
+theme colours, so the mapping is not one to one. The pairs the code uses most: `success` and `green`, `info` and
+`azure`, `warning` and `orange`, `danger` and `red`, `primary` and `purple`, `dark` and `brown`. Where the target
+has no precedent for what you are writing, pick the nearest, say in the plan which one you picked, and put the page
+on the "needs a human look" list.
 
 ## Procedure
 
@@ -72,26 +79,46 @@ code is the reference, this table is a reminder.
 python superpowers/prompts/acme-example-sync/drift.py report
 ```
 
-It lists every path under `example/` that changed in at least one repo since the baseline and is not identical in
-all three now. For each path it names the repos where it changed (the sources) and where it did not (the targets),
-prints a `git diff` or `git show` command for the source's change, and the commits that made it. Paths that still
-match the baseline are not listed: the last sync accepted them, identical or different.
+It first lists, per repo, the commits since the baseline that touch `example/`, and the files outside `example/`
+each of them also touches. Then it lists every path under `example/` that changed in at least one repo and is not
+identical in all three now. For each path it names the repos where it changed (the sources) and where it did not
+(the targets), and prints a `git diff` or `git show` command for the source's change. Paths that still match the
+baseline are not listed: the last sync accepted them, identical or different.
+
+Exit status 1 means "drift found", not "the command failed". If the report says a baseline commit or blob is not in
+a clone, the clone is shallow: `git fetch --unshallow` in that repo, then run the report again.
 
 If the report is empty, say so and stop. Do not go looking for older differences (see "Known state").
 
 ### 2. Read every change
 
-Run the printed commands. Group paths into changes by the commits that made them: a model, its migration, the form,
-the view, a template and a test usually arrive together. Read the commit messages; they say what was meant.
+Run the printed commands, and `git -C <repo> show --stat <commit>` for every commit listed, to see the whole commit
+with its message. Group paths into changes by the commits that made them: a model, its migration, the form, the
+view, a template and a test usually arrive together. Files outside `example/` in the same commit tell you whether
+the change belongs to a theme change (`src/`) or touched the README or the docs.
+
+**Check that each source change is sound before you plan to copy it.** Read it as a reviewer would: does the new
+test import what it uses, is a new form field also in the form's layout, is a new model field used anywhere. Run
+the source repo's checks from step 6. A change that is broken or half done is not ported as it is: describe the
+defect in the plan and propose the fix. With the maintainer's go, fix it in the source repo first, as its own
+commit, and then port the fixed change.
+
+Planning may run anything that does not change a tracked file: linters, the test suites, `makemigrations --check
+--dry-run`.
 
 ### 3. Decide per change
 
 - **Port:** it changes something from the left column. Targets are the repos where it is missing.
 - **Theme's own:** it only changes looks or theme wiring. No port. Check that nothing in it needs the "meaning"
   treatment above.
-- **Mixed:** split it. Port the behaviour, leave the looks.
+- **Mixed:** split it. Port the behaviour and leave out what is only looks. Markup that the behaviour itself
+  produces (a badge built in Python, a new table column) is ported, re-written in the target's vocabulary.
 - **Changed in two or three repos:** compare the changes. The same change in different words is a finished port:
   nothing to do. Different changes to the same thing are a conflict: stop and ask.
+
+For every new migration, check now that each target's latest migration of that app is the one the new file
+depends on. For every change, check that it does not rely on a django-crud-views feature newer than what the target
+installs (`noxfile.py`: `CRUD_VIEWS`, and `PIN` in AdminLTE).
 
 Never port backwards. A repo where a path is "as at the baseline" is a target, never a source, even when its
 version looks nicer.
@@ -103,8 +130,9 @@ needs a human look afterwards. List separately what you will not port and why. I
 
 ### 5. Port, one target repo at a time
 
-- **Python:** apply the same change, not the same file. The target's file may differ from the source's in
-  vocabulary (table above); keep the target's.
+- **Python:** apply the same change, not the same file: the same lines at the same place, including the order of
+  fields and columns. The target's file may differ from the source's in vocabulary (table above); keep the
+  target's. A page whose markup you wrote in Python goes on the "needs a human look" list, like a template.
 - **Migrations:** copy the source's new migration file unchanged, so names and dependencies stay the same in all
   three. First check that the target's latest migration of that app is the one the new file depends on. Then run
   `makemigrations --check --dry-run`: it must report no changes. If it wants another migration, the models differ:
@@ -113,8 +141,8 @@ needs a human look afterwards. List separately what you will not port and why. I
   templates for the same kind of page as the model for structure and classes; never paste another theme's
   component classes. Every template you write goes on the "needs a human look" list. Follow the target repo's rule
   for theme gaps (an upstream hook, then CSS, then an override, each with a tracker entry).
-- **Tests:** port every test that came with the change. Keep the behaviour assertions; re-write assertions about
-  markup with the target's own way of locating things.
+- **Tests:** port every test that came with the change, with the imports and helpers it needs in the target file.
+  Keep the behaviour assertions; re-write assertions about markup with the target's own way of locating things.
 - **Icons:** a new semantic icon name gets an entry in the target's `config/icons.py`, with an icon the target's
   library already has. Run the system check; it flags a name without a picture. If no existing icon fits, stop and
   ask.
@@ -135,7 +163,9 @@ uv run python example/manage.py check --fail-level WARNING
 ```
 
 All four must pass. Run the source repo's example suite too if you touched it. A failing test is fixed in the port,
-never skipped.
+never skipped. Local installs need the django-crud-views and django-crud-views-extensions checkouts where each
+repo's `[tool.uv.sources]` expects them: one directory up for Tabler and CoreUI, two up for AdminLTE. If `uv`
+cannot find them, say so and ask; do not edit `pyproject.toml`.
 
 ### 7. Commit
 
@@ -164,6 +194,8 @@ human should look at in a browser (URL and theme), and every open question.
 ## Stop and ask
 
 - The same thing was changed differently in two repos.
+- A source change is broken or half done (step 2).
+- A change relies on a django-crud-views feature the target does not install yet.
 - A port needs a change in `src/` of a theme repo, or in django-crud-views or django-crud-views-extensions. Those
   two checkouts are read-only for this task.
 - A migration cannot be copied unchanged, or `makemigrations --check` wants a new one.
@@ -192,3 +224,12 @@ accepted so that the first report starts empty. Leave them alone unless the main
 5. The semantic icon vocabulary has 31 names in Tabler and CoreUI and 44 in AdminLTE.
 
 The evidence for all of this, file by file, is section 3 of the spec named at the top.
+
+## How this prompt has been tested
+
+- `drift.py` was run against simulated changes in copies of the three repos and against their real `main`
+  branches one day after the baseline. It found every change and named the right sources and targets.
+- A fresh agent followed steps 1 to 4 on the simulated changes (2026-11-23). It classified all three correctly,
+  wrote the ported badge in Tabler's vocabulary, and found two defects in the simulated source commits. Its notes
+  on unclear instructions were worked into this text; the revised text has not had a second dry run.
+- **Steps 5 to 9 have never been run.** The first real sync is their test: read its result with that in mind.

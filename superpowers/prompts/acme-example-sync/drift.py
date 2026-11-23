@@ -10,6 +10,8 @@ changed (the sources of a port) and the repos where it did not (the targets).
 
 Only committed state counts (HEAD). Checkouts are looked up next to the django-crud-views checkout that holds this
 file; pass --tabler / --coreui / --adminlte for any other layout. Standard library only.
+
+Exit status of "report": 0 when nothing drifted, 1 when at least one path did. 1 is a finding, not a failure.
 """
 
 import argparse
@@ -50,9 +52,21 @@ def snapshot(repo: Path) -> dict[str, str]:
     return blobs
 
 
-def has_commit(repo: Path, commit: str) -> bool:
-    done = subprocess.run(["git", "-C", str(repo), "cat-file", "-e", f"{commit}^{{commit}}"], capture_output=True)
-    return done.returncode == 0
+def has_object(repo: Path, name: str) -> bool:
+    """True if the commit or blob is in this clone (a shallow clone may lack the baseline's)."""
+    return subprocess.run(["git", "-C", str(repo), "cat-file", "-e", name], capture_output=True).returncode == 0
+
+
+def commits_since(repo: Path, base: str) -> None:
+    """Print the commits since the baseline that touch example/, and what else each of them touches."""
+    if not has_object(repo, f"{base}^{{commit}}"):
+        print("      baseline commit is not in this clone (shallow?): no commit list; try git fetch --unshallow")
+        return
+    for line in git(repo, "log", "--format=%h %ad %s", "--date=short", f"{base}..HEAD", "--", "example").splitlines():
+        print(f"      {line}")
+        outside = git(repo, "show", "--name-only", "--format=", line.split()[0], "--", ".", ":(exclude)example").split()
+        if outside:
+            print(f"          also outside example/: {', '.join(outside)}")
 
 
 def report(repos: dict[str, Path], baseline: dict) -> int:
@@ -62,7 +76,9 @@ def report(repos: dict[str, Path], baseline: dict) -> int:
     for theme, repo in repos.items():
         head = git(repo, "rev-parse", "--short", "HEAD").strip()
         dirty = " (uncommitted changes under example/: not counted)" if git(repo, "status", "--porcelain", "--", "example") else ""
-        print(f"  {theme:9} {repo}  HEAD {head}, baseline {baseline['commits'][theme][:7]}{dirty}")
+        branch = git(repo, "rev-parse", "--abbrev-ref", "HEAD").strip()
+        print(f"  {theme:9} {repo}  {branch} at {head}, baseline {baseline['commits'][theme][:7]}{dirty}")
+        commits_since(repo, baseline["commits"][theme])
 
     drift, converged = [], []
     for path in sorted(set(then) | set().union(*now.values())):
@@ -88,12 +104,14 @@ def report(repos: dict[str, Path], baseline: dict) -> int:
                     print(f"    {theme}: deleted")
                 elif before is None:
                     print(f"    {theme}: new file      git -C {repo} show {after}")
-                else:
+                elif has_object(repo, before):
                     print(f"    {theme}: modified      git -C {repo} diff {before} {after}")
+                else:
+                    print(f"    {theme}: modified; the baseline blob {before[:7]} is not in this clone (git fetch --unshallow)")
                 base = baseline["commits"][theme]
-                if has_commit(repo, base):
-                    for line in git(repo, "log", "--format=%h %ad %s", "--date=short", f"{base}..HEAD", "--", path).splitlines():
-                        print(f"        {line}")
+                if has_object(repo, f"{base}^{{commit}}"):
+                    for line in git(repo, "log", "--format=%h", f"{base}..HEAD", "--", path).splitlines():
+                        print(f"        in {line}")
             for theme in targets:
                 print(f"    {theme}: {'absent' if new[theme] is None else 'as at the baseline'}")
     if converged:

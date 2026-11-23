@@ -458,7 +458,19 @@ To verify during planning:
 - Whether loading the grants for all rows of a list or card page in one step (`prefetch_perms`) belongs in this
   stage. The saving is expected, not measured; the planner includes it only with a pinned before-and-after count.
 
-### 12.4 Open for the planner
+### 12.4 Stages 3 to 5 are deliberately unscoped
+
+Stages 1 and 2 have scope blocks because the decisions above determine them fully. The later stages do not, and the
+missing blocks are intentional. A planner does not fill them in; each is scoped when what it waits for exists.
+
+- **Stage 3 (remaining consumers)** waits for stage 1's result: which of the three private adapters could be
+  removed, and which Guardian pieces still need their own handling.
+- **Stage 4 (breadcrumb)** waits for the measured saving from reusing resolved ancestors, and for a look at a
+  denied item rendered as plain text on a real page.
+- **Stage 5 (site menu)** waits for its own design, built on
+  `superpowers/notes/2026-11-02-navigation-concept-exploration.md` and its decisions of 2026-11-02.
+
+### 12.5 Open for the planner
 
 These are the planner's to decide, within the decisions above:
 

@@ -73,3 +73,34 @@ def test_nested_guardian_create_migration_section_is_rewritten():
 
 def test_link_check_is_not_in_the_stability_inventory():
     assert "link_access" not in (DOCS / "development" / "stability.md").read_text()
+
+
+def test_reference_pages_state_the_narrowed_meaning():
+    passages = (
+        (
+            "reference/guardian.md",
+            "### What the create access helpers accept",
+            ("cv_create_has_access", "cv_has_access", "denies every argument"),
+        ),
+        (
+            "reference/context_buttons.md",
+            "### `cv_context_has_permission` — gate surrounding markup",
+            ("Two cases stay False on purpose",),
+        ),
+        ("reference/action_enabled.md", "## The `obj` Parameter", ("nested list",)),
+        (
+            "reference/navbar.md",
+            "## Labels, access and empty output",
+            ("link check", "parent gate, own access, state hook"),
+        ),
+        ("reference/card-list-view.md", "## Child ViewSet Actions", ("cv_create_has_access",)),
+        (
+            "faq.md",
+            "### Gate surrounding markup by permission",
+            ("cv_create_has_access", "parent the request resolved from the URL", "Two", "False", "kept on purpose"),
+        ),
+    )
+    for path, heading, statements in passages:
+        section = _flat(_section((DOCS / path).read_text(), heading))
+        for statement in statements:
+            assert statement in section, (path, statement)

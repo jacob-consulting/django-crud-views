@@ -164,7 +164,7 @@ uv run python example/manage.py check --fail-level WARNING
 
 All four must pass. Run the source repo's example suite too if you touched it. A failing test is fixed in the port,
 never skipped. Local installs need the django-crud-views and django-crud-views-extensions checkouts where each
-repo's `[tool.uv.sources]` expects them: one directory up for Tabler and CoreUI, two up for AdminLTE. If `uv`
+repo's `[tool.uv.sources]` expects them: one directory up, as siblings of all three theme repos. If `uv`
 cannot find them, say so and ask; do not edit `pyproject.toml`.
 
 ### 7. Commit

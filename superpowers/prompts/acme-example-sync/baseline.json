@@ -1,9 +1,9 @@
 {
  "written": "2026-11-23",
  "commits": {
-  "tabler": "307b9d5999ccfe0385b43420c8d79b84ffb9ea51",
-  "coreui": "d67be0f92a5476a69212d4a56bad6017bca42841",
-  "adminlte": "83cb1e8ddc24e2c10208a68c69c67b3818da0ef6"
+  "tabler": "ba777c974f6cc2389a8b8f9e267638724cc13348",
+  "coreui": "11bf5b0eab33558948bd05ce751a2c58093810ed",
+  "adminlte": "ccc4947fd2d5eac1f35d88f21028148a0943e9c3"
  },
  "paths": {
   "example/catalog/__init__.py": {"tabler": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391", "coreui": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391", "adminlte": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"},
@@ -44,7 +44,7 @@
   "example/config/test_ratelimit.py": {"tabler": "d7662498feb033cfa51488b9414b0cff7dab417d", "coreui": null, "adminlte": null},
   "example/config/urls.py": {"tabler": "5514c4abb120b20e7be6c413b7fbc608c3d640cd", "coreui": "5514c4abb120b20e7be6c413b7fbc608c3d640cd", "adminlte": "5514c4abb120b20e7be6c413b7fbc608c3d640cd"},
   "example/config/urls_demo.py": {"tabler": "e84d5479d9bc8b38abf929d250ba798b11e607e9", "coreui": null, "adminlte": null},
-  "example/config/views.py": {"tabler": "5fb8496cc2cc8e3d264493eed09a9a83b5bf7bd3", "coreui": "1316d8c0d3be9f4d7a517794bf4a87d4973ca138", "adminlte": "1c5ba612e164f17bfc34498a51020a3be81c29a7"},
+  "example/config/views.py": {"tabler": "63764169bded691d7791636ad9dba21b7e0e75b3", "coreui": "ae3e83a6df02b441badf0abb8192902d1fd2b44a", "adminlte": "1c5ba612e164f17bfc34498a51020a3be81c29a7"},
   "example/config/wsgi.py": {"tabler": "9352399692b4b80b0b16d3204d4f1b242deeae28", "coreui": "9352399692b4b80b0b16d3204d4f1b242deeae28", "adminlte": "9352399692b4b80b0b16d3204d4f1b242deeae28"},
   "example/dashboard/__init__.py": {"tabler": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391", "coreui": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391", "adminlte": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"},
   "example/dashboard/admin.py": {"tabler": "846f6b4061a68eda58bc9c76c36603d1e7721ee8", "coreui": "846f6b4061a68eda58bc9c76c36603d1e7721ee8", "adminlte": "846f6b4061a68eda58bc9c76c36603d1e7721ee8"},
@@ -62,7 +62,7 @@
   "example/dashboard/templates/dashboard/user_list.html": {"tabler": "98df22586c5efcdb6cf07109c12a1d1dfa575a84", "coreui": "dcac56ac674f0c1e5c62a1eb42a9853617ec1c56", "adminlte": "6a0aa47146b874584de1318da1ba387b39e91638"},
   "example/dashboard/templatetags/__init__.py": {"tabler": null, "coreui": null, "adminlte": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"},
   "example/dashboard/templatetags/acme.py": {"tabler": null, "coreui": null, "adminlte": "8d490ac22dd574bf31e22a02b698b1cc1afe3f1a"},
-  "example/dashboard/tests.py": {"tabler": "43076cbfbcc49a3d0bf85d2402ad728be0d3e342", "coreui": "9f7c6ec33caaf3314f96cc3ce4a45d78cb2b0395", "adminlte": "332e611e8dd8f8284e91da96b51af4a68f1672b3"},
+  "example/dashboard/tests.py": {"tabler": "c0d1324af18398d6a7da466ba698a1873bb684f5", "coreui": "3a0c9318c32b6ccb11bc73ebafc256d012b1f683", "adminlte": "332e611e8dd8f8284e91da96b51af4a68f1672b3"},
   "example/dashboard/urls.py": {"tabler": "c141335bb81cba36636f1643c361b6b9f43bfccc", "coreui": "c141335bb81cba36636f1643c361b6b9f43bfccc", "adminlte": "c141335bb81cba36636f1643c361b6b9f43bfccc"},
   "example/dashboard/views.py": {"tabler": "7b0cb39fa38c46a978875a51d47238103cdad509", "coreui": "7b0cb39fa38c46a978875a51d47238103cdad509", "adminlte": "a28a4da94fcc0c5d2e035c1ee60d4ffc370a311b"},
   "example/manage.py": {"tabler": "aabb8181857d854657815b166f63f3d136c5c9bd", "coreui": "aabb8181857d854657815b166f63f3d136c5c9bd", "adminlte": "aabb8181857d854657815b166f63f3d136c5c9bd"},
@@ -76,7 +76,7 @@
   "example/roastery/models.py": {"tabler": "142e1695b3e0c62147b561b3ca60a8304f3daaca", "coreui": "142e1695b3e0c62147b561b3ca60a8304f3daaca", "adminlte": "142e1695b3e0c62147b561b3ca60a8304f3daaca"},
   "example/roastery/seed.py": {"tabler": "c92c84e0fb19ad4e0f303c4bfec8b86b17b219aa", "coreui": "c92c84e0fb19ad4e0f303c4bfec8b86b17b219aa", "adminlte": "c92c84e0fb19ad4e0f303c4bfec8b86b17b219aa"},
   "example/roastery/templates/roastery/session_detail.html": {"tabler": "c49ee06a4fedcb4fb1909cc522899579cb46d881", "coreui": "2ecb1b6568d11bee83cd353d247de416d47a0538", "adminlte": "2ecb1b6568d11bee83cd353d247de416d47a0538"},
-  "example/roastery/tests.py": {"tabler": "9d293bdfb5be6ef1095faae58b7f2061cf804be2", "coreui": "a7350b23ab9c7d1a7a483591199146bcd92639e8", "adminlte": "1daef6822b17b0e5a92cdbaf7cacff6f4f68b400"},
+  "example/roastery/tests.py": {"tabler": "9d293bdfb5be6ef1095faae58b7f2061cf804be2", "coreui": "9d293bdfb5be6ef1095faae58b7f2061cf804be2", "adminlte": "9d293bdfb5be6ef1095faae58b7f2061cf804be2"},
   "example/roastery/urls.py": {"tabler": "6d734dae659850fa99b7e086f06150d4cb3eb234", "coreui": "6d734dae659850fa99b7e086f06150d4cb3eb234", "adminlte": "6d734dae659850fa99b7e086f06150d4cb3eb234"},
   "example/roastery/views.py": {"tabler": "90cafef30819d8506ef6dfab6db119e502f8d5f4", "coreui": "42861683abf7c52e190485c01d89742a7b7dd9fd", "adminlte": "42861683abf7c52e190485c01d89742a7b7dd9fd"},
   "example/sales/__init__.py": {"tabler": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391", "coreui": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391", "adminlte": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"},
@@ -103,10 +103,10 @@
   "example/sales/tests/__init__.py": {"tabler": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391", "coreui": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391", "adminlte": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"},
   "example/sales/tests/markup.py": {"tabler": null, "coreui": null, "adminlte": "cb1914d98adc6e908ed7451d55c57bb667693597"},
   "example/sales/tests/test_access.py": {"tabler": "8f8d898d1b2fa01c18ca1c89c8ad5f2a4a2f5809", "coreui": "8f8d898d1b2fa01c18ca1c89c8ad5f2a4a2f5809", "adminlte": "8f8d898d1b2fa01c18ca1c89c8ad5f2a4a2f5809"},
-  "example/sales/tests/test_bulk.py": {"tabler": "62d26782e5b0735be559ea883f36aede99e85bf9", "coreui": "62d26782e5b0735be559ea883f36aede99e85bf9", "adminlte": "e2773104e6c0552fae9b6996dd7ed37625547f81"},
+  "example/sales/tests/test_bulk.py": {"tabler": "384207e7e1c647fefff3c6e6762f466bc1f54eeb", "coreui": "26ace5a7cf93568f47124a58350ddb872d118ed3", "adminlte": "6ddf5d66b910fdaa473591967431133a49a60911"},
   "example/sales/tests/test_customers.py": {"tabler": "d96399162f8b62beebcfa30057e246a349435b49", "coreui": "5c1474519f018eaec97ff512c051bd9e4ecc0736", "adminlte": "12fea280d66360e975ed9f7970e47f276a284537"},
   "example/sales/tests/test_navbar.py": {"tabler": "482d90e3fe3953f1310d542d6f39b1ca1436e5b0", "coreui": "4ffc65cc3520f07df7ef8fbf6e9ed5abd9be2570", "adminlte": "8ae089e0c6582d6f5e4a9836a40f29be428b798a"},
-  "example/sales/tests/test_orders.py": {"tabler": "8357b60d8b186692af796f1b0bb5aad3c6545d91", "coreui": "ac8c578b2858e9c2c7dd8ebf3c7ea375f78f2e78", "adminlte": "62ef41c0fa574504732ac4b8f9a7291170158d56"},
+  "example/sales/tests/test_orders.py": {"tabler": "8357b60d8b186692af796f1b0bb5aad3c6545d91", "coreui": "a73a5a61ec010c5f6f58c5944e4dd8f9ff5fbfa7", "adminlte": "5598321960b80662041451cac8e54e7f1b5c30df"},
   "example/sales/tests/test_subscriptions.py": {"tabler": "061cf30921fbc89f3806d8aea8ef65e3247050c3", "coreui": "061cf30921fbc89f3806d8aea8ef65e3247050c3", "adminlte": "8bbe484629c1533ba208cf60efdbc77f0a653a4a"},
   "example/sales/typeahead.py": {"tabler": "8331ebd8516836f8bfb6329423075d442679cea6", "coreui": "8331ebd8516836f8bfb6329423075d442679cea6", "adminlte": "8331ebd8516836f8bfb6329423075d442679cea6"},
   "example/sales/urls.py": {"tabler": "4218995e253afa2bb98fd4816b9342c5642404cf", "coreui": "4218995e253afa2bb98fd4816b9342c5642404cf", "adminlte": "4218995e253afa2bb98fd4816b9342c5642404cf"},
@@ -114,7 +114,7 @@
   "example/sales/views/addresses.py": {"tabler": "d9e927e6c0e7a21e551ee8a927ea3f19d3d2421b", "coreui": "f11de84e622e2db777d776c564a13acff2c4c60a", "adminlte": "f11de84e622e2db777d776c564a13acff2c4c60a"},
   "example/sales/views/customers.py": {"tabler": "f184f6361dcf6f9af0dea1b9045a4c1583cc867e", "coreui": "a3db4b16815ffb2638638c2cdfcbdcd61372bb9f", "adminlte": "1a74d37b081ecc1dc20fde34657e4b40b97ffa67"},
   "example/sales/views/order_actions.py": {"tabler": "c7f21d1600648ec1026496d332b4395d91cc9698", "coreui": "c7f21d1600648ec1026496d332b4395d91cc9698", "adminlte": "c7f21d1600648ec1026496d332b4395d91cc9698"},
-  "example/sales/views/order_bulk.py": {"tabler": "c6090d8391f634f7d7649d40771cfec38761d9ae", "coreui": "c6090d8391f634f7d7649d40771cfec38761d9ae", "adminlte": "c6090d8391f634f7d7649d40771cfec38761d9ae"},
+  "example/sales/views/order_bulk.py": {"tabler": "dc7ba2ed9eb5744619a17adc1d8e92a2d66c646f", "coreui": "dc7ba2ed9eb5744619a17adc1d8e92a2d66c646f", "adminlte": "19705b3b61395a3364c4840830a40188d94491e7"},
   "example/sales/views/orders.py": {"tabler": "dda3072b61b7923f266e75ae2a82782902464928", "coreui": "dda3072b61b7923f266e75ae2a82782902464928", "adminlte": "dda3072b61b7923f266e75ae2a82782902464928"},
   "example/sales/views/subscriptions.py": {"tabler": "0d2c239b739629f7c8e77b27baba1ada69c2ded2", "coreui": "d0bae0d140b9949bd743995931b26a290d9b5026", "adminlte": "d0bae0d140b9949bd743995931b26a290d9b5026"},
   "example/shipping/__init__.py": {"tabler": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391", "coreui": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391", "adminlte": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"},
@@ -157,7 +157,7 @@
   "example/templates/project/code_panel_shell.html": {"tabler": "89a33dc3548365658d78a59782fe2556544b911c", "coreui": "8ede37d70651c3f1bde938d26895f2c8894923b7", "adminlte": "8ede37d70651c3f1bde938d26895f2c8894923b7"},
   "example/templates/project/crud_views.html": {"tabler": "18f3fdee5d102cdc2ed8045a2a47f4e6f158d813", "coreui": "f6ff1ae973016c9ee9bf06aa11faa859168e2679", "adminlte": "cc03205e5950f08426c5453486fd63378dde0603"},
   "example/templates/project/page.html": {"tabler": null, "coreui": null, "adminlte": "e0ba24adf3947cf3e4a253e1b27713983b19e87f"},
-  "example/templates/project/theming.html": {"tabler": "99f3b9274d79341758063bedcfb67343b8c1f93f", "coreui": "f82ee40006233cbc0c90227dfb3907dffbd3e283", "adminlte": "ce4d34264d3f75c2a90304dbad31a25e75a5b623"},
+  "example/templates/project/theming.html": {"tabler": "7f65ab1f4bcc29a232df4add8c24b7957c3998d4", "coreui": "320f7bc715e51b359a24dd856fa688d74dea6df2", "adminlte": "ce4d34264d3f75c2a90304dbad31a25e75a5b623"},
   "example/templates/registration/login.html": {"tabler": "80074de1c2a2140d64cf45121bc1664ae5606823", "coreui": "6eec7942fc7b2b7745b16622d854d337d98a1832", "adminlte": "5f7141a537f16f6f3cddc2639533e6e641f42edf"}
  }
 }

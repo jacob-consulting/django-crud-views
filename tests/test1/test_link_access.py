@@ -23,9 +23,10 @@ from crud_views.lib.link_access import (
     _link_ctx,
     _link_permission,
 )
-from crud_views.lib.view import ContextButton, ParentContextButton, SiblingContextButton
+from crud_views.lib.view import CardAction, ContextButton, ParentContextButton, SiblingContextButton
 from crud_views.lib.views import CreateView, CreateViewParentMixin, DetailView, ListView
 from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
+from crud_views.templatetags.crud_views import cv_context_has_permission
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1 import test_ancestor_helpers as ancestor_helpers
 from tests.test1 import test_guardian_parent_none as parent_none
@@ -842,3 +843,117 @@ def test_sibling_button_under_create_key_gets_page_create_result(pn, data, monke
     page_gate.assert_called_once_with(actor, data.penguin)
     sibling_gate.assert_not_called()
     sibling_create.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_card_action_without_own_object_gets_none(pn, data, monkeypatch):
+    actor = _user("card_objects", superuser=True)
+    for page, row in ((pn.PublisherCard, data.penguin), (pn.BookCard, data.book)):
+        monkeypatch.setattr(page, "cv_card_actions", [])
+        monkeypatch.setattr(page, "cv_context_actions", [])
+        kwargs = {pn.book_vs.parent.get_pk_name(): data.penguin.pk} if page is pn.BookCard else {}
+        response = _client(actor).get(_url(page.cv_viewset, "card", **kwargs))
+        assert response.status_code == 200
+        view = response.context["view"]
+        for key in ("list", "detail"):
+            target = page.cv_viewset.get_view_class(key)
+            with monkeypatch.context() as patch:
+                gate = parent_spy(patch, target)
+                own, state = Mock(return_value=True), Mock(return_value=True)
+                patch.setattr(target, "cv_has_access", own)
+                patch.setattr(target, "cv_action_enabled", state)
+                ctx = view.cv_get_card_action_data(CardAction(key=key), row, actor)
+                assert ctx["cv_access"] is True
+                own.assert_called_once_with(actor, row if key == "detail" else None)
+                state_obj = row if key == "detail" else view.cv_get_parent_object() if page is pn.BookCard else None
+                state.assert_called_once_with(actor, state_obj)
+                assert state.call_args.args[1] is state_obj
+                gate.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_card_action_and_filter_reach_nested_guardian_create_through_the_check(pn, data, monkeypatch):
+    parent_none._strict_policy(pn, monkeypatch)
+    target = pn.BookCreate
+    for page in (pn.BookCard, pn.BookDetail):
+        monkeypatch.setattr(page, "cv_context_actions", [])
+    monkeypatch.setattr(pn.BookCard, "cv_card_actions", [])
+    for permitted in (True, False):
+        actor = parent_none._child_page_actor(
+            pn, data.penguin, data.book, create_grant=permitted, name=f"card_filter_{permitted}"
+        )
+        for key in ("card", "detail"):
+            response = _client(actor).get(
+                parent_none._url(pn.book_vs, key, data.penguin.pk, data.book.pk if key == "detail" else None)
+            )
+            assert response.status_code == 200
+            view = response.context["view"]
+            parent = view.cv_get_parent_object()
+            with monkeypatch.context() as patch:
+                gate = parent_spy(patch, target)
+                own = Mock(wraps=target.cv_has_access)
+                create_access = Mock(wraps=target.cv_create_has_access)
+                state = Mock(return_value=False)
+                patch.setattr(target, "cv_has_access", own)
+                patch.setattr(target, "cv_create_has_access", create_access)
+                patch.setattr(target, "cv_action_enabled", state)
+                if key == "card":
+                    ctx = view.cv_get_card_action_data(CardAction(key="create"), data.book, actor)
+                    assert ctx["cv_access"] is permitted
+                    assert ctx["cv_action_enabled"] is not permitted
+                else:
+                    assert cv_context_has_permission(view, "create") is permitted
+                create_access.assert_called_once_with(actor, None, parent)
+                assert create_access.call_args.args[2] is parent
+                gate.assert_called_once_with(actor, parent)
+                own.assert_not_called()
+                if permitted and key == "card":
+                    state.assert_called_once_with(actor, parent)
+                else:
+                    state.assert_not_called()
+
+    # The page renders under Read; an invalid nearest Write key still raises out of the filter.
+    monkeypatch.setattr(
+        pn.book_vs, "ancestor_policy", AncestorPolicy(write=AncestorPermissions(nearest="missing", higher="view"))
+    )
+    response = _client(actor).get(parent_none._url(pn.book_vs, "detail", data.penguin.pk, data.book.pk))
+    assert response.status_code == 200
+    with pytest.raises(ImproperlyConfigured, match="missing"):
+        cv_context_has_permission(response.context["view"], "create")
+
+
+@pytest.mark.django_db
+def test_nested_guardian_create_filter_and_sibling_button_stay_denied(helpers, data, monkeypatch):
+    actor = _user("filter_sibling_denials")
+    _grant(actor, helpers.pub, "view", data.penguin)
+    _grant(actor, helpers.pub, "change", data.penguin)
+    _grant(actor, helpers.genre, "view", data.genre)
+    for page, obj in ((helpers.book.List, None), (helpers.genre.Detail, data.genre)):
+        kwargs = {helpers.book.vs.parent.get_pk_name(): data.penguin.pk}
+        if obj is not None:
+            kwargs["pk"] = obj.pk
+        response = _client(actor).get(_url(page.cv_viewset, page.cv_key, **kwargs))
+        assert response.status_code == 200
+        view = response.context["view"]
+        target = page.cv_viewset.get_view_class("create")
+        with monkeypatch.context() as patch:
+            gate = parent_spy(patch, target)
+            own, create_access = Mock(wraps=target.cv_has_access), Mock(wraps=target.cv_create_has_access)
+            patch.setattr(target, "cv_has_access", own)
+            patch.setattr(target, "cv_create_has_access", create_access)
+            assert cv_context_has_permission(view, "create") is False
+            own.assert_not_called()
+            create_access.assert_not_called()
+            gate.assert_not_called()
+        assert target.cv_has_access(actor, None) is False
+
+    target = helpers.book.Create
+    gate = parent_spy(monkeypatch, target)
+    own, create_access = Mock(wraps=target.cv_has_access), Mock(wraps=target.cv_create_has_access)
+    monkeypatch.setattr(target, "cv_has_access", own)
+    monkeypatch.setattr(target, "cv_create_has_access", create_access)
+    button = SiblingContextButton(key="new_book", sibling_name=helpers.book.vs.name, sibling_key="create")
+    assert button.get_context(view.cv_get_view_context(object=data.genre))["cv_access"] is False
+    own.assert_not_called()
+    create_access.assert_not_called()
+    gate.assert_not_called()

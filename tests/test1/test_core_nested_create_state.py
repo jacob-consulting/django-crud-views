@@ -199,7 +199,7 @@ def test_url_parent_wins_over_page_child_and_missing_parent_fails_closed(monkeyp
 
 
 @pytest.mark.django_db
-def test_parent_button_top_level_create_keeps_existing_state_object(monkeypatch, book_hitchhiker):
+def test_parent_button_top_level_create_receives_no_state_object(monkeypatch, book_hitchhiker):
     from crud_views.lib.view import ParentContextButton
     from tests.test1.app.views import BookListView, PublisherCreateView, cv_book, cv_publisher
 
@@ -214,7 +214,7 @@ def test_parent_button_top_level_create_keeps_existing_state_object(monkeypatch,
     )
     assert data["cv_url"] == reverse(cv_publisher.get_router_name("create"))
     assert data["cv_action_enabled"] is True
-    assert calls == [parent]
+    assert calls == [None]
 
 
 @pytest.mark.django_db

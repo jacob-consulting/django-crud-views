@@ -2,7 +2,7 @@
 
 Date: 2026-11-23. Status: concept approved by the maintainer on 2026-11-23; **no implementation is authorized by this
 document**. It is not an implementation plan. Each stage in section 9 needs its own issue, plan and approval.
-Amended on 2026-11-23 for stage 1: section 12.6 (D-25 to D-32), decided by the maintainer while #407 was planned.
+Amended on 2026-11-23 for stage 1: section 12.6 (D-25 to D-33), decided by the maintainer while #407 was planned.
 
 Related: #385 (reuse Guardian grants), #314 (opt-in URL helper), #312/#318 (link visibility versus request gate),
 `superpowers/notes/2026-11-02-navigation-concept-exploration.md` (site menu, caching options C0–C6),
@@ -501,11 +501,12 @@ sections 5 and 12.2, they apply. Like the decisions in 12.1, they are settled in
 | D-25 | Request-gate expectations in the ancestor suites stay untouched. Assertions on link helpers in those suites (direct `cv_has_access` calls with a parent or an own child on a nested Guardian create, and the private adapters called by name) are rewritten to the narrowed contract, and the plan lists each rewritten line. `cv_has_access` on a nested Guardian create fails closed for a parent argument; `cv_create_has_access` is the replacement. | 12.2 constraints, 5.6 |
 | D-26 | Stage-1 call sites hand the check the immediate parent only, as today. The function gates every level it is handed, proven by a unit test with a two-level list. Filling the list from the request's resolved higher ancestors (5.1, 5.3, second half of D-04) waits for stage 2 or 3. | D-04, 5.1, 5.3 |
 | D-27 | On a sibling page the check takes the parent from the parent the request resolved from the URL, not from the page object's foreign key. An explicit condition keeps the two documented `False` answers: the `ManyToMany` child page, and the `cv_context_has_permission` filter on a child list page. | 5.3, 5.6 |
-| D-28 | A project's `cv_create_has_access` override governs every package control that links to a nested Guardian create, wherever it is rendered. That includes child context buttons, card child actions and object navbar child items, which bypass the hook today, and the create controls reached from sibling pages (D-31). The Breaking entry and the migration note list the sites. | 5.6 |
+| D-28 | A project's `cv_create_has_access` override governs every package control that links to a nested Guardian create and is shown today; D-33 lists the two that stay hidden. That includes child context buttons, card child actions and object navbar child items, which bypass the hook today, and the create controls reached from sibling pages (D-31). The Breaking entry and the migration note list the sites. | 5.6 |
 | D-29 | `ParentContextButton`, the state argument of `SiblingContextButton` and the non-child card action are narrowed in stage 1 as well: argument narrowing only, with no parent-gate step for them. | 9, 12.2 |
 | D-30 | The documented Guardian queryset-only exception is kept: the link shows while the request answers 403. | 5.4 |
 | D-31 | At the sibling-page sites (context buttons, row actions, the parent button, the sibling button, the non-child card action and the `cv_context_has_permission` filter), only a nested Guardian create target goes through the check. Every other target keeps today's code path with narrowed arguments (D-13, D-15, D-29). Moving those consumers to the check stays in stage 3. For a target that goes through the check, D-16 holds without exception. | 9, 12.2 |
 | D-32 | For package links to a nested Guardian create, step 2 asks `cv_create_has_access` only; `cv_has_access` is not called for them. A project override of `cv_has_access` on that view no longer affects package links, and the Breaking entry says so. `cv_has_access` stays step 2 for every other view. | 5.2, 5.6, 12.5 |
+| D-33 | A `SiblingContextButton` to a nested Guardian create, and the create control on the nested Guardian create page itself, stay hidden as today. The check is handed no parent for them, so D-16 denies and `cv_create_has_access` is not asked. This adds two kept `False` answers to the two D-27 names and limits D-28 to the controls that are shown today. It can be relaxed after 1.0. | D-27, D-28 |
 
 Consequences the plan must carry. They follow from the decisions and are not decisions themselves:
 

@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.48"
 current_phase_name: "Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)"
-current_plan: 5
+current_plan: 6
 status: executing
-stopped_at: Completed 06.48-04-PLAN.md
-last_updated: "2026-11-23T19:33:51.881Z"
+stopped_at: Completed 06.48-05-PLAN.md
+last_updated: "2026-11-23T19:59:49.376Z"
 last_activity: 2026-11-23
-last_activity_desc: Phase 06.48 plan 04 complete; child links use the private check and all three child-link adapters are removed
-state_head: ba50ab6425288f998cd50a0b5114fc15056a7ac2
+last_activity_desc: Phase 06.48 plan 05 complete; context controls narrow hook arguments and reuse the request-resolved parent
+state_head: 9e8bcadf948d3d0bef65704d4cb4a011a53fcb10
 progress:
   total_phases: 55
   completed_phases: 53
   total_plans: 294
-  completed_plans: 289
+  completed_plans: 290
 milestone_name: milestone
 ---
 
@@ -33,12 +33,19 @@ See: .planning/PROJECT.md (updated 2026-11-22)
 ## Current Position
 
 Phase: 06.48 (Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)) — EXECUTING
-Current Plan: 5
+Current Plan: 6
 Total Plans in Phase: 9
 Status: Ready to execute
-Last activity: 2026-11-23 — Phase 06.48 plan 04 complete; full suite 18,883 passed and frozen outcomes/costs retained
+Last activity: 2026-11-23 — Phase 06.48 plan 05 complete; full suite 18,889 passed and frozen outcomes/costs retained
 
 Next: $gsd-execute-phase 06.48
+
+### Phase 06.48 plan 05 — 2026-11-23
+
+- Context buttons and view-key actions now narrow both hook arguments. Only nested Guardian creates use the private page seam and link check, with the request-resolved parent, exactly one parent gate and permission before state. Core paths and unguarded core controls remain intact.
+- Six new tests cover exact hook arguments/order, cached FK B versus URL parent A, zero ancestor queries and deliberate denials. Required selection 1,242 passed; focused reconciliation 1,985 passed; final full suite 18,889 passed in 402.26s on Python 3.12.3/Django 6.0.10 with six workers and recorder off.
+- The initial full suite's 30 failures were all the three named C3 state-hook assertions; no other existing test changed, and no pinned C9 count was lowered. All 1,178 frozen outcomes, gate/golden expectations and nine isolated ancestor-cost receipts remain unchanged.
+- Three task commits and SUMMARY committed before tracking. ROADMAP is 5/9, current plan 6, completed plans 290; metrics/session updated. The generic progress refresh retains its known unscoped-requirements limitation, and unrelated state.json bytes are preserved. No unresolved issues; next is plan 06.
 
 ### Phase 06.48 plan 04 — 2026-11-23
 
@@ -1907,6 +1914,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.48 P02 | 12min | 3 tasks | 10 files |
 | Phase 06.48 P03 | 6min | 2 tasks | 2 files |
 | Phase 06.48 P04 | 12min | 2 tasks | 9 files |
+| Phase 06.48 P05 | 20min | 2 tasks | 8 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2365,6 +2373,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-23T19:33:45.308Z
-Stopped at: Completed 06.48-04-PLAN.md
+Last session: 2026-11-23T19:59:42.426Z
+Stopped at: Completed 06.48-05-PLAN.md
 Resume file: None

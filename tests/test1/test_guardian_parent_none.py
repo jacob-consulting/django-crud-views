@@ -492,23 +492,29 @@ def test_list_create_control_uses_url_parent_for_state(pn, client, monkeypatch, 
 
 @pytest.mark.parametrize("error", [Http404, KeyError])
 @pytest.mark.django_db
-def test_list_create_control_late_parent_failure_skips_state_hook(pn, client, monkeypatch, publisher_a, error):
-    """Dispatch resolves the parent; only the later cv_get_parent_object fallback fails."""
+def test_list_create_control_uses_resolved_parent_after_late_failure(pn, client, monkeypatch, publisher_a, error):
+    """A later cv_get_parent_object failure cannot discard the request-resolved parent."""
     from tests.test1.app.models import Book
 
     def fail(self):
         raise error("late failure")
 
-    monkeypatch.setattr(pn.BookList, "cv_get_parent_object", fail)
     records = _record_contexts(monkeypatch, pn.BookList)
     client.force_login(_user("no_grants"))
     before = Book.objects.count()
+    url = _url(pn.book_vs, "list", publisher_a.pk)
+    assert client.get(url).status_code == 200
+    (unpatched,) = _create_contexts(records)
+    records.clear()
+    pn.hook_calls.clear()
+    monkeypatch.setattr(pn.BookList, "cv_get_parent_object", fail)
 
-    response = client.get(_url(pn.book_vs, "list", publisher_a.pk))
+    response = client.get(url)
     assert response.status_code == 200
     (ctx,) = _create_contexts(records)
-    assert ctx["cv_access"] is False
-    assert ctx["cv_action_enabled"] is False
+    assert ctx["cv_access"] is unpatched["cv_access"] is True
+    assert ctx["cv_action_enabled"] is unpatched["cv_action_enabled"] is True
+    assert pn.hook_calls
     assert None not in pn.hook_calls
     assert Book.objects.count() == before
 

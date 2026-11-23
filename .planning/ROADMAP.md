@@ -74,6 +74,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.45: Theme-registered JS namespace and tooltip placements (#398) (INSERTED)** (completed 2026-11-21)
 - [x] **Phase 06.46: Bulk toolbar: show only actions the viewer can enter (#399) (INSERTED)** - approved D-01–D-06 handover; destination entry gates govern toolbar visibility before the freeze. (completed 2026-11-22)
 - [x] **Phase 06.47: Semantic variants for bulk toolbar buttons (#400) (INSERTED)** (completed 2026-11-21)
+- [ ] **Phase 06.48: Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)**
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2378,6 +2379,18 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 06.47-03-PLAN.md
+
+### Phase 06.48: Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407) (INSERTED)
+
+**Goal:** Decide link and button visibility through one private link check (parent gates, own permission, state) and fix the meaning of `obj` in `cv_has_access` and `cv_action_enabled` before both hooks are frozen for 1.0.
+**Source:** [Issue #407](https://github.com/jacob-consulting/django-crud-views/issues/407), stage 1 of the approved concept `superpowers/specs/2026-11-23-link-access-check-design.md` at commit `dbf1e6c4`: settled decisions in section 12.1 (D-01–D-24), stage scope in 12.2, open planner questions in 12.5, reviewer brief in 13. The concept document applies where it differs from the issue.
+**Requirements**: None assigned; use the issue acceptance criteria.
+**Depends on:** Phase 6
+**Ordering:** Explicitly assigned 06.48 by the maintainer; before the 1.0 freeze of both hooks. Stage 2 (#385, shared Guardian checker) and stages 3 to 5 are out of scope.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 06.48 to break down)
 
 ### Phase 7: Theme-surface stability policy
 

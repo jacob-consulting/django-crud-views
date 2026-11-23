@@ -1,21 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.48"
+current_phase_name: Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled
 current_plan: Not started
 status: planning
 stopped_at: Phases 06.46 and 06.47 complete, ready to plan Phase 7
-last_updated: "2026-11-22T17:30:49.000Z"
+last_updated: "2026-11-23T10:44:15.568Z"
 last_activity: 2026-11-22
-last_activity_desc: "Phase 06.46 merged with main after Phases 06.45 and 06.47"
-state_head: 3964c4404daa976a211d62fdc40666040a45840e
+last_activity_desc: Phase 06.46 merged with main after Phases 06.45 and 06.47
+state_head: dbf1e6c4ec9b6b86504cb8f1d29ab8dc55552795
 progress:
-  total_phases: 54
+  total_phases: 55
   completed_phases: 53
   total_plans: 285
   completed_plans: 285
-  percent: 98
 milestone_name: milestone
 ---
 
@@ -33,13 +32,13 @@ See: .planning/PROJECT.md (updated 2026-11-22)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.48 — Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)
 Current Plan: Not started
 Total Plans in Phase: 0 (not planned)
 Status: Ready to plan
 Last activity: 2026-11-22 — Phase 06.46 merged with main after Phases 06.45 and 06.47
 
-Next: $gsd-plan-phase 7
+Next: $gsd-plan-phase 06.48
 
 ### Phase 06.46 integration with Phase 06.47 — 2026-11-22
 
@@ -2326,6 +2325,7 @@ None yet.
 - Phase 06.45 inserted after Phase 06.44: Theme-registered JS namespace and tooltip placements (#398); approved D-01–D-05, depends on 06.42, before Phase 7 freeze (URGENT)
 - Phase 06.46 inserted after Phase 06.44: Issue #399: bulk toolbar destination entry gates; approved D-01–D-06 handover amends #387. Requested 06.46 retained; 06.45 remains unallocated in this checkout. (URGENT)
 - Phase 06.47 inserted after Phase 06.45: Semantic variants for bulk toolbar buttons (#400); explicitly assigned 06.47 by the maintainer, approved D-01–D-05, depends on 06.41, before Phase 7 freeze (URGENT)
+- Phase 06.48 inserted after Phase 6: Issue #407: link access check as a private function; narrow obj in cv_has_access and cv_action_enabled. Stage 1 of the approved link access concept (settled D-01–D-24, spec at dbf1e6c4); explicitly assigned 06.48 by the maintainer, before the 1.0 hook freeze (URGENT)
 
 ## Deferred Items
 

@@ -42,6 +42,7 @@ from crud_views.lib.check import (
     CheckUnknownAttributes,
 )
 from crud_views.lib.exceptions import CrudViewError, ParentViewSetError, ViewSetKeyFoundError, cv_raise
+from crud_views.lib.link_access import _link_access, _link_ctx, _page_action_object
 
 from ..settings import crud_views_settings
 from .action_menu import (
@@ -544,6 +545,15 @@ class CrudView(metaclass=CrudViewMetaClass):
         return cls.cv_has_access(user, obj)
 
     @classmethod
+    def _cv_page_link_ancestors(cls, rendering_view, page_obj):
+        """Private seam, not an extension point: None keeps the page's own code path.
+
+        A tuple supplies ancestors to the link check. In stage 1 only a nested Guardian create
+        returns a tuple; every other target keeps the page's existing permission and state calls.
+        """
+        return None
+
+    @classmethod
     def cv_action_enabled(cls, user: User, obj: Model | None = None) -> bool:
         """Secondary action gate, evaluated only AFTER cv_has_access has passed.
 
@@ -909,14 +919,16 @@ class CrudView(metaclass=CrudViewMetaClass):
         # set up the view context
         context = self.cv_get_view_context(object=obj)
 
-        # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(user, obj, self)
-
-        # check access
-        if cls.cv_has_access(user, obj):
-            dict_kwargs.update(
-                cv_access=True,
+        known = cls._cv_page_link_ancestors(self, obj)
+        if known is not None:
+            dict_kwargs.update(_link_ctx(_link_access(cls, user, None, known)))
+        else:
+            # State stays independent of permission except for the nested Guardian create above.
+            dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
+                user, _page_action_object(self, cls, obj), self
             )
+            if cls.cv_has_access(user, obj if cls.cv_object else None):
+                dict_kwargs.update(cv_access=True)
 
         # prepare dict
         data = cls.cv_get_dict(context=context, **dict_kwargs)

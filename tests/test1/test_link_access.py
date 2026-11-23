@@ -1,7 +1,7 @@
 """Direct contract of the private link check, independent of page rendering."""
 
 from inspect import Parameter, signature
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
@@ -688,7 +688,9 @@ def test_unguarded_view_keeps_core_controls(helpers, core_targets, data, monkeyp
     gate = parent_spy(monkeypatch, helpers.book.Create)
     create_access = Mock(wraps=helpers.book.Create.cv_create_has_access)
     monkeypatch.setattr(helpers.book.Create, "cv_create_has_access", create_access)
-    with override_settings(ROOT_URLCONF=SimpleNamespace(urlpatterns=helpers.book.vs.urlpatterns)):
+    routes = ModuleType("unguarded_guardian_page_urls")
+    routes.urlpatterns = helpers.book.vs.urlpatterns
+    with override_settings(ROOT_URLCONF=routes):
         ctx = view.cv_get_context("create", obj=data.book, user=actor)
     assert ctx["cv_access"] is False
     assert ctx["cv_action_enabled"] is True

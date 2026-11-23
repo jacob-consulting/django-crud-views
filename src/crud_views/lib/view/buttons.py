@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 from ..check import CheckExpression, CheckWarningExpression
 from ..exceptions import ViewSetNotFoundError
-from ..link_access import _link_access, _link_ctx
+from ..link_access import _link_access, _link_ctx, _page_action_object
 from ..settings import crud_views_settings
 from .action_menu import cv_is_inline_keys
 from .context import ViewContext
@@ -106,17 +106,16 @@ class ContextButton(BaseModel):
             "cv_oid": context.view.cv_get_oid(key=key_target, obj=context.object),
         }
 
-        # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
-            context.view.request.user, context.object, context.view
-        )
-
-        # check access
-        if cls.cv_has_access(context.view.request.user, context.object):
-            # get the url for the target key
-            dict_kwargs.update(
-                cv_access=True,
+        known = cls._cv_page_link_ancestors(context.view, context.object)
+        if known is not None:
+            dict_kwargs.update(_link_ctx(_link_access(cls, context.view.request.user, None, known)))
+        else:
+            # State stays independent of permission except for the nested Guardian create above.
+            dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
+                context.view.request.user, _page_action_object(context.view, cls, context.object), context.view
             )
+            if cls.cv_has_access(context.view.request.user, context.object if cls.cv_object else None):
+                dict_kwargs.update(cv_access=True)
 
         # final data
         data = cls.cv_get_dict(context=context, **dict_kwargs)

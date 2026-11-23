@@ -5,10 +5,124 @@ the route from **0.29.x** to 1.0.0. The [CHANGELOG](https://github.com/jacob-con
 stays the complete record, ordered by release and issue; this page orders the same changes by what you have to
 touch.
 
+## Link access hooks
+
+Issue #407 narrows the object passed to the two public hooks before 1.0 freezes their contracts.
+`cv_has_access(user, obj)` receives only the target view's own object, or `None` for a list or create.
+`cv_action_enabled(user, obj)` receives the object the destination request uses: its own object for an object
+view, its immediate parent for a nested list or create, and `None` for a top-level list or create.
+
+In this table, **own** means the target's own object, **parent** its immediate parent, and **page/row** the
+object on the page hosting the control. **Request object** means own, parent or `None` by the rule above.
+The Guardian-create exceptions and the case without a resolved parent are explained below.
+
+| Control | `cv_has_access` receives: before → now | `cv_action_enabled` receives: before → now | State evaluation now |
+|---------|---------------------------------------|-------------------------------------------|----------------------|
+| Child context button and child card action | Parent → `None` | Parent → parent | After permission |
+| Object navbar child item | Parent → `None` | Parent → parent | After permission |
+| Context button and row action | Page/row → own or `None` | Page/row (parent for nested create) → request object | Independently, except nested Guardian create |
+| Parent button | Parent → own or `None` | Parent → request object | Independently, except nested Guardian create |
+| Sibling button | `None` → `None` | `None` → shared parent | Independently, except nested Guardian create |
+| Non-child card action | Row → own or `None` | Row (parent for nested create) → request object | Independently, except nested Guardian create |
+| `cv_context_has_permission` filter | Page → own or `None` | Not called → not called | Permission only |
+
+Child context buttons, card child actions, object navbar child items and links to a nested Guardian create
+run the parent gate, then own access, then state. A permission-denied control does not call the state hook;
+its context dict carries `cv_action_enabled=True`, meaning **not evaluated**. The rendered result is unchanged.
+Context buttons, row actions, parent buttons, sibling buttons and non-child card actions to other targets
+still evaluate state independently of permission. The filter always answers permission only.
+
+There is one change in cost: an actor whose own access is denied now runs the parent gate of a child link
+(child context button, card child action or object navbar child item). A malformed parent policy therefore
+raises `ImproperlyConfigured` on the hosting page for that actor too. The published permitted-link cost
+figures do not change.
+
+### Overrides that read another object
+
+**An override that read the parent from `obj`:** move a nested Guardian create's parent permission rule to
+`cv_create_has_access(user, rendering_view, parent_obj)`. For a state rule on any nested list or create, use
+`cv_action_enabled`, which receives the immediate parent. For example, a nested Books list can refuse a locked
+Publisher in its state hook:
+
+```python
+@classmethod
+def cv_action_enabled(cls, user, obj=None):
+    return super().cv_action_enabled(user, obj) and obj is not None and not obj.is_locked
+```
+
+The package checks the parent's permission through the ancestor policy at child links. One exception is a
+queryset-only Guardian composition: a list built from `GuardianQuerysetMixin` without
+`GuardianParentPermissionMixin` still has no parent check at its child link. Its `cv_has_access` override receives
+`None` now at the child context button, card child action and object navbar child item, where it previously
+received the parent. Move a parent state rule to `cv_action_enabled`; a parent permission rule needs
+`GuardianParentPermissionMixin`.
+
+**An override that read the page object from `obj`:** a list or create target now receives `None` in
+`cv_has_access`. Put a parent state rule in `cv_action_enabled`; a rule needing another object belongs on the
+action's own page. For example, a Books list linked from a Book detail page receives the Publisher in its
+state hook, not that Book. A rule about that Book's publication state belongs on the Book action's own page.
+
+### Nested Guardian create controls
+
+`cv_has_access` on a nested Guardian create denies every argument, including a parent instance, an own child
+and `None`. Its replacement for parent-based permission is `cv_create_has_access(user, rendering_view, parent_obj)`,
+which still accepts a parent instance or a foreign-key own child. An override of `cv_has_access` on a nested
+Guardian create no longer affects package links: their own-permission step asks `cv_create_has_access` only.
+
+The hook decides these controls where they are shown:
+
+- `ChildContextButton`, child `CardAction` and the object navbar child item targeting create.
+- A create context action or a button with `key_target="create"` on a child object page (detail, update or delete).
+- A create card action on a child card row.
+- `ParentContextButton` to create on an object page. The unchanged list-page exception below applies: when its
+  resolved key matches the page's own create, the page's own create decides, rather than the button's target.
+- `cv_context_has_permission` for create on a child object page; this asks permission only.
+- The create control of the child list page and the cancel target, which already used this hook.
+
+`rendering_view` is `None` at all the sites above except the child list page's create control, which passes the
+list view, and the cancel target, which passes the rendering view. An override must handle `None`.
+
+On pages of the create's own ViewSet, the parent comes from the URL parent the request resolved. It no longer
+comes from the page object's foreign key or from `cv_get_parent_object()`. An override of `cv_get_parent_object()`
+on a child list view therefore no longer decides the list page's create control. Passing a parent instance as
+`obj` to `cv_get_context` on a child page no longer substitutes for that URL parent.
+
+On a view without a resolved parent because it did not run the ancestor guard (a custom or non-CRUD view),
+the nested Guardian create control is hidden and its state hook is not called. Core controls do not disappear
+there; a nested list's state hook receives `None` on such a view.
+
+Four denials are kept on purpose. The `cv_context_has_permission` filter stays `False` on a child list page and
+on a `ManyToMany` child object page. Place the actual create control on the list page instead of wrapping it
+in this filter. A `SiblingContextButton` to a nested Guardian create and the create control on the nested
+create page itself also stay hidden, subject to the unchanged list-page exception below. These denied paths
+do not ask `cv_create_has_access`, so overriding it cannot show them.
+
+Review your overrides:
+
+1. If an override read the parent from `obj`, move its rule to the parent-aware create hook or the state hook.
+2. If it read the page object from `obj`, use the parent in the state hook or move the rule to the action's own page.
+3. If a queryset-only Guardian composition overrides `cv_has_access`, handle `None` and use the parent mixin
+   for parent permissions.
+4. If a child list overrides `cv_get_parent_object()`, check its create control against the request-resolved URL
+   parent; that override no longer supplies the parent to the control.
+
+The limits are unchanged. Rendering checks only the immediate parent; a farther ancestor can still deny the
+request. A queryset-only Guardian composition can show a child link without a parent check. In either case
+the click is refused with 403. Sibling-page links to core targets still have no parent gate.
+
+On a nested Guardian list or card list page, each context action without an object resolves its button's
+`key_target` (or the action key if unset) in the page's own ViewSet. If that key names its Guardian create,
+the page's own create decides the shown access and state. Thus a `ParentContextButton(key_target="create")`
+or a `SiblingContextButton` under action key `create` shows exactly when the page's own create shows, while
+its URL still goes to its real target, whose request decides the click. This unchanged exception applies
+only to list pages; on object pages the parent button follows the parent ViewSet's create hook.
+See [action state](reference/action_enabled.md), [context buttons](reference/context_buttons.md) and
+[the create access helpers](reference/guardian.md#what-the-create-access-helpers-accept).
+
 ## Child-link parent permissions
 
 Issue #380 changes existing plain nested pages: `ChildContextButton` and child `CardAction` now honor the
-destination's own access result and then its immediate-parent permission policy. Controls previously visible
+destination's immediate-parent permission policy and then its own access result. Controls previously visible
 can disappear or become disabled, following the target's existing hide/disable preference. Disabled controls
 have no usable URL. Shipped Guardian collection/create paths still perform their parent check once; the
 [standalone queryset-only exception](reference/guardian.md#parent-to-child-collection-links) remains explicit.
@@ -28,14 +142,16 @@ Review affected pages as follows:
 3. Correct malformed policy if the host now raises `ImproperlyConfigured` while rendering: a required parent
    permission key may be missing from its map, a nested operation may lack requirements, or reached
    authorization records may route away from `default`. These failures propagate instead of hiding a control.
-   Own-access denial stops parent work; an intentionally configured `provider="none"` retains its early
+   The parent gate runs even for an actor whose own access is denied; an intentionally configured `provider="none"`
+   retains its early
    helper bypass, but does not waive full request validation or other gates.
 4. Retain the target's hide/disable preference and test both the rendered control and direct destination GET
    for denied and allowed users, including an empty collection. Independent custom access and action state
    still apply.
 
 Rendering checks only the supplied immediate parent; a farther ancestor can still deny the GET, including
-with immediate `provider="none"`. Sibling links and ordinary row actions retain their existing behavior.
+with immediate `provider="none"`. Sibling links and ordinary row actions still carry no parent gate and keep
+their evaluation order; their hook arguments follow [Link access hooks](#link-access-hooks).
 Each eligible plain link adds one parent-policy call and reuses the parent without another row fetch.
 SQL depends on actor/vocabulary caches and provider; repeated Guardian links can still issue permission queries.
 See [measured costs and configuration failures](reference/context_buttons.md#permission-cost-and-configuration-failures)
@@ -1879,34 +1995,39 @@ was unchanged is superseded by Phase 06.31's [developer-only diagnostics](#devel
 
 ### Nested Guardian create access
 
-The helpers `cv_has_access(user, obj)` and `cv_create_has_access(user, view, parent_obj)` of a nested
-`GuardianCreateViewPermissionRequired` used to return `True` for any object that was not a parent instance. Now:
+`cv_has_access(user, obj)` on a nested `GuardianCreateViewPermissionRequired` denies every argument, including
+a parent instance and an own child. The replacement for a parent-based permission check is
+`cv_create_has_access(user, rendering_view, parent_obj)`:
 
-- **A parent instance** works as before.
-- **An own child with a `ForeignKey` parent**, such as a Book on its detail page, is resolved to its actual parent
-  through `ParentViewSet.get_attribute()`. "Add book" on a Book page therefore follows the user's permission on that
-  Book's Publisher; before, it always passed. Keep passing the page object; do not swap in the parent yourself.
-- **An unrelated object, an own child without its parent, or `None`** denies, superusers included. If you called the
-  helper with such an object, pass the parent instance instead.
-- **An own child with a `ManyToMany` parent** (`many_to_many_through_attribute`) denies: the object belongs to several
-  parents and cannot say which one a create would use. An object-only control, `cv_context_has_permission:"create"`
-  on that child's page, or a helper call with the child, is therefore unavailable. Do not select the first or only
-  related parent to get it back. Pass an explicit parent instance to the helpers, or link to the child list under the
-  URL parent: its create control and the create URL itself still work for an authorized parent. Route-aware create
-  controls for such pages need an explicit selected-parent contract, which 1.0 does not provide.
+- **A parent instance** is checked against the parent's permission policy.
+- **An own child with a `ForeignKey` parent** is accepted by `cv_create_has_access`, which resolves its parent
+  through `ParentViewSet.get_attribute()`. Package create controls on child pages instead use the URL parent
+  the request resolved, not the page object's foreign key or `cv_get_parent_object()`.
+- **An unrelated object, an own child without its parent, or `None`** denies, superusers included. Pass the parent
+  instance to `cv_create_has_access` for an explicit parent permission check.
+- **An own child with a `ManyToMany` parent** (`many_to_many_through_attribute`) denies. Its object-only create
+  controls and `cv_context_has_permission:"create"` stay unavailable on purpose; do not select the first or only
+  related parent to show them. `cv_create_has_access` accepts an explicit parent instance, and the child list's
+  create control and the create URL work under an authorized URL parent. A selected-parent contract for the
+  object-only controls is not provided in 1.0.
 
-The helpers check permission only. A rendered create control also needs its action state: on a child page the
-control's `cv_action_enabled` hook receives the actual parent (the Publisher), while its label template still sees the
-page object (the Book). So `cv_context_has_permission` can be `True` while the control renders nothing. The recipes in
+The create helper checks permission only. A rendered create control also needs its action state: on a child page
+`cv_action_enabled` receives the request-resolved parent (the Publisher), while its label template still sees the
+page object (the Book). So `cv_context_has_permission` can be `True` while the control renders nothing. A page
+that did not run the ancestor guard has no resolved parent, so its nested Guardian create control is hidden.
+The recipes in
 [Context Buttons](reference/context_buttons.md#cv_context_has_permission-gate-surrounding-markup) and the
 [FAQ](faq.md#gate-surrounding-markup-by-permission) show what to use where. On a child **list** page the URL-bound
-control is unchanged, and the filter stays `False` there because the page has no object.
+control is unchanged, and the filter stays `False` there on purpose. The sibling button to a nested Guardian
+create and the create control on the create page itself also stay hidden without asking `cv_create_has_access`,
+apart from the unchanged [list-page exception](#link-access-hooks).
 
 Skipping the parent check changed with it. The old `cv_guardian_parent_permission = None` (or the create key) is
 removed; see [Removed Guardian parent fields](#removed-guardian-parent-fields). Its replacement,
 `AncestorPolicy(provider="none")` on the parent ViewSet, skips only the permission check. A missing URL parent is a
-404, a create under a parent whose `cv_action_enabled` is `False` is a 403, and the helpers return `True` for the
-parent and a `ForeignKey` own child without any grant. Top-level create still needs the model-level `add_<model>`
+404, a create under a parent whose `cv_action_enabled` is `False` is a 403, and `cv_create_has_access` accepts the
+parent and a `ForeignKey` own child for an active actor without any grant. `cv_has_access` still denies every
+argument on a nested create. Top-level create still needs the model-level `add_<model>`
 permission. See
 [What the create access helpers accept](reference/guardian.md#what-the-create-access-helpers-accept).
 
@@ -2229,9 +2350,12 @@ about these.
   ([Values are literal text](#values-are-literal-text)).
 - [ ] `helper.inputs = []` on a filter helper no longer hides Apply and Reset and drops the hidden sort inputs
   ([Filter helpers](#filter-helpers)).
-- [ ] On a nested Guardian ViewSet, `cv_has_access`, `cv_create_has_access` and `cv_context_has_permission:"create"`
-  deny an unrelated object and a `ManyToMany` own child, and a `ForeignKey` own child follows its parent's permission:
-  a create control on such pages can disappear ([Nested Guardian create access](#nested-guardian-create-access)).
+- [ ] Review overrides that read the parent or page object from `obj`, `cv_has_access` overrides on a nested
+  Guardian create or queryset-only Guardian composition, and `cv_get_parent_object()` overrides on a nested
+  Guardian child list view ([Link access hooks](#link-access-hooks)).
+- [ ] On a nested Guardian create, `cv_has_access` denies every argument; use `cv_create_has_access` for an
+  explicit parent or foreign-key own child. Package controls use the request-resolved URL parent, and the
+  documented filter and object-only denials remain ([Nested Guardian create access](#nested-guardian-create-access)).
 - [ ] A custom `cv_filter_related_objects` that returns `related.protected` unfiltered shows labels the user may not
   view ([Delete previews and protected objects](#delete-previews-and-protected-objects)).
 

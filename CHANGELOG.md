@@ -6,6 +6,22 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Link access hooks** (#407): `cv_has_access(user, obj)` now receives only the target's own object, or `None`
+  for list and create targets. `cv_action_enabled(user, obj)` receives the object the request uses: the own
+  object, the immediate parent for a nested list/create, or `None` otherwise; an unguarded page's nested list
+  also receives `None`. Child context buttons, card child actions, object navbar child items and links to a
+  nested Guardian create run parent gate, own access, then state. Permission denial skips state and leaves the
+  context flag `cv_action_enabled=True` meaning not evaluated; rendered outcomes stay the same. Other context
+  buttons, row actions, parent/sibling buttons and non-child card actions still evaluate state independently.
+  A nested Guardian create's `cv_has_access` denies every argument; use `cv_create_has_access` for its parent rule.
+  That hook now decides `ChildContextButton`, child `CardAction`, object navbar child items, create context
+  actions/buttons on child object pages, create card actions on child rows, `ParentContextButton` (subject to
+  the unchanged list-page exception in the migration note), and `cv_context_has_permission` on a child object
+  page. `rendering_view` is `None` at these sites; it remains the list view for the child list page's create
+  control and the rendering view at the cancel target. An override of `cv_has_access` on a nested Guardian
+  create no longer affects package links: their own-permission step asks `cv_create_has_access` only. Review
+  overrides, kept denials and the list-page exception in the [migration note](docs/migrating-1.0.md#link-access-hooks).
+
 - **Child-link parent permissions** (#380): plain nested destinations now check their immediate-parent policy
   when rendering `ChildContextButton` and child `CardAction` controls. Existing controls can hide or disable,
   and malformed parent policy can raise `ImproperlyConfigured` on the hosting page. Review intended grants and

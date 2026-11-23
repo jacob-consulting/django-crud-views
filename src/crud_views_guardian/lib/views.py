@@ -385,6 +385,17 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         return _immediate_parent_access(cls, user, cls._cv_guardian_create_parent(obj))
 
     @classmethod
+    def _cv_link_permission(cls, user, obj, parent_obj, *, rendering_view=None):
+        """A nested create's permission is solely its documented parent-based hook.
+
+        Keep that hook's actor rule, including anonymous backend grants under a model-provider parent
+        (known limit L2, retained for stage 1).
+        """
+        if cls.cv_viewset.parent is None:
+            return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
+        return cls.cv_create_has_access(user, rendering_view, parent_obj)
+
+    @classmethod
     def _cv_child_link_has_access(cls, user, parent_obj):
         # Create's own access contract already applies its immediate-parent permission policy.
         return cls.cv_has_access(user, parent_obj)

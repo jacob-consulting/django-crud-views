@@ -525,6 +525,25 @@ class CrudView(metaclass=CrudViewMetaClass):
         return True
 
     @classmethod
+    def _cv_link_permission(cls, user, obj, parent_obj, *, rendering_view=None) -> bool:
+        """Private seam, not an extension point: parent gate followed by own permission.
+
+        obj is only this view's own object or None; the immediate parent arrives separately.
+        rendering_view keeps the implementations' signature uniform and is unused here.
+        """
+        if cls.cv_viewset.has_parent:
+            from crud_views.lib.ancestors import _effective_provider, _immediate_parent_access
+
+            if not _immediate_parent_access(cls, user, parent_obj):
+                return False
+            if not (
+                (user.is_authenticated and user.is_active)
+                or _effective_provider(cls.cv_viewset.parent.viewset) == "none"
+            ):
+                return False
+        return cls.cv_has_access(user, obj)
+
+    @classmethod
     def _cv_child_link_has_access(cls, user, parent_obj) -> bool:
         """Access for a child link whose URL uses the supplied immediate parent."""
         access = cls.cv_has_access(user, parent_obj)

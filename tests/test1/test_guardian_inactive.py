@@ -457,12 +457,11 @@ def test_inactive_access_helpers_deny(world, monkeypatch, kind):
     assert GuardianAuthorListView.cv_has_access(user, world.author) is False
     assert GuardianBookCreateView.cv_create_has_access(user, None, world.publisher) is False
     assert GuardianBookCreateView.cv_create_has_access(user, None, world.book) is False
-    assert GuardianBookCreateView.cv_create_has_access(user, None, world.publisher) is False
+    assert GuardianBookCreateView.cv_has_access(user, world.publisher) is False
 
     # an unprotected parent (provider "none", the removed child-side None policy, D-28) skips only the parent
     # permission evaluation — never the inactive denial
     monkeypatch.setattr(cv_guardian_publisher, "ancestor_policy", AncestorPolicy(provider="none"))
-    assert GuardianBookCreateView.cv_create_has_access(user, None, world.publisher) is False
     assert GuardianBookCreateView.cv_create_has_access(user, None, world.publisher) is False
 
 

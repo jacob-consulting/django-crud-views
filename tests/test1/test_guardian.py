@@ -316,7 +316,7 @@ def test_create_cv_has_access_child_no_object_without_parent_perm(user_guardian)
 
 @pytest.mark.django_db
 def test_create_cv_has_access_child_with_parent_obj_and_perm(user_guardian, cv_guardian_publisher, publisher_a):
-    """Child create, obj=parent instance: True when user has change perm on that parent."""
+    """The parent helper allows a change grant; own-access denies even with that grant."""
     from tests.test1.app.views import GuardianBookCreateView
 
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
@@ -326,7 +326,7 @@ def test_create_cv_has_access_child_with_parent_obj_and_perm(user_guardian, cv_g
 
 @pytest.mark.django_db
 def test_create_cv_has_access_child_with_parent_obj_without_perm(user_guardian, publisher_a):
-    """Child create, obj=parent instance: False when user has no change perm on that parent."""
+    """The parent helper denies a missing change grant, as does the narrowed own-access hook."""
     from tests.test1.app.views import GuardianBookCreateView
 
     assert GuardianBookCreateView.cv_has_access(user_guardian, publisher_a) is False

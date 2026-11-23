@@ -2,7 +2,7 @@
 
 Date: 2026-11-23. Status: concept approved by the maintainer on 2026-11-23; **no implementation is authorized by this
 document**. It is not an implementation plan. Each stage in section 9 needs its own issue, plan and approval.
-Amended on 2026-11-23 for stage 1: section 12.6 (D-25 to D-33), decided by the maintainer while #407 was planned.
+Amended on 2026-11-23 for stage 1: section 12.6 (D-25 to D-36), decided by the maintainer while #407 was planned.
 
 Related: #385 (reuse Guardian grants), #314 (opt-in URL helper), #312/#318 (link visibility versus request gate),
 `superpowers/notes/2026-11-02-navigation-concept-exploration.md` (site menu, caching options C0–C6),
@@ -507,6 +507,9 @@ sections 5 and 12.2, they apply. Like the decisions in 12.1, they are settled in
 | D-31 | At the sibling-page sites (context buttons, row actions, the parent button, the sibling button, the non-child card action and the `cv_context_has_permission` filter), only a nested Guardian create target goes through the check. Every other target keeps today's code path with narrowed arguments (D-13, D-15, D-29). Moving those consumers to the check stays in stage 3. For a target that goes through the check, D-16 holds without exception. | 9, 12.2 |
 | D-32 | For package links to a nested Guardian create, step 2 asks `cv_create_has_access` only; `cv_has_access` is not called for them. A project override of `cv_has_access` on that view no longer affects package links, and the Breaking entry says so. `cv_has_access` stays step 2 for every other view. | 5.2, 5.6, 12.5 |
 | D-33 | A `SiblingContextButton` to a nested Guardian create, and the create control on the nested Guardian create page itself, stay hidden as today. The check is handed no parent for them, so D-16 denies and `cv_create_has_access` is not asked. This adds two kept `False` answers to the two D-27 names and limits D-28 to the controls that are shown today. It can be relaxed after 1.0. | D-27, D-28 |
+| D-34 | Known limit L1 is kept in stage 1. `GuardianQuerysetMixin.cv_get_context` matches the resolved key of any context button on a Guardian list or card list page, so a `ParentContextButton(key_target="create")` on a grandchild Guardian list page shows the page's own create result and runs two parent gates; a sibling button registered under the action key `create` there is shown the same way. This is an approved exception to D-28 and D-33 for those controls. It exists before stage 1, removing it would change a rendered result, and section 3 assigns this rewrite to stage 3. The migration note, the Breaking entry and `docs/reference/guardian.md` state it. | 3, D-28, D-33 |
+| D-35 | Known limit L2 is kept in stage 1. Today's path for a nested Guardian create under a model-permission parent denies an inactive actor and returns the provider's answer for an anonymous one; the signed-in-and-active rule of the core adapter was never on this path. "Kept" in 5.2 and D-18 means the rules today's parent check applies. | 5.2, D-18 |
+| D-36 | On a view that did not run the ancestor guard, a nested list's state hook receives `None`. This narrows D-13; no core control disappears on such a view. | 5.2, D-13 |
 
 Consequences the plan must carry. They follow from the decisions and are not decisions themselves:
 
@@ -514,6 +517,8 @@ Consequences the plan must carry. They follow from the decisions and are not dec
   answers `False` for every argument. Either way, the passages that say a parent instance "works as before"
   (`docs/migrating-1.0.md`, "Nested Guardian create access") and the input table in `docs/reference/guardian.md`
   ("What the create access helpers accept") are rewritten, not appended to. The change is from allowed to denied.
+- **D-26, D-30, D-34 and D-35:** the known limits of D-34 and D-35 are accepted behaviour for a stage-1 review
+  in the same way, and not a finding under section 13.
 - **D-26 and D-30:** a child link can stay visible where a farther ancestor, or a queryset-only composition, denies
   the request. The click is refused with 403, as documented today. For a stage-1 review this is accepted behaviour
   and not a finding under section 13.

@@ -1,8 +1,9 @@
 # Sharing the Acme Roasters demo and "Show code" across the theme repos: evaluation and design
 
 **Date:** 2026-11-22
-**Status:** evaluation complete, recommendation made. **No implementation authorized.** The maintainer decisions in
-[section 12](#12-decisions-the-maintainer-has-to-make) are open; an implementation plan is written only after them.
+**Status:** **deferred by the maintainer on 2026-11-23** (see "Maintainer decision" below). Nothing is shared for
+now, no implementation is authorized and no implementation plan is written. The evaluation below is kept as the
+record of what was found; its recommendation (section 9) and its stages (section 10) were **not adopted**.
 **Scope:** the `example/` projects of django-crud-views-tabler, django-crud-views-coreui and
 django-crud-views-adminlte. Nothing in `src/` of django-crud-views changes under the recommended option.
 **Audience:** the maintainer, and an implementer who has not seen the discussion. Everything needed to take over is in
@@ -19,6 +20,58 @@ Commits analysed (each repo's `main` on 2026-11-22):
 | T | jacob-consulting/django-crud-views-tabler | `307b9d5` |
 | C | jacob-consulting/django-crud-views-coreui | `d67be0f` |
 | A | jacob-consulting/django-crud-views-adminlte | `83cb1e8` |
+
+## Maintainer decision (2026-11-23): give it time
+
+**Decision.** None of the sharing options is adopted now. The three `example/` projects stay independent copies.
+Sections 1 to 15 are unchanged below this notice and are historical evaluation, not requirements.
+
+**Reasons given by the maintainer**, in the maintainer's words:
+
+- "Examples should be easy to understand. A shared adapter package contradicts this as well as the installation
+  procedure locally, in github and on render. It does not matter if this is a sibling project or a submodule: in
+  any way it adds complexity."
+- "The most important thing for django-crud-views 1.0 are deployments of the examples on render.com."
+- "Why not giving this a little time."
+
+**What happens instead.**
+
+- The maintainer adopts DateTimePicker and DatePicker widgets in a private project, "to gain experience how this
+  plays" and to have "real world code examples to continue the discussion". This is the evidence section 5.5 said
+  was missing: no theme ships a date field today.
+- A fourth repository `django-crud-views-acme` may be developed "to see how this is themed". The maintainer said
+  "maybe"; it is not scheduled. *Author's reading, not the maintainer's words:* as a project of its own on the
+  stock Bootstrap theme, not as a package the theme repos depend on.
+
+**Where the decisions of section 12 stand.**
+
+| | Outcome |
+|---|---|
+| D1 transport | Not chosen. The copies stay (T0). The installed package (T4) and the submodule (T3) are both judged by the maintainer to add complexity to installation. |
+| D2, D3, D5 | Moot until the question is reopened. |
+| D4 Tabler badge style | Not decided; nothing changes in T. |
+| D6 adapter port | Not adopted: it contradicts "easy to understand". |
+| D7 theme date fields | Experience first, in the maintainer's private project. |
+
+**What stays useful** (author's notes; none of this is a decision):
+
+- The findings of section 3 and the reproduction steps of section 14 describe the code as of the commits above.
+- **The cost of waiting is the drift of 3.10**, which appeared within two days of the first copy. The script in
+  section 14 measures it at any time and changes nothing in the examples: run it before porting an app change, and
+  port the change to all three copies in one sitting.
+- **For the Render priority:** only T has `render.yaml`, `example/config/settings_demo.py` and
+  `.github/workflows/demo.yml`. C and A have none of the three (3.1); C's spec names them as a follow-up.
+- **If a fourth, stock-Bootstrap Acme project is built:** A's `example/` is the closest starting point (3.6), and
+  its `CRUD_VIEWS_EXTENDS` page needs the blocks listed as "the page contract" in 5.1, which core's own example
+  page does not define. Built as an independent copy, it is a fourth copy to keep in step.
+- **If sharing is reopened under the maintainer's constraint** (no change to installation, locally, on GitHub or
+  on Render): of the transports evaluated in section 7, only T1 (copy by script with a parity test) meets it. Its
+  costs are named there.
+- **What the private project can answer for 5.5 and D7:** how the widget's assets are delivered (a `Media` class
+  or a registry) and whether that survives content injected after page load; how the picker is initialised in a
+  modal and on a newly added formset row; whether what the picker writes is what the form accepts in more than
+  one locale; and how much backend-specific configuration the form code has to pass to the widget. The last one
+  decides whether such widgets could ever be swapped behind one name.
 
 ## 1. The question
 

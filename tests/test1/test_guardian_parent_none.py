@@ -419,9 +419,9 @@ def test_none_policy_helpers_allow_parent_and_own_child_without_grants(pn, publi
     user = _user("no_grants")
     book = Book.objects.create(title="Own child", publisher=publisher_a)
 
-    assert pn.BookCreate.cv_has_access(user, publisher_a) is True
+    assert pn.BookCreate.cv_has_access(user, publisher_a) is False
     assert pn.BookCreate.cv_create_has_access(user, None, publisher_a) is True
-    assert pn.BookCreate.cv_has_access(user, book) is True
+    assert pn.BookCreate.cv_has_access(user, book) is False
     assert pn.BookCreate.cv_create_has_access(user, None, book) is True
 
 
@@ -436,6 +436,7 @@ def test_none_policy_helpers_deny_none_and_unrelated_inputs(pn, author_douglas_a
         assert pn.BookCreate.cv_create_has_access(user, None, author_douglas_adams) is False
         # an unsaved child without its parent relation cannot establish a parent
         assert pn.BookCreate.cv_has_access(user, Book(title="no parent")) is False
+        assert pn.BookCreate.cv_create_has_access(user, None, Book(title="no parent")) is False
     assert pn.hook_calls == []
 
 
@@ -446,7 +447,7 @@ def test_none_policy_helper_evaluation_is_side_effect_free(pn, client, publisher
 
     user = _user("no_grants")
     for _ in range(3):
-        assert pn.BookCreate.cv_has_access(user, publisher_a) is True
+        assert pn.BookCreate.cv_has_access(user, publisher_a) is False
         assert pn.BookCreate.cv_create_has_access(user, None, publisher_a) is True
         assert pn.BookCreate._cv_action_enabled_for_context(user, publisher_a) is True
 
@@ -634,13 +635,13 @@ def test_m2m_explicit_parent_helpers_keep_permission_results(pn, publisher_a, pu
     user = _user("granted")
     user_guardian_object_perm(user, pn.sib_pub_vs, "change", publisher_a)
 
-    assert pn.GenreCreate.cv_has_access(user, publisher_a) is True
+    assert pn.GenreCreate.cv_has_access(user, publisher_a) is False
     assert pn.GenreCreate.cv_create_has_access(user, None, publisher_a) is True
     assert pn.GenreCreate.cv_has_access(user, publisher_b) is False
     assert pn.GenreCreate.cv_create_has_access(user, None, publisher_b) is False
 
     # the None scenario (its own unprotected parent) accepts the explicit parent without a grant ...
-    assert pn.FreeGenreCreate.cv_has_access(user, publisher_b) is True
+    assert pn.FreeGenreCreate.cv_has_access(user, publisher_b) is False
     assert pn.FreeGenreCreate.cv_create_has_access(user, None, publisher_b) is True
     # ... and the strict sibling still denies it
     assert pn.GenreCreate.cv_has_access(user, publisher_b) is False
@@ -898,7 +899,8 @@ def test_child_page_create_global_fallback_follows_parent_ancestor_policy(
     assert client.get(create_url).status_code == (200 if parent_fallback else 403)
     assert client.post(create_url, {"title": "Global Parent"}).status_code == (302 if parent_fallback else 403)
     assert Book.objects.filter(title="Global Parent").exists() is parent_fallback
-    assert pn.BookCreate.cv_has_access(user, child) is parent_fallback
+    assert pn.BookCreate.cv_create_has_access(user, None, child) is parent_fallback
+    assert pn.BookCreate.cv_has_access(user, child) is False
 
 
 @pytest.mark.django_db
@@ -930,6 +932,7 @@ def test_child_page_inactive_actor_denied(pn, client, monkeypatch, publisher_a, 
         client.force_login(user, backend=backend)
         assert client.get(_url(pn.book_vs, "detail", publisher_a.pk, child.pk)).status_code == 403
     assert pn.BookCreate.cv_has_access(user, child) is False
+    assert pn.BookCreate.cv_create_has_access(user, None, child) is False
     assert pn.BookCreate._cv_action_enabled_for_context(user, child) is True  # state is not permission
     assert pn.hook_calls and pn.hook_calls[-1].pk == publisher_a.pk
 

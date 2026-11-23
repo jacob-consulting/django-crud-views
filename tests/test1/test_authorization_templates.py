@@ -602,7 +602,10 @@ def test_child_page_toolbar_create_and_alias_through_action_leaf(
     permission, button = _render_filter_and_button(response)
     assert permission == str(condition != "denied")  # permission-only: True for an authorized disabled parent
     assert ("MX-ACTION" in button and create_url in button) is allowed
-    _assert_state_hook_saw_only_parent(tp, world.a)
+    if condition != "denied":
+        _assert_state_hook_saw_only_parent(tp, world.a)
+    else:
+        assert tp.state_calls == []
 
     before = Book.objects.count()
     assert client.get(create_url).status_code == (200 if allowed else 403)

@@ -797,7 +797,10 @@ def test_child_page_create_controls_follow_parent_grant(
     assert contexts["create_alias"]["cv_action_label"] == "Another book"
     assert contexts["create"]["cv_action_label"] != "Another book"
     assert (f'href="{create_url}"' in response.content.decode()) is create_grant
-    _assert_hook_saw_only_parent(pn, publisher_a)
+    if create_grant:
+        _assert_hook_saw_only_parent(pn, publisher_a)
+    else:
+        assert pn.hook_calls == []
 
     permission, button = _render_filter_and_button(response)
     assert permission == str(create_grant)

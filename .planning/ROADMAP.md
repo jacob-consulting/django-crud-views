@@ -74,7 +74,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.45: Theme-registered JS namespace and tooltip placements (#398) (INSERTED)** (completed 2026-11-21)
 - [x] **Phase 06.46: Bulk toolbar: show only actions the viewer can enter (#399) (INSERTED)** - approved D-01–D-06 handover; destination entry gates govern toolbar visibility before the freeze. (completed 2026-11-22)
 - [x] **Phase 06.47: Semantic variants for bulk toolbar buttons (#400) (INSERTED)** (completed 2026-11-21)
-- [ ] **Phase 06.48: Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)**
+- [x] **Phase 06.48: Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)** (completed 2026-11-23)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2387,7 +2387,7 @@ Plans:
 **Requirements**: None assigned; use the issue acceptance criteria.
 **Depends on:** Phase 6
 **Ordering:** Explicitly assigned 06.48 by the maintainer; before the 1.0 freeze of both hooks. Stage 2 (#385, shared Guardian checker) and stages 3 to 5 are out of scope.
-**Plans:** 9/9 plans executed
+**Plans:** 9/9 plans complete
 
 Plans:
 **Wave 1**
@@ -2561,4 +2561,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.45. Theme-registered JS namespace and tooltip placements (#398) | 2/2 | Complete | 2026-11-21 |
 | 06.46. Bulk toolbar destination entry gates (#399) | 2/2 | Complete | 2026-11-22 |
 | 06.47. Semantic variants for bulk toolbar buttons (#400) | 3/3 | Complete | 2026-11-21 |
+| 06.48. Private link access and narrowed hook objects (#407) | 9/9 | Complete | 2026-11-23 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

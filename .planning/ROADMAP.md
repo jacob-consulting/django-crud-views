@@ -2387,7 +2387,7 @@ Plans:
 **Requirements**: None assigned; use the issue acceptance criteria.
 **Depends on:** Phase 6
 **Ordering:** Explicitly assigned 06.48 by the maintainer; before the 1.0 freeze of both hooks. Stage 2 (#385, shared Guardian checker) and stages 3 to 5 are out of scope.
-**Plans:** 2/9 plans executed
+**Plans:** 3/9 plans executed
 
 Plans:
 **Wave 1**
@@ -2397,7 +2397,7 @@ Plans:
 - [x] 06.48-02-PLAN.md — Tracer: the private link check, the per-target seam, navbar child item and nested Guardian list-page create
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06.48-03-PLAN.md — Unit tests of the check: signature, ancestor list, order, actor rule, action object, nested Guardian create
+- [x] 06.48-03-PLAN.md — Unit tests of the check: signature, ancestor list, order, actor rule, action object, nested Guardian create
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 06.48-04-PLAN.md — Child context button and card child action through the check; child-link adapter removed; private surface recorded

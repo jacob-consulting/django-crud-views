@@ -218,14 +218,17 @@ def test_plain_child_link_parent_permission(plain_links, client, django_user_mod
 @pytest.mark.django_db
 @pytest.mark.parametrize("renderer", ["context", "card"])
 def test_plain_child_link_own_denial(plain_links, django_user_model, monkeypatch, renderer):
+    from django.contrib.auth.models import Permission
+
     actor = django_user_model.objects.create_user(username="denied_child")
+    actor.user_permissions.add(Permission.objects.get(codename="view_publisher"))
     parent = Publisher.objects.create(name="Original parent")
     own = Mock(return_value=False)
     monkeypatch.setattr(plain_links.list, "cv_has_access", own)
     spy = parent_spy(monkeypatch, plain_links.list)
     assert rendered_data(plain_links, renderer, actor, parent) is None
-    own.assert_called_once_with(actor, parent)
-    spy.assert_not_called()
+    own.assert_called_once_with(actor, None)
+    spy.assert_called_once_with(actor, parent)
 
 
 @pytest.fixture(params=["model", "guardian"])
@@ -332,15 +335,18 @@ def test_plain_child_link_actor_policy(core_links, django_user_model, monkeypatc
     if provider_none:
         monkeypatch.setattr(core_links.parent, "ancestor_policy", AncestorPolicy(provider="none"))
     spy = parent_spy(monkeypatch, PlainList)
-    assert PlainList.cv_has_access(actor, parent) is True
+    assert PlainList.cv_has_access(actor, None) is True
     assert (rendered_data(core_links, renderer, actor, parent) is not None) is provider_none
     spy.assert_called_once_with(actor, parent)
     own = Mock(return_value=False)
     monkeypatch.setattr(PlainList, "cv_has_access", own)
     spy.reset_mock()
     assert rendered_data(core_links, renderer, actor, parent) is None
-    own.assert_called_once_with(actor, parent)
-    spy.assert_not_called()
+    spy.assert_called_once_with(actor, parent)
+    if provider_none:
+        own.assert_called_once_with(actor, None)
+    else:
+        own.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -404,7 +410,7 @@ def test_plain_child_link_backend_grant_cannot_waive_actor_rule(
         if actor_kind != "anonymous":
             client.force_login(actor, backend=inactive_backend)
         assert actor.has_perm("app.view_book") is True
-        assert family.list.cv_has_access(actor, parent_obj) is True
+        assert family.list.cv_has_access(actor, None) is True
         destination = child_url(family, "list", parent_obj)
         response = client.get(destination)
         assert response.status_code == (200 if provider_none else 302 if actor_kind == "anonymous" else 403)
@@ -433,8 +439,11 @@ def test_plain_child_link_backend_grant_cannot_waive_actor_rule(
         with CaptureQueriesContext(connection) as capture:
             denied = rendered_data(family, renderer, actor, parent_obj)
         assert denied is None if mode == "hide" else denied["cv_url"] is None and denied["cv_disabled"]
-        own.assert_called_once_with(actor, parent_obj)
-        spy.assert_not_called()
+        spy.assert_called_once_with(actor, parent_obj)
+        if provider_none:
+            own.assert_called_once_with(actor, None)
+        else:
+            own.assert_not_called()
         assert len(capture) == 0
 
 
@@ -478,21 +487,18 @@ def test_plain_child_link_errors(core_links, django_user_model, monkeypatch, ren
     else:
         match = "operation|actions"
     spy = parent_spy(monkeypatch, Target)
-    if own_allowed:
-        with pytest.raises(ImproperlyConfigured, match=match):
-            rendered_data(core_links, renderer, actor, parent)
-        spy.assert_called_once_with(actor, parent)
-    else:
+    if not own_allowed:
         monkeypatch.setattr(Target, "cv_has_access", Mock(return_value=False))
-        assert rendered_data(core_links, renderer, actor, parent) is None
-        spy.assert_not_called()
+    with pytest.raises(ImproperlyConfigured, match=match):
+        rendered_data(core_links, renderer, actor, parent)
+    spy.assert_called_once_with(actor, parent)
 
-    # Provider none returns before operation/vocabulary/database checks, but never before own denial.
+    # Provider none returns before operation/vocabulary/database checks, then own access still decides.
     monkeypatch.setattr(core_links.parent, "ancestor_policy", AncestorPolicy(provider="none"))
     spy.reset_mock()
     assert (rendered_data(core_links, renderer, actor, parent) is not None) is own_allowed
-    assert spy.call_count == int(own_allowed)
-    assert Target._cv_child_link_has_access(actor, None) is False
+    assert spy.call_count == 1
+    assert Target._cv_link_permission(actor, None, None) is False
 
 
 @pytest.mark.django_db
@@ -723,14 +729,17 @@ def test_preservation_none_policy_actor_state(links, django_user_model, monkeypa
     data = rendered_data(links, renderer, actor, parent)
     active = actor_kind == "active"
     assert data["cv_access"] is active
-    assert data["cv_action_enabled"] is enabled
+    assert data["cv_action_enabled"] is (enabled if active else True)
     assert data["cv_disabled"] is not (active and enabled)
     if data["cv_disabled"]:
         assert data["cv_url"] is None
         assert data["cv_disabled_reason"] == ("state" if active else "permission")
     assert spy.call_count == int(active)
     assert access.call_count == int(active)
-    state.assert_called_once_with(actor, parent)
+    if active:
+        state.assert_called_once_with(actor, parent)
+    else:
+        state.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -744,9 +753,8 @@ def test_preservation_custom_access_and_original_object(links, world, monkeypatc
     spy = parent_spy(monkeypatch, links.list)
     result = rendered_data(links, renderer, actor, parent)
     assert (result is not None) is allow
-    access.assert_called_once_with(actor, parent)
-    assert access.call_args.args[1] is parent
-    assert spy.call_count == int(allow)
+    access.assert_called_once_with(actor, None)
+    assert spy.call_count == 1
 
 
 def replace_list(links, target, monkeypatch):
@@ -789,7 +797,7 @@ def test_preservation_queryset_only_composition(links, client, django_user_model
     access = Mock(return_value=False)
     monkeypatch.setattr(QuerysetOnly, "cv_has_access", access)
     assert rendered_data(links, renderer, actor, parent) is None
-    assert access.call_args.args[1] is parent
+    assert access.call_args.args[1] is None
     access.return_value = True
     for denied in (AnonymousUser(), django_user_model.objects.create_user(username="inactive", is_active=False)):
         access.reset_mock()
@@ -827,10 +835,9 @@ def test_preservation_top_level_delegates_without_actor_or_parent_gate(links, mo
     actor = AnonymousUser()
     access = Mock(return_value=allow)
     monkeypatch.setattr(links.card, "cv_has_access", access)
-    parent = Publisher(name="Supplied original")
     spy = parent_spy(monkeypatch, links.card)
-    assert links.card._cv_child_link_has_access(actor, parent) is allow
-    access.assert_called_once_with(actor, parent)
+    assert links.card._cv_link_permission(actor, None, None) is allow
+    access.assert_called_once_with(actor, None)
     spy.assert_not_called()
 
 
@@ -867,11 +874,11 @@ def test_preservation_create_policy_once(links, world, monkeypatch, renderer, po
         assert data["cv_disabled_reason"] == "state"
         assert data["cv_url"] is None
     access = Mock(return_value=False)
-    monkeypatch.setattr(links.create, "cv_has_access", access)
+    monkeypatch.setattr(links.create, "cv_create_has_access", access)
     spy.reset_mock()
     data = rendered_data(links, renderer, actor, parent, key="create")
     assert data["cv_disabled_reason"] == "permission"
-    assert access.call_args.args[1] is parent
+    access.assert_called_once_with(actor, None, parent)
     spy.assert_not_called()
 
 
@@ -886,7 +893,7 @@ def test_preservation_interleaved_create_custom_and_collection(links, world, mon
     for key in ["list", "create", "card", "list", "card", "create"]:
         assert (rendered_data(links, renderer, actor, parent, key=key) is not None) is (key == "list")
     assert custom.call_count == 2
-    assert all(call.args[1] is parent for call in custom.call_args_list)
+    assert all(call.args[1] is None for call in custom.call_args_list)
 
 
 @pytest.mark.django_db
@@ -963,10 +970,9 @@ def test_preservation_explicit_m2m_same_model_and_core(links, alternate_child, w
     if kind == "core":
         actor.user_permissions.add(Permission.objects.get(codename="view_book"))
         user_guardian_object_perm(actor, links.parent, "view", parents[0])
-        spy = Mock(wraps=target.cv_has_access)
-        monkeypatch.setattr(target, "cv_has_access", spy)
-    else:
-        spy = parent_spy(monkeypatch, target)
+        own = Mock(wraps=target.cv_has_access)
+        monkeypatch.setattr(target, "cv_has_access", own)
+    spy = parent_spy(monkeypatch, target)
     for parent in parents:
         result = rendered_data(links, renderer, actor, parent, child=child)
         assert spy.call_args.args[1] is parent
@@ -979,6 +985,8 @@ def test_preservation_explicit_m2m_same_model_and_core(links, alternate_child, w
                 response = client.get(result["cv_url"])
                 assert response.status_code == 200
                 assert list(response.context["object_list"]) == []
+    if kind == "core":
+        own.assert_called_once_with(actor, None)
 
 
 @pytest.mark.django_db
@@ -987,27 +995,26 @@ def test_preservation_ordinary_row_and_sibling_actions(links, world, monkeypatch
 
     actors, parents = world
     actor, parent = actors[0], parents[0]
-    # Ordinary row actions retain object access, without entering the new child hook.
+    # Ordinary row actions retain object access, without entering a parent gate.
     user_guardian_object_perm(actor, links.parent, "view", parent)
-    hook = Mock(side_effect=AssertionError("ordinary path entered child adapter"))
-    monkeypatch.setattr(links.detail, "_cv_child_link_has_access", hook)
+    detail_gate = parent_spy(monkeypatch, links.detail)
     view = bound(links.card, actor)
     row = view.cv_get_card_action_data(CardAction(key="detail"), parent, actor)
     assert row["cv_access"] is True
     assert resolve(row["cv_url"].split("?")[0]).kwargs["pk"] == str(parent.pk)
     own = ContextButton(key="detail", key_target="detail").get_context(view.cv_get_view_context(object=parent))
     assert own["cv_access"] is True
-    hook.assert_not_called()
+    detail_gate.assert_not_called()
 
     # A sibling collection remains on its pre-existing general access path (outside this fix).
-    monkeypatch.setattr(links.list, "_cv_child_link_has_access", hook)
+    list_gate = parent_spy(monkeypatch, links.list)
     sibling = SiblingContextButton(key="sibling", sibling_name=links.child.name)
     host = bound(links.target_card, actor)
     host.kwargs = {links.child.parent.get_pk_name(): parents[1].pk}
     data = sibling.get_context(host.cv_get_view_context())
     assert data["cv_access"] is True
     assert resolve(data["cv_url"]).kwargs[links.child.parent.get_pk_name()] == str(parents[1].pk)
-    hook.assert_not_called()
+    list_gate.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -1097,7 +1104,7 @@ def test_query_plain_child_link_cost(
         spy.reset_mock()
         with CaptureQueriesContext(connection) as capture:
             if layer == "own_access":
-                assert target.cv_has_access(current, parent) is True
+                assert target.cv_has_access(current, None) is True
             else:
                 assert rendered_data(core_links, renderer, current, parent)["cv_access"] is True
         assert spy.call_count == int(layer == "rendered")
@@ -1251,7 +1258,7 @@ def test_query_card_occurrences_remain_independent(links, world, monkeypatch, re
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("renderer", ["context", "card"])
-def test_query_denied_actors_and_custom_do_no_permission_work(links, world, monkeypatch, renderer):
+def test_query_denied_actors_and_custom_do_no_permission_work(links, world, monkeypatch, record_property, renderer):
     from django.contrib.auth.models import AnonymousUser
     from django.db import connection
     from django.test.utils import CaptureQueriesContext
@@ -1265,8 +1272,19 @@ def test_query_denied_actors_and_custom_do_no_permission_work(links, world, monk
         monkeypatch.setattr(links.list, "cv_has_access", Mock(return_value=reason != "custom"))
         with CaptureQueriesContext(connection) as capture:
             assert rendered_data(links, renderer, current, parents[0]) is None
-        assert len(capture) == 0, capture.captured_queries
-    spy.assert_not_called()
+        if reason == "custom":
+            spy.assert_called_once_with(current, parents[0])
+            report_measurement(
+                record_property,
+                layer="own_denied",
+                renderer=renderer,
+                total=len(capture),
+                categories=sql_categories(capture.captured_queries),
+                helper_calls=spy.call_count,
+            )
+        else:
+            assert len(capture) == 0, capture.captured_queries
+            spy.assert_not_called()
 
 
 @pytest.mark.django_db

@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: f8825c0279d95f4270447505f8dff5fe766d5c8d
-last_mapped_at: 2026-11-22
+last_mapped_commit: 3a28b40a2c700f23a61fad18eef0a2fe25b009c0
+last_mapped_at: 2026-11-23
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-22
+**Analysis Date:** 2026-11-23
 
 Scope: the reusable apps under `src/`, test harnesses under `tests/`, theme contracts under `docs/reference/`, and feature consumers under `examples/bootstrap5/`. Apply the developer-maintainability rule in `AGENTS.md` when choosing locations: use focused opt-in modules and keep shared request paths easy to trace.
 
@@ -94,7 +94,7 @@ lib/
 
 **`src/crud_views/lib/bulk/` and bulk theme leaves:**
 - Core implementation: `src/crud_views/lib/bulk/__init__.py` contains `BulkSelectionMixin`, `BulkConfirmForm`, `BulkFormViewPermissionRequired`, bounded ID normalization and request-local review data.
-- Toolbar button rendering: `BulkSelectionMixin.cv_bulk_buttons` uses `src/crud_views/lib/view/button_data.py` with location `form`, then adds `destination.cv_action_variant` and renders `src/crud_views/templates/crud_views/tags/button/bulk.html`. Keep this dedicated leaf separate from generic action leaves and the review form's Confirm button.
+- Toolbar button rendering: `BulkSelectionMixin.cv_bulk_buttons` uses `src/crud_views/lib/view/button_data.py` with location `form`, then adds `destination.cv_action_variant` (unset renders `secondary`) and renders `src/crud_views/templates/crud_views/tags/button/bulk.html`. Keep this dedicated leaf separate from generic action leaves and the review form's Confirm button.
 - Theme class registry: `src/crud_views/lib/button_classes.py` defines four `bulk:<variant>` defaults, mode-specific overrides and seven structural bulk slots. Bulk label mode comes from `src/crud_views/lib/view/label_mode.py`; unavailable icons force label mode before classes are selected.
 - Entry-point boundary: `src/crud_views/lib/view/button_data.py` and `src/crud_views/templatetags/crud_views.py` reject direct generic rendering with location `bulk`; preserve these guards when changing normalization.
 - Review rendering: `src/crud_views/templates/crud_views/view_bulk_form.html`, `view_bulk_form.content.html`, and `snippets/bulk/{blocked,eligible}.html`; transport stays in the content template while snippets own presentation.
@@ -139,6 +139,7 @@ lib/
 **`src/crud_views/lib/bulk/`:**
 - Purpose: optional current-page selection controls and a reusable permission-gated bulk action destination.
 - Key file: `src/crud_views/lib/bulk/__init__.py`; exports `BulkSelectionMixin`, `BulkFormViewPermissionRequired`, and `BulkConfirmForm`.
+- Only actions whose destination passes `cv_has_access`/`cv_action_enabled` for the viewer are offered; with none, no toolbar or checkboxes render.
 - Keep selection opt-in on table/card classes. The destination rechecks visibility and object eligibility; put app-specific writes in its `cv_form_valid()` implementation.
 - Rendering lives in `src/crud_views/templates/crud_views/snippets/bulk_toolbar.html`, `columns/bulk_select.html`, `view_bulk_form.content.html`, and `snippets/bulk/`. Progressive enhancement is in `src/crud_views/static/crud_views/js/bulk.js`; list and card content templates include the toolbar when actions are declared.
 - The consumer example is `examples/bootstrap5/bulk_selection/views.py`; its model, routes, seed data and tests are in that app directory.
@@ -298,4 +299,4 @@ lib/
 
 ---
 
-*Structure analysis: 2026-11-22*
+*Structure analysis: 2026-11-23*

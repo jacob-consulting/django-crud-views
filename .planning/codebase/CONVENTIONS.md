@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: f8825c0279d95f4270447505f8dff5fe766d5c8d
-last_mapped_at: 2026-11-22
+last_mapped_commit: 3a28b40a2c700f23a61fad18eef0a2fe25b009c0
+last_mapped_at: 2026-11-23
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-22
+**Analysis Date:** 2026-11-23
 
 ## Naming Patterns
 
@@ -162,11 +162,17 @@ last_mapped_at: 2026-11-22
 - Preserve native submit identity (`cv_bulk_stage=review`), action URL and selection attributes in `src/crud_views/templates/crud_views/tags/button/bulk.html`. Bulk variant classes are independent of `form:submit`; hidden-label and host-icon utilities remain shared with the form location. Icon tooltips retain `data-cv-tooltip="form"` (`tests/test1/test_bulk_variants.py`).
 - Protect default toolbar bytes relative to the form leaf, including the terminal newline and signed URL bytes, with `tests/test1/test_bulk_variants.py::test_stock_toolbar_matches_form_leaf` (absolute form-leaf bytes are pinned by `tests/test1/test_form_buttons_golden.py`): it renders the unchanged form leaf from each real normalized payload and compares it byte for byte with the source page and with the bulk leaf. Do not normalize whitespace or strip signed tokens in that comparison.
 
+## Destination-Gated Bulk Toolbar
+
+- Render the toolbar only for actions the viewer can enter: templates wrap `crud_views/snippets/bulk_toolbar.html` in `{% if view.cv_bulk_buttons %}` (`view_list_table.content.html`, `view_card.content.html`; the card cell uses the same condition) and the snippet guards itself, so an override that still tests `view.cv_bulk_actions` still renders no empty toolbar (`tests/test1/test_bulk_source.py::test_bulk_toolbar_snippet_guards_itself`).
+- Presentation hooks (for example `cv_get_action_short_label`) must not have their exceptions swallowed by template rendering; failures propagate (`::test_bulk_button_presentation_errors_are_not_swallowed`).
+- Cost contracts are relative: compare against the same page without bulk actions rather than pinning absolute query counts (`::test_bulk_source_query_cost`). Documentation tests pin hook/template names, not prose.
+
 ## JavaScript Configuration Registries
 
 - Register namespace and tooltip defaults at startup through `src/crud_views/lib/js_config.py`, publicly exported by `src/crud_views/lib/__init__.py`. Validate the entire registration before replacing state; copy placement mappings on input and output. Namespace and data prefix are independent registrations (`tests/test1/test_js_config.py`).
-- Keep `cv_config` and `cv_const_js` on the shared serialization context in `src/crud_views/templatetags/crud_views.py`. The adapter in `src/crud_views/static/crud_views/js/adapters.js` consumes the registered provider namespace and location defaults; an explicit prefix-specific placement attribute, including an empty value, takes precedence (`tests/js/adapters.test.js`, `tests/js/tooltip.test.js`).
+- Keep `cv_config` and `cv_const_js` on the shared serialization context in `src/crud_views/templatetags/crud_views.py`. The adapter in `src/crud_views/static/crud_views/js/adapters.js` consumes the registered provider namespace and location defaults; an explicit prefix-specific placement attribute, including an empty value, takes precedence. Modal hide/hidden event names are derived from the registered data prefix (`hide.<prefix>.modal`, default `bs`) (`tests/js/adapters.test.js`, `tests/js/tooltip.test.js`).
 
 ---
 
-*Convention analysis: 2026-11-22*
+*Convention analysis: 2026-11-23*

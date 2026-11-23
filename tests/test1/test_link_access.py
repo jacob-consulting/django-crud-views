@@ -957,3 +957,64 @@ def test_nested_guardian_create_filter_and_sibling_button_stay_denied(helpers, d
     own.assert_not_called()
     create_access.assert_not_called()
     gate.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+@pytest.mark.parametrize("kind", ["object", "list", "create"])
+def test_action_object_same_for_link_and_request(data, monkeypatch, composition, kind):
+    from tests.test1.app import views
+
+    if composition == "core":
+        family = {"object": views.BookDetailView, "list": views.BookListView, "create": views.BookCreateView}
+    else:
+        family = {
+            "object": views.GuardianBookDetailView,
+            "list": views.GuardianBookListView,
+            "create": views.GuardianBookCreateView,
+        }
+    target = family[kind]
+    page = family["object" if kind == "list" else "list"]
+    assert page is not target
+    monkeypatch.setattr(target, "cv_context_actions", [])
+    monkeypatch.setattr(
+        page, "cv_context_actions", ["home"] if kind == "list" else ["create"] if kind == "create" else []
+    )
+    monkeypatch.setattr(family["list"], "cv_list_actions", ["detail"] if kind == "object" else [])
+    actor = _user(f"parity_{composition}_{kind}", superuser=True)
+    client = _client(actor)
+    calls = []
+    building_page = False
+    original_context = target.get_context_data
+
+    def get_context_data(self, *args, **kwargs):
+        nonlocal building_page
+        building_page = True
+        return original_context(self, *args, **kwargs)
+
+    def state(cls, user, obj=None):
+        calls.append((building_page, obj))
+        return True
+
+    monkeypatch.setattr(target, "get_context_data", get_context_data)
+    monkeypatch.setattr(target, "cv_action_enabled", classmethod(state))
+    kwargs = {target.cv_viewset.parent.get_pk_name(): data.penguin.pk}
+    target_kwargs = {**kwargs, "pk": data.book.pk} if kind == "object" else kwargs
+    response = client.get(_url(target.cv_viewset, target.cv_key, **target_kwargs))
+    assert response.status_code == 200
+    assert building_page, "the target must build its page after enforcement"
+    enforcement = [obj for rendering, obj in calls if not rendering]
+    assert enforcement, "no request enforcement call was recorded"
+
+    calls.clear()
+    page_kwargs = {**kwargs, "pk": data.book.pk} if kind == "list" else kwargs
+    response = client.get(_url(page.cv_viewset, page.cv_key, **page_kwargs))
+    assert response.status_code == 200
+    assert type(response.context["view"]) is page
+    rendering = [obj for _, obj in calls]
+    assert rendering, "no link rendering call was recorded"
+
+    expected = data.book if kind == "object" else data.penguin
+    for obj in [*enforcement, *rendering]:
+        assert type(obj) is type(expected)
+        assert obj.pk == expected.pk

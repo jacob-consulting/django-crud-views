@@ -550,7 +550,10 @@ def test_child_card_create_action_uses_row_parent(native, tp, client, world, cre
     assert "MX-CARD Card Child" in content
     assert f'href="{_u(tp.book_vs, "detail", book.pk, world.a.pk)}">Open</a>' in content
     assert (f'href="{_create_url(tp, world)}">Sibling book</a>' in content) is (create_grant and enabled)
-    _assert_state_hook_saw_only_parent(tp, world.a)
+    if create_grant:
+        _assert_state_hook_saw_only_parent(tp, world.a)
+    else:
+        assert tp.state_calls == []
 
 
 # ── action leaf: toolbar create, alias and the permission filter on child pages (H03) ──

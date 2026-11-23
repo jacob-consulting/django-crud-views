@@ -966,7 +966,7 @@ def test_child_card_row_create_action_uses_row_parent(
     assert response.status_code == 200
     (row,) = [data for key, obj, data in records if key == "create"]
     assert row["cv_access"] is create_grant
-    assert row["cv_action_enabled"] is enabled
+    assert row["cv_action_enabled"] is (enabled if create_grant else True)
     from tests.test1.test_cancel_navigation import checked_action_url
 
     assert checked_action_url(row["cv_url"], response.context["view"]) == create_url
@@ -974,7 +974,10 @@ def test_child_card_row_create_action_uses_row_parent(
     (detail,) = [data for key, obj, data in records if key == "detail"]
     assert detail["cv_access"] is True  # the other card action keeps its own row-object semantics
     assert ("Sibling book" in response.content.decode()) is (create_grant and enabled)
-    _assert_hook_saw_only_parent(pn, publisher_a)
+    if create_grant:
+        _assert_hook_saw_only_parent(pn, publisher_a)
+    else:
+        assert pn.hook_calls == []
 
 
 @pytest.mark.django_db

@@ -75,7 +75,7 @@ COLLECTED_VALID = {
     "bulk_filter": "BulkFilterMarkView",
     "bulk_author": "BulkAuthorMarkView",
     "bulk_code": "BulkCodeMarkView",
-    "bulk_book": "BulkBookMarkView",
+    "bulk_book": "BulkBookMarkView BulkBookMarkSecondView BulkBookMarkThirdView BulkBookMarkFourthView",
     "bulk_tenant": "BulkTenantMarkView BulkTenantNarrowView",
     "bulk_publisher": "BulkPublisherArchiveView BulkPublisherArchiveNowView BulkPublisherRenameView "
     "BulkPublisherDeleteView BulkPublisherLockedArchiveView",

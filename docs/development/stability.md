@@ -80,13 +80,17 @@ deprecation and migration policy below.
 The POST fields are `cv_bulk_ids`, `cv_bulk_blocked_ids` and `cv_bulk_stage`; the `cv_bulk_` prefix is reserved.
 The override contract includes `crud_views/view_bulk_form.html`, `crud_views/view_bulk_form.content.html`,
 `crud_views/snippets/bulk_toolbar.html`, `crud_views/columns/bulk_select.html`,
-`crud_views/snippets/message/bulk.html`, `crud_views/snippets/bulk/blocked.html` and
-`crud_views/snippets/bulk/eligible.html`. The two review snippets receive `bulk_review` with `objects` and
-`blocked`; each blocked item has `pk`, `label` and `reasons`.
+`crud_views/snippets/message/bulk.html`, `crud_views/snippets/bulk/blocked.html`,
+`crud_views/snippets/bulk/eligible.html` and `crud_views/tags/button/bulk.html`. The two review snippets receive
+`bulk_review` with `objects` and `blocked`; each blocked item has `pk`, `label` and `reasons`.
 The six data attributes are `data-cv-bulk`, `data-cv-bulk-item`, `data-cv-bulk-all`, `data-cv-bulk-count`,
 `data-cv-bulk-action` and `data-cv-bulk-enhanced`. The seven class keys are `bulk:toolbar`, `bulk:controls`,
 `bulk:select-all`, `bulk:checkbox`, `bulk:actions`, `bulk:card-cell` and `bulk:card-select`, with the
-label-mode location `bulk` (floor `both`). These names and the behavior in the
+label-mode location `bulk` (floor `both`). Four additional variant keys, `bulk:primary`, `bulk:secondary`,
+`bulk:tertiary` and `bulk:danger`, support effective-mode suffixes `:label`, `:icon` and `:both` with normal
+presence-based precedence; the seven utility keys do not. The bulk leaf's flat contract is documented in
+[Bulk button leaf](../reference/buttons.md#bulk-button-leaf); its data builder remains internal.
+These names and the behavior in the
 [bulk actions reference](../reference/bulk_actions.md) are stable at 1.0.
 There is no bulk-specific provisional exception: public breaking changes follow the major-release,
 deprecation and migration policy below.

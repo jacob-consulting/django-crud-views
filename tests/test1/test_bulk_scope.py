@@ -1,6 +1,8 @@
 """Request-level proofs of bulk key normalization and authorization boundaries."""
 
+import django_tables2 as tables
 import pytest
+from django.contrib.auth.models import PermissionsMixin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.messages import get_messages
 from django.core.exceptions import ImproperlyConfigured
@@ -8,7 +10,12 @@ from django.db import router
 from django.test import Client
 from django.urls import reverse
 
-from tests.test1.app.models import Author, Book, BulkCode, Publisher
+from crud_views.lib.bulk import BulkFormViewPermissionRequired, BulkSelectionMixin
+from crud_views.lib.table import Table
+from crud_views.lib.views import CardListViewPermissionRequired, ListViewPermissionRequired, ListViewTableMixin
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
+from crud_views_guardian.lib.viewset import GuardianViewSet
+from tests.test1.app.models import Author, Book, BookNote, BulkCode, Publisher
 from tests.test1.app.views_bulk import (
     BulkBookMarkView,
     BulkCodeMarkView,
@@ -17,7 +24,9 @@ from tests.test1.app.views_bulk import (
     BulkTenantListView,
     BulkTenantMarkView,
     BulkTenantNarrowView,
+    cv_bulk_book,
 )
+from tests.test1.test_ancestor_authorization import _client, _user, isolated_routes
 from tests.test1.test_bulk_flow import review_data, soup
 
 pytestmark = pytest.mark.django_db
@@ -392,11 +401,197 @@ def test_pagination_is_no_authorization_gate(client_user_bulk_tenant_change, mon
 def test_destination_admission_precedes_item_hooks(client_user_bulk_publisher_view, monkeypatch, stage):
     publisher = Publisher.objects.create(name="No change permission")
     calls = record_item_hooks(monkeypatch, BulkPublisherArchiveView)
+    source = client_user_bulk_publisher_view.get("/bulk-publisher/")
+    assert source.status_code == 200
+    assert not soup(source).cssselect("[data-cv-bulk-action], [data-cv-bulk-item]")
     response = post_selection(client_user_bulk_publisher_view, "/bulk-publisher/archive/", [publisher], stage)
     assert response.status_code == 403
     assert calls == {"permission": [], "check": []}
     publisher.refresh_from_db()
     assert publisher.name == "No change permission"
+
+
+@pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
+@pytest.mark.parametrize("stage", ["review", "execute"])
+def test_bulk_guardian_visibility_preserves_all_blocked_review(card, stage, monkeypatch):
+    from types import SimpleNamespace
+
+    from guardian.core import ObjectPermissionChecker
+
+    from tests.test1.app.views_bulk import BulkPublisherTable
+
+    def build(suffix):
+        vs = GuardianViewSet(model=Publisher, name=f"offered_guardian_{suffix}", prefix=f"offered-guardian-{suffix}")
+
+        # Core source admission deliberately avoids Guardian's separate queryset policy.
+        class OfferedGuardianList(BulkSelectionMixin, ListViewTableMixin, ListViewPermissionRequired):
+            cv_viewset = vs
+            table_class = BulkPublisherTable
+            cv_bulk_actions = ("mark",)
+            cv_context_actions = ["home"]
+            cv_list_actions = []
+
+        class OfferedGuardianCard(BulkSelectionMixin, CardListViewPermissionRequired):
+            cv_viewset = vs
+            cv_bulk_actions = ("mark",)
+            cv_context_actions = ["home"]
+            cv_card_actions = []
+            cv_order_fields = ["name"]
+
+        class OfferedGuardianMark(BulkFormViewPermissionRequired):
+            cv_viewset = vs
+            cv_key = "mark"
+            cv_path = "mark"
+            cv_permission = "change"
+            cv_cancel_keys = ["list", "card"]
+            cv_success_key = "list"
+            cv_action_label_template_code = "Mark selected"
+            cv_action_short_label_template_code = "Mark"
+
+            def cv_bulk_has_permission(self, obj):
+                return self.request.user.has_perm("app.change_publisher", obj)
+
+            def cv_form_valid(self, context):
+                pytest.fail("All-blocked Guardian selection reached a write")
+
+        return SimpleNamespace(vs=vs, destination=OfferedGuardianMark), [vs]
+
+    obj = Publisher.objects.create(name="No object grant")
+    actor = _user("guardian_offer", (Publisher, "view"), (Publisher, "change"))
+    client = _client(actor)
+    with isolated_routes(build) as fixture:
+        original = PermissionsMixin.has_perm
+        checker = ObjectPermissionChecker.has_perm
+        selected = []
+
+        def model_only(self, perm, obj=None):
+            assert obj is None, "Bulk rendering scanned selected-object grants"
+            return original(self, perm, obj)
+
+        def selected_check(self, perm, obj):
+            selected.append(obj.pk)
+            return checker(self, perm, obj)
+
+        with monkeypatch.context() as render_patch:
+            render_patch.setattr(PermissionsMixin, "has_perm", model_only)
+            render_patch.setattr(ObjectPermissionChecker, "has_perm", forbidden_hook)
+            render_patch.setattr(fixture.destination, "cv_bulk_has_permission", forbidden_hook)
+            render_patch.setattr(fixture.destination, "cv_bulk_check", forbidden_hook)
+            response = client.get(reverse(fixture.vs.get_router_name("card" if card else "list")))
+            assert response.status_code == 200
+            button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+            assert soup(response).cssselect("[data-cv-bulk-item]")
+            offered = button.get("formaction")
+        monkeypatch.setattr(ObjectPermissionChecker, "has_perm", selected_check)
+        response = post_selection(client, offered, [obj], stage)
+        assert response.status_code == 200
+        assert selected == [obj.pk]
+        assert response.context["bulk_review"].objects == ()
+        assert len(response.context["bulk_review"].blocked) == 1
+        assert not soup(response).cssselect('button[type="submit"]')
+        assert soup(response).cssselect("[data-cv-cancel-url]")
+        obj.refresh_from_db()
+        assert obj.name == "No object grant"
+
+
+@pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
+@pytest.mark.parametrize("stage", ["review", "execute"])
+@pytest.mark.parametrize("denial", ["immediate", "farther"])
+def test_bulk_offered_action_ancestor_write_denied(card, stage, denial, monkeypatch):
+    from types import SimpleNamespace
+
+    parent = Publisher.objects.create(name="Read-only publisher")
+    book = Book.objects.create(publisher=parent, title="Admitted book")
+    note = BookNote.objects.create(book=book, note="Unchanged note")
+    actor = _user(
+        "ancestor_offer",
+        (Publisher, "view"),
+        (Book, "view"),
+        (Book, "change"),
+        (BookNote, "view"),
+        (BookNote, "change"),
+    )
+    client = _client(actor)
+
+    def assert_denied(vs, destination, obj, kwargs):
+        monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+        response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+        assert response.status_code == 200
+        button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+        assert soup(response).cssselect("[data-cv-bulk-item]")
+        response = post_selection(client, button.get("formaction"), [obj], stage)
+        assert response.status_code == 403
+        assert list(Publisher.objects.values_list("name", flat=True)) == ["Read-only publisher"]
+        assert list(Book.objects.values_list("title", flat=True)) == ["Admitted book"]
+        assert list(BookNote.objects.values_list("note", flat=True)) == ["Unchanged note"]
+
+    if denial == "immediate":
+        assert_denied(cv_bulk_book, BulkBookMarkView, book, {"bulk_publisher_pk": parent.pk})
+        return
+
+    def build(suffix):
+        root = ViewSet(model=Publisher, name=f"offered_root_{suffix}", prefix=f"offered-root-{suffix}")
+        middle = ViewSet(
+            model=Book,
+            name=f"offered_book_{suffix}",
+            prefix="book",
+            parent=ParentViewSet(name=root.name, attribute="publisher"),
+        )
+        leaf = ViewSet(
+            model=BookNote,
+            name=f"offered_note_{suffix}",
+            prefix="note",
+            parent=ParentViewSet(name=middle.name, attribute="book"),
+            ancestor_policy=AncestorPolicy(cascade=True, write=AncestorPermissions(nearest="change", higher="change")),
+        )
+
+        class OfferedNoteTable(Table):
+            note = tables.Column()
+
+        class OfferedNoteListView(BulkSelectionMixin, ListViewTableMixin, ListViewPermissionRequired):
+            cv_viewset = leaf
+            table_class = OfferedNoteTable
+            cv_bulk_actions = ("mark",)
+            cv_context_actions = ["home"]
+            cv_list_actions = []
+
+        class OfferedNoteCardView(BulkSelectionMixin, CardListViewPermissionRequired):
+            cv_viewset = leaf
+            cv_bulk_actions = ("mark",)
+            cv_context_actions = ["home"]
+            cv_card_actions = []
+            cv_order_fields = ["note"]
+
+        class OfferedNoteMarkView(BulkFormViewPermissionRequired):
+            cv_viewset = leaf
+            cv_key = "mark"
+            cv_path = "mark"
+            cv_permission = "change"
+            cv_cancel_keys = ["list", "card"]
+            cv_success_key = "list"
+            cv_action_label_template_code = "Mark selected"
+            cv_action_short_label_template_code = "Mark"
+
+            def cv_form_valid(self, context):
+                for selected in self.cv_bulk_objects:
+                    selected.note += " (marked)"
+                    selected.save(using=self.cv_get_db_alias())
+
+        return SimpleNamespace(root=root, middle=middle, leaf=leaf, destination=OfferedNoteMarkView), [
+            root,
+            middle,
+            leaf,
+        ]
+
+    with isolated_routes(build) as fixture:
+        assert_denied(
+            fixture.leaf,
+            fixture.destination,
+            note,
+            {f"{fixture.root.name}_pk": parent.pk, f"{fixture.middle.name}_pk": book.pk},
+        )
 
 
 @pytest.mark.parametrize("stage", ["review", "execute"])

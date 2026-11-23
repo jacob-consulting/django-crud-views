@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: af5d74efd12e965b432fe30c6044f139b406eafc
-last_mapped_at: 2026-11-21
+last_mapped_commit: 3a28b40a2c700f23a61fad18eef0a2fe25b009c0
+last_mapped_at: 2026-11-23
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-21
+**Analysis Date:** 2026-11-23
 
 ## Test Framework
 
@@ -62,6 +62,8 @@ def test_debug_view(user_author_view: User, cv_author, author_douglas_adams, aut
 - Use lazy-object assertions when evaluation timing matters. `tests/test1/test_navbar_templates.py::test_context_copies_and_repeated_calls_reuse_one_lazy_build` covers copied Django contexts, includes, and repeated renders; `::test_omitted_consumers_and_modal_direct_includes_do_no_work` guards zero-work paths; `tests/test1/test_lazy_labels.py` checks lazy translations resolve in the active language.
 - Escaping tests should parse output and assert hostile inputs do not create markup or active attributes. `tests/test1/test_navbar_templates.py::test_plain_labels_and_accessible_names_are_escaped_once` covers raw/safe labels, entity-looking text, and localized accessible names.
 - Bulk action tests separate rendered selection, request validation, lifecycle, and return-navigation contracts. Use `tests/test1/test_bulk_source.py` for table/card selection markup and proof that source rendering does not invoke destination permission/item hooks; use `tests/test1/test_bulk_scope.py` for UUID/integer/string key canonicalization, deduplication, malformed and NUL key rejection, write-database routing, and authorization boundaries; use `tests/test1/test_bulk_flow.py` for review/execute ordering and atomic rollback; use `tests/test1/test_bulk_return.py` for origin preservation. Build requests with the real Django `Client` and assert state, response, or query behavior at the boundary under test.
+- Destination-gated toolbar (Phase 06.46): `tests/test1/test_bulk_source.py::test_bulk_toolbar_snippet_guards_itself` renders an override that includes `crud_views/snippets/bulk_toolbar.html` without the offered-action condition and asserts no empty toolbar (form, select-all) for a viewer admitted to no action; `::test_bulk_button_presentation_errors_are_not_swallowed` makes the `cv_get_action_short_label` hook raise `ObjectDoesNotExist` or a silent-gate error and asserts the same exception object propagates (Django templates would otherwise silence it and drop the toolbar).
+- Query-cost tests compare relative cost, not absolute counts. `tests/test1/test_bulk_source.py::test_bulk_source_query_cost` captures queries for the page with offered actions and for the same page with `cv_bulk_actions = ()`, and asserts `len(offered_queries) == len(baseline_queries)` across nested/top, table/card, row and action counts; the measured count is recorded via `record_property`. Do not pin absolute query numbers.
 
 ## Breadcrumb and Effective Ordering Contracts
 
@@ -92,7 +94,7 @@ monkeypatch.setattr(PublisherDetailView, "cv_context_actions", ["books"])
 - Goldens: normalised markup files under `tests/test1/golden/<area>/`, compared through `tests/lib/helper/golden.py::check_golden`; set `CV_UPDATE_GOLDEN=1` to rewrite.
 - Exact compatibility captures may live as frozen raw strings beside their deterministic rendering helper. `tests/test1/test_data_prefix.py` holds seven component outputs and two config aliases; `tests/test1/test_breadcrumb.py` holds three breadcrumb outputs. Compare byte-for-byte; never normalize or regenerate these captures during ordinary test runs.
 - Real HTTP behavior uses Django `Client` against the in-memory project. Navbar examples include `tests/test1/test_navbar.py::test_real_owner_navbar`, `tests/test1/test_navbar_templates.py::test_component_tags_render_independently_in_real_response`, and `::test_real_response_omits_all_navbar_work_without_consumers_or_in_custom_modal`.
-- Published examples are executable fixtures: `tests/test1/test_navbar_docs.py` extracts navbar recipes and renders them with real context; related harnesses include `tests/test1/test_cancel_docs.py`, `test_object_detail_value_docs.py`, `test_conditional_migration_docs.py`, `test_theme_adoption_docs.py`, and `tests/test1/test_data_prefix_docs.py`. The latter compiles the exact `AppConfig.ready()` recipe from `docs/reference/theme.md`, calls the real tag, renders copied template recipes against real groups, and parses the output DOM. Keep recipe markers/fences stable or update extraction tests with documentation changes.
+- Published examples are executable fixtures: `tests/test1/test_navbar_docs.py` extracts navbar recipes and renders them with real context; related harnesses include `tests/test1/test_cancel_docs.py`, `test_object_detail_value_docs.py`, `test_conditional_migration_docs.py`, `test_theme_adoption_docs.py`, and `tests/test1/test_data_prefix_docs.py`. The latter compiles the exact `AppConfig.ready()` recipe from `docs/reference/theme.md`, calls the real tag, renders copied template recipes against real groups, and parses the output DOM. Keep recipe markers/fences stable or update extraction tests with documentation changes. Documentation tests pin hook and template names (for example `tests/test1/test_bulk_docs.py::test_bulk_guide_names_the_visibility_hooks_and_template_guard`, `::test_bulk_hook_exception_beside_stability_hook_inventory`), not prose wording.
 - Mutable theme prefix tests must request `isolate_data_prefix` from `tests/test1/conftest.py`; this fixture restores the shared module scalar via `monkeypatch`. Do not add it as an autouse fixture: tests that never register a theme should not acquire unrelated global-state setup. Registration is startup-only; these tests cover repeated startup registration and late tag reads, not runtime switching guarantees.
 
 ## Coverage
@@ -161,6 +163,35 @@ paths.
 
 ---
 
-*Testing analysis: 2026-11-21*
-
 Both integration suites import `selectedPython()` from `tests/js-integration/python.js`. This shared test-only helper preserves the selected virtualenv launcher and bounded missing/invalid-interpreter diagnostics.
+
+## JavaScript Adapter Event Prefix
+
+- `tests/js/adapters.test.js` parametrizes `MODAL_EVENT_CASES` (no `data-data-prefix` on `#cv-config`, `bs`, `coreui`, hyphenated `my-lib`) via `describe.each`. Modal `onHidden` waits for `hide.<prefix>.modal` then `hidden.<prefix>.modal` (PR #405, #403), for the default, object-namespace and callback-namespace adapters, and unsubscribes idempotently. Dispatch events named from the registered prefix; an absent element or attribute means `bs`.
+
+## Bulk Variant and Copied Leaf Contracts
+
+- `tests/test1/test_bulk_variants.py` exercises table/card sources, `label`/`icon`/`both` modes, available/missing/disabled/host icons, four destination variants, inherited secondary styling, explicit empty/None class overrides, form-style isolation, and native review POSTs. Preserve real request/state assertions alongside parsed markup checks.
+- `tests/test1/test_bulk_variants.py::test_stock_toolbar_matches_form_leaf` captures each actual normalized payload, independently renders `crud_views/tags/button/form.html`, and compares it byte for byte with both the raw response control and the bulk leaf under the default secondary variant, across 24 source/mode/icon combinations. Raw extraction retains each terminal newline and the full signed URL. The comparison is computed live, has no stored fixture (the former frozen `bulk_toolbar_pre_variant.json` and `test_stock_toolbar_bytes` are removed) and is relative to the form leaf; absolute form-leaf bytes are pinned by `tests/test1/test_form_buttons_golden.py`.
+- `tests/test1/test_bulk_docs.py::test_copied_bulk_leaf_contract` extracts the exact nine-field Django recipe from `docs/reference/buttons.md`, renders it and the shipped bulk leaf against the actual projected payload, and compares both with the stock control. Its 36 cases cover table/card, three modes, inline/host/disabled icons and hostile labels. Missing `cv_title` is permitted outside icon mode; the original icon key remains available when disabled.
+- The copied-leaf test instruments `Variable.resolve` and checks recorded reads after rendering, since Django conditionals can suppress exceptions. It proves the guard with false/missing/truthy synthetic undeclared input, then asserts that form-only keys do not affect either template. Use this pattern to detect ambient-context dependencies rather than relying on output equality alone (`tests/test1/test_bulk_docs.py::test_copied_bulk_leaf_contract`).
+- `tests/test1/test_bulk_variants.py::test_short_labels_and_escaping` and `::test_bulk_action_key_is_escaped` exercise plain, safe and lazy hostile text, escaped action URLs/keys, accessible labels, and native submit attributes. Test DOM semantics and exact escaping together.
+- `tests/test1/test_bulk_docs.py::test_bulk_modules_remain_in_maintained_crispy_floor_selection` parses `noxfile.py` to keep bulk flow/execution/source/scope/return/variants in `CRISPY_FLOOR_TESTS`. A passing local selection does not establish that the floor sessions or full supported matrix ran.
+
+## Recorded Phase 06.47 Shipping Evidence
+
+Use `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-REGRESSION.md`, `06.47-03-SUMMARY.md`, and `06.47-VERIFICATION.md` for the source/revision attribution of these recorded results. Mapping performs no test reruns.
+
+| Evidence scope | Recorded result | Interpretation |
+| --- | --- | --- |
+| Original full `tests/test1 -n 4 -q` | 17,264 passed in 574.38s; Python 3.12.3 / Django 6.0.10 | Original phase acceptance; not a full run after the Phase 06.45 integration merge |
+| Original combined focused selection | 2,467 passed | Original focused gate; separately attributed from full-suite evidence |
+| Shipping integration refresh | 470 affected Python passed in 25.55s | Bulk/theme/JS-config/data-prefix coverage following the integration merge |
+| Shipping Node/jsdom lane | 541 tests across 13 files | Ordinary JavaScript suite, including runtime-contract checks (count recorded before PR #405 added modal-event cases) |
+| Shipping Django/JS lane | 3 tests across 2 files | Separate integration command and explicitly selected Python runtime |
+
+The shipping verification addendum in `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-VERIFICATION.md` also records a two-alias probe using actual bulk control output plus `cv_config`/`cv_const_js`, namespace `tabler`, independent prefix `coreui`, and form tooltip placement. The probe checks native submit identity and placement precedence through the shipped adapters/scanner. This recorded jsdom/stub-provider probe supplements the maintained context-tooltip bridge in `tests/js-integration/js-config.test.js`; it is not a committed bulk browser test or a downstream library certification. No full dependency matrix or fresh postmerge full-suite result is established by those focused checks.
+
+---
+
+*Testing analysis: 2026-11-23*

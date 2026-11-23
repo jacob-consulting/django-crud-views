@@ -119,7 +119,7 @@ def cv_button_data(ctx: dict, location: str, kind: str = "action") -> dict:
         raise ValueError(f"kind must be one of {sorted(KINDS)}, got {kind!r}")
     if location == "bulk":
         raise ValueError(
-            "location 'bulk' has no action leaf; bulk toolbar buttons render through the form leaf with "
+            "location 'bulk' has no action leaf; bulk toolbar buttons render through the dedicated bulk leaf with "
             'cv_button_data(raw, "form") and the bulk label-mode floor'
         )
     if location == "form":

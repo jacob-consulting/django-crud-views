@@ -1,0 +1,12 @@
+{
+  "command": "PYTHONPATH=src:. /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_button_data.py::test_bulk_tag_location_rejected -q --junitxml=.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-01-task2-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.369\" timestamp=\"2026-11-21T20:22:46.285922+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_button_data\" name=\"test_bulk_tag_location_rejected\" time=\"0.017\"><failure message=\"AssertionError: Regex pattern did not match.&#10;  Expected regex: 'dedicated bulk leaf'&#10;  Actual message: 'cv_button does not support location \\'bulk\\'; bulk toolbar buttons render through the form leaf with cv_button_data(raw, &quot;form&quot;) and the bulk label-mode floor'\">def test_bulk_tag_location_rejected():\n        from django.template import Context, Template\n    \n&gt;       with pytest.raises(ValueError, match=\"dedicated bulk leaf\"):\nE       AssertionError: Regex pattern did not match.\nE         Expected regex: 'dedicated bulk leaf'\nE         Actual message: 'cv_button does not support location \\'bulk\\'; bulk toolbar buttons render through the form leaf with cv_button_data(raw, \"form\") and the bulk label-mode floor'\n\ntests/test1/test_button_data.py:571: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_bulk_tag_location_rejected",
+  "targetFile": "tests/test1/test_button_data.py",
+  "expected": "Bulk dispatch raises with dedicated bulk leaf explanation",
+  "actual": "ValueError preserved but stale form leaf explanation",
+  "reportPath": ".planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-01-task2-red.xml",
+  "reportModifiedAt": 1795292566.6542304,
+  "semanticAssessment": "Target executed the generic tag refusal branch; expected refusal occurred and assertion failed only because its explanation still named the old form renderer."
+}

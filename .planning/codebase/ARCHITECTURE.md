@@ -1,13 +1,13 @@
 ---
-last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
-last_mapped_at: 2026-11-21
+last_mapped_commit: 3a28b40a2c700f23a61fad18eef0a2fe25b009c0
+last_mapped_at: 2026-11-23
 ---
-<!-- refreshed: 2026-11-21 -->
+<!-- refreshed: 2026-11-23 -->
 # Architecture
 
-**Analysis Date:** 2026-11-21
+**Analysis Date:** 2026-11-23
 
-Incremental inspection covers `src/`, `tests/`, `docs/`, and `CHANGELOG.md`, including breadcrumb classes and effective table ordering. Other descriptions retain the existing map's scope: ViewSet/CrudView, ancestors, Resource, manage, access trace, bulk selection, templates and the Bootstrap 5 bulk example; extension internals and JavaScript implementation details are summarized from the existing map and file layout.
+Scope: reusable apps under `src/`, consumer examples under `examples/bootstrap5/`, diagnostic contracts, theme registration and bulk rendering. Follow the developer-maintainability constraint in `AGENTS.md`: prefer bounded opt-in additions, keep behavior traceable, and avoid hidden state or added queries on existing request paths.
 
 ## System Overview
 
@@ -60,6 +60,7 @@ Incremental inspection covers `src/`, `tests/`, `docs/`, and `CHANGELOG.md`, inc
 | Ancestor engine | Walk/validate parent chain, authorize ancestors per request, scope child queryset | `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_policy.py`, `src/crud_views/lib/ancestor_db.py` |
 | `Resource` / `ResourceViewMixin` | Non-ORM rows via `cv_get_items`/`cv_get_item`; `_meta` duck type (`ResourceOptions`) | `src/crud_views/lib/resource.py` |
 | Bulk selection and action form | Opt-in table/card selection plus permission-gated review and transactional execution of selected ORM objects | `src/crud_views/lib/bulk/__init__.py` |
+| Bulk toolbar button boundary | Normalize native submit payloads through the form contract, attach the destination semantic variant, then render the dedicated bulk leaf | `src/crud_views/lib/bulk/__init__.py`, `src/crud_views/lib/view/button_data.py`, `src/crud_views/templates/crud_views/tags/button/bulk.html` |
 | Object section navigation | Opt-in `NavBar`/`NavItem` declarations, lazy per-view projection, visibility and active-section calculation | `src/crud_views/lib/navbar.py` |
 | Breadcrumb presentation | Opt-in hierarchy projection; list/item/active classes use the shared registry | `src/crud_views/lib/breadcrumb.py`, `src/crud_views/templates/crud_views/tags/breadcrumb.html`, `src/crud_views/lib/button_classes.py` |
 | Table header presentation | Projects effective bound-column ordering to sort icons and `aria-sort`; creates prefixed sort links | `src/crud_views/templates/crud_views/table/bootstrap5.html` |
@@ -125,6 +126,9 @@ Incremental inspection covers `src/`, `tests/`, `docs/`, and `CHANGELOG.md`, inc
 - Depends on: ORM model ViewSets, normal destination permission and ancestor checks, `cv_get_atomic()`, and `cv_form_valid()`/`cv_form_valid_hook()` for the write. The component is limited to the default database and scalar PK models.
 - Presentation: `src/crud_views/templates/crud_views/snippets/bulk_toolbar.html`, `columns/bulk_select.html`, `view_bulk_form.content.html`, and `snippets/bulk/`; progressive enhancement is in `src/crud_views/static/crud_views/js/bulk.js`.
 - Consumer example: `examples/bootstrap5/bulk_selection/views.py` shows table and card selection plus bulk delete/archive/owner assignment actions.
+- Toolbar styling: `BulkSelectionMixin.cv_bulk_buttons` normalizes with `cv_button_data(raw, "form")`, applies `destination.cv_action_variant` (an unset `None`/`""` value renders as `bulk:secondary`), and renders `src/crud_views/templates/crud_views/tags/button/bulk.html`. `bulk` is a class-registry and label-mode location, not a generic action-normalization location. Both `cv_button_data(..., "bulk")` and `{% cv_button location="bulk" %}` raise `ValueError` (`src/crud_views/lib/view/button_data.py`, `src/crud_views/templatetags/crud_views.py`).
+- Offering: `BulkSelectionMixin` offers an action only when its destination view passes `cv_has_access` and `cv_action_enabled` for the viewer (request-local cached `_cv_effective_bulk_actions`/`cv_bulk_buttons`). With nothing offered, no toolbar and no selection checkboxes render; `snippets/bulk_toolbar.html` guards itself. `cv_bulk_buttons` is evaluated in `get_context_data` so presentation errors surface instead of being swallowed by templates. Submission enforcement at the destination is unchanged.
+- Theme classes: `bulk:primary`, `bulk:secondary`, `bulk:tertiary`, and `bulk:danger` all default to `btn btn-primary`; mode-specific keys take precedence, including empty/None overrides. The leaf retains form tooltip, hidden-label and host-icon semantics; review Confirm still uses `form:submit` (`src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/button/bulk.html`).
 
 **Diagnostics (manage + trace + CLI contracts):**
 - Purpose: developer-facing projections of configuration and access.
@@ -174,8 +178,8 @@ Incremental inspection covers `src/`, `tests/`, `docs/`, and `CHANGELOG.md`, inc
 
 ### ViewSet Registration
 
-1. `ViewSet(...)` validates (label modes, `verbose_name`, ancestor policy) and records the caller-supplied field names in `_manage_constructor_fields` for manage provenance.
-2. `.register` (a property) rejects `resource_permissions` on model ViewSets, validates ancestor policy, derives `pk` from the model PK field type (or `Resource._meta.pk_type`), inserts into `_REGISTRY` under `_REGISTRY_LOCK` (duplicate name raises), then creates `AutoManageView` from `get_manage_view_class()` bound to the ViewSet (`src/crud_views/lib/viewset/__init__.py:183-217`). `GuardianViewSet` swaps the manage base to `GuardianManageView` *(inferred from baseline plus `src/crud_views_guardian/lib/viewset.py` class presence; override body not read)*.
+1. `ViewSet(...)` validates (label modes, `verbose_name`, ancestor policy) and records the caller-supplied field names in `_manage_constructor_fields` for manage provenance (`src/crud_views/lib/viewset/__init__.py`).
+2. `.register` is a Pydantic `@model_validator(mode="after")`: it rejects `resource_permissions` on model ViewSets, validates ancestor policy, derives `pk` from the model PK field type (or `Resource._meta.pk_type`), inserts into `_REGISTRY` under `_REGISTRY_LOCK` (duplicate name raises), then creates `AutoManageView` from `get_manage_view_class()` bound to the ViewSet (`src/crud_views/lib/viewset/__init__.py:183`). `GuardianViewSet.register()` rejects Resources, calls the base registration, removes the generated manage entry and regenerates it through its override. `get_manage_view_class()` selects a configured class or `GuardianManageView` (`src/crud_views_guardian/lib/viewset.py:93`).
 
 ### Nested Request Path
 
@@ -215,7 +219,7 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 2. django-tables2 configures effective ordering from request parameters or declared defaults. The stock header reads `column.orderable`, `column.is_ordered`, and `column.order_by_alias.is_descending`; orderable headers expose `ascending`, `descending`, or `none`, with icons only for ordered columns (`src/crud_views/templates/crud_views/table/bootstrap5.html`).
 3. Sort links use `cv_querystring table.prefixed_order_by_field=column.order_by_alias.next`, preserving unrelated parameters. Non-orderable columns receive no generated sort attribute, icon or link. `tests/test1/test_table_template.py` covers request, constructor, `Meta.order_by`, prefixed tables, links and escaped attrs; `tests/test1/test_breadcrumb.py` covers default bytes, precedence, empty values and current-item semantics.
 
-### Access Trace Path (cv_access, Phases 06.34 and 06.37)
+### Access Trace Path (cv_access)
 
 1. `cv_access <path> <user>|--anonymous [--as-json] | --schema` (`src/crud_views/management/commands/cv_access.py`). `--schema` is exclusive, needs no actor, and prints `export_schema()` (exit via CommandError returncode 2 on bad combos).
 2. `resolve_trace_user` (username first, then PK) -> `trace_access(path, actor)` -> `_run_trace` (`src/crud_views/lib/access_trace_runner.py:385`).
@@ -225,7 +229,7 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 6. Exit codes: allowed 0; denied/not_found/login_redirect 1; no_such_route/error 2.
 7. The manage page can run the same engine (`ManageView.get_manage_access_trace`, modes `path` and `viewset`) when `CRUD_VIEWS_MANAGE_ACCESS_TRACE` is on; template `src/crud_views/templates/crud_views/includes/access_trace.html`.
 
-### ViewSet Configuration CLI Path (cv_manage_view, Phase 06.36)
+### ViewSet Configuration CLI Path (cv_manage_view)
 
 1. `cv_manage_view --list | --schema | <viewset> [<view>] [--user U] [--as-json]` (`src/crud_views/management/commands/cv_manage_view.py`). Invalid combinations yield a `failed` report with code `invalid_arguments`.
 2. `_load_catalogue()` requires URLconf discovery (`_url_configuration_loaded()` from `src/crud_views/checks.py`) so lazily imported view modules have registered; it snapshots `_REGISTRY` under the lock, sorted by name.
@@ -236,11 +240,12 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 
 ### Bulk Selection and Execution Path
 
-1. A table or card view opts in with `BulkSelectionMixin` and `cv_bulk_actions`; the mixin adds checkboxes and action submits while leaving ordinary list GET and POST behavior alone (`src/crud_views/lib/bulk/__init__.py`, `src/crud_views/templates/crud_views/snippets/bulk_toolbar.html`).
+1. A table or card view opts in with `BulkSelectionMixin` and `cv_bulk_actions`; the mixin adds checkboxes and action submits only for destinations the viewer may enter, while leaving ordinary list GET and POST behavior alone (`src/crud_views/lib/bulk/__init__.py`, `src/crud_views/templates/crud_views/snippets/bulk_toolbar.html`).
 2. The action key must resolve in the same ViewSet to a `BulkFormViewPermissionRequired` subclass; system checks also validate model shape, action form and positive `cv_bulk_max` (`src/crud_views/lib/bulk/__init__.py`).
-3. POST IDs are normalized using the model PK field. Review queries intersect the destination-visible queryset with the base ViewSet and nested-parent scope, then classify missing, unauthorized, ineligible and explicitly excluded rows without exposing inaccessible labels.
+3. The destination validates exactly one stage and counts raw candidate plus excluded entries before normalization, enforcing `cv_bulk_max` (default 100). `_read_ids()` converts with the model PK field, stringifies and deduplicates in submission order; empty/NUL/invalid IDs and overlap between normalized candidate/excluded lists cause `BadRequest`. Review queries intersect the destination-visible queryset with the base ViewSet and nested-parent scope, then classify missing, unauthorized, ineligible and explicitly excluded rows without exposing inaccessible labels (`src/crud_views/lib/bulk/__init__.py:184`).
 4. Confirmation posts eligible and blocked IDs back to the destination. Execution re-resolves and rechecks selection inside `cv_get_atomic()`, rejects changed eligibility, then invokes the consumer write through `cv_form_valid()` and its hook. A `cv_on_commit` callback runs after the transaction (`src/crud_views/lib/bulk/__init__.py`).
 5. The example consumer demonstrates extension points and per-object checks in `examples/bootstrap5/bulk_selection/views.py`; list/card templates are `src/crud_views/templates/crud_views/view_list_table.content.html` and `view_card.content.html`.
+6. Source controls use a separate presentation pipeline: take the bulk label-mode floor (fallback to label when the icon is unavailable), normalize form data, attach the destination variant and render `src/crud_views/templates/crud_views/tags/button/bulk.html`. Native `name="cv_bulk_stage"`, `value="review"` and destination `formaction` remain functional without JavaScript. Review hidden IDs and card checkbox values use `unlocalize` so numeric PK transport remains machine-readable (`src/crud_views/templates/crud_views/view_bulk_form.content.html`, `src/crud_views/templates/crud_views/view_card.content.html`).
 
 ## Key Abstractions
 
@@ -309,6 +314,11 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 
 ## Anti-Patterns
 
+### Sending bulk toolbar payloads through the action normalizer
+**What happens:** a consumer passes `location="bulk"` to `cv_button_data()` or `cv_button`, or changes global `form:submit` classes to style toolbar destinations.
+**Why it's wrong:** bulk controls have a dedicated native-submit contract; both generic entry points reject the bulk location. Toolbar class selection belongs to destination variants rather than the form submit class.
+**Do this instead:** follow `BulkSelectionMixin.cv_bulk_buttons` in `src/crud_views/lib/bulk/__init__.py`: normalize with the form location and effective bulk label mode, then add the destination variant and render `src/crud_views/templates/crud_views/tags/button/bulk.html`. Theme overrides belong to `bulk:<variant>[:<mode>]` in `src/crud_views/lib/button_classes.py`.
+
 ### Deriving table sort presentation from raw query parameters
 **What happens:** a copied header decides its icon or `aria-sort` from a literal `sort` parameter.
 **Why it's wrong:** it misses constructor/default ordering and prefixed table parameters.
@@ -351,11 +361,11 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 
 ## Cross-Cutting Concerns
 
-**Logging:** none imposed; Django/consumer configuration.
+**Logging:** Python module loggers use the consumer's Django logging configuration, including non-strict button-normalization diagnostics in `src/crud_views/lib/view/button_data.py`.
 **Validation:** ViewSet Pydantic validators; `Check` hierarchy in `src/crud_views/lib/check.py` (`CheckAttribute`, `CheckTemplate`, `CheckExpression`, `CheckUnknownAttributes`, ...) returned from `CrudView.checks()`/`ViewSet.checks()`; Django checks in `src/crud_views/checks.py` (`check_viewsets`, `check_ancestor_declarations`, `check_conditional`, `check_ordered_model_installed`, `check_asset_registry`, `check_asset_pipeline`, plus settings messages); settings messages from `CrudViewsSettings.check_messages`.
 **Settings:** `crud_views_settings` singleton (`src/crud_views/lib/settings.py`): manage mode/group/show-users/access-trace/view-class, theme (`theme_path`, templates under `crud_views/`), session key, origin param (`cv_from`), CSP nonce attr, asset bundling, inaccessible actions (`hide|disable`), inline/label-mode action settings, ancestor cascade/read/write defaults, breadcrumb prefix, filter persistence/pinned, per-view default action lists, delete preview limit.
 **Assets:** `register_assets(key, js, css, emit)` stores `AssetBundle`s (`src/crud_views/lib/assets.py`); `cv_css`/`cv_js` render them with optional CSP nonce and SRI; `cv_sources` (`src/crud_views/lib/pipeline.py`) bundles them for django-pipeline; `cv_assets` command lists delivery.
-**Browser configuration and adapters:** `src/crud_views/lib/js_config.py` owns process-wide theme defaults: a single validated JavaScript global identifier (default `bootstrap`, last valid registration wins) and a copied, whole-map tooltip placement setting (default `{}`). Both template tags call `_cv_config_context()` at render time, which also supplies request path/query, CSRF token, and the independent native data prefix; the default `src/crud_views/templates/crud_views/tags/cv_config.html` serializes these as escaped `data-*` attributes on hidden `#cv-config` and includes the modal shell. `src/crud_views/static/crud_views/js/adapters.js` reads that node when each adapter operation needs the UI namespace and builds Bootstrap-compatible modal, tooltip, tab, collapse, and alert defaults. Core scripts dispatch through `cv.adapters` at call time; themes may replace entries. The stock tooltip adapter reads the placement map and native prefix at initialization time, and an explicit `data-{prefix}-placement` on a trigger takes precedence. Keep the namespace, tooltip map, and data prefix independently registered; absent legacy attributes use `bootstrap`, `{}`, and `bs` respectively. Theme startup examples and lifecycle constraints are in `docs/reference/theme.md` and `docs/reference/javascript.md`.
+**Browser configuration and adapters:** `src/crud_views/lib/js_config.py` owns process-wide theme defaults: a single validated JavaScript global identifier (default `bootstrap`, last valid registration wins) and a copied, whole-map tooltip placement setting (default `{}`). Both template tags call `_cv_config_context()` at render time, which also supplies request path/query, CSRF token, and the independent native data prefix; the default `src/crud_views/templates/crud_views/tags/cv_config.html` serializes these as escaped `data-*` attributes on hidden `#cv-config` and includes the modal shell. `src/crud_views/static/crud_views/js/adapters.js` reads that node when each adapter operation needs the UI namespace and builds Bootstrap-compatible modal, tooltip, tab, collapse, and alert defaults. Core scripts dispatch through `cv.adapters` at call time; themes may replace entries. The stock modal adapter listens to `hide.{prefix}.modal` / `hidden.{prefix}.modal`, where `{prefix}` is the registered data prefix read from `#cv-config` `data-data-prefix` (default `bs`), rather than fixed `*.bs.modal` events; its missing-component error does not name Bootstrap. The stock tooltip adapter reads the placement map and native prefix at initialization time, and an explicit `data-{prefix}-placement` on a trigger takes precedence. Keep the namespace, tooltip map, and data prefix independently registered; absent legacy attributes use `bootstrap`, `{}`, and `bs` respectively. Theme startup examples and lifecycle constraints are in `docs/reference/theme.md` and `docs/reference/javascript.md`.
 **Theme CSS:** six `--cv-*` palette/shape tokens are consumed by `manage.css` and `formset.css` with Bootstrap-property and literal fallbacks; themes own mappings on their theme roots (`docs/reference/theme.md`). Compact headings and fields add the Bootstrap `gx-3` utility at their respective template/helper row declarations.
 **Authentication:** Django auth locally; ancestors via `ancestors.py`; per-object via Guardian.
 **Runtime CLI contracts:** `cv_manage_view` and `cv_access` are independent management-command interfaces. Their versioned Pydantic output boundaries live in `src/crud_views/lib/manage_report.py` and `src/crud_views/lib/access_trace_export.py`; command parsing/rendering/exit codes stay in `src/crud_views/management/commands/`.
@@ -363,4 +373,4 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 
 ---
 
-*Architecture analysis: 2026-11-21*
+*Architecture analysis: 2026-11-23*

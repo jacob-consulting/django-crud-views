@@ -1,7 +1,7 @@
 """Opt-in current-page selection and permission-gated action forms."""
 
 from dataclasses import dataclass
-from functools import partial
+from functools import cached_property, partial
 from typing import ClassVar
 
 import django_tables2 as tables
@@ -17,8 +17,8 @@ from django.utils.translation import gettext_lazy, ngettext
 from crud_views.lib.ancestors import _scope_child_queryset
 from crud_views.lib.check import CheckExpression, CheckWarningExpression
 from crud_views.lib.crispy import CrispyForm, CrispyViewMixin
-from crud_views.lib.crispy.buttons import FORM_LEAF_TEMPLATE
 from crud_views.lib.icons import _icon_available
+from crud_views.lib.view.base import _cancel_target_available
 from crud_views.lib.view.button_data import cv_button_data
 from crud_views.lib.view.cancel import effective_cancel_keys
 from crud_views.lib.view.label_mode import default_label_mode
@@ -102,12 +102,31 @@ class BulkSelectionMixin:
                     "Cancel and the warning redirect fall back to cv_cancel_key",
                 )
 
-    @property
+    @cached_property
+    def _cv_effective_bulk_actions(self):
+        if not self.cv_bulk_actions:
+            return ()
+        return tuple(
+            key
+            for key in self.cv_bulk_actions
+            if _cancel_target_available(self.cv_viewset.get_view_class(key), self.request.user, None, self)
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Evaluate the gates and the buttons in Python: a template lookup would swallow some hook exceptions
+        # (ObjectDoesNotExist, for one) and render the page without its toolbar.
+        _ = self.cv_bulk_buttons
+        return context
+
+    @cached_property
     def cv_bulk_buttons(self):
+        if not self._cv_effective_bulk_actions:
+            return []
         mode = default_label_mode("bulk")
         context = self.cv_get_view_context()
         buttons = []
-        for key in self.cv_bulk_actions:
+        for key in self._cv_effective_bulk_actions:
             destination = self.cv_viewset.get_view_class(key)
             raw = {
                 "cv_key": "submit",
@@ -120,12 +139,14 @@ class BulkSelectionMixin:
                 "cv_label_mode": mode if _icon_available(destination.cv_icon_action) else "label",
                 "cv_attrs": {"formaction": self.cv_get_link_url(destination, key), "data-cv-bulk-action": key},
             }
-            buttons.append(render_to_string(FORM_LEAF_TEMPLATE, cv_button_data(raw, "form")))
+            data = cv_button_data(raw, "form")
+            data["cv_variant"] = destination.cv_action_variant or "secondary"
+            buttons.append(render_to_string("crud_views/tags/button/bulk.html", data))
         return buttons
 
     def get_table_kwargs(self):
         kwargs = super().get_table_kwargs()
-        if not self.cv_bulk_actions:
+        if not self._cv_effective_bulk_actions:
             return kwargs
         table_class = self.get_table_class()
         sequence = kwargs.get("sequence") or table_class._meta.sequence

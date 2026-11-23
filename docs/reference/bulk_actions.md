@@ -86,9 +86,51 @@ Cards receive their checkbox from the grid wrapper, so a custom `cv_card_templat
 Checkbox labels and the review list show `str(record)`; the application loads what `__str__` reads, because
 a deferred field or a relation can cost one query per record.
 
-An overridden list or card content template must include `crud_views/snippets/bulk_toolbar.html` alongside
-its table or grid. Support one bulk source per page. The toolbar renders every configured action without
-scanning the page for eligible objects or issuing bulk-permission queries; admission happens on submission.
+Support one bulk source per page.
+
+### Which actions a user sees
+
+The toolbar offers an action only to a user who can enter its destination. In the example project, archiving
+needs the `change` permission and deleting needs `delete`. A user who may change documents but not delete them
+sees the archive button and no delete button. A user who may only view documents sees no toolbar, no selection column
+and no card checkboxes: the page looks like a list without bulk actions.
+
+For each key in `cv_bulk_actions`, in the configured order, the source asks the destination two questions:
+
+1. `cv_has_access(user, None)`: does the user hold the destination's permission?
+2. `cv_action_enabled(user, obj)`: is the action available right now? This is asked only when the first answer
+   is yes. `obj` is `None`, or the parent object in a nested ViewSet.
+
+An action that fails either question leaves no markup, not a disabled button. This decides what is displayed;
+it does not authorize anything. The destination checks the user again on every submission, see
+[Scope and permissions](#scope-and-permissions).
+
+Both questions are asked once per action and request, never once per record. Rendering the list does not look
+at the records on the page, so `cv_bulk_has_permission` and `cv_bulk_check` are not called. When the source is a
+permission-required view, this adds no database query, because Django has already loaded the user's
+permissions to admit the list request. A source without a permission check, or a hook of your own that queries
+the database, pays that cost on each list request.
+
+### Template integration
+
+The stock list and card content templates place the toolbar and the card checkboxes. A project that overrides
+one of them includes the toolbar next to its table or grid:
+
+```django
+{% include "crud_views/snippets/bulk_toolbar.html" %}
+```
+
+The snippet renders nothing when no action is offered. A card template that draws its own selection cell wraps
+the cell in the condition the stock template uses, so the checkboxes disappear together with the toolbar:
+
+```django
+{% if view.cv_bulk_buttons %}
+  <input type="checkbox" name="cv_bulk_ids" ...>
+{% endif %}
+```
+
+Do not test `view.cv_bulk_actions` for this. It is the configured tuple and stays truthy for a user who is
+offered nothing. `view.cv_bulk_buttons` is an internal name: it is not in the stable 1.0 inventory and may change.
 
 ## How a submission is handled
 
@@ -199,6 +241,18 @@ A filter that exists only on the source list is no authorization gate; shared re
 or an application queryset function used by both source and destination. A destination may narrow its
 `get_queryset()` further, but cannot widen the ViewSet and parent scope.
 
+The toolbar decides what to show from `cv_has_access`, not from `has_permission`. A destination that overrides
+`has_permission` to admit more users than its model permission must override `cv_has_access` the same way;
+otherwise those users can submit the action but never see its button. Context and list buttons follow the same
+rule. There is no setting that turns the toolbar check off.
+
+A visible button does not promise that the submission succeeds. Two checks run only on submission:
+
+- **Ancestor write rules** in a nested ViewSet. By default the immediate parent needs `change` and farther
+  ancestors need `view`. A stricter rule configured for an ancestor answers 403, although the list was readable.
+- **Per-record permission** through `cv_bulk_has_permission`. A user who holds the model permission but no
+  grant on any selected record gets the review page with every record blocked and only Cancel.
+
 The default `cv_bulk_has_permission` returns `True`, so it adds no per-object policy. With Guardian, implement
 the application policy explicitly, for example:
 
@@ -220,7 +274,7 @@ authorize every value of a related form field.
 records, on both stages. Empty and oversized selections warn and return without writes; selection is cleared
 on return. Invalid keys, duplicate stage fields or overlapping candidate and excluded lists produce HTTP 400.
 
-`viewset.W274` warns when a declared page size exceeds an offered destination's limit. Raise `cv_bulk_max`
+`viewset.W274` warns when a declared page size exceeds a configured destination's limit. Raise `cv_bulk_max`
 deliberately for larger pages. Above about **990** records, also raise Django's `DATA_UPLOAD_MAX_NUMBER_FIELDS`
 from its default of 1000, allowing room for CSRF, stage and action-form fields. The limit bounds selected
 roots; it does not bound related records loaded by application checks or deletion inspection.
@@ -297,6 +351,7 @@ class DeleteDocumentsView(BreadcrumbMixin, BulkFormViewPermissionRequired):
     cv_path = "bulk-delete"
     cv_permission = "delete"
     cv_icon_action = "delete"
+    cv_action_variant = "danger"
     cv_action_label_template_code = _("Delete selected documents")
     cv_action_short_label_template_code = _("Delete")
     cv_success_key = "list"
@@ -412,14 +467,29 @@ The result message uses `crud_views/snippets/message/bulk.html`.
 
 ## Toolbar buttons
 
-There is one button per action, with and without JavaScript. These are form submit buttons styled by
-`form:submit`. Their visible text, hidden text in icon-only mode and tooltip all come from the destination's
-short action label; the icon comes from `cv_icon_action`. The full action label appears only as the header of
-the review page.
+There is one button per offered action, with and without JavaScript. These are native form submit buttons rendered by
+`crud_views/tags/button/bulk.html`: `type="submit"`, `name="cv_bulk_stage"`, `value="review"` and each destination's
+`formaction` preserve JavaScript-free submission. Their visible text, hidden text in icon-only mode and tooltip
+all come from the destination's short action label; the icon comes from `cv_icon_action`. The full action label
+appears only as the header of the review page.
+
+Each button takes `cv_action_variant` from its destination, with inherited `secondary` as the default.
+The source view's variant does not override it. Set `cv_action_variant = "danger"` on destructive destinations,
+as in the delete example above. Themes configure `bulk:primary`, `bulk:secondary`, `bulk:tertiary` and `bulk:danger`
+in `CRUD_VIEWS_BUTTON_CLASSES`. All four stock defaults are `btn btn-primary`, so declaring `danger` alone keeps
+the stock appearance. Bulk buttons no longer inherit a project's `form:submit` override; review Confirm still
+uses `form:submit`, and all-blocked Cancel still uses the form leaf and its existing form class contract.
 
 Label mode comes only from the `bulk` location floor in `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, default `both`.
-There is no per-action map and no variant. The seven structural class keys are `bulk:toolbar`, `bulk:controls`,
-`bulk:select-all`, `bulk:checkbox`, `bulk:actions`, `bulk:card-cell` and `bulk:card-select`; see
+There is no per-action map. A mode-specific class key, such as `bulk:danger:icon`, takes precedence over the base
+variant key when present, including an empty string or `None` override. Selection uses the effective label mode:
+a missing or disabled icon falls back to `label`, so `bulk:danger:label` applies instead of `bulk:danger:icon`.
+The leaf reuses `form:hidden-label` for icon-only text, `form:icon-host` for host-placed icons and the form tooltip
+location, `data-cv-tooltip="form"`. Host icons add classes to the button without a duplicate inline icon.
+See [Bulk button leaf](buttons.md#bulk-button-leaf) for the exact fields available to themes copying the leaf.
+
+The seven structural class keys remain `bulk:toolbar`, `bulk:controls`, `bulk:select-all`, `bulk:checkbox`,
+`bulk:actions`, `bulk:card-cell` and `bulk:card-select`; see
 [Bulk selection classes](buttons.md#bulk-selection-classes) for their theme defaults.
 
 ## JavaScript
@@ -439,7 +509,7 @@ See [Bulk selection toolbar](javascript.md#bulk-selection-toolbar) for script lo
 | `viewset.E271` | Error | `cv_bulk_actions` must be a tuple of unique nonempty strings. |
 | `viewset.E272` | Error | Each action must name a registered bulk destination in the same ViewSet. |
 | `viewset.E273` | Error | Selection requires an ORM table list or card source. |
-| `viewset.W274` | Warning | The declared page size exceeds an offered action's selection limit. |
+| `viewset.W274` | Warning | The declared page size exceeds a configured destination's selection limit. |
 | `viewset.W275` | Warning | The destination does not accept the source's origin key for Cancel. |
 | `viewset.E276` | Error | A destination requires an ORM model with a scalar primary key. |
 | `viewset.E277` | Error | `cv_bulk_max` must be a positive integer, not a boolean. |

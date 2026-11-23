@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.232" timestamp="2026-11-21T20:41:40.716966+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_bulk_docs" name="test_bulk_theme_authorization_boundary" time="0.002"><failure message="assert 'permission-filtered action/menu leaves' in 'The library decides what a user may see and do before a template renders. An overridden template receives context tha... the generic sentence. See [Protected objects](delete_view.md#protected-objects). &lt;a id=&quot;object-navbar-templates&quot;&gt;&lt;/a&gt;'">def test_bulk_theme_authorization_boundary():
+        text = (ROOT / "docs/reference/theme.md").read_text()
+        authorized = normalized(section(text, "Authorized data in overridden templates"))
+        for phrase in (
+            "permission-filtered action/menu leaves",
+            "configured bulk destinations",
+            "without destination access or item checks during source rendering",
+            "destination POST enforces permissions and admission",
+            "Styling or hiding a bulk button grants no authority",
+        ):
+&gt;           assert phrase in authorized
+E           assert 'permission-filtered action/menu leaves' in 'The library decides what a user may see and do before a template renders. An overridden template receives context tha... the generic sentence. See [Protected objects](delete_view.md#protected-objects). &lt;a id="object-navbar-templates"&gt;&lt;/a&gt;'
+
+tests/test1/test_bulk_docs.py:549: AssertionError</failure></testcase></testsuite></testsuites>

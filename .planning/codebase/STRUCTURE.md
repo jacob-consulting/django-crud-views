@@ -1,14 +1,12 @@
 ---
-last_mapped_commit: 7cdb6f2b2f609b4ac8b586b06ff05630a8da42cd
-last_mapped_at: 2026-11-21
+last_mapped_commit: 3a28b40a2c700f23a61fad18eef0a2fe25b009c0
+last_mapped_at: 2026-11-23
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-21
+**Analysis Date:** 2026-11-23
 
-Paths were verified to exist at mapping time. Items marked *(inferred)* were not read in detail.
-
-Incremental inspection covers `src/`, `tests/`, `docs/`, and `CHANGELOG.md`; descriptions outside those paths retain the existing map's scope.
+Scope: the reusable apps under `src/`, test harnesses under `tests/`, theme contracts under `docs/reference/`, and feature consumers under `examples/bootstrap5/`. Apply the developer-maintainability rule in `AGENTS.md` when choosing locations: use focused opt-in modules and keep shared request paths easy to trace.
 
 ## Directory Layout
 
@@ -41,7 +39,7 @@ django-crud-views/
 ├── superpowers/                        # design notes, plans, specs, archives (committed)
 ├── .planning/                          # GSD state, phases, codebase maps
 ├── .github/                            # workflows (tests, lint, docs, js, publish, demo, readme-examples), templates
-├── pyproject.toml, noxfile.py, taskfile.yaml, uv.lock
+├── pyproject.toml, noxfile.py, taskfile.yaml
 ├── package.json, vitest.config.js, vitest.integration.config.js
 ├── mkdocs.yml, settings_i18n.py, render.yaml, codecov.yml
 └── CHANGELOG.md, README.md, CLAUDE.md, AGENTS.md, CONTRIBUTING.md, SECURITY.md, AUDIT.md
@@ -94,6 +92,14 @@ lib/
 - Purpose: behavior shared by every view (metaclass, base contract, action/button projection, label modes, cancel).
 - Key files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/meta.py`.
 
+**`src/crud_views/lib/bulk/` and bulk theme leaves:**
+- Core implementation: `src/crud_views/lib/bulk/__init__.py` contains `BulkSelectionMixin`, `BulkConfirmForm`, `BulkFormViewPermissionRequired`, bounded ID normalization and request-local review data.
+- Toolbar button rendering: `BulkSelectionMixin.cv_bulk_buttons` uses `src/crud_views/lib/view/button_data.py` with location `form`, then adds `destination.cv_action_variant` (unset renders `secondary`) and renders `src/crud_views/templates/crud_views/tags/button/bulk.html`. Keep this dedicated leaf separate from generic action leaves and the review form's Confirm button.
+- Theme class registry: `src/crud_views/lib/button_classes.py` defines four `bulk:<variant>` defaults, mode-specific overrides and seven structural bulk slots. Bulk label mode comes from `src/crud_views/lib/view/label_mode.py`; unavailable icons force label mode before classes are selected.
+- Entry-point boundary: `src/crud_views/lib/view/button_data.py` and `src/crud_views/templatetags/crud_views.py` reject direct generic rendering with location `bulk`; preserve these guards when changing normalization.
+- Review rendering: `src/crud_views/templates/crud_views/view_bulk_form.html`, `view_bulk_form.content.html`, and `snippets/bulk/{blocked,eligible}.html`; transport stays in the content template while snippets own presentation.
+- Reference consumer: `examples/bootstrap5/bulk_selection/views.py`; contract: `docs/reference/bulk_actions.md` and `docs/reference/buttons.md`.
+
 **`src/crud_views/lib/navbar.py`:**
 - Purpose: opt-in object-section navigation declaration and builder; mixin attaches lazy data to participating view contexts.
 - Contains: `NavBar`, `NavItem`, `CrudViewNavBarMixin`, metadata-only `Check` integration and `_build()` destination/admission logic.
@@ -128,11 +134,12 @@ lib/
 **`src/crud_views/lib/views/`:**
 - Purpose: one module per operation type; each combines `CrudView` with a Django generic view and has a `*PermissionRequired` variant.
 - Key files: `src/crud_views/lib/views/list.py`, `src/crud_views/lib/views/create.py`, `src/crud_views/lib/views/delete.py`, `src/crud_views/lib/views/manage.py`, `src/crud_views/lib/views/mixins.py`.
-- Public exports are listed in `src/crud_views/lib/views/__init__.py` (note: `ManageView`, `CustomFormView*` and the polymorphic/workflow views are imported from their modules or apps *(inferred from `__all__` contents)*).
+- Public exports are listed in `src/crud_views/lib/views/__init__.py`. Import `ManageView` from `src/crud_views/lib/views/manage.py`, `CustomFormView*` from `src/crud_views/lib/views/form.py`, and polymorphic/workflow views from their extension apps; these are not in the core views barrel.
 
 **`src/crud_views/lib/bulk/`:**
 - Purpose: optional current-page selection controls and a reusable permission-gated bulk action destination.
 - Key file: `src/crud_views/lib/bulk/__init__.py`; exports `BulkSelectionMixin`, `BulkFormViewPermissionRequired`, and `BulkConfirmForm`.
+- Only actions whose destination passes `cv_has_access`/`cv_action_enabled` for the viewer are offered; with none, no toolbar or checkboxes render.
 - Keep selection opt-in on table/card classes. The destination rechecks visibility and object eligibility; put app-specific writes in its `cv_form_valid()` implementation.
 - Rendering lives in `src/crud_views/templates/crud_views/snippets/bulk_toolbar.html`, `columns/bulk_select.html`, `view_bulk_form.content.html`, and `snippets/bulk/`. Progressive enhancement is in `src/crud_views/static/crud_views/js/bulk.js`; list and card content templates include the toolbar when actions are declared.
 - The consumer example is `examples/bootstrap5/bulk_selection/views.py`; its model, routes, seed data and tests are in that app directory.
@@ -151,7 +158,7 @@ lib/
 
 **`src/crud_views/templates/crud_views/` and `static/crud_views/`:**
 - Templates: top-level `view_<op>.html` plus `.content.html` (modal/body), `snippets/{action,action_short,header,paragraph,message,alert,delete}/<key>.html` (per-view text templates referenced by `cv_*_template`), `tags/` (template-tag partials), `columns/`, `crispy/`, `formsets/`, `conditional/`, `modal/`, `shared/` (`css.html`, `js.html`), `table/`.
-- Static: `css/{formset,icons,manage,property,table}.css`; `js/{adapters,formset,list.filter,manage,modal,toggle,tooltip,viewset}.js`.
+- Static: `css/{formset,icons,manage,property,table}.css`; `js/{adapters,bulk,formset,list.filter,manage,modal,toggle,tooltip,viewset}.js`.
 
 **Extension apps** (`src/crud_views_*/`):
 - Guardian: `src/crud_views_guardian/lib/viewset.py` (`GuardianViewSet`), `mixins.py`, `views.py` (`Guardian*ViewPermissionRequired`, `GuardianManageView`), `ancestors.py`; template `templates/crud_views/view_guardian_manage.html`.
@@ -228,10 +235,14 @@ lib/
 
 **Bulk selection/action changes:**
 - Core API and checks: `src/crud_views/lib/bulk/__init__.py`.
+- Toolbar payload normalization: keep `cv_button_data(raw, "form")` in `BulkSelectionMixin.cv_bulk_buttons`, apply the bulk label-mode floor with icon fallback, then add the destination variant. Do not route location `bulk` through `cv_button_data()` or `cv_button`; both reject that entry point (`src/crud_views/lib/view/button_data.py`, `src/crud_views/templatetags/crud_views.py`).
+- Toolbar presentation: `src/crud_views/templates/crud_views/tags/button/bulk.html`; classes: `bulk:<variant>` or `bulk:<variant>:<mode>` in `src/crud_views/lib/button_classes.py`. Preserve native submit attributes, `form:hidden-label`, host icon handling and form tooltip location. Review Confirm continues through `form:submit`.
 - Shared presentation: `src/crud_views/templates/crud_views/snippets/bulk_toolbar.html`, `columns/bulk_select.html`, `view_bulk_form.content.html`, and `snippets/bulk/`.
+- Selection transport: `_read_ids()` in `src/crud_views/lib/bulk/__init__.py` owns canonicalization/deduplication/overlap checks; raw count limits run before normalization. Keep numeric hidden IDs and card checkbox values unlocalized in the content/card templates.
 - List/card integration: `src/crud_views/templates/crud_views/view_list_table.content.html` and `view_card.content.html`; table selection is contributed through `BulkSelectionMixin.get_table_kwargs()`.
 - Example consumer and package reference: `examples/bootstrap5/bulk_selection/views.py`, `examples/bootstrap5/bulk_selection/tests.py`, and `docs/reference/bulk_actions.md`.
 - Core test coverage is grouped in `tests/test1/test_bulk_*.py`; browser behavior is in `tests/js/bulk.test.js`.
+- Semantic class, normalization boundary, icon and raw-byte compatibility checks: `tests/test1/test_bulk_variants.py` (live comparison with the unchanged form leaf, no fixture). ID/stage/review checks: `tests/test1/test_bulk_flow.py`; source markup/localization: `tests/test1/test_bulk_source.py`.
 
 **Object navbar change:**
 - Declaration, request-local lazy builder, destination validation and admission: `src/crud_views/lib/navbar.py`.
@@ -288,4 +299,4 @@ lib/
 
 ---
 
-*Structure analysis: 2026-11-21*
+*Structure analysis: 2026-11-23*

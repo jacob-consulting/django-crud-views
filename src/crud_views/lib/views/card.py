@@ -4,6 +4,7 @@ from typing import ClassVar
 from django.views import generic
 
 from crud_views.lib.check import Check
+from crud_views.lib.link_access import _link_access, _link_ctx
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.view.action_menu import ActionGroup, cv_inline_checks, cv_split_actions
@@ -60,8 +61,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
             child_cls = child_viewset.get_view_class(action.child_key)
             # permission is checked on the child view, like ChildContextButton (#149)
             return {
-                "cv_access": bool(child_cls._cv_child_link_has_access(user, obj)),
-                "cv_action_enabled": child_cls._cv_action_enabled_for_rendering(user, obj, self),
+                **_link_ctx(_link_access(child_cls, user, None, (obj,))),
                 "cv_inaccessible_actions": child_cls.cv_get_inaccessible_actions(),
                 "cv_key": action.child_name,
                 "cv_url": url,

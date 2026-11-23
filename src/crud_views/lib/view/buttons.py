@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 
 from ..check import CheckExpression, CheckWarningExpression
 from ..exceptions import ViewSetNotFoundError
+from ..link_access import _link_access, _link_ctx
 from ..settings import crud_views_settings
 from .action_menu import cv_is_inline_keys
 from .context import ViewContext
@@ -234,13 +235,7 @@ class ChildContextButton(ContextButton):
             "cv_icon_action": child_vs.icon_header,
         }
 
-        # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
-            context.view.request.user, context.object, context.view
-        )
-
-        if cls._cv_child_link_has_access(context.view.request.user, context.object):
-            dict_kwargs.update(cv_access=True)
+        dict_kwargs.update(_link_ctx(_link_access(cls, context.view.request.user, None, (context.object,))))
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 

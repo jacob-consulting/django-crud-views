@@ -2387,7 +2387,7 @@ Plans:
 **Requirements**: None assigned; use the issue acceptance criteria.
 **Depends on:** Phase 6
 **Ordering:** Explicitly assigned 06.48 by the maintainer; before the 1.0 freeze of both hooks. Stage 2 (#385, shared Guardian checker) and stages 3 to 5 are out of scope.
-**Plans:** 8/9 plans executed
+**Plans:** 9/9 plans executed
 
 Plans:
 **Wave 1**
@@ -2415,7 +2415,7 @@ Plans:
 - [x] 06.48-08-PLAN.md — Breaking entry, migration note, five reference pages, doc pins
 
 **Wave 9** *(blocked on Wave 8 completion)*
-- [ ] 06.48-09-PLAN.md — Navbar and FAQ passages, reference pins, before-and-after costs, private surface, phase gate
+- [x] 06.48-09-PLAN.md — Navbar and FAQ passages, reference pins, before-and-after costs, private surface, phase gate
 
 **Cross-cutting constraints:** <!-- gsd:generated -->
 - Every cell of the characterization matrix, every gate event of tests/test1/test_ancestor_costs.py and every query total of tests/test1/test_navbar_costs.py is unchanged; the golden files are byte-identical.

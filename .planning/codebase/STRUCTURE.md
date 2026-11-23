@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 3a28b40a2c700f23a61fad18eef0a2fe25b009c0
+last_mapped_commit: ce3903c37a05b334ded3d3c655a4534836fc6132
 last_mapped_at: 2026-11-23
 ---
 # Codebase Structure
@@ -36,7 +36,7 @@ django-crud-views/
 ├── examples/bootstrap5/                # demo project + feature apps, including bulk_selection and navbar_demo
 ├── docs/                               # MkDocs source (reference/, getting_started/, development/)
 ├── scripts/                            # check_dist.py, generate_screenshots.py, wait_for_server.py
-├── superpowers/                        # design notes, plans, specs, archives (committed)
+├── superpowers/                        # design notes, plans, specs, prompts (incl. acme-example-sync/), archives (committed)
 ├── .planning/                          # GSD state, phases, codebase maps
 ├── .github/                            # workflows (tests, lint, docs, js, publish, demo, readme-examples), templates
 ├── pyproject.toml, noxfile.py, taskfile.yaml
@@ -293,7 +293,7 @@ lib/
 
 **`src/*/migrations/`:** Django migrations; only `src/crud_views_workflow/migrations/` has schema; `src/crud_views/migrations/` is an empty package. Committed.
 **`.planning/phases/`:** phase plans/receipts, committed; some `.gitkeep`/`.review-inputs/` entries are untracked.
-**`superpowers/`:** committed design notes and archives (`notes/`, `plans/`, `specs/`, `archive/`).
+**`superpowers/`:** committed design notes and archives (`notes/`, `plans/`, `specs/`, `prompts/`, `archive/`, `instructions/`). `superpowers/prompts/acme-example-sync/` holds `PROMPT.md`, `baseline.json`, `drift.py` and `LOG.md` for syncing the Acme demo across theme repos; `superpowers/specs/2026-11-22-shared-acme-demo-design.md` (with two badge screenshots) evaluates sharing that demo.
 **`site/`, `dist/`, `node_modules/`, `.venv/`, `.nox/`:** generated and git-ignored (confirmed for `site`, `dist`, `node_modules`).
 **`src/*/locale/`:** `.po/.mo` translation catalogues (`de`); `src/crud_views_workflow/locale/` exists *(contents not read)*.
 

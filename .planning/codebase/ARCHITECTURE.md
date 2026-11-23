@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 3a28b40a2c700f23a61fad18eef0a2fe25b009c0
+last_mapped_commit: ce3903c37a05b334ded3d3c655a4534836fc6132
 last_mapped_at: 2026-11-23
 ---
 <!-- refreshed: 2026-11-23 -->

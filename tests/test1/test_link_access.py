@@ -40,6 +40,16 @@ BACKENDS = ["django.contrib.auth.backends.ModelBackend", "guardian.backends.Obje
 ANONYMOUS_EDITOR = "tests.test1.test_link_access_matrix.AnonymousParentEditorBackend"
 
 
+def test_child_link_adapter_is_gone():
+    from crud_views.lib.view import CrudView
+    from crud_views_guardian.lib.mixins import GuardianQuerysetMixin
+    from crud_views_guardian.lib.views import GuardianCreateViewPermissionRequired
+
+    for target in (CrudView, GuardianQuerysetMixin, GuardianCreateViewPermissionRequired):
+        assert not hasattr(target, "_cv_child_link_has_access"), target
+        assert hasattr(target, "_cv_link_permission"), target
+
+
 class InactiveAncestorBackend(BaseBackend):
     """Grant the checked parent permissions even to an inactive signed-in actor."""
 

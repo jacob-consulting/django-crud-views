@@ -214,9 +214,9 @@ def test_child_collection_link_uses_the_target_read_requirement(helpers, data):
     _grant(viewer, helpers.pub, "view", data.penguin)
     editor = _user("ah_link_editor")
     _grant(editor, helpers.pub, "change", data.penguin)
-    assert helpers.book.List._cv_child_link_has_access(viewer, data.penguin) is True
-    assert helpers.book.List._cv_child_link_has_access(editor, data.penguin) is False
-    assert helpers.book.List._cv_child_link_has_access(viewer, data.other) is False
+    assert helpers.book.List._cv_link_permission(viewer, None, data.penguin) is True
+    assert helpers.book.List._cv_link_permission(editor, None, data.penguin) is False
+    assert helpers.book.List._cv_link_permission(viewer, None, data.other) is False
 
 
 @pytest.mark.django_db
@@ -352,7 +352,7 @@ def test_anonymous_and_inactive_actors_get_no_create_access(helpers, data):
     inactive = _user("ah_inactive", superuser=True)
     inactive.is_active = False
     assert create.cv_has_access(inactive, data.penguin) is False
-    assert helpers.book.List._cv_child_link_has_access(inactive, data.penguin) is False
+    assert helpers.book.List._cv_link_permission(inactive, None, data.penguin) is False
 
 
 # ── request helpers: list-page create button and cancel availability ─────────

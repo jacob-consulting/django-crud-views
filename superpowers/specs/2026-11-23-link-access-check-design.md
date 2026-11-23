@@ -2,6 +2,7 @@
 
 Date: 2026-11-23. Status: concept approved by the maintainer on 2026-11-23; **no implementation is authorized by this
 document**. It is not an implementation plan. Each stage in section 9 needs its own issue, plan and approval.
+Amended on 2026-11-23 for stage 1: section 12.6 (D-25 to D-30), decided by the maintainer while #407 was planned.
 
 Related: #385 (reuse Guardian grants), #314 (opt-in URL helper), #312/#318 (link visibility versus request gate),
 `superpowers/notes/2026-11-02-navigation-concept-exploration.md` (site menu, caching options C0–C6),
@@ -423,6 +424,9 @@ Constraints the plan must satisfy:
 Out of scope for stage 1: the shared Guardian checker (stage 2), the remaining consumers (stage 3), the breadcrumb,
 the site menu, and everything in section 8.
 
+Section 12.6 amends this scope: D-25 settles which test expectations may be rewritten, D-26 limits which ancestors
+the stage-1 call sites hand over, and D-29 adds three callers from the stage-3 list as argument narrowing.
+
 ### 12.3 Scope of stage 2 (shared Guardian checker, #385)
 
 Stage 2 is independent of stage 1 and may be planned before or after it. #385 is its issue; that issue's handover
@@ -479,6 +483,48 @@ These are the planner's to decide, within the decisions above:
 - Which of the three private adapters can be removed in stage 1 and which must wait for stage 3.
 - The exact wording and extent of the Breaking entry.
 - The remaining items of section 11.
+
+### 12.6 Stage 1 amendments (2026-11-23)
+
+Planning research for #407 (phase 06.48) found that existing tests and reference pages pin behaviour that sections 5
+and 12.1 change, and that two statements of this document cannot both hold in stage 1: D-04 with sections 5.1 and
+5.3 (a link also checks the higher ancestors the request resolved) against "the rendered result is the same as
+before for every actor" and the pinned gate counts. Checking higher ancestors "costs no query" only once stage 2's
+shared checker exists.
+
+The maintainer decided the following on 2026-11-23. The decisions apply to stage 1 only. Where they differ from
+sections 5 and 12.2, they apply. Like the decisions in 12.1, they are settled input and are not under review
+(section 13, point 1).
+
+| # | Decision | Amends |
+|---|---|---|
+| D-25 | Request-gate expectations in the ancestor suites stay untouched. Assertions on link helpers in those suites (direct `cv_has_access` calls with a parent or an own child on a nested Guardian create, and the private adapters called by name) are rewritten to the narrowed contract, and the plan lists each rewritten line. `cv_has_access` on a nested Guardian create fails closed for a parent argument; `cv_create_has_access` is the replacement. | 12.2 constraints, 5.6 |
+| D-26 | Stage-1 call sites hand the check the immediate parent only, as today. The function gates every level it is handed, proven by a unit test with a two-level list. Filling the list from the request's resolved higher ancestors (5.1, 5.3, second half of D-04) waits for stage 2 or 3. | D-04, 5.1, 5.3 |
+| D-27 | On a sibling page the check takes the parent from the parent the request resolved from the URL, not from the page object's foreign key. An explicit condition keeps the two documented `False` answers: the `ManyToMany` child page, and the `cv_context_has_permission` filter on a child list page. | 5.3, 5.6 |
+| D-28 | A project's `cv_create_has_access` override also governs child context buttons, card child actions and object navbar child items, which bypass the hook today. The Breaking entry and the migration note say so. | 5.6 |
+| D-29 | `ParentContextButton`, the state argument of `SiblingContextButton` and the non-child card action are narrowed in stage 1 as well: argument narrowing only, with no parent-gate step for them. | 9, 12.2 |
+| D-30 | The documented Guardian queryset-only exception is kept: the link shows while the request answers 403. | 5.4 |
+
+Consequences the plan must carry. They follow from the decisions and are not decisions themselves:
+
+- **D-25:** the own-child argument is the planner's to settle within D-11; research recommends that the hook
+  answers `False` for every argument. Either way, the passages that say a parent instance "works as before"
+  (`docs/migrating-1.0.md`, "Nested Guardian create access") and the input table in `docs/reference/guardian.md`
+  ("What the create access helpers accept") are rewritten, not appended to. The change is from allowed to denied.
+- **D-26 and D-30:** a child link can stay visible where a farther ancestor, or a queryset-only composition, denies
+  the request. The click is refused with 403, as documented today. For a stage-1 review this is accepted behaviour
+  and not a finding under section 13.
+- **D-27:** `docs/reference/context_buttons.md` gives "the filter has no URL parent to work with" as the reason for
+  the two `False` answers. That reason no longer holds and is reworded: the two answers are kept on purpose. A view
+  without a resolved parent (a custom or non-CRUD view) is denied under D-16, where the foreign-key walk answered
+  before; the migration note names this.
+- **D-28:** the hook exists only on the Guardian create view, and its `rendering_view` is documented as the list
+  view instance. At the three new sites it is a different view, or nothing. The Breaking entry states what an
+  override receives there. The rendered result is unchanged only for the default hook, which stays one parent gate.
+- **D-29 with D-25:** a narrowed site that reaches a nested Guardian create with `None` would get `False`. Such a
+  site goes through the check for that target; narrowing alone would hide a button that shows today.
+- **From "the rendered result is the same as before":** sibling-page links to core targets carry no parent gate
+  today and get none in stage 1. Gating them is stage 3.
 
 ## 13. Reviewer brief
 

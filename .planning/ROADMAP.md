@@ -2387,10 +2387,26 @@ Plans:
 **Requirements**: None assigned; use the issue acceptance criteria.
 **Depends on:** Phase 6
 **Ordering:** Explicitly assigned 06.48 by the maintainer; before the 1.0 freeze of both hooks. Stage 2 (#385, shared Guardian checker) and stages 3 to 5 are out of scope.
-**Plans:** 0 plans
+**Plans:** 6 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 06.48 to break down)
+**Wave 1**
+- [ ] 06.48-01-PLAN.md — Baseline on the unchanged tree: characterization matrix of every affected control, cost record
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.48-02-PLAN.md — Tracer: the private link check, the per-target seam, navbar child item and nested Guardian list-page create
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.48-03-PLAN.md — Child context button and card child action through the check; child-link adapter removed
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.48-04-PLAN.md — Sibling-page sites: context buttons, row actions, parent button, sibling state argument, card action, permission filter
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 06.48-05-PLAN.md — `cv_has_access` on a nested Guardian create fails closed; D-25 test rewrites; no call site passes a parent
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 06.48-06-PLAN.md — Breaking entry, migration note, reference pages, doc pins, before-and-after costs, phase gate
 
 ### Phase 7: Theme-surface stability policy
 

@@ -291,17 +291,6 @@ class GuardianQuerysetMixin:
         return bool(cls.cv_viewset.permissions.get(cls.cv_permission))
 
     @classmethod
-    def _cv_child_link_has_access(cls, user, parent_obj):
-        if not cls.cv_viewset.has_parent:
-            return super()._cv_child_link_has_access(user, parent_obj)
-        if not user.is_authenticated or _guardian_inactive_actor(user):
-            return False
-        # Standalone queryset compositions never checked the parent for their links (bounded migration).
-        if not issubclass(cls, GuardianParentPermissionMixin):
-            return cls.cv_has_access(user, parent_obj)
-        return super()._cv_child_link_has_access(user, parent_obj)
-
-    @classmethod
     def _cv_link_permission(cls, user, obj, parent_obj, *, rendering_view=None):
         """Keep Guardian's actor rule and the bounded queryset-only link exception."""
         if not cls.cv_viewset.has_parent:

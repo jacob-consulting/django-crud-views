@@ -395,11 +395,6 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
             return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
         return cls.cv_create_has_access(user, rendering_view, parent_obj)
 
-    @classmethod
-    def _cv_child_link_has_access(cls, user, parent_obj):
-        # Create's own access contract already applies its immediate-parent permission policy.
-        return cls.cv_has_access(user, parent_obj)
-
 
 class GuardianManageView(ManageView):
     def _manage_class_source(self, viewset):

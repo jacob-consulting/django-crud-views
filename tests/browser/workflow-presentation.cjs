@@ -292,7 +292,7 @@ async function main(argv = process.argv.slice(2)) {
         cases: [], failures: [], servers: [], assets: [], cleanup: [], screenshots: [], logs: {}};
     let browser;
     try {
-        const companion = path.resolve(process.env.CV_WORKFLOW_COMPANION ?? path.join(root, '../tabler-test'));
+        const companion = path.resolve(process.env.CV_WORKFLOW_COMPANION ?? path.join(root, '../django-crud-views-tabler'));
         report.sources = sources(companion);
         const playwright = runtime('CV_WORKFLOW_PLAYWRIGHT', cached(path.join(os.homedir(), '.npm/_npx'), 'node_modules/playwright'));
         const chromium = runtime('CV_WORKFLOW_CHROMIUM', cached(path.join(os.homedir(), '.cache/ms-playwright'), 'chrome-linux64/chrome'), true);

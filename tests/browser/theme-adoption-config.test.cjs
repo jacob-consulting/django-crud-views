@@ -83,14 +83,14 @@ test('recorded root and runtime resolve from an isolated script location with sp
         fs.mkdirSync(path.join(root,phase),{recursive:true});fs.writeFileSync(path.join(root,phase,'06-companion-baseline.json'),JSON.stringify(baseline));
         const isolated=path.join(root,'tests/browser/theme-adoption.cjs');const env={...process.env,CV_THEME_PORT:'8159'};delete env.CV_THEME_PYTHON;delete env.CV_FOCUS_PYTHON;
         for(const sibling of [false,true]) {
-            if(sibling)fs.mkdirSync(path.join(temp,'tabler-test'));
+            if(sibling)fs.mkdirSync(path.join(temp,'django-crud-views-tabler'));
             const result=cp.spawnSync(process.execPath,['-e',`require(${JSON.stringify(isolated)}).configuration(['--case','label-floor','--delivered-source','recorded']).then(c=>console.log(JSON.stringify(c))).catch(e=>{console.error(e);process.exitCode=1})`],{cwd:os.tmpdir(),env,encoding:'utf8',shell:false});
             assert.equal(result.status,0,result.stderr);const config=JSON.parse(result.stdout);
             assert.equal(config.executable,baseline.companion_python);assert.equal(config.source,source);assert.equal(config.runtime.prefix,identity.prefix);
         }
         const harness=require(isolated);
         assert.throws(()=>harness.resolveSource('relative'),/absolute/);
-        assert.throws(()=>harness.resolveSource(path.join(temp,'tabler-test')),/does not match/);
+        assert.throws(()=>harness.resolveSource(path.join(temp,'django-crud-views-tabler')),/does not match/);
         assert.throws(()=>harness.resolveSource('recorded',{env:{CV_PACK_SOURCE:root}}),/conflicting/);
         for(const mutation of [b=>delete b.companion_python,b=>b.companion_python='',b=>b.runtime.prefix='/wrong',b=>b.runtime.python=[3,12,0]]) {
             const changed=structuredClone(baseline);mutation(changed);fs.writeFileSync(path.join(root,phase,'06-companion-baseline.json'),JSON.stringify(changed));

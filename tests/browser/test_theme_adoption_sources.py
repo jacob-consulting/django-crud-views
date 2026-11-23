@@ -203,7 +203,7 @@ def test_recorded_root_ignores_sibling_checkout(repo, tmp_path, monkeypatch, sib
     target.parent.mkdir(parents=True)
     target.write_text(json.dumps(manifest_for(root, revision)))
     if sibling == "unrelated":
-        repository(isolated.parent / "tabler-test")
+        repository(isolated.parent / "django-crud-views-tabler")
     monkeypatch.setattr(sources, "__file__", str(script))
     assert sources.resolve_recorded_source() == root
 
@@ -218,7 +218,7 @@ def test_source_identity_refuses_conflicts(repo, tmp_path, case):
     if case == "absent":
         manifest["companion_root"] = str(tmp_path / "absent")
     elif case == "relative":
-        operand = "../tabler-test"
+        operand = "../django-crud-views-tabler"
     elif case == "unrelated":
         operand = str(tmp_path / "other")
     elif case.endswith("conflict"):

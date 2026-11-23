@@ -165,7 +165,7 @@ async function selfTest(target) {
 async function run(options) {
     const root = fs.realpathSync(process.env.CV_QUERYSET_UPSTREAM || path.resolve(__dirname, '../..'));
     const sources = {upstream: root, downstream: options.target === 'downstream'
-        ? fs.realpathSync(process.env.CV_QUERYSET_DOWNSTREAM || '/home/alex/projects/alex/tabler-test') : null};
+        ? fs.realpathSync(process.env.CV_QUERYSET_DOWNSTREAM || '/home/alex/projects/alex/django-crud-views-tabler') : null};
     const python = process.env.CV_QUERYSET_PYTHON || path.join(sources.downstream || root, '.venv/bin/python');
     const playwright = process.env.CV_QUERYSET_PLAYWRIGHT || '/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright';
     const chromium = process.env.CV_QUERYSET_CHROMIUM || '/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome';

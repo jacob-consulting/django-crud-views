@@ -45,7 +45,9 @@ def sources_from(downstream=None):
     upstream = Path(os.environ.get("CV_QUERYSET_UPSTREAM", ROOT)).resolve()
     if upstream != ROOT:
         raise ValueError("CV_QUERYSET_UPSTREAM must identify the executing checkout")
-    downstream = Path(downstream or os.environ.get("CV_QUERYSET_DOWNSTREAM", ROOT.parent / "tabler-test")).resolve()
+    downstream = Path(
+        downstream or os.environ.get("CV_QUERYSET_DOWNSTREAM", ROOT.parent / "django-crud-views-tabler")
+    ).resolve()
     for root in [upstream, downstream]:
         result = invoke(["git", "rev-parse", "--show-toplevel"], cwd=root)
         if result.returncode or Path(result.stdout.strip()).resolve() != root:

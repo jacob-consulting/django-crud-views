@@ -19,7 +19,7 @@ import uuid
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-COMPANION_ROOT = "/home/alex/projects/alex/tabler-test"
+COMPANION_ROOT = "/home/alex/projects/alex/django-crud-views-tabler"
 COMPANION_REVISION = "885dfc791a150fdc715d6fb34c2e6181d6b92f3c"
 COMPANION_ORIGIN = "https://github.com/alexander-jacob/tabler-test.git"
 CORE_BASE = "cb26af4dfef2afb31d774a219abfad1c675cdff1"

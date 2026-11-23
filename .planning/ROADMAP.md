@@ -2387,7 +2387,7 @@ Plans:
 **Requirements**: None assigned; use the issue acceptance criteria.
 **Depends on:** Phase 6
 **Ordering:** Explicitly assigned 06.48 by the maintainer; before the 1.0 freeze of both hooks. Stage 2 (#385, shared Guardian checker) and stages 3 to 5 are out of scope.
-**Plans:** 6 plans
+**Plans:** 8 plans
 
 Plans:
 **Wave 1**
@@ -2397,16 +2397,22 @@ Plans:
 - [ ] 06.48-02-PLAN.md — Tracer: the private link check, the per-target seam, navbar child item and nested Guardian list-page create
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06.48-03-PLAN.md — Child context button and card child action through the check; child-link adapter removed
+- [ ] 06.48-03-PLAN.md — Unit tests of the check: signature, ancestor list, order, actor rule, action object, nested Guardian create
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 06.48-04-PLAN.md — Sibling-page sites: context buttons, row actions, parent button, sibling state argument, card action, permission filter
+- [ ] 06.48-04-PLAN.md — Child context button and card child action through the check; child-link adapter removed; private surface recorded
 
 **Wave 5** *(blocked on Wave 4 completion)*
-- [ ] 06.48-05-PLAN.md — `cv_has_access` on a nested Guardian create fails closed; D-25 test rewrites; no call site passes a parent
+- [ ] 06.48-05-PLAN.md — Context buttons and actions by view key: narrowed arguments; only a nested Guardian create takes the check (D-31)
 
 **Wave 6** *(blocked on Wave 5 completion)*
-- [ ] 06.48-06-PLAN.md — Breaking entry, migration note, reference pages, doc pins, before-and-after costs, phase gate
+- [ ] 06.48-06-PLAN.md — Parent button, sibling button, non-child card action, permission filter: same rule; same state object for link and request
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [ ] 06.48-07-PLAN.md — `cv_has_access` on a nested Guardian create fails closed; D-25 test rewrites; no call site passes a parent
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [ ] 06.48-08-PLAN.md — Breaking entry, migration note, reference pages, doc pins, before-and-after costs, phase gate
 
 ### Phase 7: Theme-surface stability policy
 

@@ -523,6 +523,10 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
+        """Permission for this view's own object, or None for a view without one (list, create).
+
+        Package callers never pass a parent or a page object of another kind as obj.
+        """
         return True
 
     @classmethod
@@ -555,13 +559,23 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     @classmethod
     def cv_action_enabled(cls, user: User, obj: Model | None = None) -> bool:
-        """Secondary action gate, evaluated only AFTER cv_has_access has passed.
+        """Whether the action is applicable to its current object, independently of permission.
 
         cv_has_access answers "may you do this in principle?" (permission).
         cv_action_enabled answers "is this action currently applicable to THIS
         object?" (state) — e.g. an open/locked parent disables child create/delete.
         Both must be true for the action button to render and the request to be
         allowed. Default: always enabled.
+
+        The request's cv_get_action_object defines obj: the view's own object, the immediate parent for a
+        nested view without an own object (list or create), otherwise None. Package links pass that same
+        object, except that a nested list receives None on a view that did not run the ancestor guard.
+
+        Requests and links decided by the private link check call this only after permission passes:
+        child context buttons, card child actions, object navbar child items and every link to a nested
+        Guardian create. Other context buttons, row actions, parent buttons, sibling buttons and non-child
+        card actions still evaluate state independently of permission. Overrides must not rely on
+        permission having passed.
         """
         return True
 

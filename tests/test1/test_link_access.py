@@ -9,6 +9,7 @@ from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connection
+from django.template import Context, Template
 from django.test import override_settings
 from django.test.utils import CaptureQueriesContext
 from guardian.shortcuts import remove_perm
@@ -23,7 +24,9 @@ from crud_views.lib.link_access import (
     _link_ctx,
     _link_permission,
 )
-from crud_views.lib.view import CardAction, ContextButton, ParentContextButton, SiblingContextButton
+from crud_views.lib.navbar import NavBar, NavItem
+from crud_views.lib.navbar import _build as _build_navbar
+from crud_views.lib.view import CardAction, ChildContextButton, ContextButton, ParentContextButton, SiblingContextButton
 from crud_views.lib.views import CreateView, CreateViewParentMixin, DetailView, ListView
 from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
 from crud_views.templatetags.crud_views import cv_context_has_permission
@@ -34,6 +37,7 @@ from tests.test1.app.models import Book, BookNote, Publisher
 from tests.test1.test_ancestor_authorization import _client, _url, _user, isolated_routes
 from tests.test1.test_ancestor_helpers import _bound, _grant
 from tests.test1.test_guardian_child_link_visibility import parent_spy
+from tests.test1.test_link_access_matrix import _actor, _get, _page_scene
 
 helpers = ancestor_helpers.helpers
 data = ancestor_helpers.data
@@ -1018,3 +1022,146 @@ def test_action_object_same_for_link_and_request(data, monkeypatch, composition,
     for obj in [*enforcement, *rendering]:
         assert type(obj) is type(expected)
         assert obj.pk == expected.pk
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("superuser", [False, True])
+def test_nested_guardian_create_cv_has_access_fails_closed_for_every_argument(
+    helpers, data, provider_calls, django_assert_num_queries, superuser
+):
+    actor = _user("narrow_create", superuser=superuser)
+    _grant(actor, helpers.pub, "change", data.penguin)
+    with django_assert_num_queries(0):
+        for target, own_child in ((helpers.book.Create, data.book), (helpers.genre.Create, data.genre)):
+            for obj in (None, data.penguin, own_child, data.author):
+                assert target.cv_has_access(actor, obj) is False
+    assert provider_calls == []
+
+
+def _assert_control_own_access(control, target, expectation, calls):
+    """Require this control's own observation, then validate every observed argument."""
+    target_calls = [obj for called, obj in calls if called is target]
+    if expectation == "asked":
+        assert target_calls, f"{control}: target cv_has_access was not asked"
+    else:
+        assert expectation == "not asked"
+        assert not target_calls, f"{control}: nested Guardian create cv_has_access was asked"
+    for called, obj in calls:
+        assert obj is None or (called.cv_object and isinstance(obj, called.cv_viewset.model)), (control, called, obj)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("composition", ["plain", "guardian"])
+def test_no_package_call_site_passes_a_parent_to_cv_has_access(request, monkeypatch, composition):
+    # Each control owns its recording: another control aimed at the same class cannot satisfy its row.
+    with _page_scene(composition, "card", request, monkeypatch) as scene:
+        actor = _actor("superuser", scene.parents, children=[scene.obj])
+        child, parent, sibling = scene.vs, scene.parent, scene.sibling
+        calls = []
+        for viewset in (child, parent, sibling):
+            for target in set(viewset.get_all_views().values()):
+                original = target.cv_has_access.__func__
+
+                def record(cls, user, obj=None, *, _original=original):
+                    calls.append((cls, obj))
+                    return _original(cls, user, obj)
+
+                monkeypatch.setattr(target, "cv_has_access", classmethod(record))
+                # Page rendering establishes request context; controls are built separately below.
+                monkeypatch.setattr(target, "cv_context_actions", [])
+                monkeypatch.setattr(target, "cv_list_actions", [], raising=False)
+                monkeypatch.setattr(target, "cv_card_actions", [], raising=False)
+
+        views = {}
+        for viewset, page in (
+            (parent, "detail"),
+            (parent, "card"),
+            (child, "list"),
+            (child, "detail"),
+            (child, "card"),
+        ):
+            page_cls = viewset.get_view_class(page)
+            kwargs = {viewset.parent.get_pk_name(): scene.parents[0].pk} if viewset.has_parent else {}
+            if page_cls.cv_object:
+                kwargs[viewset.pk_name] = (scene.obj if viewset is child else scene.parents[0]).pk
+            response = _get(actor, _url(viewset, page, **kwargs))
+            assert response.status_code == 200
+            views[viewset.name, page] = response.context["view"]
+
+        create_expectation = "not asked" if composition == "guardian" else "asked"
+        # control, page ViewSet/key, target ViewSet/key, expectation; each tuple is built and checked once.
+        rows = [
+            ("child-context", parent, "detail", child, "list", "asked"),
+            ("child-context", parent, "detail", child, "create", create_expectation),
+            ("card-child", parent, "card", child, "list", "asked"),
+            ("card-child", parent, "card", child, "create", create_expectation),
+            ("navbar-child", parent, "detail", child, "list", "asked"),
+            ("navbar-child", parent, "detail", child, "create", create_expectation),
+            ("list-create", child, "list", child, "create", create_expectation),
+            ("row", child, "list", child, "detail", "asked"),
+            ("row", child, "list", child, "update", "asked"),
+            ("row", child, "list", child, "delete", "asked"),
+            ("home", child, "detail", child, "list", "asked"),
+            ("context", child, "detail", child, "detail", "asked"),
+            ("context", child, "detail", child, "update", "asked"),
+            ("context", child, "detail", child, "delete", "asked"),
+            ("context", child, "detail", child, "create", create_expectation),
+            ("card", child, "card", child, "create", create_expectation),
+            ("card", child, "card", child, "detail", "asked"),
+            ("parent", child, "detail", parent, "list", "asked"),
+            ("parent", child, "detail", parent, "detail", "asked"),
+            ("sibling", child, "detail", sibling, "list", "asked"),
+            ("sibling", child, "detail", sibling, "create", create_expectation),
+            ("filter", child, "detail", child, "create", create_expectation),
+            ("filter", child, "detail", child, "update", "asked"),
+        ]
+        with pytest.raises(AssertionError, match="was not asked"):
+            _assert_control_own_access("unbuilt control", child.get_view_class("detail"), "asked", [])
+
+        for control, page_vs, page, target_vs, key, expectation in rows:
+            view = views[page_vs.name, page]
+            target = target_vs.get_view_class(key)
+            row_name = f"{composition}/{control}/{key}"
+            row_obj = scene.parents[0] if page_vs is parent else scene.obj
+            calls.clear()
+            if control == "navbar-child":
+                view.cv_navbar = NavBar(viewset=parent.name, items=[NavItem(child=child.name, key=key)])
+                result = _build_navbar(view)
+                assert result and len(result["items"]) == 1, row_name
+            elif control in {"card-child", "card"}:
+                action = (
+                    CardAction(child_name=child.name, child_key=key) if control == "card-child" else CardAction(key=key)
+                )
+                result = view.cv_get_card_action_data(action, row_obj, actor)
+            elif control == "filter":
+                template = Template('{% load crud_views %}{{ view|cv_context_has_permission:"' + key + '" }}')
+                result = template.render(Context({"view": view, "request": view.request}))
+                assert result in {"True", "False"}, row_name
+            else:
+                action_key = key
+                if control == "child-context":
+                    action_key = f"child_{key}"
+                    view.cv_context_buttons = [
+                        ChildContextButton(key=action_key, child_name=child.name, child_key=key, label_mode="label")
+                    ]
+                elif control == "parent":
+                    action_key = f"parent_{key}"
+                    view.cv_context_buttons = [ParentContextButton(key=action_key, key_target=key, label_mode="label")]
+                elif control == "sibling":
+                    action_key = f"sibling_{key}"
+                    assert not child.is_view_registered(action_key)
+                    view.cv_context_buttons = [
+                        SiblingContextButton(
+                            key=action_key, sibling_name=sibling.name, sibling_key=key, label_mode="label"
+                        )
+                    ]
+                elif control == "home":
+                    action_key = "home"
+                result = view.cv_get_context(
+                    action_key,
+                    obj=None if control == "list-create" else row_obj,
+                    user=actor,
+                    location="list" if control == "row" else "context",
+                )
+            assert result, f"{row_name}: control was not built"
+            _assert_control_own_access(row_name, target, expectation, calls)

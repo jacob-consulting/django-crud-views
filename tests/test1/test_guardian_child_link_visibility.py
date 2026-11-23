@@ -1298,7 +1298,7 @@ def test_query_create_uses_only_its_existing_parent_check(links, world, monkeypa
     _ = links.parent.permissions
     spy = parent_spy(monkeypatch, links.create)
     with CaptureQueriesContext(connection) as baseline:
-        assert links.create.cv_has_access(actor, parent) is True
+        assert links.create.cv_create_has_access(actor, None, parent) is True
     spy.reset_mock()
     with CaptureQueriesContext(connection) as rendered:
         assert rendered_data(links, renderer, actor, parent, key="create")["cv_access"] is True

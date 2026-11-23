@@ -1,6 +1,6 @@
 # Concept: one link access check, shared grants, and what is deliberately left out
 
-Date: 2026-11-23. Status: concept agreed with the maintainer in discussion; **no implementation is authorized by this
+Date: 2026-11-23. Status: concept approved by the maintainer on 2026-11-23; **no implementation is authorized by this
 document**. It is not an implementation plan. Each stage in section 9 needs its own issue, plan and approval.
 
 Related: #385 (reuse Guardian grants), #314 (opt-in URL helper), #312/#318 (link visibility versus request gate),
@@ -356,3 +356,134 @@ Later, on demonstrated need: section 8.2, then 8.1, then 8.3.
   change.
 - Whether stage 2 also changes how `get_objects_for_user` based list filtering interacts with the checker: not
   examined.
+
+## 12. gsd-handover
+
+The maintainer approved this concept on 2026-11-23. The decisions below are settled input for planning. A planner
+does not reopen them; a decision changes only when the maintainer says so. No issue has been created yet, and no
+stage is scheduled by this document.
+
+### 12.1 Settled decisions
+
+Decided by the maintainer in discussion:
+
+| # | Decision | Section |
+|---|---|---|
+| D-01 | Approach B: a shared Guardian checker plus one link check. Delivered in the stages of section 9. | 4, 9 |
+| D-02 | The request gate always reads grants fresh. A revoked permission takes effect on the next request. | 8.1 |
+| D-03 | A cross-request cache may serve link rendering only, never the gate. It is specified, not built, and is decided again after a real menu has been measured. | 8.1 |
+| D-04 | A link checks the ancestors it is handed plus those the current request already resolved. It never loads an ancestor only to decide a link. | 5.3 |
+| D-05 | Links to ancestors that a ViewSet queryset filters out (archived, soft-deleted) are accepted. Links do not consult ViewSet querysets. The failure is a refused click. | 5.4 |
+| D-06 | No stand-in or fake view instances, for any purpose. | 2, 8.3 |
+| D-07 | `force_full_hierarchy_check` is specified as a foreign-key walk over permission gates, with many-to-many parents denied. The check's ancestor-list interface is fixed now so the flag is additive. | 5.1, 8.2 |
+| D-08 | Business rules split in two: cheap state rules (`cv_action_enabled`) run for links and requests and are never cached; expensive checks run only on the action's page. Delete gets no new hook. | 6 |
+| D-09 | The shared Guardian checker lives on the user object. | 7 |
+| D-10 | Manage page, `cv_access` and `cv_manage_view` change only if something there needs fixing. Their published JSON formats stay as they are. | 9 |
+| D-11 | `obj` in `cv_has_access` is narrowed to the target's own object before 1.0. | 5.6 |
+| D-12 | Because D-11 cannot ship alone, the core of the link check is pulled forward to before 1.0 as a private function, and the package's child-link and create call sites move to it in the same change. | 5.6, 9 |
+| D-13 | The object passed to `cv_action_enabled` for a link follows the request's `cv_get_action_object`. It lands with D-11. | 5.2 |
+
+Proposed by the assistant and approved with the document:
+
+| # | Decision | Section |
+|---|---|---|
+| D-14 | The request gate is not rewired. The link check is assembled from the gate's existing building blocks. | 5.5 |
+| D-15 | A target without an own object receives `None` in `cv_has_access`. | 5.6 |
+| D-16 | A nested target whose immediate parent is not known is denied. Only ancestors above the nearest may be absent. | 5.2 |
+| D-17 | The check takes no view. The real rendering view may be passed through to hooks that already accept one, or nothing on a non-CRUD page. | 5.1 |
+| D-18 | Step 1 keeps the signed-in-and-active rule for protected ancestry and `_check_nested_auth`. | 5.2 |
+| D-19 | State is evaluated only after parent gates and own permission have passed. | 5.2 |
+| D-20 | Decisions (the answer per view and object) are not stored anywhere; only grants are shared. | 7 |
+| D-21 | A denied breadcrumb item renders as plain text, not as a link. | 9 |
+| D-22 | `force_full_hierarchy_check` is built at the first real case, not in the first version. | 8.2 |
+| D-23 | If the cross-request cache is ever built, it is opt-in, holds grants only, and is invalidated by one global permission counter plus a short timeout. | 8.1 |
+| D-24 | The delete preview stays the only place that maps a model to a ViewSet. | 9, 10 |
+
+### 12.2 Scope of the first phase (stage 1, before 1.0)
+
+In scope:
+
+- The link check as a private function with the inputs of section 5.1 and the steps of section 5.2.
+- The call sites that pass a parent today, core and Guardian, moved to it: `_cv_child_link_has_access` and its
+  callers, the Guardian child create's access cases, and the Guardian pieces listed in section 3 as far as they
+  concern child links and creates.
+- D-11, D-13 and D-15 applied to the two public hooks, with one `### Breaking` entry in `CHANGELOG.md`, the matching
+  entry in `docs/migrating-1.0.md`, and the affected reference pages.
+
+Constraints the plan must satisfy:
+
+- A direct call to `cv_has_access` on a nested Guardian create never starts answering "allowed" without a parent
+  check.
+- `cv_create_has_access(user, rendering_view, parent_obj)` stays the documented hook for parent-based create rules
+  and keeps being called.
+- The request gate, its order, its responses and its trace recording are unchanged (D-14).
+- Golden files stay byte-identical unless the plan names an intended markup change.
+- Query counts are pinned before and after in the existing cost tests.
+
+Out of scope for stage 1: the shared Guardian checker (stage 2), the remaining consumers (stage 3), the breadcrumb,
+the site menu, and everything in section 8.
+
+### 12.3 Scope of stage 2 (shared Guardian checker, #385)
+
+Stage 2 is independent of stage 1 and may be planned before or after it. #385 is its issue; that issue's handover
+still calls the checker's placement open, which D-09 now settles.
+
+In scope:
+
+- One small helper in `crud_views_guardian` that returns the user's `ObjectPermissionChecker`, creating it on first
+  use and keeping it on the user object.
+- The four places that build a checker today use the helper: `crud_views_guardian/lib/mixins.py:156, 213` and
+  `crud_views_guardian/lib/ancestors.py:67, 70`. The view-local `_cv_guardian_ancestor_checker` is replaced by it.
+- Documentation of the lifetime: a user object kept alive beyond one request keeps its old grants, as Django's own
+  permission set does.
+- The measured-cost table in `docs/reference/navbar.md` and the pinned counts in `tests/test1/test_navbar_costs.py`
+  and `tests/test1/test_ancestor_costs.py`, updated to the new figures.
+
+Constraints the plan must satisfy:
+
+- Every access decision is unchanged for every actor: anonymous, inactive, superuser, direct grant, group grant and
+  model fallback. Only query counts change.
+- Each destination still applies its own permission and its own state rule (#385, decision 4). Sharing loaded
+  grants must not make one item's answer stand in for another's.
+- The request gate reads grants loaded in the same request, never from an earlier one (D-02).
+- The access trace output is unchanged.
+- No `### Breaking` entry is expected. If the plan finds one, it stops and reports it.
+
+Out of scope for stage 2: the link check, any Django cache, storing decisions, and top-level navigation.
+
+To verify during planning:
+
+- That keeping an attribute on `request.user` survives Django's lazy user wrapper and behaves for the anonymous
+  user. Not checked for this concept.
+- Whether loading the grants for all rows of a list or card page in one step (`prefetch_perms`) belongs in this
+  stage. The saving is expected, not measured; the planner includes it only with a pinned before-and-after count.
+
+### 12.4 Open for the planner
+
+These are the planner's to decide, within the decisions above:
+
+- Name, module and exact signature of the check.
+- How step 2 is satisfied for a view whose only rule is the parent rule (the nested Guardian create).
+- Which of the three private adapters can be removed in stage 1 and which must wait for stage 3.
+- The exact wording and extent of the Breaking entry.
+- The remaining items of section 11.
+
+## 13. Reviewer brief
+
+For external reviewers of a plan or of code that implements a stage of this concept.
+
+1. **The concept is fixed input.** Sections 1 to 12 record decisions the maintainer has taken. They are not under
+   review. Do not propose a different architecture, a more general mechanism, or a broader scope.
+2. **Only defects count.** Report a finding only when you can name a concrete case, for example:
+   - a link or button that is shown without the parent check the request would apply;
+   - a direct call to a public hook that now answers "allowed" where it answered "denied" before;
+   - a call site that the change missed, with file and line;
+   - a project override that changes behaviour without a migration note;
+   - a difference in the request gate's order, response or trace output;
+   - a state or business rule that can end up in a cache.
+3. **Design alternatives are out of scope** unless you show that the plan or code violates one of the anti-goals in
+   section 2. In that case name the anti-goal and the case.
+4. **Give evidence.** Each finding states the input, what happens, and what should happen. Mark anything you did
+   not verify against the source as unverified.
+5. **Report independently.** Do not respond to other reviewers. The maintainer sorts all reports once into "fix",
+   "document" and "ignore".

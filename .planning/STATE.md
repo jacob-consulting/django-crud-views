@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.48"
 current_phase_name: "Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)"
-current_plan: 7
+current_plan: 8
 status: executing
-stopped_at: Completed 06.48-06-PLAN.md
-last_updated: "2026-11-23T20:19:46.852Z"
+stopped_at: Completed 06.48-07-PLAN.md
+last_updated: "2026-11-23T20:39:41.119Z"
 last_activity: 2026-11-23
-last_activity_desc: Phase 06.48 plan 06 complete; remaining page controls narrow hook objects and link-request parity passes
-state_head: f20dd898060a7ea39077fe1af19dadb3b98f5a55
+last_activity_desc: Phase 06.48 plan 07 complete; nested Guardian create own-access fails closed and all package callers conform
+state_head: 37207bd63d336279a34b1ad484ccf5857255cf93
 progress:
   total_phases: 55
   completed_phases: 53
   total_plans: 294
-  completed_plans: 291
+  completed_plans: 292
 milestone_name: milestone
 ---
 
@@ -33,12 +33,18 @@ See: .planning/PROJECT.md (updated 2026-11-22)
 ## Current Position
 
 Phase: 06.48 (Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)) — EXECUTING
-Current Plan: 7
+Current Plan: 8
 Total Plans in Phase: 9
 Status: Ready to execute
-Last activity: 2026-11-23 — Phase 06.48 plan 06 complete; full suite 18,904 passed and frozen outcomes/costs retained
+Last activity: 2026-11-23 — Phase 06.48 plan 07 complete; full suite 18,908 passed and protected request/rendering baselines retained
 
 Next: $gsd-execute-phase 06.48
+
+### Phase 06.48 plan 07 — 2026-11-23
+
+- Nested Guardian create `cv_has_access` now returns False for every argument without SQL or a provider call; `cv_create_has_access` retains the parent rule. Approved D-25/C7 tests preserve parent-policy coverage, including four denial companions proven on the unchanged hook first. Public hook docstrings state the approved object and evaluation-order limits.
+- The new recording test observes 23 separately built controls per core/Guardian composition and wraps all registered child, parent and sibling view classes. All 14 runtime source calls were reviewed. Full suite 18,908 passed; standalone ancestor suites 1,336 passed and access-trace suites 640 passed. Frozen matrix data, golden files, protected gate methods and cost expectations are unchanged.
+- Three task commits and SUMMARY committed before tracking. ROADMAP is 7/9, current plan 8, completed plans 292; metrics/session updated. The generic progress refresh retains its known unscoped-requirements limitation, and unrelated state.json bytes are preserved. No unresolved issue; next is plan 08. The phase remains executing.
 
 ### Phase 06.48 plan 06 — 2026-11-23
 
@@ -1922,6 +1928,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.48 P04 | 12min | 2 tasks | 9 files |
 | Phase 06.48 P05 | 20min | 2 tasks | 8 files |
 | Phase 06.48 P06 | 16min | 3 tasks | 7 files |
+| Phase 06.48 P07 | 15min | 2 tasks | 8 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2380,6 +2387,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-23T20:19:39.836Z
-Stopped at: Completed 06.48-06-PLAN.md
+Last session: 2026-11-23T20:39:34.048Z
+Stopped at: Completed 06.48-07-PLAN.md
 Resume file: None

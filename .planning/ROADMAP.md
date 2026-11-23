@@ -2387,7 +2387,7 @@ Plans:
 **Requirements**: None assigned; use the issue acceptance criteria.
 **Depends on:** Phase 6
 **Ordering:** Explicitly assigned 06.48 by the maintainer; before the 1.0 freeze of both hooks. Stage 2 (#385, shared Guardian checker) and stages 3 to 5 are out of scope.
-**Plans:** 6/9 plans executed
+**Plans:** 7/9 plans executed
 
 Plans:
 **Wave 1**
@@ -2409,7 +2409,7 @@ Plans:
 - [x] 06.48-06-PLAN.md — Parent button, sibling button, non-child card action, permission filter: same rule; same state object for link and request
 
 **Wave 7** *(blocked on Wave 6 completion)*
-- [ ] 06.48-07-PLAN.md — `cv_has_access` on a nested Guardian create fails closed; D-25 test rewrites; no call site passes a parent
+- [x] 06.48-07-PLAN.md — `cv_has_access` on a nested Guardian create fails closed; D-25 test rewrites; no call site passes a parent
 
 **Wave 8** *(blocked on Wave 7 completion)*
 - [ ] 06.48-08-PLAN.md — Breaking entry, migration note, five reference pages, doc pins

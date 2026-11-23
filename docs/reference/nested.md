@@ -562,9 +562,9 @@ this URL path, not every parent an object belongs to.
 
 ### Visible links and buttons
 
-`ChildContextButton` and child `CardAction` call the destination's child-link hook once. Plain nested targets
-first honor their own `cv_has_access(user, parent_obj)` result, then check the supplied immediate parent using
-the destination operation's nearest key. The parent owns the provider and `accept_global_perms` policy: core
+`ChildContextButton` and child `CardAction` use the package's link check once. Plain nested targets first check
+the supplied immediate parent using the destination operation's nearest key, then call `cv_has_access(user, None)`,
+then state with the parent if permission passed. The parent owns the provider and `accept_global_perms` policy: core
 parents use model permissions; Guardian parents use object/group grants with model fallback only when that
 parent's `AncestorPolicy(accept_global_perms=True)` allows it. `provider="none"` bypasses only this parent gate.
 Shipped Guardian collection/create paths retain one parent check and their existing actor/create policy;
@@ -574,7 +574,8 @@ standalone queryset-only compositions keep their documented exception. See
 A user with Book `view` and Publisher `change`, but without Publisher `view`, can open Publisher update while
 the default Books list GET returns 403. Both child renderers now hide or disable that Books control according
 to the destination's setting, with no usable disabled URL. Grant Publisher `view` and the same parent's empty
-Books collection is accessible. Custom own denials and independent action-state policy still apply.
+Books collection is accessible. Custom own denials and action-state policy still apply; state is asked only
+after permission passes. Nested Guardian create links use `cv_create_has_access` for their parent permission.
 
 Each eligible plain link adds one parent-policy call, not necessarily one SQL query, and reuses the supplied
 parent without another parent-row fetch. For both renderers, measured fresh/cold through warm/warm totals were
@@ -584,13 +585,16 @@ actor/vocabulary caches and the provider determine SQL, and repeated Guardian li
 
 Parent-policy configuration errors propagate as `ImproperlyConfigured` during host rendering: a required key
 missing from the parent's permission map, a nested operation without requirements, or reached authorization
-records routed away from `default`. Own denial short-circuits parent work; `provider="none"` retains its early
+records routed away from `default`. The parent gate runs before own access, so malformed policy raises even
+for an actor whose own access is denied; `provider="none"` retains its early
 helper bypass before these validations. These failures are not ordinary hidden/disabled denials.
 
 Request enforcement remains authoritative for the full ancestor chain. Rendering checks only the supplied
 immediate parent, so a visible link can still lead to a 403 from a farther ancestor, including when the immediate
-provider is `"none"`. Sibling links and ordinary row actions are unchanged, and URL construction proves no
-authorization. The manage page shows declared policy, not whether a user can pass it.
+provider is `"none"`. A queryset-only Guardian composition can also show a child link without a parent check
+while its request returns 403. Sibling links and ordinary row actions still carry no parent gate and keep
+their evaluation order, while their hook arguments follow [the narrowed meaning](../migrating-1.0.md#link-access-hooks).
+URL construction proves no authorization. The manage page shows declared policy, not whether a user can pass it.
 
 ## See also
 

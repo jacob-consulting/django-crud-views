@@ -1,7 +1,9 @@
 # Conditionally Disabling an Action
 
-`cv_action_enabled` is a secondary gate that runs **after** `cv_has_access` (permission) has
-already passed. The two hooks answer different questions:
+`cv_action_enabled` is a state gate beside permission: requests, child context buttons, card child actions,
+object navbar child items and links to a nested Guardian create ask it only after permission passes.
+Other buttons evaluate it independently of permission, as listed under [Enforcement Points](#enforcement-points).
+The two hooks answer different questions:
 
 | Hook | Question |
 |------|----------|
@@ -52,11 +54,13 @@ When `cv_action_enabled` returns `False`:
 | View type | `obj` value |
 |-----------|-------------|
 | Object views (detail, update, delete, action, custom form) | The model instance being acted on |
-| Child create view | The **parent** instance (since no child instance exists yet) |
-| Top-level create with no parent | `None` |
+| Nested view without an own object (list or create) | The **immediate parent** instance |
+| Top-level view without an own object (list or create) | `None` |
 
-The helper `cv_get_action_object()` resolves this: it returns `self.get_object()` for object
-views and `self.cv_get_parent_object()` for child-create views.
+The request's `cv_get_action_object()` returns `self.get_object()` for object views and the immediate parent
+for nested views without an own object; otherwise it returns `None`. A link passes the same action object,
+with one exception: on a hosting view that did not run the ancestor guard (a custom or non-CRUD view), a
+nested list's state hook receives `None`. Core controls do not disappear on such a view.
 
 ## Example: Locked Group Disables Member Add/Remove
 
@@ -89,6 +93,11 @@ class PersonCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, Cre
 `card_action.html`) guard their output with `{% if cv_action_enabled is not False %}`.
 The `cv_action_enabled` flag is injected into the template context by the rendering
 infrastructure.
+Child context buttons, card child actions, object navbar child items and links to a nested Guardian create
+run parent gate, own access, then state. A permission denial skips the state hook and leaves the context flag
+`cv_action_enabled=True`, meaning not evaluated; the permission result still hides or disables the control.
+Context buttons, row actions, parent buttons, sibling buttons and non-child card actions to other targets
+keep evaluating state independently of permission. The `cv_context_has_permission` filter never evaluates state.
 
 **Request enforcement (plain views)** — `CrudViewPermissionRequiredMixin.has_permission()`
 calls `cv_get_action_object()` then `cv_action_enabled()`. Returning `False` causes
@@ -99,7 +108,8 @@ calls `cv_get_action_object()` then `cv_action_enabled()`. Returning `False` cau
 - `GuardianObjectPermissionMixin.get_object()` — for object actions (detail, update, delete,
   action views). After the per-object guardian check, it calls `cv_action_enabled()` and raises
   `PermissionDenied` if it returns `False`.
-- `GuardianParentPermissionMixin.dispatch()` — for child-create views. After checking the parent
+- `GuardianParentPermissionMixin.dispatch()` — for every nested view without an own object, including list
+  and create. After checking the parent
   permission, it calls `cv_action_enabled()` with the resolved parent and raises `PermissionDenied`
   if it returns `False`.
 

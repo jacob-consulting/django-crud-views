@@ -573,8 +573,10 @@ def test_bulk_theme_authorization_boundary():
     authorized = normalized(section(text, "Authorized data in overridden templates"))
     for phrase in (
         "permission-filtered action/menu leaves",
-        "configured bulk destinations",
-        "without destination access or item checks during source rendering",
+        "configured bulk destinations only to a viewer who passes their `cv_has_access` and `cv_action_enabled`",
+        "with no record checks during source rendering",
+        "bulk_actions.md#which-actions-a-user-sees",
+        "view.cv_bulk_buttons",
         "destination POST enforces permissions and admission",
         "Styling or hiding a bulk button grants no authority",
     ):

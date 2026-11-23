@@ -13,7 +13,7 @@ from django.test import override_settings
 from django.test.utils import CaptureQueriesContext
 from guardian.shortcuts import remove_perm
 
-from crud_views.lib import ancestors
+from crud_views.lib import ancestors, link_access
 from crud_views.lib.link_access import (
     _LINK_ALLOWED,
     _LINK_PERMISSION,
@@ -23,13 +23,15 @@ from crud_views.lib.link_access import (
     _link_ctx,
     _link_permission,
 )
-from crud_views.lib.views import CreateView, CreateViewParentMixin, ListView
+from crud_views.lib.view import ContextButton
+from crud_views.lib.views import CreateView, CreateViewParentMixin, DetailView, ListView
 from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1 import test_ancestor_helpers as ancestor_helpers
 from tests.test1.app.models import Book, Publisher
 from tests.test1.test_ancestor_authorization import _user, isolated_routes
 from tests.test1.test_ancestor_helpers import _bound, _grant
+from tests.test1.test_guardian_child_link_visibility import parent_spy
 
 helpers = ancestor_helpers.helpers
 data = ancestor_helpers.data
@@ -83,6 +85,8 @@ def core_targets():
             vs=child,
             List=type("LinkCoreList", (ListView,), {**common, "cv_list_actions": []}),
             Create=type("LinkCoreCreate", (CreateViewParentMixin, CreateView), {**common, "fields": ["title"]}),
+            Detail=type("LinkCoreDetail", (DetailView,), dict(common)),
+            TopList=type("LinkCoreTopList", (ListView,), {"cv_viewset": parent}),
         )
         return family, [parent, child]
 
@@ -491,3 +495,202 @@ def test_link_ctx_maps_outcomes():
     assert _link_ctx(_LINK_ALLOWED) == {"cv_access": True, "cv_action_enabled": True}
     assert _link_ctx(_LINK_PERMISSION) == {"cv_access": False, "cv_action_enabled": True}
     assert _link_ctx(_LINK_STATE) == {"cv_access": True, "cv_action_enabled": False}
+
+
+def _page_view(target, actor, parent, obj=None, *, guarded=True):
+    """Bind a real page view and let its request guard resolve the URL parent."""
+    kwargs = {target.cv_viewset.parent.get_pk_name(): parent.pk}
+    if obj is not None:
+        kwargs["pk"] = obj.pk
+    view = _bound(target, actor, **kwargs)
+    view.request.resolver_match = SimpleNamespace(url_name=target.cv_viewset.get_router_name(target.cv_key))
+    if guarded:
+        assert view._cv_ancestor_guard() is None
+    return view
+
+
+@pytest.mark.django_db
+def test_page_link_ancestors_only_for_nested_guardian_create(helpers, core_targets, data):
+    actor = _user("page_seam", (Publisher, "view"))
+    _grant(actor, helpers.pub, "view", data.penguin)
+    view = _page_view(helpers.book.Detail, actor, data.penguin, data.book)
+    for target in (
+        core_targets.List,
+        core_targets.Create,
+        helpers.book.List,
+        helpers.book.Detail,
+        helpers.pub.Create,
+    ):
+        seam = getattr(target, "_cv_page_link_ancestors", None)
+        assert callable(seam), "the private page seam must exist"
+        assert seam(view, data.book) is None
+    known = helpers.book.Create._cv_page_link_ancestors(view, data.book)
+    assert isinstance(known, tuple)
+    assert len(known) == 1
+    assert known[0] is view.cv_get_parent_object()
+
+
+@pytest.mark.django_db
+def test_page_link_ancestors_keep_documented_denials(helpers, data, django_assert_num_queries):
+    actor = _user("page_seam_denials")
+    _grant(actor, helpers.pub, "view", data.penguin)
+    view = _page_view(helpers.book.Detail, actor, data.penguin, data.book)
+    genre_view = _page_view(helpers.genre.Detail, actor, data.penguin, data.genre)
+    parent = view.cv_get_parent_object()
+    target = helpers.book.Create
+    unguarded = _bound(helpers.book.Detail, actor, **view.kwargs)
+    # The cached FK costs no query too: identity, not query count, proves the URL parent wins.
+    mismatched = Book(pk=data.book.pk, title="Different FK", publisher=data.other)
+    assert mismatched.publisher is data.other
+    with django_assert_num_queries(0):
+        for obj in (None, data.author, data.penguin):
+            assert target._cv_page_link_ancestors(view, obj) == ()
+        assert helpers.genre.Create._cv_page_link_ancestors(genre_view, data.genre) == ()
+        assert target._cv_page_link_ancestors(unguarded, data.book) == ()
+        for obj in (data.book, mismatched):
+            known = target._cv_page_link_ancestors(view, obj)
+            assert len(known) == 1
+            assert known[0] is parent
+            assert known[0] is not data.other
+
+
+@pytest.mark.django_db
+def test_page_action_object_follows_request_definition(helpers, data, django_assert_num_queries):
+    actor = _user("page_action_object")
+    _grant(actor, helpers.pub, "view", data.penguin)
+    view = _page_view(helpers.book.Detail, actor, data.penguin, data.book)
+    parent = view.cv_get_parent_object()
+    unguarded = _bound(helpers.book.Detail, actor, **view.kwargs)
+    action_object = getattr(link_access, "_page_action_object", None)
+    assert callable(action_object), "the page action-object helper must exist"
+    with django_assert_num_queries(0):
+        assert action_object(view, helpers.book.Detail, data.book) is data.book
+        assert action_object(view, helpers.book.List, data.book) is parent
+        assert action_object(view, helpers.book.Create, data.book) is parent
+        assert action_object(view, helpers.pub.List, data.book) is None
+        assert action_object(unguarded, helpers.book.List, data.book) is None
+
+
+@pytest.mark.django_db
+def test_context_controls_keep_core_targets_on_their_code_path(core_targets, data, monkeypatch):
+    actor = _user("page_core_controls", (Publisher, "view"))
+    view = _page_view(core_targets.Detail, actor, data.penguin, data.book)
+    parent = view.cv_get_parent_object()
+    for target, key, own_obj, state_obj in (
+        (core_targets.List, "home", None, parent),
+        (core_targets.List, "list", None, parent),
+        (core_targets.Detail, "detail", data.book, data.book),
+        (core_targets.Create, "create", None, parent),
+    ):
+        with monkeypatch.context() as patch:
+            gate = parent_spy(patch, target)
+            calls = []
+            own = Mock(side_effect=lambda *args, _calls=calls: _calls.append("own") or False)
+            state = Mock(side_effect=lambda *args, _calls=calls: _calls.append("state") or True)
+            patch.setattr(target, "cv_has_access", own)
+            patch.setattr(target, "cv_action_enabled", state)
+            ctx = view.cv_get_context(key, obj=data.book, user=actor, location="list" if key == "detail" else "context")
+            assert ctx["cv_access"] is False
+            assert ctx["cv_action_enabled"] is True
+            assert calls == ["state", "own"]
+            own.assert_called_once_with(actor, own_obj)
+            state.assert_called_once_with(actor, state_obj)
+            assert state.call_args.args[1] is state_obj
+            gate.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_context_controls_send_nested_guardian_create_through_the_check(helpers, data, monkeypatch):
+    target = helpers.book.Create
+    alias = ContextButton(key="new_book", key_target="create")
+    monkeypatch.setattr(helpers.book.Detail, "cv_context_buttons", [alias])
+    for permitted in (True, False):
+        actor = _user(f"page_guardian_create_{permitted}")
+        _grant(actor, helpers.pub, "view", data.penguin)
+        _grant(actor, helpers.book, "view", data.book)
+        if permitted:
+            _grant(actor, helpers.pub, "change", data.penguin)
+        view = _page_view(helpers.book.Detail, actor, data.penguin, data.book)
+        parent = view.cv_get_parent_object()
+        assert actor.has_perm("app.change_publisher", data.other) is False
+        # Parent A is authorized, parent B is cached on the child and has no create grant.
+        mismatched = Book(pk=data.book.pk, title="Different FK", publisher=data.other)
+        assert mismatched.publisher is data.other
+        for key in ("create", "new_book"):
+            with monkeypatch.context() as patch:
+                gate = parent_spy(patch, target)
+                create_access = Mock(wraps=target.cv_create_has_access)
+                own = Mock(wraps=target.cv_has_access)
+                state = Mock(return_value=True)
+                patch.setattr(target, "cv_create_has_access", create_access)
+                patch.setattr(target, "cv_has_access", own)
+                patch.setattr(target, "cv_action_enabled", state)
+                with CaptureQueriesContext(connection) as queries:
+                    ctx = view.cv_get_context(key, obj=mismatched, user=actor)
+                assert ctx["cv_access"] is permitted
+                assert ctx["cv_action_enabled"] is True
+                create_access.assert_called_once_with(actor, None, parent)
+                assert create_access.call_args.args[2] is parent
+                gate.assert_called_once_with(actor, parent)
+                assert gate.call_args.args[1] is parent
+                own.assert_not_called()
+                if permitted:
+                    state.assert_called_once_with(actor, parent)
+                else:
+                    state.assert_not_called()
+                for query in queries.captured_queries:
+                    for clause in ("from", "join"):
+                        assert f'{clause} "{Publisher._meta.db_table}"' not in query["sql"].lower()
+
+    actor = _user("page_guardian_kept_hidden")
+    _grant(actor, helpers.pub, "view", data.penguin)
+    _grant(actor, helpers.pub, "change", data.penguin)
+    for page, obj, create in (
+        (helpers.genre.Detail, data.genre, helpers.genre.Create),
+        (helpers.book.Create, None, target),
+    ):
+        view = _page_view(page, actor, data.penguin, obj)
+        with monkeypatch.context() as patch:
+            patch.setattr(page, "cv_context_buttons", [alias])
+            gate = parent_spy(patch, create)
+            create_access = Mock(wraps=create.cv_create_has_access)
+            state = Mock(return_value=True)
+            patch.setattr(create, "cv_create_has_access", create_access)
+            patch.setattr(create, "cv_action_enabled", state)
+            for key in ("create", "new_book"):
+                ctx = view.cv_get_context(key, obj=obj, user=actor)
+                assert ctx["cv_access"] is False
+                assert ctx["cv_action_enabled"] is True
+            gate.assert_not_called()
+            create_access.assert_not_called()
+            state.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_unguarded_view_keeps_core_controls(helpers, core_targets, data, monkeypatch):
+    actor = _user("page_unguarded")
+    view = _page_view(core_targets.Detail, actor, data.penguin, data.book, guarded=False)
+    for target, key in ((core_targets.List, "home"), (core_targets.Create, "create")):
+        with monkeypatch.context() as patch:
+            gate = parent_spy(patch, target)
+            own, state = Mock(return_value=True), Mock(return_value=True)
+            patch.setattr(target, "cv_has_access", own)
+            patch.setattr(target, "cv_action_enabled", state)
+            ctx = view.cv_get_context(key, obj=data.book, user=actor)
+            assert ctx["cv_access"] is True
+            assert ctx["cv_action_enabled"] is True
+            own.assert_called_once_with(actor, None)
+            state.assert_called_once_with(actor, None if key == "home" else data.penguin)
+            gate.assert_not_called()
+
+    _grant(actor, helpers.pub, "change", data.penguin)
+    view = _page_view(helpers.book.Detail, actor, data.penguin, data.book, guarded=False)
+    gate = parent_spy(monkeypatch, helpers.book.Create)
+    create_access = Mock(wraps=helpers.book.Create.cv_create_has_access)
+    monkeypatch.setattr(helpers.book.Create, "cv_create_has_access", create_access)
+    with override_settings(ROOT_URLCONF=SimpleNamespace(urlpatterns=helpers.book.vs.urlpatterns)):
+        ctx = view.cv_get_context("create", obj=data.book, user=actor)
+    assert ctx["cv_access"] is False
+    assert ctx["cv_action_enabled"] is True
+    create_access.assert_not_called()
+    gate.assert_not_called()

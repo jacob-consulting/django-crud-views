@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.48"
 current_phase_name: "Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)"
-current_plan: 4
+current_plan: 5
 status: executing
-stopped_at: Completed 06.48-03-PLAN.md
-last_updated: "2026-11-23T19:19:02.716Z"
+stopped_at: Completed 06.48-04-PLAN.md
+last_updated: "2026-11-23T19:33:51.881Z"
 last_activity: 2026-11-23
-last_activity_desc: Phase 06.48 plan 03 complete; fourteen direct link contract tests verified and committed
-state_head: 43be919dcc819a6c437b73a8d809c27433b4b3eb
+last_activity_desc: Phase 06.48 plan 04 complete; child links use the private check and all three child-link adapters are removed
+state_head: ba50ab6425288f998cd50a0b5114fc15056a7ac2
 progress:
   total_phases: 55
   completed_phases: 53
   total_plans: 294
-  completed_plans: 288
+  completed_plans: 289
 milestone_name: milestone
 ---
 
@@ -33,12 +33,19 @@ See: .planning/PROJECT.md (updated 2026-11-22)
 ## Current Position
 
 Phase: 06.48 (Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)) — EXECUTING
-Current Plan: 4
+Current Plan: 5
 Total Plans in Phase: 9
 Status: Ready to execute
-Last activity: 2026-11-23 — Phase 06.48 plan 03 complete; 14 contract tests and 1,489 regression tests passed
+Last activity: 2026-11-23 — Phase 06.48 plan 04 complete; full suite 18,883 passed and frozen outcomes/costs retained
 
 Next: $gsd-execute-phase 06.48
+
+### Phase 06.48 plan 04 — 2026-11-23
+
+- Child context buttons and card child actions now use the private link check; all three `_cv_child_link_has_access` definitions are removed. Every planned test edit is classified in the summary, alongside the adapter record and planned stage-1 private surface.
+- Two RED/GREEN pairs verified; affected selection 1,519 passed, adapter/helper/cost selection 413 passed, full suite 18,883 passed in 396.38s on Python 3.12.3/Django 6.0.10 with six workers and recorder off. Frozen 1,178 matrix outcomes, golden files, request-gate/trace expectations, 120 navbar measurements and nine ancestor-cost receipts remain unchanged; exactly four approved ancestor-helper lines changed.
+- C2 now applies to all three parent-in-hand controls: own denial pays for the parent gate. Newly measured context/card cases each make one gate call and two permission queries; every existing child-link query-only measurement stays identical. L1/L2 and D-30 remain unchanged.
+- Four task commits and SUMMARY committed before tracking. ROADMAP is 4/9, current plan 5, completed plans 289; metrics/session updated, with the known unscoped-requirements limitation on the generic progress-field refresh. Unrelated state.json bytes preserved. No unresolved issues; next is plan 05.
 
 ### Phase 06.48 plan 03 — 2026-11-23
 
@@ -1899,6 +1906,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.48 P01 | 19min | 3 tasks | 3 files |
 | Phase 06.48 P02 | 12min | 3 tasks | 10 files |
 | Phase 06.48 P03 | 6min | 2 tasks | 2 files |
+| Phase 06.48 P04 | 12min | 2 tasks | 9 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2357,6 +2365,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-23T19:18:55.729Z
-Stopped at: Completed 06.48-03-PLAN.md
+Last session: 2026-11-23T19:33:45.308Z
+Stopped at: Completed 06.48-04-PLAN.md
 Resume file: None

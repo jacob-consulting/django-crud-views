@@ -2387,7 +2387,7 @@ Plans:
 **Requirements**: None assigned; use the issue acceptance criteria.
 **Depends on:** Phase 6
 **Ordering:** Explicitly assigned 06.48 by the maintainer; before the 1.0 freeze of both hooks. Stage 2 (#385, shared Guardian checker) and stages 3 to 5 are out of scope.
-**Plans:** 3/9 plans executed
+**Plans:** 4/9 plans executed
 
 Plans:
 **Wave 1**
@@ -2400,7 +2400,7 @@ Plans:
 - [x] 06.48-03-PLAN.md — Unit tests of the check: signature, ancestor list, order, actor rule, action object, nested Guardian create
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 06.48-04-PLAN.md — Child context button and card child action through the check; child-link adapter removed; private surface recorded
+- [x] 06.48-04-PLAN.md — Child context button and card child action through the check; child-link adapter removed; private surface recorded
 
 **Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 06.48-05-PLAN.md — Context buttons and actions by view key: narrowed arguments; only a nested Guardian create takes the check (D-31)

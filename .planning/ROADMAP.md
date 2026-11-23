@@ -2417,6 +2417,9 @@ Plans:
 **Wave 9** *(blocked on Wave 8 completion)*
 - [ ] 06.48-09-PLAN.md — Navbar and FAQ passages, reference pins, before-and-after costs, private surface, phase gate
 
+**Cross-cutting constraints:** <!-- gsd:generated -->
+- Every cell of the characterization matrix, every gate event of tests/test1/test_ancestor_costs.py and every query total of tests/test1/test_navbar_costs.py is unchanged; the golden files are byte-identical.
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name

@@ -5,9 +5,11 @@ from unittest.mock import Mock, call
 import guardian.core
 import pytest
 from django.contrib.auth.models import AnonymousUser, Group, User
-from django.test import RequestFactory
+from django.test import Client, RequestFactory
+from django.urls import reverse
+from django.utils.functional import SimpleLazyObject
 from guardian.conf import settings as guardian_settings
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, remove_perm
 from guardian.utils import get_anonymous_user
 
 from crud_views.lib.link_access import _LINK_ALLOWED, _LINK_PERMISSION, _LINK_STATE, _link_access
@@ -161,3 +163,80 @@ def test_anonymous_direct_hook_reuses_checker(monkeypatch, checker_factory):
     assert actor._cv_guardian_checker.user.pk == backing.pk
     assert actor._cv_guardian_checker.has_perm.call_count == 4
     assert "_cv_guardian_checker" not in vars(backing)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("grant_source", ["direct", "group"])
+@pytest.mark.parametrize("initial_grant", [False, True], ids=["added", "revoked"])
+def test_loaded_grants_survive_same_user_mutation(grant_source, initial_grant):
+    actor = User.objects.create_user(username="retained-grants")
+    obj = Publisher.objects.create(name="mutated grants")
+    grantee = actor
+    if grant_source == "group":
+        grantee = Group.objects.create(name="retained grants")
+        actor.groups.add(grantee)
+    if initial_grant:
+        assign_perm("app.view_publisher", grantee, obj)
+
+    assert GuardianPublisherDetailView.cv_has_access(actor, obj) is initial_grant
+    checker = actor._cv_guardian_checker
+    mutate = remove_perm if initial_grant else assign_perm
+    mutate("app.view_publisher", grantee, obj)
+
+    # Keeping the Python user keeps both loaded grants and loaded absences.
+    assert GuardianPublisherDetailView.cv_has_access(actor, obj) is initial_grant
+    assert actor._cv_guardian_checker is checker
+    fresh = User.objects.get(pk=actor.pk)
+    assert fresh is not actor
+    assert GuardianPublisherDetailView.cv_has_access(fresh, obj) is not initial_grant
+    assert fresh._cv_guardian_checker is not checker
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("grant_source", ["direct", "group"])
+def test_client_requests_get_distinct_users_and_checkers(grant_source):
+    actor = User.objects.create_user(username="request-checkers")
+    obj = Publisher.objects.create(name="request ownership")
+    grantee = actor
+    if grant_source == "group":
+        grantee = Group.objects.create(name="request grants")
+        actor.groups.add(grantee)
+    assign_perm("app.view_publisher", grantee, obj)
+    client = Client()
+    client.force_login(actor)
+    url = reverse(cv_guardian_publisher.get_router_name("detail"), kwargs={cv_guardian_publisher.pk_name: obj.pk})
+
+    first_response, second_response = client.get(url), client.get(url)
+    assert first_response.status_code == second_response.status_code == 200
+    first, second = first_response.wsgi_request.user, second_response.wsgi_request.user
+    assert isinstance(first, SimpleLazyObject) and isinstance(second, SimpleLazyObject)
+    assert first.pk == second.pk == actor.pk  # Force lazy resolution before identity inspection.
+    assert first is not second
+    assert first._wrapped is not second._wrapped
+    assert first._wrapped is not actor and second._wrapped is not actor
+    assert first._cv_guardian_checker is first._wrapped._cv_guardian_checker
+    assert second._cv_guardian_checker is second._wrapped._cv_guardian_checker
+    assert first._cv_guardian_checker is not second._cv_guardian_checker
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("grant_source", ["direct", "group"])
+def test_next_request_observes_revocation(grant_source):
+    actor = User.objects.create_user(username="next-request-revocation")
+    obj = Publisher.objects.create(name="revoked next request")
+    grantee = actor
+    if grant_source == "group":
+        grantee = Group.objects.create(name="revoked grants")
+        actor.groups.add(grantee)
+    assign_perm("app.view_publisher", grantee, obj)
+    client = Client()
+    client.force_login(actor)
+    url = reverse(cv_guardian_publisher.get_router_name("detail"), kwargs={cv_guardian_publisher.pk_name: obj.pk})
+
+    first = client.get(url)
+    assert first.status_code == 200
+    remove_perm("app.view_publisher", grantee, obj)
+    assert GuardianPublisherDetailView.cv_has_access(first.wsgi_request.user, obj) is True
+    second = client.get(url)
+    assert second.status_code == 403
+    assert first.wsgi_request.user.pk == second.wsgi_request.user.pk == actor.pk

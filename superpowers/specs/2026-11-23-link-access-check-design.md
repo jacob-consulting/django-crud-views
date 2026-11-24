@@ -5,7 +5,8 @@ document**. It is not an implementation plan. Each stage in section 9 needs its 
 Amended on 2026-11-23 for stage 1: section 12.6 (D-25 to D-36), decided by the maintainer while #407 was planned.
 Amended on 2026-11-24 for stage 2: section 12.7, findings F-01 to F-08 from a probe after stage 1 shipped, and
 D-37 and D-38, decided by the maintainer. The "to verify" items of 12.3 are answered there.
-Amended on 2026-11-24 for stage 3: section 12.8 (D-39 to D-54), decided by the maintainer after a review of #411.
+Amended on 2026-11-24 for stage 3: section 12.8 (D-39 to D-55), decided by the maintainer after a review of #411;
+D-55 was added while #412 was planned.
 
 Related: #385 (reuse Guardian grants), #314 (opt-in URL helper), #312/#318 (link visibility versus request gate),
 `superpowers/notes/2026-11-02-navigation-concept-exploration.md` (site menu, caching options C0–C6),
@@ -658,6 +659,7 @@ Terms used below:
 | D-42 | Cancel takes its immediate parent from `cv_get_parent_object`, as today, through the existing `_cv_cancel_parent_object`, which treats a 404 of the built-in lookup as "unavailable". On a guarded request that is the resolved parent, without a query. A project override of the hook keeps working. On a view that did not run the guard the hook's existing lookup still finds the parent, so Cancel is the one consumer that does not deny there. Higher ancestors for Cancel come from the guard state only. | review | D-41 |
 | D-43 | The bulk toolbar is a link to a view of the same ViewSet and calls the check directly, like a context button. It no longer goes through the cancel helper. | review | 9 |
 | D-44 | `cv_context_has_permission` stays permission-only. It runs the parent gates and the own permission and never the state hook, so it can answer true for an action that is disabled by state. | #411 (S3-02) | 9 |
+| D-55 | The immediate-parent-only handling of a nested Guardian create that 3a keeps is bound to the two mechanisms that produce it, the seam and the rewrite, not to the page. A navbar child item uses neither and always receives the aligned list, also when the navbar renders on a page of the create's own ViewSet. Decided while #412 was planned, after a probe showed both outcomes. | planning of #412 | D-40 |
 | D-52 | Bulk return redirects (GET, the warning POST and the Cancel button of the all-blocked page) follow Cancel's eligibility as changed by 3a and 3b. The order origin, fallback, success URL stays. The chosen `Location` may change; authorization responses and login redirects do not. This applies in 3a and again in 3b. | #411 (S3-09) | none |
 
 **Stage 3b: Guardian exceptions removed**
@@ -698,14 +700,16 @@ Consequences the plans must carry. They follow from the decisions and from readi
   consumer through the rendering adapter (`test_navbar_checks.py`, `test_navbar_templates.py`,
   `test_navbar_costs.py`, `test_cancel_state.py`, `test_cancel_permissions.py`, `test_bulk_source.py`) and the two
   lines of `test_link_access.py` that name `_page_action_object`.
-- **D-40, where a Guardian target does not yet gain a gate:** at the pages of its own ViewSet a nested Guardian
-  create is handed the immediate parent only, by its kept seam and by the list-page rewrite, so it gets no
-  higher-ancestor gate until 3b. Reached from a parent's page (child button, card child action, navbar child item)
-  it is handed the aligned list and gains the higher-ancestor gates in 3a. A queryset-only composition keeps
-  skipping the immediate parent (D-30), but the higher-ancestor gates run before that class step
-  (`crud_views/lib/link_access.py:74`), so on three or more levels D-30 is partly ended in 3a. Cancel to a
-  queryset-only nested list defers to the core check (`mixins.py:252-256`) and gains the higher-ancestor gates in
-  3a as well.
+- **D-40, where a Guardian target does not yet gain a gate:** a nested Guardian create is handed the immediate
+  parent only, and gets no higher-ancestor gate until 3b, where a site consults the seam (context buttons, actions
+  by view key, card own actions and the permission filter, on the pages of the create's own ViewSet) or where the
+  rewrite applies. A child button, a card child action and a navbar child item hand over the aligned list, so there
+  it gains the higher-ancestor gates in 3a. A navbar child item does so on every page that renders the navbar, the
+  pages of the create's own ViewSet included (D-55); on such a page the navbar item and the context create button
+  can differ until 3b. A queryset-only composition keeps skipping the immediate parent (D-30), but the
+  higher-ancestor gates run before that class step (`crud_views/lib/link_access.py:74`), so on three or more levels
+  D-30 is partly ended in 3a. Cancel to a queryset-only nested list defers to the core check (`mixins.py:252-256`)
+  and gains the higher-ancestor gates in 3a as well.
 - **D-40, the rendering view:** today the hook receives a view from the create button of the nested list or card
   page, through the rewrite (`mixins.py:330`), and from Cancel (`mixins.py:442`), both of its own ViewSet. It
   receives `None` everywhere else, the own ViewSet's object pages and its row and card actions included. Under D-40

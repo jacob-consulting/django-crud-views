@@ -7,5 +7,5 @@ def _get_guardian_checker(user):
         from guardian.core import ObjectPermissionChecker
 
         checker = ObjectPermissionChecker(user)
-        setattr(user, "_cv_guardian_checker", checker)
+        user._cv_guardian_checker = checker
     return checker

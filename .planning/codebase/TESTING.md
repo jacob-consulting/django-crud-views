@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: ce3903c37a05b334ded3d3c655a4534836fc6132
-last_mapped_at: 2026-11-23
+last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_at: 2026-11-24
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-23
+**Analysis Date:** 2026-11-24
 
 ## Test Framework
 
@@ -17,7 +17,7 @@ last_mapped_at: 2026-11-23
 
 **Run Commands:**
 ```bash
-pytest tests -n auto                       # full suite, multicore (preferred)
+PYTHONPATH=src:. pytest tests -n auto      # full checkout suite, multicore (preferred)
 pytest tests -n 4                          # broad local run on a shared/resource-bounded machine
 pytest tests/test1/test_crud.py -v         # representative single file
 pytest tests/test1/test_crud.py::test_name # single test
@@ -192,6 +192,21 @@ Use `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47
 
 The shipping verification addendum in `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-VERIFICATION.md` also records a two-alias probe using actual bulk control output plus `cv_config`/`cv_const_js`, namespace `tabler`, independent prefix `coreui`, and form tooltip placement. The probe checks native submit identity and placement precedence through the shipped adapters/scanner. This recorded jsdom/stub-provider probe supplements the maintained context-tooltip bridge in `tests/js-integration/js-config.test.js`; it is not a committed bulk browser test or a downstream library certification. No full dependency matrix or fresh postmerge full-suite result is established by those focused checks.
 
+## Recorded Phase 06.48 Link Access Evidence
+
+Use `.planning/phases/06.48-link-access-check-as-a-private-function-narrow-obj-in-cv-has/06.48-09-SUMMARY.md`, `06.48-VALIDATION.md`, and `06.48-VERIFICATION.md` for source revision and scope. These are recorded receipts from the shipping gate, not fresh execution by this mapping refresh.
+
+| Evidence scope | Recorded result | Interpretation |
+| --- | --- | --- |
+| Frozen behavior matrix | 1,178 cells in `tests/test1/link_access_matrix_baseline.json`; the fixture remained byte-identical through the final gate | `tests/test1/test_link_access_matrix.py` compares live cases against the pre-refactor snapshot and checks completeness; do not regenerate the fixture |
+| Direct contracts | 40 active cases in `tests/test1/test_link_access.py` | Signature, ordering, object identity, provider behavior, no stored decisions, and preserved denials; recorded targeted validation also includes surrounding ancestor/access-trace tests |
+| Documentation guard | 6 active cases in `tests/test1/test_link_access_docs.py` | Pins the migration entry, override cases, explicit denials, and six heading-scoped reference passages |
+| Full Python suite at gate commit `f242c65b64fa898b0f64b9d8a23155bb329dc48c` | **18,915 passed in 499.95s** | Historical phase gate evidence, Python 3.12.3 / Django 6.0.10, six workers; not a fresh run on the current checkout or a compatibility matrix |
+
+The phase summary records 1,598 targeted validation passes, including 1,179 matrix tests (1,178 cells plus completeness), the 40 direct link-access cases, and six docs tests. The 18,915 full-suite result belongs to the recorded gate revision. This mapping did not execute tests, so do not describe it as current fresh execution.
+
+For direct pytest from a `src/` layout checkout, prefix commands with `PYTHONPATH=src:.` when the active interpreter would otherwise import an installed `crud_views` distribution instead of this worktree. Nox sessions intentionally build/install the distribution and assert imports do not come from `src/`; their evidence has a different import path and scope.
+
 ---
 
-*Testing analysis: 2026-11-23*
+*Testing analysis: 2026-11-24*

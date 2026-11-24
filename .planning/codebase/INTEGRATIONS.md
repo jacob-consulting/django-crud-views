@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: ce3903c37a05b334ded3d3c655a4534836fc6132
-last_mapped_at: 2026-11-23
+last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_at: 2026-11-24
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-23
+**Analysis Date:** 2026-11-24
 
 No third-party service client is bundled for server request handling. The reusable `vendor(spec)` helper downloads explicitly configured assets using `urllib.request`; extension apps can wrap it in a management command. Browser filter and modal scripts use `fetch()` against host application endpoints. Integrations, database configuration, and resource backends otherwise belong to the host project (`src/crud_views/lib/vendor.py`, `src/crud_views/static/crud_views/js/list.filter.js`, `src/crud_views/static/crud_views/js/modal.js`, `docs/reference/assets.md`).
 
@@ -17,6 +17,7 @@ No third-party service client is bundled for server request handling. The reusab
 - django-fsm-2 and django-fsm-2-admin - workflow transitions and admin integration (`src/crud_views_workflow/`)
 - django-polymorphic - model-aware create flow (`src/crud_views_polymorphic/`)
 - django-guardian - per-object permissions (`src/crud_views_guardian/`)
+- Link visibility checks are an internal Django authorization integration: link rendering uses supplied target objects and known ancestors with the existing model or guardian permission providers, without performing ancestor lookups or changing request authorization (`src/crud_views/lib/link_access.py`, `src/crud_views/lib/ancestor_db.py`)
 - django-ordered-model - ordered up/down actions (`src/crud_views/lib/views/action_ordered.py`)
 - django-pipeline - optional asset bundling through `cv_sources`; exercised by tests (`src/crud_views/lib/assets.py`)
 - Bulk actions use existing Django ORM/queryset/transaction APIs, django-tables2, Django messages, and Crispy forms; the implementation requires no external service or additional package dependency (`src/crud_views/lib/bulk/__init__.py`)
@@ -112,4 +113,4 @@ No third-party service client is bundled for server request handling. The reusab
 
 ---
 
-*Integration audit: 2026-11-23*
+*Integration audit: 2026-11-24*

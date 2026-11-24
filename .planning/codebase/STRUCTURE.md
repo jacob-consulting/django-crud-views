@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: ce3903c37a05b334ded3d3c655a4534836fc6132
-last_mapped_at: 2026-11-23
+last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_at: 2026-11-24
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-23
+**Analysis Date:** 2026-11-24
 
 Scope: the reusable apps under `src/`, test harnesses under `tests/`, theme contracts under `docs/reference/`, and feature consumers under `examples/bootstrap5/`. Apply the developer-maintainability rule in `AGENTS.md` when choosing locations: use focused opt-in modules and keep shared request paths easy to trace.
 
@@ -63,6 +63,7 @@ lib/
 │                       form, manage, mixins (+ __init__ re-exports)
 ├── bulk/               __init__.py (BulkSelectionMixin, BulkFormViewPermissionRequired, BulkConfirmForm)
 ├── ancestors.py        request-time ancestor authorization and child scoping
+├── link_access.py      link-only evaluation over caller-supplied objects; separate from request auth
 ├── ancestor_policy.py  AncestorPolicy / AncestorPermissions (config values only)
 ├── ancestor_db.py      database-alias handling for ancestor reads
 ├── resource.py         Resource, ResourceMeta/ResourceOptions, ResourceViewMixin (leaf module)
@@ -91,6 +92,12 @@ lib/
 **`src/crud_views/lib/view/`:**
 - Purpose: behavior shared by every view (metaclass, base contract, action/button projection, label modes, cancel).
 - Key files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/meta.py`.
+
+**`src/crud_views/lib/link_access.py` and link producers:**
+- Purpose: private permission-then-state evaluation for a bounded set of rendered controls; this is not request authorization and does not load objects or ancestors.
+- The evaluator receives the target's own object or `None` and known ancestors supplied by callers. `_cv_link_permission()` keeps the own-object argument separate from the immediate parent (`src/crud_views/lib/view/base.py`).
+- `_cv_page_link_ancestors()` returns `None` to preserve a producer's existing behavior, or a tuple to opt that link into `_link_access()`; empty tuple is an intentional no-known-parent/deny result. The narrow Guardian override is in `src/crud_views_guardian/lib/views.py` and uses the request-resolved parent only for a nested create linked from its own child object in single-FK nesting.
+- Link producers live in `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/navbar.py`, and `src/crud_views/templatetags/crud_views.py`. Preserve the page-control seam's `None` fallback: ordinary controls keep their established permission/state ordering. The destination request still passes through `CrudView.dispatch()` and `_cv_ancestor_guard()`.
 
 **`src/crud_views/lib/bulk/` and bulk theme leaves:**
 - Core implementation: `src/crud_views/lib/bulk/__init__.py` contains `BulkSelectionMixin`, `BulkConfirmForm`, `BulkFormViewPermissionRequired`, bounded ID normalization and request-local review data.
@@ -193,7 +200,7 @@ lib/
 - CSS token values belong to the consumer theme and its theme-root selectors; there is no package setting or global token declaration. See `docs/reference/theme.md` and the stock consumers in `src/crud_views/static/crud_views/css/manage.css` and `formset.css`.
 
 **Core Logic:**
-- `src/crud_views/lib/view/meta.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/resource.py`, `src/crud_views/lib/access_trace_runner.py`, `src/crud_views/lib/manage_report.py`.
+- `src/crud_views/lib/view/meta.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/link_access.py` (rendered link decisions only), `src/crud_views/lib/resource.py`, `src/crud_views/lib/access_trace_runner.py`, `src/crud_views/lib/manage_report.py`.
 
 **Contracts (machine-readable output):**
 - `src/crud_views/lib/manage_report.py` (`report_schema`), `docs/reference/cv_manage_view.schema.json`, `src/crud_views/lib/access_trace_export.py` (`export_schema`), `tests/check_manage_schema.py`, `tests/test1/test_access_trace_contract.py`.
@@ -229,6 +236,7 @@ lib/
 **New view type or shared view behavior:**
 - Operation handler: new module in `src/crud_views/lib/views/` plus `*PermissionRequired` variant and export in `__init__.py`.
 - Shared behavior: `src/crud_views/lib/view/base.py` or a focused module in `src/crud_views/lib/view/`.
+- Do not route general request authorization through `src/crud_views/lib/link_access.py`; it is private presentation logic over already-known objects. A link access change should keep `_cv_link_permission()`'s own-object/parent arguments distinct and preserve `None` fallback behavior at link producers.
 - Templates/snippets: `src/crud_views/templates/crud_views/`.
 - Validation: add `Check` objects in the view's `checks()` (`src/crud_views/lib/check.py`) or a Django check in `src/crud_views/checks.py`.
 - Tests: `tests/test1/test_<feature>.py`.
@@ -299,4 +307,4 @@ lib/
 
 ---
 
-*Structure analysis: 2026-11-23*
+*Structure analysis: 2026-11-24*

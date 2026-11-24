@@ -1,11 +1,11 @@
 ---
-last_mapped_commit: ce3903c37a05b334ded3d3c655a4534836fc6132
-last_mapped_at: 2026-11-23
+last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_at: 2026-11-24
 ---
-<!-- refreshed: 2026-11-23 -->
+<!-- refreshed: 2026-11-24 -->
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-23
+**Analysis Date:** 2026-11-24
 
 ## Tech Debt
 
@@ -67,6 +67,13 @@ last_mapped_at: 2026-11-23
 ## Security Considerations
 
 No distinct security defect is confirmed by current evidence. Keep navbar rendering and endpoint authorization separate: a navbar item is admitted for display using destination access/state checks, but a rendered link is not an authorization grant. The destination request still applies its own permission, ancestor, and queryset restrictions; a reachable nested host can display a child link whose destination returns 403/404. Relevant implementation and regressions are `src/crud_views/lib/navbar.py`, `src/crud_views/lib/viewset/__init__.py`, `tests/test1/test_navbar_permissions.py`, and `tests/test1/test_authorization_matrix.py`.
+
+**Phase 06.48 link visibility boundaries (accepted scope; no new defect):**
+- Risk boundary: link checks gate only the immediate parent supplied by package call sites. A farther ancestor may still deny the destination request, and a Guardian queryset-only child link can remain visible while the click is refused with 403.
+- Files: `src/crud_views/lib/link_access.py`, `src/crud_views/lib/view/base.py`, `src/crud_views_guardian/lib/mixins.py`, `.planning/phases/06.48-link-access-check-as-a-private-function-narrow-obj-in-cv-has/06.48-CONTEXT.md`, `.planning/phases/06.48-link-access-check-as-a-private-function-narrow-obj-in-cv-has/06.48-VERIFICATION.md`
+- Current mitigation: `_link_access()` centralizes the link-only order of supplied parent gates, own permission, then state; it loads no ancestors and stores no authorization decision. Request handling still enforces its own access and queryset rules.
+- Accepted limitations retained in stage 1: nested Guardian list-page button-key matching can replace a parent/sibling create result with the page's own create result (D-34); anonymous nested Guardian create access under a model-permission parent follows the provider's answer (D-35); and an unguarded nested-list state hook can receive `None` (D-36). These are documented, tested scope decisions, not newly verified defects.
+- Verification: Phase 06.48 passed 24/24 must-haves, the deep review found zero findings, and its security register has zero open threats (`.planning/phases/06.48-link-access-check-as-a-private-function-narrow-obj-in-cv-has/06.48-REVIEW.md`, `06.48-SECURITY.md`).
 
 ## Performance Bottlenecks
 
@@ -272,6 +279,8 @@ Phase 06.46 shipped through PR #404: the earlier risk of Django templates silent
 
 Phase 06.47 shipped through PR #402 with 16/16 verified must-haves and zero open review findings. WR-01's incorrect promise that an unavailable icon becomes empty is corrected in the copied-leaf documentation and regression checks; it is not an open concern. The security register closes all nine entries. Recorded original acceptance passed 17,264 Python tests on Python 3.12.3/Django 6.0.10; the merged phase 06.45 integration has 470 affected Python passes, 541 JavaScript passes, three Django/JS integration passes, and independent rendered-config/jsdom checks for both config aliases. The broad Python result remains attributed to its original revision, rather than relabeled as a combined full-suite run. Native bulk submission and form tooltip dispatch remain intact; no fresh browser, downstream-theme, full dependency-matrix, or installed-distribution runtime acceptance is claimed. The source/template scope explicitly requires no additional human verification (`src/crud_views/lib/bulk/__init__.py`, `src/crud_views/templates/crud_views/tags/button/bulk.html`, `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-VERIFICATION.md`, `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-REVIEW-DISPOSITION.md`, `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-SECURITY.md`).
 
+Phase 06.48 shipped through PR #409. Its private link check centralizes supplied-parent gating, target permission, and state evaluation; the `obj` contract for `cv_has_access` and `cv_action_enabled` is narrowed and migration guidance documents the hook change. Verification passed 24/24 must-haves; deep review found zero findings and the security audit closed all 31 threats. Stage-1 limits D-26, D-30, D-34, D-35, and D-36 remain accepted and documented above; they are not open defects. Relevant implementation is `src/crud_views/lib/link_access.py`, with regression coverage in `tests/test1/test_link_access.py`, `tests/test1/test_link_access_matrix.py`, and `tests/test1/test_guardian_child_link_visibility.py` (`.planning/phases/06.48-link-access-check-as-a-private-function-narrow-obj-in-cv-has/06.48-VERIFICATION.md`, `06.48-REVIEW.md`, `06.48-SECURITY.md`).
+
 ---
 
-*Concerns audit: 2026-11-23*
+*Concerns audit: 2026-11-24*

@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.49"
 current_phase_name: Reuse Guardian object grants across navigation checks
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 06.49-01-PLAN.md
-last_updated: "2026-11-24T12:09:40.554Z"
+stopped_at: Completed 06.49-02-PLAN.md
+last_updated: "2026-11-24T12:20:56.192Z"
 last_activity: 2026-11-24
-last_activity_desc: Phase 06.49 plan 01 complete; before receipts committed
-state_head: 55fb5d2c40f83a3e9834476bd239f2326318540f
+last_activity_desc: Phase 06.49 plan 02 complete; shared Guardian grants and preservation tests committed
+state_head: f9547f14b0ce73decc9a5e9dccd07e2c5129f71f
 progress:
   total_phases: 56
   completed_phases: 54
   total_plans: 299
-  completed_plans: 295
+  completed_plans: 296
 milestone_name: milestone
 ---
 
@@ -33,12 +33,19 @@ See: .planning/PROJECT.md (updated 2026-11-23)
 ## Current Position
 
 Phase: 06.49 (Reuse Guardian object grants across navigation checks) — EXECUTING
-Current Plan: 2
+Current Plan: 3
 Total Plans in Phase: 5
-Status: Executing Phase 06.49; plan 02 next
-Last activity: 2026-11-24 — Phase 06.49 plan 01 complete; before receipts committed
+Status: Executing Phase 06.49; plan 03 next
+Last activity: 2026-11-24 — Phase 06.49 plan 02 complete; shared Guardian grants and preservation tests committed
 
 Next: $gsd-execute-phase 06.49
+
+### Phase 06.49 plan 02 — 2026-11-24
+
+- One private user-owned checker now serves both own-permission paths and the retained thin ancestor delegate. Caller policy and trace recording remain unchanged; the ancestor lifetime paragraph explains fresh normal-request users and retained-user grants.
+- RED evidence validated for shared construction (four versus one real checker) and F-01's exact stored-grant exemption. Final focused checks: 3 construction/isolation, 196 trace/inactive, 6 checker/F-01 and 1,179 frozen matrix tests passed; all five changed Python files pass Ruff. Real direct/group, colliding-model/PK, target-state and configured AnonymousUser cases are covered.
+- Five task/refactor commits through 918828a5 and SUMMARY f9547f14 precede tracking. ROADMAP is 2/5 In Progress; current plan 3, completed plans 296. SDK handlers recorded progress, metrics, decisions and session; its stale dotted progress row was corrected. Original dirty state.json bytes were restored and checked; unrelated staged/unstaged configuration remains untouched. No phase completion handler ran.
+- Later lifetime/workflow adaptations and measured cost pins retain their plan 03/04 ownership; broad regression closure remains in plan 05. No full-suite or recorder-enabled certification is claimed here.
 
 ### Phase 06.49 plan 01 — 2026-11-24
 
@@ -1968,6 +1975,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.48 P08 | 10min | 2 tasks | 8 files |
 | Phase 06.48 P09 | 12min | 2 tasks | 5 files |
 | Phase 06.49 P01 | 9 min | 2 tasks | 2 files |
+| Phase 06.49 P02 | 7 min | 2 tasks | 5 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2326,6 +2334,8 @@ Recent decisions affecting current work:
 - [Phase 06.47]: Followed approved local adapter and dedicated bulk leaf; generic action/form dispatch remains bounded.
 - [Phase 06.49]: Preserve unchanged production and exact isolated/combined list pins before checker replacement.
 - [Phase 06.49]: Attribute outer list-filter SELECTs separately from Guardian user/group checker loads.
+- [Phase 06.49]: Keep _request_checker(view, user) as a thin private compatibility delegate without view-owned state.
+- [Phase 06.49]: Exempt exactly _cv_guardian_checker from both user-attribute checks while retaining all decision-freshness assertions.
 
 ### Pending Todos
 
@@ -2429,6 +2439,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-24T12:09:34.703Z
-Stopped at: Completed 06.49-01-PLAN.md
+Last session: 2026-11-24T12:20:50.009Z
+Stopped at: Completed 06.49-02-PLAN.md
 Resume file: None

@@ -111,21 +111,28 @@ def _view(cls, kwargs=None):
 @pytest.mark.django_db
 @pytest.mark.parametrize("entry", ["card", "child-card", "child-button", "sibling-button"])
 @pytest.mark.parametrize("enabled", [True, False])
-def test_create_rendering_entry_points_keep_parent_and_adapter(monkeypatch, book_hitchhiker, entry, enabled):
+def test_create_rendering_entry_points_keep_parent_and_adapter(
+    monkeypatch, book_hitchhiker, django_user_model, entry, enabled
+):
+    from django.contrib.auth.models import Permission
+
     from crud_views.lib.view import CardAction, ChildContextButton, SiblingContextButton
     from crud_views.lib.views.card import CardListView
     from tests.test1.app.views import BookCreateView, BookListView, PublisherCardListView, cv_book
 
     parent = book_hitchhiker.publisher
     calls = []
-    # An existing subclass adapter override must still receive the normalized state object.
+    # Child links call state directly; the other entries retain the existing subclass adapter.
     monkeypatch.setattr(
         BookCreateView,
-        "_cv_action_enabled_for_context",
+        "cv_action_enabled" if entry in {"child-card", "child-button"} else "_cv_action_enabled_for_context",
         classmethod(lambda cls, user, obj=None: calls.append(obj) or enabled),
     )
     if entry in {"child-card", "child-button"}:
         view = _view(PublisherCardListView)
+        actor = django_user_model.objects.create_user(username="child_create_state")
+        actor.user_permissions.add(*Permission.objects.filter(codename__in=["change_publisher", "add_book"]))
+        view.request.user = actor
         if entry == "child-card":
             data = view.cv_get_card_action_data(
                 CardAction(child_name="book", child_key="create"), parent, view.request.user
@@ -192,7 +199,7 @@ def test_url_parent_wins_over_page_child_and_missing_parent_fails_closed(monkeyp
 
 
 @pytest.mark.django_db
-def test_parent_button_top_level_create_keeps_existing_state_object(monkeypatch, book_hitchhiker):
+def test_parent_button_top_level_create_receives_no_state_object(monkeypatch, book_hitchhiker):
     from crud_views.lib.view import ParentContextButton
     from tests.test1.app.views import BookListView, PublisherCreateView, cv_book, cv_publisher
 
@@ -207,7 +214,7 @@ def test_parent_button_top_level_create_keeps_existing_state_object(monkeypatch,
     )
     assert data["cv_url"] == reverse(cv_publisher.get_router_name("create"))
     assert data["cv_action_enabled"] is True
-    assert calls == [parent]
+    assert calls == [None]
 
 
 @pytest.mark.django_db

@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: ce3903c37a05b334ded3d3c655a4534836fc6132
-last_mapped_at: 2026-11-23
+last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_at: 2026-11-24
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-23
+**Analysis Date:** 2026-11-24
 
 ## Naming Patterns
 
@@ -173,6 +173,13 @@ last_mapped_at: 2026-11-23
 - Register namespace and tooltip defaults at startup through `src/crud_views/lib/js_config.py`, publicly exported by `src/crud_views/lib/__init__.py`. Validate the entire registration before replacing state; copy placement mappings on input and output. Namespace and data prefix are independent registrations (`tests/test1/test_js_config.py`).
 - Keep `cv_config` and `cv_const_js` on the shared serialization context in `src/crud_views/templatetags/crud_views.py`. The adapter in `src/crud_views/static/crud_views/js/adapters.js` consumes the registered provider namespace and location defaults; an explicit prefix-specific placement attribute, including an empty value, takes precedence. Modal hide/hidden event names are derived from the registered data prefix (`hide.<prefix>.modal`, default `bs`) (`tests/js/adapters.test.js`, `tests/js/tooltip.test.js`).
 
+## Link Access Contract Tests
+
+- Keep the shared link decision private in `src/crud_views/lib/link_access.py`; `_link_access` evaluates permission before state and returns the closed outcome constants. Callers provide the target object and already-known ancestors explicitly. Do not cache a decision or perform ancestor lookup in these link-only helpers.
+- Protect pre-refactor behavior with the immutable 1,178-cell fixture in `tests/test1/link_access_matrix_baseline.json`. `tests/test1/test_link_access_matrix.py::test_link_matrix_cell` compares current live responses with each named frozen cell, while `::test_link_matrix_snapshot_is_complete` checks fixture completeness. Do not regenerate or edit the snapshot to accept implementation changes.
+- Put direct helper and consumer contracts in `tests/test1/test_link_access.py`: assert the callable signature, permission-before-state ordering, exact object identity passed to hooks, provider call order, no persisted decisions, and named retained denials. Use real request/client checks where behavior crosses the HTTP boundary.
+- Keep migration guidance pinned by `tests/test1/test_link_access_docs.py`. Its six tests extract heading-scoped passages and assert required hook names, migration anchors, denial cases, and reference-page guidance. When changing the published guidance, update the relevant source text and its explicit assertions together; do not rely on a broad whole-file prose snapshot.
+
 ---
 
-*Convention analysis: 2026-11-23*
+*Convention analysis: 2026-11-24*

@@ -419,9 +419,9 @@ def test_none_policy_helpers_allow_parent_and_own_child_without_grants(pn, publi
     user = _user("no_grants")
     book = Book.objects.create(title="Own child", publisher=publisher_a)
 
-    assert pn.BookCreate.cv_has_access(user, publisher_a) is True
+    assert pn.BookCreate.cv_has_access(user, publisher_a) is False
     assert pn.BookCreate.cv_create_has_access(user, None, publisher_a) is True
-    assert pn.BookCreate.cv_has_access(user, book) is True
+    assert pn.BookCreate.cv_has_access(user, book) is False
     assert pn.BookCreate.cv_create_has_access(user, None, book) is True
 
 
@@ -436,6 +436,7 @@ def test_none_policy_helpers_deny_none_and_unrelated_inputs(pn, author_douglas_a
         assert pn.BookCreate.cv_create_has_access(user, None, author_douglas_adams) is False
         # an unsaved child without its parent relation cannot establish a parent
         assert pn.BookCreate.cv_has_access(user, Book(title="no parent")) is False
+        assert pn.BookCreate.cv_create_has_access(user, None, Book(title="no parent")) is False
     assert pn.hook_calls == []
 
 
@@ -446,7 +447,7 @@ def test_none_policy_helper_evaluation_is_side_effect_free(pn, client, publisher
 
     user = _user("no_grants")
     for _ in range(3):
-        assert pn.BookCreate.cv_has_access(user, publisher_a) is True
+        assert pn.BookCreate.cv_has_access(user, publisher_a) is False
         assert pn.BookCreate.cv_create_has_access(user, None, publisher_a) is True
         assert pn.BookCreate._cv_action_enabled_for_context(user, publisher_a) is True
 
@@ -492,23 +493,29 @@ def test_list_create_control_uses_url_parent_for_state(pn, client, monkeypatch, 
 
 @pytest.mark.parametrize("error", [Http404, KeyError])
 @pytest.mark.django_db
-def test_list_create_control_late_parent_failure_skips_state_hook(pn, client, monkeypatch, publisher_a, error):
-    """Dispatch resolves the parent; only the later cv_get_parent_object fallback fails."""
+def test_list_create_control_uses_resolved_parent_after_late_failure(pn, client, monkeypatch, publisher_a, error):
+    """A later cv_get_parent_object failure cannot discard the request-resolved parent."""
     from tests.test1.app.models import Book
 
     def fail(self):
         raise error("late failure")
 
-    monkeypatch.setattr(pn.BookList, "cv_get_parent_object", fail)
     records = _record_contexts(monkeypatch, pn.BookList)
     client.force_login(_user("no_grants"))
     before = Book.objects.count()
+    url = _url(pn.book_vs, "list", publisher_a.pk)
+    assert client.get(url).status_code == 200
+    (unpatched,) = _create_contexts(records)
+    records.clear()
+    pn.hook_calls.clear()
+    monkeypatch.setattr(pn.BookList, "cv_get_parent_object", fail)
 
-    response = client.get(_url(pn.book_vs, "list", publisher_a.pk))
+    response = client.get(url)
     assert response.status_code == 200
     (ctx,) = _create_contexts(records)
-    assert ctx["cv_access"] is False
-    assert ctx["cv_action_enabled"] is False
+    assert ctx["cv_access"] is unpatched["cv_access"] is True
+    assert ctx["cv_action_enabled"] is unpatched["cv_action_enabled"] is True
+    assert pn.hook_calls
     assert None not in pn.hook_calls
     assert Book.objects.count() == before
 
@@ -628,13 +635,13 @@ def test_m2m_explicit_parent_helpers_keep_permission_results(pn, publisher_a, pu
     user = _user("granted")
     user_guardian_object_perm(user, pn.sib_pub_vs, "change", publisher_a)
 
-    assert pn.GenreCreate.cv_has_access(user, publisher_a) is True
+    assert pn.GenreCreate.cv_has_access(user, publisher_a) is False
     assert pn.GenreCreate.cv_create_has_access(user, None, publisher_a) is True
     assert pn.GenreCreate.cv_has_access(user, publisher_b) is False
     assert pn.GenreCreate.cv_create_has_access(user, None, publisher_b) is False
 
     # the None scenario (its own unprotected parent) accepts the explicit parent without a grant ...
-    assert pn.FreeGenreCreate.cv_has_access(user, publisher_b) is True
+    assert pn.FreeGenreCreate.cv_has_access(user, publisher_b) is False
     assert pn.FreeGenreCreate.cv_create_has_access(user, None, publisher_b) is True
     # ... and the strict sibling still denies it
     assert pn.GenreCreate.cv_has_access(user, publisher_b) is False
@@ -791,7 +798,10 @@ def test_child_page_create_controls_follow_parent_grant(
     assert contexts["create_alias"]["cv_action_label"] == "Another book"
     assert contexts["create"]["cv_action_label"] != "Another book"
     assert (f'href="{create_url}"' in response.content.decode()) is create_grant
-    _assert_hook_saw_only_parent(pn, publisher_a)
+    if create_grant:
+        _assert_hook_saw_only_parent(pn, publisher_a)
+    else:
+        assert pn.hook_calls == []
 
     permission, button = _render_filter_and_button(response)
     assert permission == str(create_grant)
@@ -889,7 +899,8 @@ def test_child_page_create_global_fallback_follows_parent_ancestor_policy(
     assert client.get(create_url).status_code == (200 if parent_fallback else 403)
     assert client.post(create_url, {"title": "Global Parent"}).status_code == (302 if parent_fallback else 403)
     assert Book.objects.filter(title="Global Parent").exists() is parent_fallback
-    assert pn.BookCreate.cv_has_access(user, child) is parent_fallback
+    assert pn.BookCreate.cv_create_has_access(user, None, child) is parent_fallback
+    assert pn.BookCreate.cv_has_access(user, child) is False
 
 
 @pytest.mark.django_db
@@ -921,6 +932,7 @@ def test_child_page_inactive_actor_denied(pn, client, monkeypatch, publisher_a, 
         client.force_login(user, backend=backend)
         assert client.get(_url(pn.book_vs, "detail", publisher_a.pk, child.pk)).status_code == 403
     assert pn.BookCreate.cv_has_access(user, child) is False
+    assert pn.BookCreate.cv_create_has_access(user, None, child) is False
     assert pn.BookCreate._cv_action_enabled_for_context(user, child) is True  # state is not permission
     assert pn.hook_calls and pn.hook_calls[-1].pk == publisher_a.pk
 
@@ -957,7 +969,7 @@ def test_child_card_row_create_action_uses_row_parent(
     assert response.status_code == 200
     (row,) = [data for key, obj, data in records if key == "create"]
     assert row["cv_access"] is create_grant
-    assert row["cv_action_enabled"] is enabled
+    assert row["cv_action_enabled"] is (enabled if create_grant else True)
     from tests.test1.test_cancel_navigation import checked_action_url
 
     assert checked_action_url(row["cv_url"], response.context["view"]) == create_url
@@ -965,7 +977,10 @@ def test_child_card_row_create_action_uses_row_parent(
     (detail,) = [data for key, obj, data in records if key == "detail"]
     assert detail["cv_access"] is True  # the other card action keeps its own row-object semantics
     assert ("Sibling book" in response.content.decode()) is (create_grant and enabled)
-    _assert_hook_saw_only_parent(pn, publisher_a)
+    if create_grant:
+        _assert_hook_saw_only_parent(pn, publisher_a)
+    else:
+        assert pn.hook_calls == []
 
 
 @pytest.mark.django_db

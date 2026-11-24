@@ -42,6 +42,7 @@ from crud_views.lib.check import (
     CheckUnknownAttributes,
 )
 from crud_views.lib.exceptions import CrudViewError, ParentViewSetError, ViewSetKeyFoundError, cv_raise
+from crud_views.lib.link_access import _link_access, _link_ctx, _page_action_object
 
 from ..settings import crud_views_settings
 from .action_menu import (
@@ -522,33 +523,59 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
+        """Permission for this view's own object, or None for a view without one (list, create).
+
+        Package callers never pass a parent or a page object of another kind as obj.
+        """
         return True
 
     @classmethod
-    def _cv_child_link_has_access(cls, user, parent_obj) -> bool:
-        """Access for a child link whose URL uses the supplied immediate parent."""
-        access = cls.cv_has_access(user, parent_obj)
-        if not access or not cls.cv_viewset.has_parent:
-            return access
-        from crud_views.lib.ancestors import _effective_provider, _immediate_parent_access
+    def _cv_link_permission(cls, user, obj, parent_obj, *, rendering_view=None) -> bool:
+        """Private seam, not an extension point: parent gate followed by own permission.
 
-        if not _immediate_parent_access(cls, user, parent_obj):
-            return False
-        # A backend grant cannot waive protected ancestry's actor rule. Keep the helper's
-        # configuration errors and provider-none bypass, without consulting farther ancestors.
-        return (user.is_authenticated and user.is_active) or _effective_provider(
-            cls.cv_viewset.parent.viewset
-        ) == "none"
+        obj is only this view's own object or None; the immediate parent arrives separately.
+        rendering_view keeps the implementations' signature uniform and is unused here.
+        """
+        if cls.cv_viewset.has_parent:
+            from crud_views.lib.ancestors import _effective_provider, _immediate_parent_access
+
+            if not _immediate_parent_access(cls, user, parent_obj):
+                return False
+            if not (
+                (user.is_authenticated and user.is_active)
+                or _effective_provider(cls.cv_viewset.parent.viewset) == "none"
+            ):
+                return False
+        return cls.cv_has_access(user, obj)
+
+    @classmethod
+    def _cv_page_link_ancestors(cls, rendering_view, page_obj):
+        """Private seam, not an extension point: None keeps the page's own code path.
+
+        A tuple supplies ancestors to the link check. In stage 1 only a nested Guardian create
+        returns a tuple; every other target keeps the page's existing permission and state calls.
+        """
+        return None
 
     @classmethod
     def cv_action_enabled(cls, user: User, obj: Model | None = None) -> bool:
-        """Secondary action gate, evaluated only AFTER cv_has_access has passed.
+        """Whether the action is applicable to its current object, independently of permission.
 
         cv_has_access answers "may you do this in principle?" (permission).
         cv_action_enabled answers "is this action currently applicable to THIS
         object?" (state) — e.g. an open/locked parent disables child create/delete.
         Both must be true for the action button to render and the request to be
         allowed. Default: always enabled.
+
+        The request's cv_get_action_object defines obj: the view's own object, the immediate parent for a
+        nested view without an own object (list or create), otherwise None. Package links pass that same
+        object, except that a nested list receives None on a view that did not run the ancestor guard.
+
+        Requests and links decided by the private link check call this only after permission passes:
+        child context buttons, card child actions, object navbar child items and every link to a nested
+        Guardian create. Other context buttons, row actions, parent buttons, sibling buttons and non-child
+        card actions still evaluate state independently of permission. Overrides must not rely on
+        permission having passed.
         """
         return True
 
@@ -906,14 +933,16 @@ class CrudView(metaclass=CrudViewMetaClass):
         # set up the view context
         context = self.cv_get_view_context(object=obj)
 
-        # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(user, obj, self)
-
-        # check access
-        if cls.cv_has_access(user, obj):
-            dict_kwargs.update(
-                cv_access=True,
+        known = cls._cv_page_link_ancestors(self, obj)
+        if known is not None:
+            dict_kwargs.update(_link_ctx(_link_access(cls, user, None, known)))
+        else:
+            # State stays independent of permission except for the nested Guardian create above.
+            dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
+                user, _page_action_object(self, cls, obj), self
             )
+            if cls.cv_has_access(user, obj if cls.cv_object else None):
+                dict_kwargs.update(cv_access=True)
 
         # prepare dict
         data = cls.cv_get_dict(context=context, **dict_kwargs)

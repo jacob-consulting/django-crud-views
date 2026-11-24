@@ -2,7 +2,7 @@
 Phase 06.18 plan 03 — bounded immediate-parent helpers.
 
 Rendering and access helpers that already check a resolved immediate structural parent (Guardian child
-collection links, contextual create buttons, ``cv_create_has_access`` / ``cv_has_access`` of nested Guardian
+collection links, contextual create buttons, ``cv_create_has_access`` of nested Guardian
 creates and cancel availability) use ``crud_views.lib.ancestors._immediate_parent_access``:
 
 * the immediate structural parent's own provider and fallback, with the target operation's *nearest* key;
@@ -195,17 +195,16 @@ def test_create_helpers_follow_the_immediate_parent_policy(helpers, data):
     editor = _user("ah_create_editor")
     _grant(editor, helpers.pub, "change", data.penguin)
     create = helpers.book.Create
-    for helper in (
-        lambda user, obj: create.cv_has_access(user, obj),
-        lambda user, obj: create.cv_create_has_access(user, None, obj),
-    ):
-        assert helper(editor, data.penguin) is True
-        assert helper(viewer, data.penguin) is False
-        # a single-FK own-child input resolves its parent
-        assert helper(editor, data.book) is True
-        assert helper(viewer, data.book) is False
-        # no context stays unavailable
-        assert helper(editor, None) is False
+    assert create.cv_create_has_access(editor, None, data.penguin) is True
+    assert create.cv_create_has_access(viewer, None, data.penguin) is False
+    # a single-FK own-child input resolves its parent
+    assert create.cv_create_has_access(editor, None, data.book) is True
+    assert create.cv_create_has_access(viewer, None, data.book) is False
+    # no context stays unavailable
+    assert create.cv_create_has_access(editor, None, None) is False
+    assert create.cv_has_access(editor, data.penguin) is False
+    assert create.cv_has_access(editor, data.book) is False
+    assert create.cv_has_access(editor, None) is False
 
 
 @pytest.mark.django_db
@@ -214,9 +213,9 @@ def test_child_collection_link_uses_the_target_read_requirement(helpers, data):
     _grant(viewer, helpers.pub, "view", data.penguin)
     editor = _user("ah_link_editor")
     _grant(editor, helpers.pub, "change", data.penguin)
-    assert helpers.book.List._cv_child_link_has_access(viewer, data.penguin) is True
-    assert helpers.book.List._cv_child_link_has_access(editor, data.penguin) is False
-    assert helpers.book.List._cv_child_link_has_access(viewer, data.other) is False
+    assert helpers.book.List._cv_link_permission(viewer, None, data.penguin) is True
+    assert helpers.book.List._cv_link_permission(editor, None, data.penguin) is False
+    assert helpers.book.List._cv_link_permission(viewer, None, data.other) is False
 
 
 @pytest.mark.django_db
@@ -224,8 +223,8 @@ def test_core_immediate_parent_uses_model_permissions(helpers, data):
     object_only = _user("ah_core_object")
     assign_perm("app.change_publisher", object_only, data.penguin)
     model_only = _user("ah_core_model", (Publisher, "change"))
-    assert helpers.core_book.Create.cv_has_access(object_only, data.penguin) is False
-    assert helpers.core_book.Create.cv_has_access(model_only, data.penguin) is True
+    assert helpers.core_book.Create.cv_create_has_access(object_only, None, data.penguin) is False
+    assert helpers.core_book.Create.cv_create_has_access(model_only, None, data.penguin) is True
 
 
 @pytest.mark.django_db
@@ -236,7 +235,7 @@ def test_ambiguous_m2m_child_input_stays_unavailable(helpers, data, provider_cal
     assert create.cv_has_access(editor, data.genre) is False  # a Genre names no single parent
     assert create.cv_create_has_access(editor, None, data.genre) is False
     assert provider_calls == []  # nothing is guessed, no permission is evaluated
-    assert create.cv_has_access(editor, data.penguin) is True  # an explicit parent works
+    assert create.cv_create_has_access(editor, None, data.penguin) is True  # an explicit parent works
 
 
 @pytest.mark.django_db
@@ -245,7 +244,7 @@ def test_invalid_nearest_key_surfaces_as_configuration_error(helpers, data):
     with pytest.raises(ImproperlyConfigured, match="approve"):
         ancestors._immediate_parent_access(helpers.odd.Create, editor, data.penguin)
     with pytest.raises(ImproperlyConfigured, match="approve"):
-        helpers.odd.Create.cv_has_access(editor, data.penguin)
+        helpers.odd.Create.cv_create_has_access(editor, None, data.penguin)
 
 
 # ── provider none and farther ancestors ──────────────────────────────────────
@@ -257,7 +256,7 @@ def test_none_immediate_parent_skips_only_its_gate(helpers, data, provider_calls
     create = helpers.open_note.Create
     with CaptureQueriesContext(connection) as captured:
         assert ancestors._immediate_parent_access(create, nobody, data.book) is True
-        assert create.cv_has_access(nobody, data.book) is True
+        assert create.cv_has_access(nobody, data.book) is False
         assert create.cv_create_has_access(nobody, None, data.book) is True
     # the farther protected Publisher is never evaluated for rendering, nothing is looked up
     assert provider_calls == []
@@ -334,7 +333,7 @@ def test_uuid_parent_identity_and_declarations_survive_repeated_calls(helpers, d
     pk = data.author.pk
     for _ in range(3):
         assert ancestors._immediate_parent_access(create, editor, data.author) is True
-        assert create.cv_has_access(editor, data.author) is True
+        assert create.cv_create_has_access(editor, None, data.author) is True
     assert all(obj is data.author for _, _, obj in provider_calls)
     assert isinstance(data.author.pk, uuid.UUID) and data.author.pk == pk
     after = (
@@ -348,11 +347,11 @@ def test_uuid_parent_identity_and_declarations_survive_repeated_calls(helpers, d
 @pytest.mark.django_db
 def test_anonymous_and_inactive_actors_get_no_create_access(helpers, data):
     create = helpers.book.Create
-    assert create.cv_has_access(AnonymousUser(), data.penguin) is False
+    assert create.cv_create_has_access(AnonymousUser(), None, data.penguin) is False
     inactive = _user("ah_inactive", superuser=True)
     inactive.is_active = False
-    assert create.cv_has_access(inactive, data.penguin) is False
-    assert helpers.book.List._cv_child_link_has_access(inactive, data.penguin) is False
+    assert create.cv_create_has_access(inactive, None, data.penguin) is False
+    assert helpers.book.List._cv_link_permission(inactive, None, data.penguin) is False
 
 
 # ── request helpers: list-page create button and cancel availability ─────────

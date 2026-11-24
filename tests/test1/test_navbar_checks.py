@@ -136,6 +136,7 @@ def test_invalid_configurations(case, django_assert_num_queries, monkeypatch):
         # Checks must never evaluate access/state; neither are registry validation.
         for cls in ns.views.values():
             monkeypatch.setattr(cls, "cv_has_access", classmethod(lambda *args: pytest.fail("startup access hook")))
+            monkeypatch.setattr(cls, "cv_action_enabled", classmethod(lambda *args: pytest.fail("startup state hook")))
             monkeypatch.setattr(
                 cls, "_cv_action_enabled_for_rendering", classmethod(lambda *args: pytest.fail("startup state hook"))
             )

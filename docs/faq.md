@@ -139,24 +139,29 @@ when the user may access a key:
 {% endif %}
 ```
 
-The filter checks access for `view`'s current object (or `None` for list-type views) and
-returns `False` for unknown keys.
+The filter passes the target view's own object for an object target and `None` for a target without one,
+including a create target. It returns `False` for unknown keys.
 
 It is a permission check only. A key can be permitted while its action is disabled by state, in which case
 `cv_context_button` renders nothing (or a disabled button), so the wrapper can end up empty. To wrap only buttons that
 actually render, use the loop below.
 
-On a child page of a nested Guardian ViewSet with a `ForeignKey` parent, keep passing the page's own object: for the
-`create` key the filter checks the permission on that object's actual parent (a Book page asks about its Publisher).
-Two cases return `False`:
+For the `create` key of a nested Guardian ViewSet with a `ForeignKey` parent, the filter on a child object page
+asks `cv_create_has_access(user, None, parent)`. This is the parent the request resolved from the URL, not the
+page object's foreign key. On a view that did not run the ancestor guard, the control is denied without a
+resolved parent.
 
-- A child **list** page has no current object, so the filter gets `None`. The list's own create control resolves the
-  parent from the URL: place it with `{% cv_context_button "create" %}` or the loop below instead of gating on the
-  filter.
-- The page of a **`ManyToMany`** child: the child can belong to several parents, so its object cannot say which
-  parent a create would use. The filter and the page's create control both stay closed. Link to the child list under
-  the parent the user came from, or call the helpers with an explicit parent instance. Never pick "the first" related
-  parent yourself.
+Two `False` answers are kept on purpose:
+
+- On a child **list** page, the filter returns `False` even though the URL parent is resolved. The list's own
+  create control uses that parent: place it with `{% cv_context_button "create" %}` or the loop below instead
+  of gating on the filter.
+- On a **`ManyToMany`** child page, the filter and the page's create control both stay closed. Link to the child
+  list under the parent the user came from, or call `cv_create_has_access(user, None, parent)` with an explicit
+  parent instance. Never pick "the first" related parent yourself.
+
+`cv_has_access` on a nested Guardian create denies every argument; `cv_create_has_access` is the helper that
+accepts an explicit parent instance.
 
 See [What the create access helpers accept](reference/guardian.md#what-the-create-access-helpers-accept).
 

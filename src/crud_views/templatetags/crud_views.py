@@ -20,6 +20,7 @@ from crud_views.lib.data_prefix import get_data_prefix
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception, is_strict
 from crud_views.lib.icons import render_icon, resolve_icon_name_class
 from crud_views.lib.js_config import get_js_namespace, get_tooltip_placements
+from crud_views.lib.link_access import _link_permission
 from crud_views.lib.messages import alert_data, message_alerts
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
@@ -652,7 +653,11 @@ def cv_context_has_permission(view, key) -> bool:
         cls = view.cv_viewset.get_view_class(key)
     except Exception:
         return False
-    return bool(cls.cv_has_access(view.request.user, getattr(view, "object", None)))
+    page_obj = getattr(view, "object", None)
+    known = cls._cv_page_link_ancestors(view, page_obj)
+    if known is not None:
+        return _link_permission(cls, view.request.user, None, known)
+    return bool(cls.cv_has_access(view.request.user, page_obj if cls.cv_object else None))
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/card_action.html", takes_context=True)

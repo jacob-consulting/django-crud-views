@@ -74,6 +74,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.45: Theme-registered JS namespace and tooltip placements (#398) (INSERTED)** (completed 2026-11-21)
 - [x] **Phase 06.46: Bulk toolbar: show only actions the viewer can enter (#399) (INSERTED)** - approved D-01–D-06 handover; destination entry gates govern toolbar visibility before the freeze. (completed 2026-11-22)
 - [x] **Phase 06.47: Semantic variants for bulk toolbar buttons (#400) (INSERTED)** (completed 2026-11-21)
+- [x] **Phase 06.48: Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)** (completed 2026-11-23)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2379,6 +2380,46 @@ Plans:
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 06.47-03-PLAN.md
 
+### Phase 06.48: Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407) (INSERTED)
+
+**Goal:** Decide link and button visibility through one private link check (parent gates, own permission, state) and fix the meaning of `obj` in `cv_has_access` and `cv_action_enabled` before both hooks are frozen for 1.0.
+**Source:** [Issue #407](https://github.com/jacob-consulting/django-crud-views/issues/407), stage 1 of the approved concept `superpowers/specs/2026-11-23-link-access-check-design.md` at commit `dbf1e6c4`: settled decisions in section 12.1 (D-01–D-24), stage scope in 12.2, open planner questions in 12.5, reviewer brief in 13, amended for stage 1 by section 12.6 (D-25–D-36, decided 2026-11-23 on branch `gsd/phase-06.48`). The concept document applies where it differs from the issue.
+**Requirements**: None assigned; use the issue acceptance criteria.
+**Depends on:** Phase 6
+**Ordering:** Explicitly assigned 06.48 by the maintainer; before the 1.0 freeze of both hooks. Stage 2 (#385, shared Guardian checker) and stages 3 to 5 are out of scope.
+**Plans:** 9/9 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.48-01-PLAN.md — Baseline on the unchanged tree: characterization matrix of every affected control, cost record
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.48-02-PLAN.md — Tracer: the private link check, the per-target seam, navbar child item and nested Guardian list-page create
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.48-03-PLAN.md — Unit tests of the check: signature, ancestor list, order, actor rule, action object, nested Guardian create
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.48-04-PLAN.md — Child context button and card child action through the check; child-link adapter removed; private surface recorded
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [x] 06.48-05-PLAN.md — Context buttons and actions by view key: narrowed arguments; only a nested Guardian create takes the check (D-31)
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [x] 06.48-06-PLAN.md — Parent button, sibling button, non-child card action, permission filter: same rule; same state object for link and request
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [x] 06.48-07-PLAN.md — `cv_has_access` on a nested Guardian create fails closed; D-25 test rewrites; no call site passes a parent
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [x] 06.48-08-PLAN.md — Breaking entry, migration note, five reference pages, doc pins
+
+**Wave 9** *(blocked on Wave 8 completion)*
+- [x] 06.48-09-PLAN.md — Navbar and FAQ passages, reference pins, before-and-after costs, private surface, phase gate
+
+**Cross-cutting constraints:** <!-- gsd:generated -->
+- Every cell of the characterization matrix, every gate event of tests/test1/test_ancestor_costs.py and every query total of tests/test1/test_navbar_costs.py is unchanged; the golden files are byte-identical.
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -2520,4 +2561,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.45. Theme-registered JS namespace and tooltip placements (#398) | 2/2 | Complete | 2026-11-21 |
 | 06.46. Bulk toolbar destination entry gates (#399) | 2/2 | Complete | 2026-11-22 |
 | 06.47. Semantic variants for bulk toolbar buttons (#400) | 3/3 | Complete | 2026-11-21 |
+| 06.48. Private link access and narrowed hook objects (#407) | 9/9 | Complete | 2026-11-23 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

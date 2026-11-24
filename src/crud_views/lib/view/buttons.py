@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 
 from ..check import CheckExpression, CheckWarningExpression
 from ..exceptions import ViewSetNotFoundError
+from ..link_access import _link_access, _link_ctx, _page_action_object
 from ..settings import crud_views_settings
 from .action_menu import cv_is_inline_keys
 from .context import ViewContext
@@ -105,17 +106,16 @@ class ContextButton(BaseModel):
             "cv_oid": context.view.cv_get_oid(key=key_target, obj=context.object),
         }
 
-        # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
-            context.view.request.user, context.object, context.view
-        )
-
-        # check access
-        if cls.cv_has_access(context.view.request.user, context.object):
-            # get the url for the target key
-            dict_kwargs.update(
-                cv_access=True,
+        known = cls._cv_page_link_ancestors(context.view, context.object)
+        if known is not None:
+            dict_kwargs.update(_link_ctx(_link_access(cls, context.view.request.user, None, known)))
+        else:
+            # State stays independent of permission except for the nested Guardian create above.
+            dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
+                context.view.request.user, _page_action_object(context.view, cls, context.object), context.view
             )
+            if cls.cv_has_access(context.view.request.user, context.object if cls.cv_object else None):
+                dict_kwargs.update(cv_access=True)
 
         # final data
         data = cls.cv_get_dict(context=context, **dict_kwargs)
@@ -171,8 +171,8 @@ class ParentContextButton(ContextButton):
         # get the url for the target key
         dict_kwargs.update(cv_url=cv_url)
 
-        # the button links UP to the parent, so access is governed by the PARENT
-        # object — not context.object (the child instance, or None on a list page).
+        # The looked-up parent is an object target's own object and an input to its URL.
+        # A target without an own object receives None for own access.
         parent_obj = None
         if hasattr(context.view, "cv_get_parent_object"):
             try:
@@ -180,16 +180,16 @@ class ParentContextButton(ContextButton):
             except (Http404, KeyError):
                 parent_obj = None
 
-        # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
-            context.view.request.user, parent_obj, context.view
-        )
-
-        # check permission against the parent object
-        if cls.cv_has_access(context.view.request.user, parent_obj):
-            dict_kwargs.update(
-                cv_access=True,
+        known = cls._cv_page_link_ancestors(context.view, parent_obj)
+        if known is not None:
+            dict_kwargs.update(_link_ctx(_link_access(cls, context.view.request.user, None, known)))
+        else:
+            # Other targets keep independent state-before-permission evaluation.
+            dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
+                context.view.request.user, _page_action_object(context.view, cls, parent_obj), context.view
             )
+            if cls.cv_has_access(context.view.request.user, parent_obj if cls.cv_object else None):
+                dict_kwargs.update(cv_access=True)
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 
@@ -234,13 +234,7 @@ class ChildContextButton(ContextButton):
             "cv_icon_action": child_vs.icon_header,
         }
 
-        # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
-            context.view.request.user, context.object, context.view
-        )
-
-        if cls._cv_child_link_has_access(context.view.request.user, context.object):
-            dict_kwargs.update(cv_access=True)
+        dict_kwargs.update(_link_ctx(_link_access(cls, context.view.request.user, None, (context.object,))))
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 
@@ -258,8 +252,9 @@ class SiblingContextButton(ContextButton):
     the same parent — reusing the parent PK already present in the current URL.
 
     Collection-only: a sibling button has no specific sibling object in scope, so object-gated
-    sibling views (detail/update/delete) are unsupported — access is checked with obj=None,
-    which is correct only for collection targets (list/card, whose access is unconditional).
+    sibling views (detail/update/delete) are unsupported. Access is checked with no object;
+    state receives the shared parent already resolved by the request. A nested Guardian create
+    cannot be reached through this button.
     """
 
     sibling_name: str
@@ -293,13 +288,16 @@ class SiblingContextButton(ContextButton):
             "cv_icon_action": sibling_vs.icon_header,
         }
 
-        # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
-            context.view.request.user, None, context.view
-        )
-
-        if cls.cv_has_access(context.view.request.user, None):
-            dict_kwargs.update(cv_access=True)
+        known = cls._cv_page_link_ancestors(context.view, None)
+        if known is not None:
+            dict_kwargs.update(_link_ctx(_link_access(cls, context.view.request.user, None, known)))
+        else:
+            # Other targets keep independent state-before-permission evaluation.
+            dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
+                context.view.request.user, _page_action_object(context.view, cls, None), context.view
+            )
+            if cls.cv_has_access(context.view.request.user, None):
+                dict_kwargs.update(cv_access=True)
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 

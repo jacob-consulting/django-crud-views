@@ -8,7 +8,7 @@ from django.db.models import Count
 from django.utils.translation import gettext as _
 
 from crud_views.lib.ancestor_db import _check_nested_auth
-from crud_views.lib.ancestors import _immediate_parent_access
+from crud_views.lib.ancestors import _immediate_parent_access, _resolved_ancestor
 from crud_views.lib.manage_report import SourceRecord, normalize_value
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views import (
@@ -270,12 +270,27 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
     permissions for a core parent). No model-level add_<child> check is made. The parent is resolved and
     cv_action_enabled still runs with it, also when the parent is unprotected (provider "none").
 
-    The access helpers (cv_has_access, cv_create_has_access) are permission-only and use the bounded
-    immediate-parent rule (crud_views.lib.ancestors._immediate_parent_access): the immediate parent's provider
-    with this create's nearest Write key, never a farther ancestor. They accept the configured parent model
-    instance, or an own-child instance of a single-FK nesting whose parent is resolved through
-    ParentViewSet.attribute. Anything else denies.
+    The permission helper for a nested create is cv_create_has_access. It uses the bounded immediate-parent
+    rule (crud_views.lib.ancestors._immediate_parent_access): the immediate parent's provider with this
+    create's nearest Write key, never a farther ancestor. It accepts the configured parent model instance,
+    or an own-child instance of a single-FK nesting whose parent is resolved through ParentViewSet.attribute.
+    Anything else denies. cv_has_access always returns False for a nested create: a create has no own object,
+    and the parent rule does not belong in that hook's object argument.
     """
+
+    @classmethod
+    def _cv_page_link_ancestors(cls, rendering_view, page_obj):
+        """Supply only the URL parent of an own child in a single-FK nesting, without a lookup."""
+        parent = cls.cv_viewset.parent
+        if parent is None:
+            return super()._cv_page_link_ancestors(rendering_view, page_obj)
+        # Keep denied: the child-list permission filter and M2M child page (D-27), the create page
+        # itself and sibling button (D-33), and views without a resolved parent (D-16).
+        # GuardianQuerysetMixin.cv_get_context supplies the child list page's URL parent itself.
+        if not isinstance(page_obj, cls.cv_viewset.model) or parent.many_to_many_through_attribute:
+            return ()
+        resolved = _resolved_ancestor(rendering_view, parent.name)
+        return (resolved,) if resolved is not None else ()
 
     @classmethod
     def _cv_guardian_create_parent(cls, obj):
@@ -315,26 +330,27 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
     @classmethod
     def cv_create_has_access(cls, user, rendering_view, parent_obj):
         """
-        Determine whether the create button should be visible for this child viewset.
+        Permission-only hook for links to this create, using its immediate parent's rule.
 
-        Called by GuardianQuerysetMixin.cv_get_context() when rendering the create
-        context action from a list view where obj=None. The list view resolves the
-        parent object from its URL kwargs and passes it here.
+        This is the only own-permission step for every package control currently shown that links to a
+        nested Guardian create. A sibling button to it and its create-page create control stay hidden
+        without asking this hook. One existing list-page limit remains: when a nested Guardian list's own
+        ViewSet registers a Guardian create under the same key, GuardianQuerysetMixin.cv_get_context gives
+        a parent or sibling button to this create the page's own create result.
 
-        Default implementation applies the immediate-parent rule on the parent object — the immediate parent's
-        provider and fallback with this create's nearest Write key; a parent with provider "none" skips only
-        that permission. During a request the rendering view's resolved parent identity is reused. Permission
-        only: the action state is resolved separately. Override in subclasses for custom logic.
+        The default applies the immediate parent's provider and fallback with this create's nearest Write
+        key; provider "none" skips only that permission. An inactive signed-in actor is denied; an anonymous
+        actor receives the parent provider's answer. The request-resolved parent identity is reused when
+        available. Action state is evaluated separately. Override in subclasses for custom parent rules.
 
         Args:
             user: the requesting user
-            rendering_view: the view instance that is rendering the button
-                (e.g. NetzwerkMemberListView) — provides access to
-                rendering_view.request, rendering_view.kwargs, etc.
-                Not used by the default implementation; available for subclass overrides.
-            parent_obj: the resolved parent model instance (an own-child instance of a
-                single-FK nesting is resolved to its parent), or None if resolution
-                failed (returns False in that case, as does any other object)
+            rendering_view: the child list view for its create control, or the rendering view for a cancel
+                target. It is None for child context buttons, card child actions, object navbar child items,
+                parent buttons, create controls or create card actions on child object/card pages, and the
+                cv_context_has_permission filter on a child object page. Overrides must not assume it is set.
+            parent_obj: the resolved parent instance. An own child of a single-foreign-key nesting is also
+                accepted and resolved to its parent; None, missing relations and every other input deny.
         """
         if cls.cv_viewset.parent is None:
             return cls.cv_has_access(user, None)
@@ -346,48 +362,29 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
     @classmethod
     def cv_has_access(cls, user, obj=None):
         """
-        Permission check for create button visibility.
+        Top-level create: check the model-level add permission through the base class.
 
-        Case 1 — Top-level create (cv_viewset.parent is None):
-            Falls through to the base class, which checks the model-level
-            add_<model> permission. Top-level creates intentionally require a
-            model-level grant; there is no parent object to check against.
-
-        Case 2 — Child create, no object (obj=None, e.g. book list page):
-            Returns False. GuardianQuerysetMixin.cv_get_context() handles the
-            real check by resolving the parent from URL kwargs and calling
-            cv_create_has_access(). This is a safe fallback for any call path
-            that bypasses the list view override.
-
-        Case 3 — Child create, parent object available (e.g. publisher detail page):
-            When obj is an instance of the parent model, applies the immediate-parent rule (the
-            parent's provider/fallback with this create's nearest Write key) on that specific
-            parent object. "add book" only appears for parent objects the user is actually
-            allowed to create children under (farther ancestors are checked by the request).
-
-        Case 4 — Child create, own-child object (e.g. a book detail page):
-            For single-FK nesting the book's configured parent attribute is
-            resolved and Case 3 applies to that parent. M2M nesting cannot name a
-            single parent from a child and denies.
-
-        Any other object (an unrelated model, a child without its parent
-        relation) denies — it cannot establish which parent the create would
-        bind to. This supersedes the former permissive fallback to True.
+        Nested create: return False for every argument. A create has no own object; use
+        cv_create_has_access for its parent-based permission rule. Package links to a nested Guardian
+        create do not call cv_has_access, so overriding it does not affect those links.
         """
         assert not isinstance(user, str)
 
         if cls.cv_viewset.parent is None:
             return super().cv_has_access(user, obj)
 
-        if obj is None or _guardian_inactive_actor(user):
-            return False  # safe fallback — GuardianQuerysetMixin.cv_get_context handles the real check
-
-        return _immediate_parent_access(cls, user, cls._cv_guardian_create_parent(obj))
+        return False
 
     @classmethod
-    def _cv_child_link_has_access(cls, user, parent_obj):
-        # Create's own access contract already applies its immediate-parent permission policy.
-        return cls.cv_has_access(user, parent_obj)
+    def _cv_link_permission(cls, user, obj, parent_obj, *, rendering_view=None):
+        """A nested create's permission is solely its documented parent-based hook.
+
+        Keep that hook's actor rule, including anonymous backend grants under a model-provider parent
+        (known limit L2, retained for stage 1).
+        """
+        if cls.cv_viewset.parent is None:
+            return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
+        return cls.cv_create_has_access(user, rendering_view, parent_obj)
 
 
 class GuardianManageView(ManageView):

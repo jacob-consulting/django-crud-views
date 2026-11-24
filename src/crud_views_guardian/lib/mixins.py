@@ -1,5 +1,3 @@
-import logging
-
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
 from django.utils.translation import gettext as _
@@ -9,9 +7,8 @@ from django.views.generic.list import MultipleObjectMixin
 from crud_views.lib.access_trace import _object_identity, get_recorder
 from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.ancestors import _immediate_parent_access, _resolved_parent
+from crud_views.lib.link_access import _link_access, _link_ctx
 from crud_views.lib.view import CrudView
-
-logger = logging.getLogger(__name__)
 
 
 def _record_guardian_actor(view, result, source, message=None):
@@ -294,32 +291,23 @@ class GuardianQuerysetMixin:
         return bool(cls.cv_viewset.permissions.get(cls.cv_permission))
 
     @classmethod
-    def _cv_child_link_has_access(cls, user, parent_obj):
+    def _cv_link_permission(cls, user, obj, parent_obj, *, rendering_view=None):
+        """Keep Guardian's actor rule and the bounded queryset-only link exception."""
         if not cls.cv_viewset.has_parent:
-            return super()._cv_child_link_has_access(user, parent_obj)
+            return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
         if not user.is_authenticated or _guardian_inactive_actor(user):
             return False
-        # Standalone queryset compositions never checked the parent for their links (bounded migration).
         if not issubclass(cls, GuardianParentPermissionMixin):
-            return cls.cv_has_access(user, parent_obj)
-        return super()._cv_child_link_has_access(user, parent_obj)
+            return cls.cv_has_access(user, obj)
+        return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
 
     def cv_get_context(self, key=None, obj=None, user=None, request=None, *, location=None):
-        """
-        Override to fix create button visibility for child viewsets under guardian.
+        """Decide nested Guardian create controls from the request-resolved parent.
 
-        cv_has_access() is a classmethod with no access to the request or URL
-        kwargs. When a create context action is rendered from a list page, obj=None
-        and the parent object cannot be determined inside cv_has_access() alone.
-
-        This override detects that situation (obj=None, target is a child create
-        view, viewset has a parent), resolves the parent object from self.kwargs
-        using the existing cv_get_parent_object() helper, and delegates to
-        target_cls.cv_create_has_access() with the resolved parent. The result
-        replaces cv_access in the already-built context dict. cv_action_enabled is
-        re-derived separately from the same parent through the target's state
-        adapter; when the parent cannot be resolved both fields are False and no
-        custom state hook is called with None. No other context fields are affected.
+        Stamp permission and state through the private link check; a missing parent denies permission
+        without calling the state hook. Other context fields keep their already-built values.
+        The existing key-based selection also replaces parent/sibling buttons with the page's own create
+        result when their resolved key matches it (known limit L1, retained for stage 1).
         """
         assert not isinstance(user, str)
 
@@ -340,20 +328,9 @@ class GuardianQuerysetMixin:
                 and getattr(target_cls, "cv_permission", None) == "add"
                 and hasattr(target_cls, "cv_create_has_access")
             ):
-                try:
-                    parent_obj = self.cv_get_parent_object()
-                except (Http404, KeyError):
-                    logger.warning(
-                        "could not resolve parent object for create button visibility at %s",
-                        self,
-                        exc_info=True,
-                    )
-                    parent_obj = None
-                ctx["cv_access"] = target_cls.cv_create_has_access(user, self, parent_obj)
-                # state is independent of permission; an unresolved parent never reaches a custom state hook
-                ctx["cv_action_enabled"] = parent_obj is not None and target_cls._cv_action_enabled_for_context(
-                    user, parent_obj
-                )
+                parent_obj = _resolved_parent(self)
+                known = (parent_obj,) if parent_obj is not None else ()
+                ctx.update(_link_ctx(_link_access(target_cls, user, None, known, rendering_view=self)))
 
         return ctx
 

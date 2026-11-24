@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ Private link permission/state check, narrowed own-object hook arguments, fail-closed nested Guardian create own access, and paired Breaking/migration guidance — Phase 06.48. Nine plans/21 tasks complete; verification 24/24 across 99 declarations, frozen 1,178 outcomes preserved, 18,915 full-suite tests passed, deep review clean, 31 authored threats closed. Approved stage-1 limitations remain documented; no browser/downstream/full-matrix certification claimed.
+
 - ✓ Bulk toolbar destination entry gates shared by table/card controls, request-local effective actions, bounded rendering costs and unchanged submission authorization — Phase 06.46; verified 7/7, all six decisions honored, eight threats closed. Full suite17,281 and examples637+300 subtests passed; the N6-01 LOW presentation exception residual was fixed in the follow-up (buttons evaluated before template rendering).
 
 - ✓ Destination-driven bulk semantic variants, four theme keys and dedicated nine-field leaf with byte-identical stock controls — Phase 06.47; 16/16 verified, six tasks covered, security9/9 and clean independent review after icon-contract documentation fix. Full Python suite17,264, JavaScript512 and integration2 passed; downstream/browser/full-matrix claims excluded.
@@ -181,6 +183,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Keep stage-1 link authorization private, pass parents separately, and narrow public hook objects before the 1.0 freeze | Preserve request gates and proven core paths while migrating only approved consumers; no new cache or public surface | Validated Phase 06.48; frozen rendering and cost comparisons pass, with approved parent-first own-denial cost and documented L1/L2 limits |
 | Reuse the existing non-object destination gate and cache effective bulk actions per request | Keep access/state policy aligned with Cancel without scanning selected rows or changing POST enforcement | Validated Phase 06.46; N6-01 fixed in follow-up: buttons are evaluated before template rendering |
 | Normalize bulk controls through the existing form path, then add the destination variant for a dedicated leaf | Preserve native submission/escaping and stock bytes while keeping generic action/form dispatch bounded | Validated (Phase 06.47; 16/16) |
 | Register the JS namespace and tooltip placements at theme startup; resolve config at call time | Reuse the existing adapter factory and preserve explicit trigger/factory ownership and Bootstrap defaults without an extra theme script | Validated (Phase 06.45; 9/9); supersedes placement-only wrapper guidance from 06.28 |
@@ -279,4 +282,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-22 after integrating Phase 06.46 with Phase 06.47*
+*Last updated: 2026-11-23 after Phase 06.48 completion*

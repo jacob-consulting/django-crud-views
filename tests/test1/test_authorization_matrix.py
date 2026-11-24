@@ -1062,8 +1062,11 @@ def test_child_page_create_control_matches_direct_route(mx, client, monkeypatch,
     assert ctx["cv_url"] == create_url  # linked to the actual FK parent, not the child
     assert (f'href="{create_url}"' in response.content.decode()) is (permitted and enabled)
     assert _render_permission_filter(response) == str(permitted)  # permission-only, independent of state
-    assert mx.state_calls["book"], "the create state hook was not consulted"
-    assert all(type(obj) is Publisher and obj.pk == world.a.pk for obj in mx.state_calls["book"])
+    if permitted:
+        assert mx.state_calls["book"], "the create state hook was not consulted"
+        assert all(type(obj) is Publisher and obj.pk == world.a.pk for obj in mx.state_calls["book"])
+    else:
+        assert mx.state_calls["book"] == []
 
     before = _snapshot()
     allowed = permitted and enabled

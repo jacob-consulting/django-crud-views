@@ -5,31 +5,31 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phases 06.46 and 06.47 complete, ready to plan Phase 7
-last_updated: "2026-11-22T17:30:49.000Z"
-last_activity: 2026-11-22
-last_activity_desc: "Phase 06.46 merged with main after Phases 06.45 and 06.47"
-state_head: 3964c4404daa976a211d62fdc40666040a45840e
+stopped_at: Phase 06.48 complete, ready to plan Phase 7
+last_updated: "2026-11-24T07:24:28.674Z"
+last_activity: 2026-11-24
+last_activity_desc: "Phase 06.48 shipped as PR #409 targeting feature/link-access-check-design"
+state_head: 971ac67e12b8b797fbbdfad51c4df5a2a228fb4a
 progress:
-  total_phases: 54
-  completed_phases: 53
-  total_plans: 285
-  completed_plans: 285
+  total_phases: 55
+  completed_phases: 54
+  total_plans: 294
+  completed_plans: 294
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 54
-Completed Phases: 53
+Total Phases: 55
+Completed Phases: 54
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-22)
+See: .planning/PROJECT.md (updated 2026-11-23)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme surface freeze
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
@@ -37,9 +37,75 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: 0 (not planned)
 Status: Ready to plan
-Last activity: 2026-11-22 — Phase 06.46 merged with main after Phases 06.45 and 06.47
+Last activity: 2026-11-24 -- Phase 06.48 shipped as PR #409 targeting feature/link-access-check-design
 
-Next: $gsd-plan-phase 7
+Next: $gsd-discuss-phase 7
+
+### Phase 06.48 completion — 2026-11-23
+
+- All nine plans/21 tasks complete. Independent verification passed 24/24 consolidated truths covering 99 plan declarations; CLI fingerprint accepted, decision coverage 27/27, no required human checks. Private helper and narrowed hook arguments delivered with Breaking/migration guidance; request authority and 1,178 frozen outcomes preserved.
+- Final full suite 18,915 passed; examples 637 plus 300 subtests; ancestor/trace 1,976; strict docs and repository-wide Ruff passed. Validation independently passed 1,598 tests and covered 21/21 tasks (23 acceptance rows); reviewer 46 tests and verifier 11 cases passed. Only planning records changed after the final product gate.
+- Deep review of 33 files is clean. Authored security register 31/31 closed, including seven existing accepted dispositions; UI source audit found no new issue, visual dimensions unassessed. Browser/downstream/full dependency matrix certification remains unclaimed.
+- Cost report preserves original receipts and the warm-six/fresh-seven ContentType observation; only approved own-denied parent-first costs changed. Existing example warnings and optional WINDOWS ledger format issue are recorded. Pre-existing GSD-only configuration dirt and state.json bytes preserved.
+- phase.complete advanced to Phase 7 without verification-debt warnings. Reconciled stale dotted progress row/count/focus against 55 roadmap phases (54 complete), cleared stale next-step text. No parent UAT gaps, matching todos, handoffs or learning artifacts; codebase-map refresh follows gsd-ship per AGENTS.md. No ship, push, PR or merge performed.
+
+### Phase 06.48 plan 09 — 2026-11-23
+
+- Navbar/FAQ guidance and the sixth documentation test complete the narrowed-hook references. The gate at `f242c65b64fa898b0f64b9d8a23155bb329dc48c` passed 18,915 full-suite tests, 1,976 ancestor/access-trace tests, strict MkDocs, repository-wide Ruff and 637 example tests plus 300 subtests.
+- Nine ancestor-cost receipts and 120 navbar properties match the baseline. The 38 existing child properties match under equivalent cache conditions: the report preserves one warm six-query observation beside its exact fresh-process seven-query baseline reproduction. Own-denied child context/card controls each add the approved one gate/two permission queries; navbar has the same gate change without a measured SQL count. No baseline expectation was edited.
+- Private-surface counts and the adapter record match the approved stage-1 inventory. Frozen matrix, golden files, request gates and commands remain unchanged. The kept L1/L2/D-36 limits, authorized GSD-only dirty-config exception and existing example/optional-ledger warnings are recorded.
+- Two task commits and SUMMARY `880ff3b8` precede tracking. ROADMAP records 9/9 executed with phase In Progress; STATE has 294 completed plans and review/verification pending. The generic progress refresh retains its unscoped-requirements decline. Original dirty state.json/config bytes are preserved, and no phase-completion handler ran.
+
+### Phase 06.48 plan 08 — 2026-11-23
+
+- Paired Breaking entry and migration section describe both narrowed hooks, the create-hook sites, override migrations, kept denials and unchanged list-page exception. Five reference pages now state parent-first order and the separate consumers that evaluate state independently.
+- Five new documentation tests passed after the expected four-test RED. Required selections passed 63 and 208 tests; strict MkDocs passed. Existing tests, executable examples, reference anchors, stability inventory and published cost figures are preserved. No runtime source changed.
+- Three task commits and SUMMARY committed before tracking. ROADMAP is 8/9, current plan 9, completed plans 293; metrics/session updated. The generic progress refresh retains its known unscoped-requirements limitation, and unrelated state.json bytes are preserved. Next is plan 09; the phase remains executing.
+
+### Phase 06.48 plan 07 — 2026-11-23
+
+- Nested Guardian create `cv_has_access` now returns False for every argument without SQL or a provider call; `cv_create_has_access` retains the parent rule. Approved D-25/C7 tests preserve parent-policy coverage, including four denial companions proven on the unchanged hook first. Public hook docstrings state the approved object and evaluation-order limits.
+- The new recording test observes 23 separately built controls per core/Guardian composition and wraps all registered child, parent and sibling view classes. All 14 runtime source calls were reviewed. Full suite 18,908 passed; standalone ancestor suites 1,336 passed and access-trace suites 640 passed. Frozen matrix data, golden files, protected gate methods and cost expectations are unchanged.
+- Three task commits and SUMMARY committed before tracking. ROADMAP is 7/9, current plan 8, completed plans 292; metrics/session updated. The generic progress refresh retains its known unscoped-requirements limitation, and unrelated state.json bytes are preserved. No unresolved issue; next is plan 08. The phase remains executing.
+
+### Phase 06.48 plan 06 — 2026-11-23
+
+- Parent/sibling buttons, non-child card actions and the permission filter now use the existing page seam for nested Guardian creates and narrow hook objects for every other target. The permission filter stays permission-only; all four kept denials and the approved L1 list-page override remain intact.
+- Seven new test functions (15 cases) include six real-request comparisons of enforcement and rendering action objects. Full suite 18,904 passed; standalone ancestor suites 1,336 passed and access-trace suites 640 passed. All 1,178 frozen outcomes and nine isolated ancestor-cost receipts are unchanged; no golden, request-gate or trace expectation changed.
+- Five task commits and SUMMARY committed before tracking. ROADMAP is 6/9, current plan 7, completed plans 291; metrics/session updated. The generic progress refresh retains its known unscoped-requirements limitation, and unrelated state.json bytes are preserved. No unresolved issues; next is plan 07.
+
+### Phase 06.48 plan 05 — 2026-11-23
+
+- Context buttons and view-key actions now narrow both hook arguments. Only nested Guardian creates use the private page seam and link check, with the request-resolved parent, exactly one parent gate and permission before state. Core paths and unguarded core controls remain intact.
+- Six new tests cover exact hook arguments/order, cached FK B versus URL parent A, zero ancestor queries and deliberate denials. Required selection 1,242 passed; focused reconciliation 1,985 passed; final full suite 18,889 passed in 402.26s on Python 3.12.3/Django 6.0.10 with six workers and recorder off.
+- The initial full suite's 30 failures were all the three named C3 state-hook assertions; no other existing test changed, and no pinned C9 count was lowered. All 1,178 frozen outcomes, gate/golden expectations and nine isolated ancestor-cost receipts remain unchanged.
+- Three task commits and SUMMARY committed before tracking. ROADMAP is 5/9, current plan 6, completed plans 290; metrics/session updated. The generic progress refresh retains its known unscoped-requirements limitation, and unrelated state.json bytes are preserved. No unresolved issues; next is plan 06.
+
+### Phase 06.48 plan 04 — 2026-11-23
+
+- Child context buttons and card child actions now use the private link check; all three `_cv_child_link_has_access` definitions are removed. Every planned test edit is classified in the summary, alongside the adapter record and planned stage-1 private surface.
+- Two RED/GREEN pairs verified; affected selection 1,519 passed, adapter/helper/cost selection 413 passed, full suite 18,883 passed in 396.38s on Python 3.12.3/Django 6.0.10 with six workers and recorder off. Frozen 1,178 matrix outcomes, golden files, request-gate/trace expectations, 120 navbar measurements and nine ancestor-cost receipts remain unchanged; exactly four approved ancestor-helper lines changed.
+- C2 now applies to all three parent-in-hand controls: own denial pays for the parent gate. Newly measured context/card cases each make one gate call and two permission queries; every existing child-link query-only measurement stays identical. L1/L2 and D-30 remain unchanged.
+- Four task commits and SUMMARY committed before tracking. ROADMAP is 4/9, current plan 5, completed plans 289; metrics/session updated, with the known unscoped-requirements limitation on the generic progress-field refresh. Unrelated state.json bytes preserved. No unresolved issues; next is plan 05.
+
+### Phase 06.48 plan 03 — 2026-11-23
+
+- Fourteen direct tests pin the private link check's signature, ancestor order, actor rules, action objects, nested Guardian create hook, rendering-view identity and fresh decisions. Navbar startup checks now guard the direct state hook as well.
+- Unit module: 14 passed with four workers; matrix, both cost suites, navbar permissions/checks and Guardian: 1,489 passed with six workers. Production code, the 1,178-cell baseline, request gates, golden files and ancestor costs are unchanged. No additional full-suite run was required by this test-only plan.
+- Two task commits and SUMMARY committed. ROADMAP is 3/9, current plan 4, completed plans 288. The SDK again declined the generic progress-field refresh for unscoped requirements; metrics and session updates succeeded. No unresolved issues; next is plan 04's child-link call sites.
+
+### Phase 06.48 plan 02 — 2026-11-23
+
+- Private link check and per-target seams now decide navbar child items and nested Guardian list-page creates. All 1,178 frozen outcomes, request gate/trace expectations, golden files and pinned query totals remain unchanged; L1/L2 retained.
+- Navbar child admission now runs the parent gate before own access (C2), including own-denied actors. The six malformed-policy cases pin the approved change; plans 04/09 carry its cost consequence forward.
+- Tracer and feedback rerun: 1,204 passed each; navbar plus matrix: 1,723; Guardian/cost selection: 260; full suite: 18,867 passed in 397.35s, Python 3.12.3/Django 6.0.10, six workers, recorder off. The extra test is the existing source-file scanner covering link_access.py.
+- Three task commits and SUMMARY committed. ROADMAP is 2/9, current plan 3; the SDK again declined the generic progress-field refresh for unscoped requirements. No unresolved issues; next is plan 03's direct contract tests.
+
+### Phase 06.48 plan 01 — 2026-11-23
+
+- Characterization baseline complete: 544 parent-in-hand cells extended to 1,178 total; all prior values retained. D-26/D-30 visible-link exceptions, L1/L2 and D-27/D-33 denials frozen as planned.
+- Final matrix 1,179 passed; full suite 18,866 passed on Python 3.12.3/Django 6.0.10 with six workers and recorder off. Nine ancestor files, 120 navbar properties and 38 child-link properties recorded in 06.48-COST-BASELINE.md.
+- Production, docs, changelog and golden files remain identical to dbf1e6c4. Three task commits plus committed SUMMARY; next is plan 02. ROADMAP is 1/9, current plan 2; the SDK declined only the generic progress-field refresh for unscoped phase requirements.
 
 ### Phase 06.46 integration with Phase 06.47 — 2026-11-22
 
@@ -1622,7 +1688,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 270
+- Total plans completed: 283
 
 - Total plans completed: 186
 - Average duration: -
@@ -1681,6 +1747,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.47 | 3 | - | - |
 | 06.45 | 2 | - | - |
 | 06.46 | 2 | - | - |
+| 06.48 | 9 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1878,6 +1945,15 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.47 P01 | 5min | 2 tasks | 14 files |
 | Phase 06.47 P02 | 8min | 2 tasks | 10 files |
 | Phase 06.47 P03 | 16min | 2 tasks | 11 files |
+| Phase 06.48 P01 | 19min | 3 tasks | 3 files |
+| Phase 06.48 P02 | 12min | 3 tasks | 10 files |
+| Phase 06.48 P03 | 6min | 2 tasks | 2 files |
+| Phase 06.48 P04 | 12min | 2 tasks | 9 files |
+| Phase 06.48 P05 | 20min | 2 tasks | 8 files |
+| Phase 06.48 P06 | 16min | 3 tasks | 7 files |
+| Phase 06.48 P07 | 15min | 2 tasks | 8 files |
+| Phase 06.48 P08 | 10min | 2 tasks | 8 files |
+| Phase 06.48 P09 | 12min | 2 tasks | 5 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2326,6 +2402,7 @@ None yet.
 - Phase 06.45 inserted after Phase 06.44: Theme-registered JS namespace and tooltip placements (#398); approved D-01–D-05, depends on 06.42, before Phase 7 freeze (URGENT)
 - Phase 06.46 inserted after Phase 06.44: Issue #399: bulk toolbar destination entry gates; approved D-01–D-06 handover amends #387. Requested 06.46 retained; 06.45 remains unallocated in this checkout. (URGENT)
 - Phase 06.47 inserted after Phase 06.45: Semantic variants for bulk toolbar buttons (#400); explicitly assigned 06.47 by the maintainer, approved D-01–D-05, depends on 06.41, before Phase 7 freeze (URGENT)
+- Phase 06.48 inserted after Phase 6: Issue #407: link access check as a private function; narrow obj in cv_has_access and cv_action_enabled. Stage 1 of the approved link access concept (settled D-01–D-24, spec at dbf1e6c4); explicitly assigned 06.48 by the maintainer, before the 1.0 hook freeze (URGENT)
 
 ## Deferred Items
 
@@ -2335,6 +2412,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-22T07:55:34.002638+00:00
-Stopped at: Phases 06.46 and 06.47 complete, ready to plan Phase 7
+Last session: 2026-11-23T21:41:16.482890+00:00
+Stopped at: Phase 06.48 complete, ready to plan Phase 7
 Resume file: None

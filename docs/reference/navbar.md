@@ -121,9 +121,11 @@ labels retain literal entity sequences: an explicit `"A &amp; B"` displays those
 Markup, including values marked safe, displays as text. Keep template autoescaping enabled; do not apply `safe`.
 Private normalization helpers are not public API.
 
-For each owner item, destination access is checked with the owner object. For each child item, the existing
-child-link admission helper is called once with that same owner. Only after admission does the destination's
-existing state check run, again with the navbar owner (not a child row). Denied or state-disabled items are
+For each owner item, destination access is checked with the owner object. Each child item is decided by the
+link check with the navbar owner as its immediate parent, in the order parent gate, own access, state hook.
+Own access receives `None` in `cv_has_access`; a nested Guardian create is asked through `cv_create_has_access`
+with `rendering_view=None`. Only after permission passes does the state hook receive the navbar owner.
+Denied or state-disabled items are
 hidden, even if ordinary action buttons would be disabled. Accessible empty collections remain visible: there
 are no row counts, badges, existence probes or row-count-based hiding.
 
@@ -134,6 +136,8 @@ are no row counts, badges, existence probes or row-count-based hiding.
     enables ancestor cascading and uses strict Guardian Tenant object grants, plus model permissions below Tenant.
 
 Reached configuration errors propagate; invalid policy or URL configuration is not silently treated as denial.
+The child item's parent policy is evaluated before the destination's own access, so malformed parent policy
+raises also for an actor whose own access is denied. Such an actor now pays for the parent gate as well.
 If no items survive, the entire bar, including identity and spacing, is absent. Modals omit the bar. Context
 creation is lazy: omitting all three tags **and** both partials performs zero navbar construction or admission work.
 Repeated template/context access on the same view/request shares one result; declarations do not cache users.

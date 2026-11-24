@@ -4,6 +4,7 @@ from typing import ClassVar
 from django.views import generic
 
 from crud_views.lib.check import Check
+from crud_views.lib.link_access import _link_access, _link_ctx, _page_action_object
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.view.action_menu import ActionGroup, cv_inline_checks, cv_split_actions
@@ -60,8 +61,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
             child_cls = child_viewset.get_view_class(action.child_key)
             # permission is checked on the child view, like ChildContextButton (#149)
             return {
-                "cv_access": bool(child_cls._cv_child_link_has_access(user, obj)),
-                "cv_action_enabled": child_cls._cv_action_enabled_for_rendering(user, obj, self),
+                **_link_ctx(_link_access(child_cls, user, None, (obj,))),
                 "cv_inaccessible_actions": child_cls.cv_get_inaccessible_actions(),
                 "cv_key": action.child_name,
                 "cv_url": url,
@@ -78,13 +78,23 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
         view_context = self.cv_get_view_context(object=obj)
         label = action.label or cls.cv_get_action_short_label(context=view_context)
 
+        known = cls._cv_page_link_ancestors(self, obj)
+        if known is not None:
+            access = _link_ctx(_link_access(cls, user, None, known))
+        else:
+            access = {
+                "cv_access": bool(cls.cv_has_access(user, obj if cls.cv_object else None)),
+                "cv_action_enabled": cls._cv_action_enabled_for_rendering(
+                    user, _page_action_object(self, cls, obj), self
+                ),
+            }
+
         # always build the full data: disable mode renders label/icon/variant without access (#149)
         data = cls.cv_get_dict(
             context=view_context,
             cv_oid=self.cv_get_oid(action.key, obj=obj),
             cv_url=url,
-            cv_access=bool(cls.cv_has_access(user, obj)),
-            cv_action_enabled=cls._cv_action_enabled_for_rendering(user, obj, self),
+            **access,
         )
         variant = action.variant if action.variant is not None else cls.cv_action_variant
         data.update(cv_label=label, cv_variant=variant, cv_flex=action.flex, cv_label_mode=label_mode)

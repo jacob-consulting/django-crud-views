@@ -316,19 +316,21 @@ def test_create_cv_has_access_child_no_object_without_parent_perm(user_guardian)
 
 @pytest.mark.django_db
 def test_create_cv_has_access_child_with_parent_obj_and_perm(user_guardian, cv_guardian_publisher, publisher_a):
-    """Child create, obj=parent instance: True when user has change perm on that parent."""
+    """The parent helper allows a change grant; own-access denies even with that grant."""
     from tests.test1.app.views import GuardianBookCreateView
 
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
-    assert GuardianBookCreateView.cv_has_access(user_guardian, publisher_a) is True
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, publisher_a) is True
+    assert GuardianBookCreateView.cv_has_access(user_guardian, publisher_a) is False
 
 
 @pytest.mark.django_db
 def test_create_cv_has_access_child_with_parent_obj_without_perm(user_guardian, publisher_a):
-    """Child create, obj=parent instance: False when user has no change perm on that parent."""
+    """The parent helper denies a missing change grant, as does the narrowed own-access hook."""
     from tests.test1.app.views import GuardianBookCreateView
 
     assert GuardianBookCreateView.cv_has_access(user_guardian, publisher_a) is False
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, publisher_a) is False
 
 
 @pytest.mark.django_db
@@ -355,9 +357,9 @@ def test_create_cv_has_access_child_own_child_obj_uses_fk_parent(
     # the correct parent's create grant authorizes — the same answer as passing that parent directly
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
     user = User.objects.get(pk=user_guardian.pk)
-    assert GuardianBookCreateView.cv_has_access(user, book) is True
+    assert GuardianBookCreateView.cv_has_access(user, book) is False
     assert GuardianBookCreateView.cv_create_has_access(user, None, book) is True
-    assert GuardianBookCreateView.cv_has_access(user, publisher_a) is True
+    assert GuardianBookCreateView.cv_create_has_access(user, None, publisher_a) is True
 
 
 @pytest.mark.django_db
@@ -397,17 +399,19 @@ def test_create_cv_has_access_parent_none_policy_resolves_without_permission(
 
     # control: the strict (default) Guardian Publisher denies the same actor without a grant
     assert GuardianBookCreateView.cv_has_access(user_guardian, publisher_a) is False
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, publisher_a) is False
     assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, book_under_publisher_a) is False
 
     monkeypatch.setattr(cv_guardian_publisher, "ancestor_policy", AncestorPolicy(provider="none"))
 
-    assert GuardianBookCreateView.cv_has_access(user_guardian, publisher_a) is True
+    assert GuardianBookCreateView.cv_has_access(user_guardian, publisher_a) is False
     assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, publisher_a) is True
-    assert GuardianBookCreateView.cv_has_access(user_guardian, book_under_publisher_a) is True
+    assert GuardianBookCreateView.cv_has_access(user_guardian, book_under_publisher_a) is False
     assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, book_under_publisher_a) is True
     assert GuardianBookCreateView.cv_has_access(user_guardian, None) is False
     assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, None) is False
     assert GuardianBookCreateView.cv_has_access(user_guardian, author_douglas_adams) is False
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, author_douglas_adams) is False
 
 
 # ── cv_create_has_access ──────────────────────────────────────────────────────
@@ -441,7 +445,7 @@ def test_cv_create_has_access_returns_false_without_parent_perm(user_guardian, p
 # ── GuardianQuerysetMixin.cv_get_context create button ────────────────────────
 
 
-def _make_book_list_view(user_guardian, publisher_a):
+def _make_book_list_view(user_guardian, publisher_a, *, guarded=False):
     """Instantiate GuardianBookListView with request and URL kwargs for publisher_a."""
     from unittest.mock import MagicMock
 
@@ -458,6 +462,10 @@ def _make_book_list_view(user_guardian, publisher_a):
     request.resolver_match = resolver_match
 
     view = GuardianBookListView()
+    if guarded:
+        view.setup(request, guardian_publisher_pk=str(publisher_a.pk))
+        assert view._cv_ancestor_guard() is None
+        return view
     view.request = request
     view.args = []
     view.kwargs = {"guardian_publisher_pk": str(publisher_a.pk)}
@@ -466,17 +474,19 @@ def _make_book_list_view(user_guardian, publisher_a):
 
 @pytest.mark.django_db
 def test_cv_get_context_create_with_parent_perm_shows_button(user_guardian, cv_guardian_publisher, publisher_a):
-    """cv_get_context resolves parent and grants access when user has change perm on parent."""
+    """cv_get_context uses the guarded parent and grants access with change permission."""
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
-    view = _make_book_list_view(user_guardian, publisher_a)
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
     ctx = view.cv_get_context(key="create", obj=None, user=user_guardian)
     assert ctx["cv_access"] is True
 
 
 @pytest.mark.django_db
-def test_cv_get_context_create_without_parent_perm_hides_button(user_guardian, publisher_a):
-    """cv_get_context resolves parent and denies access when user lacks change perm on parent."""
-    view = _make_book_list_view(user_guardian, publisher_a)
+def test_cv_get_context_create_without_parent_perm_hides_button(user_guardian, cv_guardian_publisher, publisher_a):
+    """The list's parent view grant does not grant the create control's change permission."""
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
     ctx = view.cv_get_context(key="create", obj=None, user=user_guardian)
     assert ctx["cv_access"] is False
 
@@ -494,7 +504,7 @@ def test_cv_get_context_non_create_key_not_affected(user_guardian, cv_guardian_p
 
 
 @pytest.mark.django_db
-def test_cv_get_context_respects_cv_create_has_access_override(user_guardian, publisher_a):
+def test_cv_get_context_respects_cv_create_has_access_override(user_guardian, cv_guardian_publisher, publisher_a):
     """An override of cv_create_has_access on the create view class is called by cv_get_context."""
     from tests.test1.app.views import GuardianBookCreateView
 
@@ -506,8 +516,9 @@ def test_cv_get_context_respects_cv_create_has_access_override(user_guardian, pu
 
     GuardianBookCreateView.cv_create_has_access = always_true
     try:
-        view = _make_book_list_view(user_guardian, publisher_a)
-        # user has no perm on publisher_a, but override returns True
+        user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+        view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
+        # user has no change permission on publisher_a, but override returns True
         ctx = view.cv_get_context(key="create", obj=None, user=user_guardian)
         assert ctx["cv_access"] is True
     finally:
@@ -609,7 +620,8 @@ def test_sibling_classes_render_custom_label_like_parent(user_guardian, publishe
 def test_create_button_matches_create_with_parent_perm(user_guardian, cv_guardian_publisher, publisher_a):
     """create_button (key != key_target) matches built-in create when parent perm is granted."""
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
-    view = _make_book_list_view(user_guardian, publisher_a)
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
     create = view.cv_get_context(key="create", obj=None, user=user_guardian)
     button = view.cv_get_context(key="create_button", obj=None, user=user_guardian)
     assert create["cv_access"] is True
@@ -618,9 +630,10 @@ def test_create_button_matches_create_with_parent_perm(user_guardian, cv_guardia
 
 
 @pytest.mark.django_db
-def test_create_button_matches_create_without_parent_perm(user_guardian, publisher_a):
+def test_create_button_matches_create_without_parent_perm(user_guardian, cv_guardian_publisher, publisher_a):
     """create_button is hidden, exactly like built-in create, without parent perm."""
-    view = _make_book_list_view(user_guardian, publisher_a)
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
     create = view.cv_get_context(key="create", obj=None, user=user_guardian)
     button = view.cv_get_context(key="create_button", obj=None, user=user_guardian)
     assert create["cv_access"] is False

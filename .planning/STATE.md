@@ -1,44 +1,53 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.49"
-current_phase_name: Reuse Guardian object grants across navigation checks
-current_plan: 5
-status: verifying
-stopped_at: Completed 06.49-05-PLAN.md
-last_updated: "2026-11-24T13:05:54.282Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.49 complete, ready to plan Phase 7
+last_updated: "2026-11-24T13:27:18Z"
 last_activity: 2026-11-24
-last_activity_desc: Phase 06.49 plan 05 complete; all five plans executed, independent review and verification pending
-state_head: 41d4a52872c225af3f00bbf9d3b4f0503b287a3a
+last_activity_desc: Phase 06.49 complete, transitioned to Phase 7
+state_head: ce8db2a31c70e23ee0198e8cbfbfc4dcb983f036
 progress:
   total_phases: 56
-  completed_phases: 54
+  completed_phases: 55
   total_plans: 299
   completed_plans: 299
+  percent: 98
 milestone_name: milestone
 ---
 
 Total Phases: 56
-Completed Phases: 54
+Completed Phases: 55
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-23)
+See: .planning/PROJECT.md (updated 2026-11-24)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.49 — Reuse Guardian object grants across navigation checks
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.49 (Reuse Guardian object grants across navigation checks) — IN PROGRESS
-Current Plan: 5
-Total Plans in Phase: 5
-Status: All five plans executed; independent phase review and verification pending
-Last activity: 2026-11-24 — Phase 06.49 plan 05 complete; final documentation and regression evidence committed
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: TBD
+Status: Ready to plan
+Last activity: 2026-11-24 — Phase 06.49 complete, transitioned to Phase 7
 
-Next: Independent review and verification of Phase 06.49
+Next: $gsd-discuss-phase 7
+
+### Phase 06.49 completion — 2026-11-24
+
+- Five plans/11 tasks complete. Independent verifier passed 21/21 truths and 9/9 decisions with 43 focused checks; CLI fingerprint/status accepted. Deep 18-file review clean; validation covers every task; authored ASVS L1 security register 15/15 closed. UI source review found no phase defect; browser visuals unassessed.
+- Final product `0f7b17546ccc5353fb3d536cc21ac6e53e26c000`: full core 18,934, Django 4.2/5.2 targeted 1,833 each, ancestor/trace 1,976, frozen matrix 1,179, preservation 313, examples 637 plus 300 subtests; strict docs, Ruff and compilation passed. Final core/examples receipts cover 315 prior-phase Python test files. Only planning records changed afterward.
+- Real list costs 7/14/26 → 7/10/14; Guardian/mixed navbar saves 2 owner/4 deep queries, plain unchanged. All 18 receipt hashes and before data preserved. Corrected three final planning prose labels to total/guard/rest for the separately attributed ContentType observation; no numeric evidence changed.
+- User-object grant lifetime is deliberate; each target still evaluates its own rules and fresh requests observe revocation. Recorder-enabled CI, installed distribution, full version matrix and customer/browser performance remain unexecuted/uncertified.
+- phase.complete advanced to Phase 7 without verification-debt warnings. Reconciled SDK stale dotted progress row/count/focus. No parent UAT gaps, matching pending todos, handoffs or learning artifacts. Original dirty configuration/state.json preserved; externally edited gsd-cli config left untouched. Sequential execution used a new phase branch from current HEAD because origin/HEAD lacked reviewed plans/prerequisites. No ship/push/PR/merge; map refresh follows gsd-ship per project instructions.
 
 ### Phase 06.49 plan 05 — 2026-11-24
 
@@ -1729,7 +1738,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 283
+- Total plans completed: 288
 
 - Total plans completed: 186
 - Average duration: -
@@ -1789,6 +1798,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.45 | 2 | - | - |
 | 06.46 | 2 | - | - |
 | 06.48 | 9 | - | - |
+| 06.49 | 5 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2011,6 +2021,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 ## Accumulated Context
 
 ### Decisions
+
+- [Phase 06.49] Share Guardian grants only through a private user-owned checker; each destination independently evaluates permission/state. Retained users retain loaded grants; normal fresh requests observe revocation. Preserve actual before measurements and distinguish ContentType warm-up from grant savings.
 
 - [Phase 06.39 plan 01] Keep the existing renderer calls and ancestor engine; the destination hook owns one own-first immediate-parent gate. Guardian create retains its existing access contract and standalone queryset-only keeps its explicit exception. Report helper invocations separately from cache-sensitive SQL.
 
@@ -2470,6 +2482,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-24T13:05:47.535Z
-Stopped at: Completed 06.49-05-PLAN.md
+Last session: 2026-11-24T13:27:18Z
+Stopped at: Phase 06.49 complete, ready to plan Phase 7
 Resume file: None

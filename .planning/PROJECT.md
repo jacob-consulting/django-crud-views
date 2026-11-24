@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ User-owned Guardian grant reuse with independent destination permission/state checks, explicit retained-user lifetime, measured list/navbar savings and preserved request/trace rules — Phase 06.49. Five plans/11 tasks complete; 21/21 truths and 9/9 decisions verified, deep review clean, 15 authored threats closed, full core 18,934 passed. Recorder-enabled CI, installed distribution and full version matrix remain uncertified.
+
 - ✓ Private link permission/state check, narrowed own-object hook arguments, fail-closed nested Guardian create own access, and paired Breaking/migration guidance — Phase 06.48. Nine plans/21 tasks complete; verification 24/24 across 99 declarations, frozen 1,178 outcomes preserved, 18,915 full-suite tests passed, deep review clean, 31 authored threats closed. Approved stage-1 limitations remain documented; no browser/downstream/full-matrix certification claimed.
 
 - ✓ Bulk toolbar destination entry gates shared by table/card controls, request-local effective actions, bounded rendering costs and unchanged submission authorization — Phase 06.46; verified 7/7, all six decisions honored, eight threats closed. Full suite17,281 and examples637+300 subtests passed; the N6-01 LOW presentation exception residual was fixed in the follow-up (buttons evaluated before template rendering).
@@ -183,6 +185,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Keep one private Guardian checker on the supplied Python user; share grants, never destination decisions | Remove repeated grant reads while preserving existing gates; retained users explicitly retain loaded grants and fresh requests observe revocation | Validated Phase 06.49; list 7/14/26 → 7/10/14 queries, Guardian navbar saves 2 owner/4 deep queries |
 | Keep stage-1 link authorization private, pass parents separately, and narrow public hook objects before the 1.0 freeze | Preserve request gates and proven core paths while migrating only approved consumers; no new cache or public surface | Validated Phase 06.48; frozen rendering and cost comparisons pass, with approved parent-first own-denial cost and documented L1/L2 limits |
 | Reuse the existing non-object destination gate and cache effective bulk actions per request | Keep access/state policy aligned with Cancel without scanning selected rows or changing POST enforcement | Validated Phase 06.46; N6-01 fixed in follow-up: buttons are evaluated before template rendering |
 | Normalize bulk controls through the existing form path, then add the destination variant for a dedicated leaf | Preserve native submission/escaping and stock bytes while keeping generic action/form dispatch bounded | Validated (Phase 06.47; 16/16) |
@@ -282,4 +285,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-23 after Phase 06.48 completion*
+*Last updated: 2026-11-24 after Phase 06.49 completion*

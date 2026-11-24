@@ -108,9 +108,10 @@ def test_guardian_list_row_action_cost(row_count, cv_guardian_publisher, django_
                 sort_keys=True,
             ),
         )
-        # Measured on unchanged production; full SQL and immutable before values
-        # live in phase 06.49's COST-BASELINE and its isolated/combined receipts.
-        total, grants, filtered = {0: (7, 0, 2), 1: (14, 3, 3), 3: (26, 9, 3)}[row_count]
+        # Measured after user-owned checker reuse: one user/group load per row,
+        # shared by its three actions. Immutable before values remain in phase
+        # 06.49's COST-BASELINE beside the current isolated/combined SQL receipts.
+        total, grants, filtered = {0: (7, 0, 2), 1: (10, 1, 3), 3: (14, 3, 3)}[row_count]
         assert len(capture) == total, sql
         assert categories.get("checker_user_grants", 0) == grants, sql
         assert categories.get("checker_group_grants", 0) == grants, sql

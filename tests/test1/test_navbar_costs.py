@@ -41,8 +41,8 @@ def cache_conditions(viewsets, actor, *, vocabulary, actor_cache):
             # whereas mutating the proxy's __dict__ leaves its real caches warm.
             if hasattr(actor, name):
                 delattr(actor, name)
-        # These class-level admissions create fresh Guardian checkers; no persistent
-        # rendering-view checker is involved. Warm actor means Django model perms only.
+        # Warm actor means Django model permissions only. Keep Guardian grants
+        # already loaded on this request's user when measuring incremental rendering.
         if actor_cache == "warm":
             actor.get_all_permissions()
         check_module._VOCAB_CACHE.clear()
@@ -160,9 +160,6 @@ def test_navbar_isolated_costs(
             assert categories.get("parent_rows", 0) == categories.get("child_or_relation_rows", 0) == 0
             assert not any('from "app_booknote"' in q["sql"].lower() for q in capture.captured_queries)
             assert set(categories) <= {"permissions", "content_type"}
-            expected = (0 if composition == "plain" else 4) + (4 if vocabulary == "cold" else 0)
-            expected += 2 if actor_cache == "cold" and composition != "guardian" else 0
-            assert len(capture) == expected
             record_property(
                 "measurement",
                 json.dumps(
@@ -176,10 +173,20 @@ def test_navbar_isolated_costs(
                         "categories": categories,
                         "builds": build.call_count,
                         "hooks": [spy.call_count for spy in spies],
+                        "sql": [query["sql"] for query in capture.captured_queries],
                     },
                     sort_keys=True,
                 ),
             )
+            # The deep request already loaded the owner's Guardian grants. The
+            # owner host did not: its two items share one user/group grant load.
+            expected = 2 if composition != "plain" and page == "owner" else 0
+            expected += 4 if vocabulary == "cold" else 0
+            expected += 2 if actor_cache == "cold" and composition != "guardian" else 0
+            assert len(capture) == expected, capture.captured_queries
+            content_types = 2 if vocabulary == "cold" else 0
+            assert categories.get("content_type", 0) == content_types
+            assert categories.get("permissions", 0) == expected - content_types
 
 
 @pytest.mark.django_db

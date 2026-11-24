@@ -75,6 +75,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.46: Bulk toolbar: show only actions the viewer can enter (#399) (INSERTED)** - approved D-01–D-06 handover; destination entry gates govern toolbar visibility before the freeze. (completed 2026-11-22)
 - [x] **Phase 06.47: Semantic variants for bulk toolbar buttons (#400) (INSERTED)** (completed 2026-11-21)
 - [x] **Phase 06.48: Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)** (completed 2026-11-23)
+- [x] **Phase 06.49: Reuse Guardian object grants across navigation checks (#385) (INSERTED)** (completed 2026-11-24)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2420,6 +2421,34 @@ Plans:
 **Cross-cutting constraints:** <!-- gsd:generated -->
 - Every cell of the characterization matrix, every gate event of tests/test1/test_ancestor_costs.py and every query total of tests/test1/test_navbar_costs.py is unchanged; the golden files are byte-identical.
 
+### Phase 06.49: Reuse Guardian object grants across navigation checks (#385) (INSERTED)
+
+**Goal:** Reuse loaded Guardian object grants across checks for the same user and object, while each destination still evaluates its own permission and action-state rules.
+**Source:** [Issue #385](https://github.com/jacob-consulting/django-crud-views/issues/385), stage 2 of the approved concept `superpowers/specs/2026-11-23-link-access-check-design.md` at commit `4b65990f`: settled decisions in section 12.1, stage scope in 12.3, and post-stage-1 amendments in 12.7 (F-01–F-08, D-37 and D-38). Issue snapshot: `06.49-ISSUE-385.md`. The concept applies where it differs from the issue; settled decisions are not reopened.
+**Requirements**: None assigned; use the approved issue handover and concept acceptance constraints.
+**Depends on:** Phase 06.48
+**Ordering:** Assigned 06.49 after shipped stage 1 (#407, PR #409), before Phase 7. Stage 2 is conceptually independent of stage 1; this dependency records execution order. The maintainer's 2026-11-24 decision supersedes the earlier post-1.0 deferral.
+**Scope:** One small helper in `crud_views_guardian` keeps an `ObjectPermissionChecker` on the user object and replaces the four construction sites and view-local ancestor checker. Share grants only, never access decisions. D-37 permits repeated checks in one request to reuse its loaded grants; grant changes take effect on the next request, including the documented workflow-refusal reload exception. Document the lifetime of a user object retained beyond a request.
+**Acceptance:** Preserve actor-specific access decisions except D-37, destination-specific permission/state checks, request isolation, and access-trace output. Carry F-01–F-08 into planning, including the anonymous-user test, checker-lifetime tests, affected query pins and documentation. D-38 requires a pinned before/after cost for a Guardian list page with row actions. No Breaking entry is expected; report any discovered need before proceeding.
+**Out of scope:** Django or cross-request caches, cached decisions, `prefetch_perms`, link-check redesign, and stages 3–5/top-level navigation.
+**Plans:** 5/5 plans complete
+
+Plans:
+**Wave 1**
+- [x] 06.49-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [x] 06.49-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [x] 06.49-03-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [x] 06.49-04-PLAN.md
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [x] 06.49-05-PLAN.md
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -2562,4 +2591,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.46. Bulk toolbar destination entry gates (#399) | 2/2 | Complete | 2026-11-22 |
 | 06.47. Semantic variants for bulk toolbar buttons (#400) | 3/3 | Complete | 2026-11-21 |
 | 06.48. Private link access and narrowed hook objects (#407) | 9/9 | Complete | 2026-11-23 |
+| 06.49. Reuse Guardian object grants across navigation checks (#385) | 5/5 | Complete | 2026-11-24 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

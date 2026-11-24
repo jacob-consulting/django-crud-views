@@ -1,16 +1,17 @@
 """Integration regressions for workflow execution review findings."""
 
 from functools import wraps
+from types import ModuleType
 
 import pytest
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import Http404
-from django.test import RequestFactory
-from django.urls import resolve
+from django.test import Client, RequestFactory, override_settings
+from django.urls import path, resolve
 from django.utils.safestring import mark_safe
 from django_fsm import transition
-from guardian.shortcuts import assign_perm, remove_perm
+from guardian.shortcuts import assign_perm, get_perms, remove_perm
 from lxml import html
 
 from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin
@@ -248,7 +249,7 @@ def test_guardian_workflow_late_refusal_retains_scoped_authorization(
     request.session = {}
     request._messages = FallbackStorage(request)
     request.resolver_match = resolve(url)
-    if outcome == "allow":
+    if outcome in {"allow", "permission"}:
         response = GuardianWorkflow.as_view()(request, **request.resolver_match.kwargs)
         assert response.status_code == (422 if modal else 200)
         form = response.context_data["form"]
@@ -270,3 +271,20 @@ def test_guardian_workflow_late_refusal_retains_scoped_authorization(
             assert all(obj._state.db == "default" for obj in checked)
     assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.NEW
     assert not WorkflowInfo.objects.exists()
+
+    if outcome == "permission":
+        # Revocation preceded the refused transaction and survives its rollback.
+        assert "change_campaign" not in get_perms(user_campaign_change, campaign_new)
+        # Keep the scoped-reload observations above separate from a fresh middleware user.
+        urlconf = ModuleType("guardian_workflow_refusal_urls")
+        urlconf.urlpatterns = [path("campaign/<int:pk>/workflow/", GuardianWorkflow.as_view())]
+        client = Client()
+        client.force_login(user_campaign_change)
+        with override_settings(ROOT_URLCONF=urlconf):
+            denied = client.get(url, headers={"X-CV-Modal": "true"} if modal else {})
+        assert denied.status_code == 403
+        assert denied.wsgi_request.resolver_match.func.view_class is GuardianWorkflow
+        assert denied.wsgi_request.user.pk == user_campaign_change.pk
+        assert denied.wsgi_request.user._wrapped is not user_campaign_change
+        assert Campaign.objects.get(pk=campaign_new.pk).state == CampaignState.NEW
+        assert not WorkflowInfo.objects.exists()

@@ -5,28 +5,28 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.48 complete, ready to plan Phase 7
-last_updated: "2026-11-24T07:24:28.674Z"
+stopped_at: Phase 06.49 complete, ready to plan Phase 7
+last_updated: "2026-11-24T13:43:44.376Z"
 last_activity: 2026-11-24
-last_activity_desc: "Phase 06.48 shipped as PR #409 targeting feature/link-access-check-design"
-state_head: 971ac67e12b8b797fbbdfad51c4df5a2a228fb4a
+last_activity_desc: "Phase 06.49 shipped as PR #410"
+state_head: 00b210f118de4234c3b542d00cd56d8dc1eb54f3
 progress:
-  total_phases: 55
-  completed_phases: 54
-  total_plans: 294
-  completed_plans: 294
+  total_phases: 56
+  completed_phases: 55
+  total_plans: 299
+  completed_plans: 299
   percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 55
-Completed Phases: 54
+Total Phases: 56
+Completed Phases: 55
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-23)
+See: .planning/PROJECT.md (updated 2026-11-24)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
 **Current focus:** Phase 7 — Theme-surface stability policy
@@ -35,11 +35,61 @@ See: .planning/PROJECT.md (updated 2026-11-23)
 
 Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: 0 (not planned)
+Total Plans in Phase: TBD
 Status: Ready to plan
-Last activity: 2026-11-24 -- Phase 06.48 shipped as PR #409 targeting feature/link-access-check-design
+Last activity: 2026-11-24 -- Phase 06.49 shipped as PR #410
 
 Next: $gsd-discuss-phase 7
+
+### Phase 06.49 completion — 2026-11-24
+
+- Five plans/11 tasks complete. Independent verifier passed 21/21 truths and 9/9 decisions with 43 focused checks; CLI fingerprint/status accepted. Deep 18-file review clean; validation covers every task; authored ASVS L1 security register 15/15 closed. UI source review found no phase defect; browser visuals unassessed.
+- Final product `0f7b17546ccc5353fb3d536cc21ac6e53e26c000`: full core 18,934, Django 4.2/5.2 targeted 1,833 each, ancestor/trace 1,976, frozen matrix 1,179, preservation 313, examples 637 plus 300 subtests; strict docs, Ruff and compilation passed. Final core/examples receipts cover 315 prior-phase Python test files. Only planning records changed afterward.
+- Real list costs 7/14/26 → 7/10/14; Guardian/mixed navbar saves 2 owner/4 deep queries, plain unchanged. All 18 receipt hashes and before data preserved. Corrected three final planning prose labels to total/guard/rest for the separately attributed ContentType observation; no numeric evidence changed.
+- User-object grant lifetime is deliberate; each target still evaluates its own rules and fresh requests observe revocation. Recorder-enabled CI, installed distribution, full version matrix and customer/browser performance remain unexecuted/uncertified.
+- phase.complete advanced to Phase 7 without verification-debt warnings. Reconciled SDK stale dotted progress row/count/focus. No parent UAT gaps, matching pending todos, handoffs or learning artifacts. Original dirty configuration/state.json preserved; externally edited gsd-cli config left untouched. Sequential execution used a new phase branch from current HEAD because origin/HEAD lacked reviewed plans/prerequisites. No ship/push/PR/merge; map refresh follows gsd-ship per project instructions.
+
+### Phase 06.49 plan 05 — 2026-11-24
+
+- Canonical and duplicated cost guidance now uses measured runtime/cache conditions, preserves historical figures, and explains Python-user grant lifetime and D-37's scoped error render followed by fresh-request denial. The existing migration paragraph and non-Breaking #385 release note are aligned; no source/test changes in this plan.
+- Final product source 0f7b17546ccc5353fb3d536cc21ac6e53e26c000 passed full core 18,934, ancestor/trace 1,976, Django 4.2/5.2 preservation plus all affected costs 1,833 each, frozen matrix 1,179, Guardian/delete/bulk 313, and examples 637 plus 300 subtests. Documentation selections 97/48, strict MkDocs, repository Ruff and source compileall passed. No product changes followed the final gates.
+- VALIDATION maps all eleven tasks and fifteen authored threats to actual evidence. Original before/after baseline bytes and all eighteen artifact digests remain intact; all published navbar and child numeric cells match receipts. Existing workflow/example warnings are recorded. Recorder-enabled CI (CV_ACCESS_RECORD_REQUESTS=1), installed-distribution and full Python/version matrix certification remain explicitly unexecuted and uncertified.
+- Task commits 0f5e3bb0, 0f7b1754 and e32cafef and immediate SUMMARY commit 41d4a528 precede tracking. ROADMAP is 5/5 In Progress; current plan 5, completed plans 299. SDK progress/metrics/decisions/session handlers ran; the known unscoped progress-refresh decline and stale dotted row were reconciled. Current dirty state.json bytes were restored and verified; unrelated configuration/index edits remain untouched. No phase completion handler ran; independent orchestrator review/verification is pending.
+
+### Phase 06.49 plan 04 — 2026-11-24
+
+- List totals are 7/10/14 versus 7/14/26 before for 0/1/3 rows: one user/group grant pair per row, with the same allowed Details, denied Edit/Delete and excluded row. All 80 Guardian/mixed navbar cells save exactly 2 owner-page or 4 deep-page queries; 40 plain controls are unchanged. Exact hooks, object identities and no-row-work assertions remain.
+- Five child cases pin actual first/subsequent costs (discovery 6/0, create 2/0, mixed 2/0, ordinary 0/0). H-01 prepares the existing view grant before the first load and is labeled as a setup adjustment, not an identical-setup performance comparison. All 16 current child-link documentation cells and both layers are retained.
+- Required results: 3 list, 120 navbar, 5 child, 9 ancestor and 385 combined tests passed; the 385-test SQL supplement and five fresh child processes passed. Ruff passes all three changed Python files. Original before bytes/digests remain intact. The ancestor module is byte-identical and all 68 standalone observations match; one combined cold slice omits a separately documented Guardian ContentType lookup without changing permission/gate work.
+- Task commits 296d4e5a and 86d871e0 and SUMMARY 5fe3b5cc precede tracking. ROADMAP is 4/5 In Progress; current plan 5, completed plans 298. SDK progress/metrics/decisions/session ran; the known unscoped progress-refresh decline remains and the stale dotted table row was corrected. Current dirty state.json bytes were restored and verified; unrelated configuration/index changes are preserved. No phase completion handler ran. Plan 05 owns documentation and broad regression closure; no full-suite or recorder-enabled certification is claimed here.
+
+### Phase 06.49 plan 03 — 2026-11-24
+
+- Direct/group grant additions and revocations preserve loaded answers on retained users; normal Client requests get distinct actual users/checkers and enforce next-request revocation. Both workflow permission-refusal variants render the error once (200/modal 422) and then deny a fresh authenticated request to the same class with 403. Scope/action/initial-denial, scoped reload, default alias and no-write assertions remain unchanged.
+- Two narrow F-05 refetches preserve all visibility/state outcomes, with the Cancel request rebound to the fresh actor. Four F-06 cases positively assert actual user/checker separation while retaining distinct views and resolved ancestors; classes/ViewSets forbid both checker names. Only five test files changed; production, trace/matrix data, query pins and COST-BASELINE are untouched.
+- Final required checks: 8 lifetime, 10 workflow and 13 fixture/isolation tests passed; all five files pass Ruff. Existing F-02 RED was exactly two failures/eight passes and received RED_EVIDENCE_OK; this test-only plan adds no artificial production RED/GREEN cycle. Three task commits through bba9db2b and SUMMARY aee1598b precede tracking.
+- ROADMAP is 3/5 In Progress; current plan 4, completed plans 297. SDK progress/metrics/decision/session handlers ran; the known unscoped progress-refresh decline and stale dotted row were reconciled. Current dirty state.json bytes were restored and checked, with unrelated configuration preserved. No phase completion handler ran. Plan 04 owns measured cost changes/H-01 setup; plan 05 owns broad regression closure. Full-suite and recorder-enabled certification remain unclaimed here.
+
+### Phase 06.49 plan 02 — 2026-11-24
+
+- One private user-owned checker now serves both own-permission paths and the retained thin ancestor delegate. Caller policy and trace recording remain unchanged; the ancestor lifetime paragraph explains fresh normal-request users and retained-user grants.
+- RED evidence validated for shared construction (four versus one real checker) and F-01's exact stored-grant exemption. Final focused checks: 3 construction/isolation, 196 trace/inactive, 6 checker/F-01 and 1,179 frozen matrix tests passed; all five changed Python files pass Ruff. Real direct/group, colliding-model/PK, target-state and configured AnonymousUser cases are covered.
+- Five task/refactor commits through 918828a5 and SUMMARY f9547f14 precede tracking. ROADMAP is 2/5 In Progress; current plan 3, completed plans 296. SDK handlers recorded progress, metrics, decisions and session; its stale dotted progress row was corrected. Original dirty state.json bytes were restored and checked; unrelated staged/unstaged configuration remains untouched. No phase completion handler ran.
+- Later lifetime/workflow adaptations and measured cost pins retain their plan 03/04 ownership; broad regression closure remains in plan 05. No full-suite or recorder-enabled certification is claimed here.
+
+### Phase 06.49 plan 01 — 2026-11-24
+
+- Real Guardian Publisher list responses are pinned at 7/14/26 total queries for 0/1/3 rows, with direct view grants, excluded ungranted rows, Details allowed and Edit/Delete denied inside each action cell. Explicit reset/warm vocabulary keeps fresh request users unprimed.
+- Isolated list 3, navbar 120, ancestor 9 and affected child 5 passed; combined four-module run 385 passed. All list pins, 120 navbar properties and five affected child cases agree across their receipts. Nine ancestor slices and raw SQL supplements are preserved with SHA-256 digests in COST-BASELINE. Production is unchanged from 37d98d0d.
+- Two task commits and SUMMARY 55fb5d2c precede tracking. ROADMAP is 1/5 In Progress; current plan 2, completed plans 295. Generic progress refresh retains its known unscoped-requirements decline; plan-count progress is recorded. Original state.json bytes and unrelated staged configuration changes are preserved. No phase completion handler ran.
+
+### Phase 06.49 plan convergence — 2026-11-24
+
+- Five sequential plans / eleven tasks are committed. All three configured external reviewers covered all five plans in each of five review cycles; final report has zero HIGH, zero actionable non-HIGH, and zero open revision conflicts.
+- Decision coverage is 9/9; all five plan structures and frontmatter pass; all 26 automated commands parse as shell. Execution, measured before/after results, and product verification remain pending.
+- Recorder-enabled CI (`CV_ACCESS_RECORD_REQUESTS=1`) is explicitly unexecuted and uncertified; plan 05 and VALIDATION require this limit in final reporting. No product source changed during planning or convergence.
+- Review history is in `06.49-REVIEWS.md`; resume with `$gsd-execute-phase 06.49`. Original dirty configuration/state.json bytes are preserved.
+
 
 ### Phase 06.48 completion — 2026-11-23
 
@@ -1688,7 +1738,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 283
+- Total plans completed: 288
 
 - Total plans completed: 186
 - Average duration: -
@@ -1748,6 +1798,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.45 | 2 | - | - |
 | 06.46 | 2 | - | - |
 | 06.48 | 9 | - | - |
+| 06.49 | 5 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -1954,6 +2005,11 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.48 P07 | 15min | 2 tasks | 8 files |
 | Phase 06.48 P08 | 10min | 2 tasks | 8 files |
 | Phase 06.48 P09 | 12min | 2 tasks | 5 files |
+| Phase 06.49 P01 | 9 min | 2 tasks | 2 files |
+| Phase 06.49 P02 | 7 min | 2 tasks | 5 files |
+| Phase 06.49 P03 | 5 min | 2 tasks | 5 files |
+| Phase 06.49 P04 | 9 min | 2 tasks | 4 files |
+| Phase 06.49 P05 | 20 min | 3 tasks | 9 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -1965,6 +2021,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 ## Accumulated Context
 
 ### Decisions
+
+- [Phase 06.49] Share Guardian grants only through a private user-owned checker; each destination independently evaluates permission/state. Retained users retain loaded grants; normal fresh requests observe revocation. Preserve actual before measurements and distinguish ContentType warm-up from grant savings.
 
 - [Phase 06.39 plan 01] Keep the existing renderer calls and ancestor engine; the destination hook owns one own-first immediate-parent gate. Guardian create retains its existing access contract and standalone queryset-only keeps its explicit exception. Report helper invocations separately from cache-sensitive SQL.
 
@@ -2310,6 +2368,17 @@ Recent decisions affecting current work:
 - [Phase 06.46]: Keep the existing template guard internal and defer promote/replace/retain decision to stability work.
 - [Phase 06.46]: Follow-up evaluates bulk buttons in Python before template rendering and guards the toolbar snippet itself; supersedes the N6-01 deferral.
 - [Phase 06.47]: Followed approved local adapter and dedicated bulk leaf; generic action/form dispatch remains bounded.
+- [Phase 06.49]: Preserve unchanged production and exact isolated/combined list pins before checker replacement.
+- [Phase 06.49]: Attribute outer list-filter SELECTs separately from Guardian user/group checker loads.
+- [Phase 06.49]: Keep _request_checker(view, user) as a thin private compatibility delegate without view-owned state.
+- [Phase 06.49]: Exempt exactly _cv_guardian_checker from both user-attribute checks while retaining all decision-freshness assertions.
+- [Phase 06.49]: Follow D-37 for retained users and refused workflow rendering; fresh authenticated requests enforce revocation.
+- [Phase 06.49]: Keep original user/cache lifetimes and attribute savings only to measured grant SELECTs.
+- [Phase 06.49]: Prepare the ordinary control view grant before its first load; label this setup change separately.
+- [Phase 06.49]: Preserve standalone ancestor counts and label the combined Guardian ContentType-cache observation without changing pins.
+- [Phase 06.49]: Publish first-load child costs under the measured Django 6 runtime and distinguish Django model-permission warmth from retained Guardian grants.
+- [Phase 06.49]: Preserve historical before/after receipts and label the combined ContentType observation and H-01 setup adaptation separately.
+- [Phase 06.49]: Certify only executed checkout gates; recorder-enabled CI, installed-distribution and full-version matrix certification remain excluded.
 
 ### Pending Todos
 
@@ -2403,6 +2472,7 @@ None yet.
 - Phase 06.46 inserted after Phase 06.44: Issue #399: bulk toolbar destination entry gates; approved D-01–D-06 handover amends #387. Requested 06.46 retained; 06.45 remains unallocated in this checkout. (URGENT)
 - Phase 06.47 inserted after Phase 06.45: Semantic variants for bulk toolbar buttons (#400); explicitly assigned 06.47 by the maintainer, approved D-01–D-05, depends on 06.41, before Phase 7 freeze (URGENT)
 - Phase 06.48 inserted after Phase 6: Issue #407: link access check as a private function; narrow obj in cv_has_access and cv_action_enabled. Stage 1 of the approved link access concept (settled D-01–D-24, spec at dbf1e6c4); explicitly assigned 06.48 by the maintainer, before the 1.0 hook freeze (URGENT)
+- Phase 06.49 inserted after Phase 06.48: Reuse Guardian object grants across navigation checks (#385); approved stage 2, concept sections 12.1, 12.3 and 12.7 at 4b65990f, including D-37 and D-38 (URGENT)
 
 ## Deferred Items
 
@@ -2412,6 +2482,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-23T21:41:16.482890+00:00
-Stopped at: Phase 06.48 complete, ready to plan Phase 7
+Last session: 2026-11-24T13:27:18Z
+Stopped at: Phase 06.49 complete, ready to plan Phase 7
 Resume file: None

@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
 last_mapped_at: 2026-11-24
 ---
 # External Integrations
@@ -110,6 +110,12 @@ No third-party service client is bundled for server request handling. The reusab
 **Outgoing:**
 - Demo deployment workflow calls Render's API (`.github/workflows/demo.yml`)
 - No third-party outbound service callbacks detected in the package; UI fetch calls target host application endpoints (`src/crud_views/static/crud_views/js/modal.js`, `src/crud_views/static/crud_views/js/list.filter.js`)
+
+## Guardian Grant Ownership
+
+`src/crud_views_guardian/lib/permissions.py` owns the private `_get_guardian_checker(user)` accessor. `GuardianObjectPermissionMixin` request and callable object checks and the ancestor provider reuse that checker through the actual supplied user. Guardian's loaded object grants are reused; each destination still tests its permission and action state.
+
+Fresh normal requests receive fresh users/checkers. Retaining a Python user also retains loaded positive/negative grants across grant mutations; see `docs/reference/guardian.md`. Queryset filtering and independent auth backend paths do not populate this shared checker. Configured anonymous users, model fallback, inactive actors and default-database checks retain their existing provider rules (`src/crud_views_guardian/lib/mixins.py`, `ancestors.py`).
 
 ---
 

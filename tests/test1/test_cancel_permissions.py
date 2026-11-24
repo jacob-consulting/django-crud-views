@@ -615,7 +615,9 @@ def test_guardian_parent_global_policy(pn, publisher_a, client, monkeypatch, glo
 
 
 @pytest.mark.django_db
-def test_guardian_child_object_state_once_after_parent_and_object_policy(pn, publisher_a, publisher_b, monkeypatch):
+def test_guardian_child_object_state_once_after_parent_and_object_policy(
+    pn, publisher_a, publisher_b, monkeypatch, django_user_model
+):
     from guardian.shortcuts import assign_perm
 
     from tests.test1.app.models import Book
@@ -633,6 +635,8 @@ def test_guardian_child_object_state_once_after_parent_and_object_policy(pn, pub
     assert view.cv_get_cancel_url() is None  # parent granted, child denied
     assert events == []
     assign_perm("view_book", user, book)
+    user = django_user_model.objects.get(pk=user.pk)
+    view.request.user = user  # Model a fresh request after the grant, including the bound Cancel view.
     assert view.cv_get_cancel_url() is None  # child granted, state denied
     assert events == [book]
     events.clear()

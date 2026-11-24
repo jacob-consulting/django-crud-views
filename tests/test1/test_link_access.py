@@ -466,14 +466,18 @@ def test_no_decision_is_stored(helpers, data, provider_calls, monkeypatch):
     user_before = dict(vars(actor))
     assert _link_access(target, actor, None, known) == _LINK_ALLOWED
     assert not {name for name in vars(target).keys() - target_before.keys() if "cv" in name}
-    assert not {name for name in vars(actor).keys() - user_before.keys() if "cv" in name}
+    assert not {
+        name for name in vars(actor).keys() - user_before.keys() if "cv" in name and name != "_cv_guardian_checker"
+    }
     remove_perm(helpers.pub.vs.permissions["view"], actor, data.penguin)
     actor = User.objects.get(pk=actor.pk)
     user_before = dict(vars(actor))
     assert _link_access(target, actor, None, known) == _LINK_PERMISSION
     assert provider_calls == [(helpers.pub.vs.name, "app.view_publisher", data.penguin)] * 2
     assert not {name for name in vars(target).keys() - target_before.keys() if "cv" in name}
-    assert not {name for name in vars(actor).keys() - user_before.keys() if "cv" in name}
+    assert not {
+        name for name in vars(actor).keys() - user_before.keys() if "cv" in name and name != "_cv_guardian_checker"
+    }
 
     # Hold these exact objects across both calls: re-fetching a user alone cannot rule out a stored answer.
     for changed, denied in (("gate", _LINK_PERMISSION), ("own", _LINK_PERMISSION), ("state", _LINK_STATE)):

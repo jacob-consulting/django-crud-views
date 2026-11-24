@@ -578,10 +578,15 @@ Books collection is accessible. Custom own denials and action-state policy still
 after permission passes. Nested Guardian create links use `cv_create_has_access` for their parent permission.
 
 Each eligible plain link adds one parent-policy call, not necessarily one SQL query, and reuses the supplied
-parent without another parent-row fetch. For both renderers, measured fresh/cold through warm/warm totals were
-6/4/2/0 SQL queries with a plain parent and 8/6/4/2 with a strict Guardian parent. See the
-[measurement conditions and permission cost](context_buttons.md#permission-cost-and-configuration-failures):
-actor/vocabulary caches and the provider determine SQL, and repeated Guardian links can still query permissions.
+parent without another parent-row fetch. The current Python 3.12.3 / Django 6.0.10 / django-guardian 3.5.2
+measurement gives 6/4/2/0 SQL queries with a plain parent and 8/6/4/2 with a strict Guardian parent, for both
+renderers in fresh-cold/warm-cold/fresh-warm/warm-warm Django model-cache/vocabulary states. These first-load
+figures match the earlier historical Django 5.2/Guardian 3.5 totals. Each measured layer fetches a fresh user;
+a warm Django model cache does not mean loaded Guardian grants. Repeated links on the same Python user reuse
+the same parent's loaded grants, while distinct parents have separate loads and destination permission/state
+decisions remain independent. See the canonical
+[measurement conditions and permission cost](context_buttons.md#permission-cost-and-configuration-failures) and
+[Guardian grant lifetime](guardian.md#object-grant-lifetime), including retained users and normal fresh requests.
 
 Parent-policy configuration errors propagate as `ImproperlyConfigured` during host rendering: a required key
 missing from the parent's permission map, a nested operation without requirements, or reached authorization

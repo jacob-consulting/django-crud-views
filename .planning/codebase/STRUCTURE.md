@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
 last_mapped_at: 2026-11-24
 ---
 # Codebase Structure
@@ -22,7 +22,7 @@ django-crud-views/
 │   │   ├── static/crud_views/{css,js}/ # core CSS/JS, including the UI adapter boundary
 │   │   ├── locale/de/                  # translations
 │   │   └── migrations/                 # empty package (no models)
-│   ├── crud_views_guardian/            # django-guardian: lib/{viewset,mixins,views,ancestors}.py, checks.py
+│   ├── crud_views_guardian/            # django-guardian: lib/{viewset,mixins,views,ancestors,permissions}.py, checks.py
 │   ├── crud_views_object_detail/       # lib/{views,mixins,config,resolvers,presentation,conf}.py, templatetags/, layout-pack templates, js
 │   ├── crud_views_polymorphic/         # lib/{create,create_select,detail,update,delete,utils}.py
 │   └── crud_views_workflow/            # lib/{views,mixins,execution,forms,widgets,enums}.py, models.py, migrations/, checks.py
@@ -304,6 +304,16 @@ lib/
 **`superpowers/`:** committed design notes and archives (`notes/`, `plans/`, `specs/`, `prompts/`, `archive/`, `instructions/`). `superpowers/prompts/acme-example-sync/` holds `PROMPT.md`, `baseline.json`, `drift.py` and `LOG.md` for syncing the Acme demo across theme repos; `superpowers/specs/2026-11-22-shared-acme-demo-design.md` (with two badge screenshots) evaluates sharing that demo.
 **`site/`, `dist/`, `node_modules/`, `.venv/`, `.nox/`:** generated and git-ignored (confirmed for `site`, `dist`, `node_modules`).
 **`src/*/locale/`:** `.po/.mo` translation catalogues (`de`); `src/crud_views_workflow/locale/` exists *(contents not read)*.
+
+## Guardian Grant Reuse Locations
+
+- `src/crud_views_guardian/lib/permissions.py`: private `_get_guardian_checker(user)` accessor and user-owned `_cv_guardian_checker` storage.
+- `src/crud_views_guardian/lib/mixins.py`: request and callable own-object permission consumers.
+- `src/crud_views_guardian/lib/ancestors.py`: ancestor acquisition through the same helper, retaining `_request_checker(view, user)`.
+- `tests/test1/test_guardian_checker.py`: real direct/group grants, destination state, anonymous caller and user/object/request isolation.
+- `tests/test1/test_guardian_checker_costs.py`: rendered list row actions and exact SQL category counts at zero/one/three rows.
+- `docs/reference/guardian.md`, `navbar.md`, `context_buttons.md`, `card-list-view.md`, `nested.md`: grant lifetime and measured cost guidance.
+- `.planning/phases/06.49-reuse-guardian-object-grants-across-navigation-checks-385/`: five plans/summaries, immutable baseline receipts and validation/review/security/verification reports.
 
 ---
 

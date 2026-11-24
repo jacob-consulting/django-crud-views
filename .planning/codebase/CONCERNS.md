@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
 last_mapped_at: 2026-11-24
 ---
 <!-- refreshed: 2026-11-24 -->
@@ -83,11 +83,10 @@ No distinct security defect is confirmed by current evidence. Keep navbar render
 - Cause: `_cv_inspect_deletion()` runs before `_cv_select_delete_preview()` applies the display limit.
 - Improvement path: document the display-only behavior; profile real cascades before designing a separately bounded inspection contract.
 
-**Guardian object-action checks can repeat:**
-- Problem: list/card objects and their actions may each perform permission checks. Ancestor checks have request-scoped caching, but ordinary object-action checks can construct separate checkers.
-- Files: `src/crud_views_guardian/lib/mixins.py`, `src/crud_views_guardian/lib/views.py`, `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/views/card.py`
-- Cause: permissions are consulted while visible actions are assembled for objects.
-- Improvement path: profile large pages before considering checker reuse; preserve the query budgets in `tests/test1/test_ancestor_costs.py`.
+**Guardian grants are shared; destination checks still repeat:**
+- Current behavior: own-object and ancestor checks share a user-owned checker through `src/crud_views_guardian/lib/permissions.py`; destination permission and state hooks continue to execute independently.
+- Measured benefit: real list responses at zero/one/three rows changed from 7/14/26 queries to 7/10/14 (`tests/test1/test_guardian_checker_costs.py`). Queryset filtering remains independent and another object still needs its own grant load.
+- Remaining boundary: measure large customer pages before considering broader prefetching; maintain the exact fixture/category budgets and retained-user lifetime contract.
 
 **Navbar SQL is bounded only by the published fixture contract:**
 - Problem: navbar admission may execute permission and ContentType reads; Guardian object-permission work remains visible. It is not a universal whole-page query budget or a guarantee for custom authorization hooks/backends.
@@ -167,7 +166,7 @@ No distinct security defect is confirmed by current evidence. Keep navbar render
 - Files: `src/crud_views_workflow/lib/execution.py`, `src/crud_views_workflow/lib/views.py`, `src/crud_views_workflow/lib/mixins.py`, `docs/reference/workflow_view.md`
 - Why fragile: `run_transition()` requires a persisted actor/object on the selected write alias; direct django-fsm calls bypass helper validation/history, and `workflow_check_transition()` is business validation rather than authorization. Page and transition permissions are separate.
 - Safe modification: route transitions through the documented helper and preserve independent page and transition permission checks.
-- Test coverage: `tests/test1/test_workflow_permissions.py`, `tests/test1/test_workflow_execution.py`; concurrency and Guardian/nested combinations are not certified.
+- Test coverage: `tests/test1/test_workflow_permissions.py`, `tests/test1/test_workflow_execution.py`; concurrency remains uncertified; Phase 06.49 adds ten scoped Guardian refusal/reload cases in `tests/test1/test_workflow_review.py`, not general concurrency certification.
 
 **Lazy snippet parent resolution:**
 - Files: `src/crud_views/lib/view/base.py`, `docs/reference/templates.md`, `tests/test1/test_snippet_context.py`, `tests/test1/test_snippet_docs.py`
@@ -280,6 +279,14 @@ Phase 06.46 shipped through PR #404: the earlier risk of Django templates silent
 Phase 06.47 shipped through PR #402 with 16/16 verified must-haves and zero open review findings. WR-01's incorrect promise that an unavailable icon becomes empty is corrected in the copied-leaf documentation and regression checks; it is not an open concern. The security register closes all nine entries. Recorded original acceptance passed 17,264 Python tests on Python 3.12.3/Django 6.0.10; the merged phase 06.45 integration has 470 affected Python passes, 541 JavaScript passes, three Django/JS integration passes, and independent rendered-config/jsdom checks for both config aliases. The broad Python result remains attributed to its original revision, rather than relabeled as a combined full-suite run. Native bulk submission and form tooltip dispatch remain intact; no fresh browser, downstream-theme, full dependency-matrix, or installed-distribution runtime acceptance is claimed. The source/template scope explicitly requires no additional human verification (`src/crud_views/lib/bulk/__init__.py`, `src/crud_views/templates/crud_views/tags/button/bulk.html`, `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-VERIFICATION.md`, `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-REVIEW-DISPOSITION.md`, `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-SECURITY.md`).
 
 Phase 06.48 shipped through PR #409. Its private link check centralizes supplied-parent gating, target permission, and state evaluation; the `obj` contract for `cv_has_access` and `cv_action_enabled` is narrowed and migration guidance documents the hook change. Verification passed 24/24 must-haves; deep review found zero findings and the security audit closed all 31 threats. Stage-1 limits D-26, D-30, D-34, D-35, and D-36 remain accepted and documented above; they are not open defects. Relevant implementation is `src/crud_views/lib/link_access.py`, with regression coverage in `tests/test1/test_link_access.py`, `tests/test1/test_link_access_matrix.py`, and `tests/test1/test_guardian_child_link_visibility.py` (`.planning/phases/06.48-link-access-check-as-a-private-function-narrow-obj-in-cv-has/06.48-VERIFICATION.md`, `06.48-REVIEW.md`, `06.48-SECURITY.md`).
+
+## Phase 06.49 Grant Lifetime Boundary
+
+Phase 06.49 is submitted as PR #410 against `feature/link-access-check-design`. Verification passed 21/21 must-haves; its scoped review has zero findings and the security register closes all 15 threats (`.planning/phases/06.49-reuse-guardian-object-grants-across-navigation-checks-385/06.49-VERIFICATION.md`, `06.49-REVIEW.md`, `06.49-SECURITY.md`).
+
+The accepted grant lifetime is the supplied Python user, including cached negative grants. A long-lived user can retain stale authorization data after direct/group mutations. Fresh normal requests establish the revocation boundary; workflow permission-refusal reloads can render the error once before the next request denies access. Preserve these documented boundaries rather than assuming every repeated check reloads grants (`docs/reference/guardian.md`, `tests/test1/test_guardian_checker.py`, `tests/test1/test_workflow_review.py`).
+
+Loaded-grant reuse reduces measured SQL but does not certify customer latency. Recorder-enabled CI, rebuilt-distribution verification, full compatibility coverage and browser/customer reproduction remain outside the phase evidence. Existing stage-1 scope limits remain unchanged.
 
 ---
 

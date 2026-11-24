@@ -18,9 +18,9 @@ tables and the grant tables of ``_guardian_grant_tables`` — on the default dat
 (``ancestor_db._check_nested_auth``), so neither a cached vocabulary nor a superuser or fallback shortcut can
 answer from another database.
 
-The checker is reused only within the requested (or rendering) view instance of one request; helpers called
-without a view use a fresh checker. Nothing outlives the request, so a revoked grant takes effect on the next
-request.
+The checker belongs to the supplied Python user object and shares its loaded grants across own and ancestor
+checks. Normal requests receive fresh users/checkers, so a revoked grant takes effect on the next request.
+Retaining a user beyond a request also retains its loaded grants; each destination still evaluates its own rules.
 """
 
 from __future__ import annotations
@@ -30,6 +30,7 @@ from typing import TYPE_CHECKING
 from django.utils.translation import gettext as _
 
 from crud_views.lib.access_trace import _object_identity, get_recorder
+from crud_views_guardian.lib.permissions import _get_guardian_checker
 
 if TYPE_CHECKING:
     from django.db.models import Model
@@ -59,17 +60,7 @@ def _guardian_grant_tables(model: type[Model]) -> list[type[Model]]:
 
 
 def _request_checker(view: CrudView | None, user):
-    """The view-local ``ObjectPermissionChecker`` for ``user`` (created on first use); a fresh one when a helper
-    runs without a view."""
-    from guardian.core import ObjectPermissionChecker
-
-    if view is None:
-        return ObjectPermissionChecker(user)
-    cached = getattr(view, "_cv_guardian_ancestor_checker", None)
-    if cached is None or cached[0] is not user:
-        cached = (user, ObjectPermissionChecker(user))
-        view._cv_guardian_ancestor_checker = cached
-    return cached[1]
+    return _get_guardian_checker(user)
 
 
 def _guardian_ancestor_has_permission(

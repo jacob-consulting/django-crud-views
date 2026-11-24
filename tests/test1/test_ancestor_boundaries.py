@@ -11,10 +11,10 @@ normal semantics:
   excludes the field from its form (an application choice, shown as an allowed control).
 
 Grants are evaluated on every request (D-20, D-22): a direct or group Guardian grant and a model grant revoked
-between two requests deny the second one before any downstream work. Resolved objects and the Guardian checker
-live on the view instance of one request; nothing authorizes another request, not even one that runs while the
-first is still in flight. Django's per-user-instance permission cache is caller-held state: the framework does
-not invalidate it, and a fresh request never reuses it.
+between two requests deny the second one before any downstream work. Resolved ancestor objects live on the view;
+loaded Guardian grants live in the checker on the Python user. Normal requests receive distinct users and checkers,
+even while the first request is still in flight. Retaining a user retains its loaded grants, as with Django's
+per-user-instance permission cache: the framework does not invalidate either cache.
 
 Ancestors are Guardian ViewSets (strict object grants, so path A and path B are distinguishable), at one ancestor
 (Publisher) and three ancestors (Publisher → Book → BookNote), in both cascade modes. Leaf views are core
@@ -547,11 +547,19 @@ def test_resolved_objects_and_checker_belong_to_one_request(routes, world, guard
     assert first is not second
     assert first._cv_ancestor_state is not second._cv_ancestor_state
     assert first._cv_ancestor_state.objects[0] is not second._cv_ancestor_state.objects[0]  # re-resolved
-    assert first._cv_guardian_ancestor_checker[1] is not second._cv_guardian_ancestor_checker[1]
+    first_user, second_user = first.request.user, second.request.user
+    assert first_user.pk == second_user.pk  # Resolve lazy users before checking the actual actor identities.
+    assert first_user is not second_user
+    first_actor = getattr(first_user, "_wrapped", first_user)
+    second_actor = getattr(second_user, "_wrapped", second_user)
+    assert first_actor is not second_actor
+    assert first_user._cv_guardian_checker is first_actor._cv_guardian_checker
+    assert second_user._cv_guardian_checker is second_actor._cv_guardian_checker
+    assert first_actor._cv_guardian_checker is not second_actor._cv_guardian_checker
     # nothing about access is kept on the ViewSets or the view classes between requests
     for holder in [*routes.chain, routes.mm_vs, type(first)]:
         state = vars(holder)
-        assert "_cv_ancestor_state" not in state and "_cv_guardian_ancestor_checker" not in state
+        assert not {"_cv_ancestor_state", "_cv_guardian_ancestor_checker", "_cv_guardian_checker"} & state.keys()
 
 
 @pytest.mark.parametrize("depth", DEPTH3)

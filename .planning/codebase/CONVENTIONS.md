@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
 last_mapped_at: 2026-11-24
 ---
 # Coding Conventions
@@ -179,6 +179,13 @@ last_mapped_at: 2026-11-24
 - Protect pre-refactor behavior with the immutable 1,178-cell fixture in `tests/test1/link_access_matrix_baseline.json`. `tests/test1/test_link_access_matrix.py::test_link_matrix_cell` compares current live responses with each named frozen cell, while `::test_link_matrix_snapshot_is_complete` checks fixture completeness. Do not regenerate or edit the snapshot to accept implementation changes.
 - Put direct helper and consumer contracts in `tests/test1/test_link_access.py`: assert the callable signature, permission-before-state ordering, exact object identity passed to hooks, provider call order, no persisted decisions, and named retained denials. Use real request/client checks where behavior crosses the HTTP boundary.
 - Keep migration guidance pinned by `tests/test1/test_link_access_docs.py`. Its six tests extract heading-scoped passages and assert required hook names, migration anchors, denial cases, and reference-page guidance. When changing the published guidance, update the relevant source text and its explicit assertions together; do not rely on a broad whole-file prose snapshot.
+
+## Guardian Grant Lifetime Contracts
+
+- Acquire shared Guardian grants through `_get_guardian_checker(user)` in `src/crud_views_guardian/lib/permissions.py`. Keep destination permission/state checks in their existing callers; loaded grants do not represent a cached access decision.
+- Use fresh user instances at an intended request/lifetime boundary in tests. A retained user intentionally preserves loaded positive/negative grants; do not invalidate it implicitly to make a mutation test pass (`tests/test1/test_guardian_checker.py`).
+- Preserve `_request_checker(view, user)` as the existing ancestor test seam while acquiring on the supplied user (`src/crud_views_guardian/lib/ancestors.py`).
+- Pair measured query pins with independent visibility, ordering and identity assertions. Preserve historical before-cost receipts and label cache conditions; SQL reduction alone does not prove faster responses (`tests/test1/test_guardian_checker_costs.py`, `tests/test1/test_navbar_costs.py`).
 
 ---
 

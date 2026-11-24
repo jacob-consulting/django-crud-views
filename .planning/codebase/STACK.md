@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
 last_mapped_at: 2026-11-24
 ---
 # Technology Stack
@@ -105,6 +105,12 @@ last_mapped_at: 2026-11-24
 - Package distribution to PyPI using GitHub Actions (`.github/workflows/publish.yml`)
 - Documentation hosted by Read the Docs (`.readthedocs.yaml`)
 - Public example demo hosted on Render (`render.yaml`)
+
+## Guardian Grant Reuse and Local Tooling
+
+- The optional `guardian` extra remains django-guardian >=2.4; Phase 06.49 adds no dependency or setting (`pyproject.toml`).
+- `_get_guardian_checker(user)` lazily imports Guardian and stores its checker on the caller user (`src/crud_views_guardian/lib/permissions.py`). Own-object and ancestor permission paths acquire through that helper.
+- `gsd-cli.config.json` now uses schema version 2 with per-runtime blueprints and review configuration; its minimum gsd-cli version is 1.21.0. This is repository development tooling, outside the package runtime.
 
 ---
 

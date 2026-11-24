@@ -609,6 +609,7 @@ def test_parity_child_collection(links, client, django_user_model, monkeypatch, 
             assert node.get(attribute) is None
 
     user_guardian_object_perm(actor, links.parent, "change", parent)
+    actor = django_user_model.objects.get(pk=actor.pk)  # The next rendering models a fresh request user.
     response = client.get(host_url)
     assert response.status_code == 200
     assert html.fromstring(response.content).xpath("//*[@href=$url]", url=destination)

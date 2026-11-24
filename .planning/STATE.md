@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.49"
 current_phase_name: Reuse Guardian object grants across navigation checks
-current_plan: 4
+current_plan: 5
 status: executing
-stopped_at: Completed 06.49-03-PLAN.md
-last_updated: "2026-11-24T12:29:30.423Z"
+stopped_at: Completed 06.49-04-PLAN.md
+last_updated: "2026-11-24T12:41:58.746Z"
 last_activity: 2026-11-24
-last_activity_desc: Phase 06.49 plan 03 complete; grant lifetime and workflow/request boundary tests committed
-state_head: aee1598b923290da9932f683b1c7d6ad854acdb2
+last_activity_desc: Phase 06.49 plan 04 complete; measured list/navbar/child costs and ancestor receipts committed
+state_head: 5fe3b5cca42e1c49b81130ef26487a1ca20b16d9
 progress:
   total_phases: 56
   completed_phases: 54
   total_plans: 299
-  completed_plans: 297
+  completed_plans: 298
 milestone_name: milestone
 ---
 
@@ -33,12 +33,19 @@ See: .planning/PROJECT.md (updated 2026-11-23)
 ## Current Position
 
 Phase: 06.49 (Reuse Guardian object grants across navigation checks) — EXECUTING
-Current Plan: 4
+Current Plan: 5
 Total Plans in Phase: 5
-Status: Executing Phase 06.49; plan 04 next
-Last activity: 2026-11-24 — Phase 06.49 plan 03 complete; grant lifetime and workflow/request boundary tests committed
+Status: Executing Phase 06.49; plan 05 next
+Last activity: 2026-11-24 — Phase 06.49 plan 04 complete; measured list/navbar/child costs and ancestor receipts committed
 
 Next: $gsd-execute-phase 06.49
+
+### Phase 06.49 plan 04 — 2026-11-24
+
+- List totals are 7/10/14 versus 7/14/26 before for 0/1/3 rows: one user/group grant pair per row, with the same allowed Details, denied Edit/Delete and excluded row. All 80 Guardian/mixed navbar cells save exactly 2 owner-page or 4 deep-page queries; 40 plain controls are unchanged. Exact hooks, object identities and no-row-work assertions remain.
+- Five child cases pin actual first/subsequent costs (discovery 6/0, create 2/0, mixed 2/0, ordinary 0/0). H-01 prepares the existing view grant before the first load and is labeled as a setup adjustment, not an identical-setup performance comparison. All 16 current child-link documentation cells and both layers are retained.
+- Required results: 3 list, 120 navbar, 5 child, 9 ancestor and 385 combined tests passed; the 385-test SQL supplement and five fresh child processes passed. Ruff passes all three changed Python files. Original before bytes/digests remain intact. The ancestor module is byte-identical and all 68 standalone observations match; one combined cold slice omits a separately documented Guardian ContentType lookup without changing permission/gate work.
+- Task commits 296d4e5a and 86d871e0 and SUMMARY 5fe3b5cc precede tracking. ROADMAP is 4/5 In Progress; current plan 5, completed plans 298. SDK progress/metrics/decisions/session ran; the known unscoped progress-refresh decline remains and the stale dotted table row was corrected. Current dirty state.json bytes were restored and verified; unrelated configuration/index changes are preserved. No phase completion handler ran. Plan 05 owns documentation and broad regression closure; no full-suite or recorder-enabled certification is claimed here.
 
 ### Phase 06.49 plan 03 — 2026-11-24
 
@@ -1984,6 +1991,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.49 P01 | 9 min | 2 tasks | 2 files |
 | Phase 06.49 P02 | 7 min | 2 tasks | 5 files |
 | Phase 06.49 P03 | 5 min | 2 tasks | 5 files |
+| Phase 06.49 P04 | 9 min | 2 tasks | 4 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2345,6 +2353,9 @@ Recent decisions affecting current work:
 - [Phase 06.49]: Keep _request_checker(view, user) as a thin private compatibility delegate without view-owned state.
 - [Phase 06.49]: Exempt exactly _cv_guardian_checker from both user-attribute checks while retaining all decision-freshness assertions.
 - [Phase 06.49]: Follow D-37 for retained users and refused workflow rendering; fresh authenticated requests enforce revocation.
+- [Phase 06.49]: Keep original user/cache lifetimes and attribute savings only to measured grant SELECTs.
+- [Phase 06.49]: Prepare the ordinary control view grant before its first load; label this setup change separately.
+- [Phase 06.49]: Preserve standalone ancestor counts and label the combined Guardian ContentType-cache observation without changing pins.
 
 ### Pending Todos
 
@@ -2448,6 +2459,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-24T12:29:24.106Z
-Stopped at: Completed 06.49-03-PLAN.md
+Last session: 2026-11-24T12:41:52.382Z
+Stopped at: Completed 06.49-04-PLAN.md
 Resume file: None

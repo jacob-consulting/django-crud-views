@@ -4,7 +4,7 @@ Date: 2026-11-23. Status: concept approved by the maintainer on 2026-11-23; **no
 document**. It is not an implementation plan. Each stage in section 9 needs its own issue, plan and approval.
 Amended on 2026-11-23 for stage 1: section 12.6 (D-25 to D-36), decided by the maintainer while #407 was planned.
 Amended on 2026-11-24 for stage 2: section 12.7, findings F-01 to F-08 from a probe after stage 1 shipped, and
-D-37, decided by the maintainer on F-02.
+D-37 and D-38, decided by the maintainer. The "to verify" items of 12.3 are answered there.
 
 Related: #385 (reuse Guardian grants), #314 (opt-in URL helper), #312/#318 (link visibility versus request gate),
 `superpowers/notes/2026-11-02-navigation-concept-exploration.md` (site menu, caching options C0–C6),
@@ -465,7 +465,8 @@ To verify during planning:
   stage. The saving is expected, not measured; the planner includes it only with a pinned before-and-after count.
 
 Section 12.7 adds what a probe found after stage 1 shipped: one stage-1 test that contradicts D-09, the tests and
-passages the plan must list, and D-37, which states one exception to the first constraint above.
+passages the plan must list, D-37, which states one exception to the first constraint above, and D-38, which
+answers the `prefetch_perms` item. The first "to verify" item is answered there by reading and by the probe.
 
 ### 12.4 Stages 3 to 5 are deliberately unscoped
 
@@ -562,12 +563,13 @@ decided as D-37 below. No decision is open.
 | F-07 | Three passages describe fresh or view-local checkers and are rewritten: `docs/reference/navbar.md:346` ("Guardian admission creates fresh checkers"), `docs/reference/context_buttons.md:245` ("no rendering-view argument to reuse a request-local Guardian checker"), and the module docstring of `src/crud_views_guardian/lib/ancestors.py`. | documentation | 12.3 scope |
 | F-08 | Line drift: stage 1 removed two lines from `crud_views_guardian/lib/mixins.py`, so the checker sites 12.3 gives as `mixins.py:156, 213` are at 153 and 210. `ancestors.py:67, 70` are unchanged. | drift | 12.3 scope |
 
-Decided by the maintainer on 2026-11-24. Like the decisions in 12.1 and 12.6, it is settled input and is not under
-review (section 13, point 1).
+Decided by the maintainer on 2026-11-24. Like the decisions in 12.1 and 12.6, they are settled input and are not
+under review (section 13, point 1).
 
 | # | Decision | Amends |
 |---|---|---|
 | D-37 | A second check of the same object in one request uses the grants that request already loaded. A grant changed during a request is seen from the next request on. The workflow reload after a refused transition therefore shows the form with the error once more; the next request answers 403. No fresh checker, flag or bypass is added for it. This is the one stated exception to "every access decision is unchanged" in 12.3. | 12.3 constraints, D-02 |
+| D-38 | `prefetch_perms` is not part of stage 2. Stage 2 adds a pinned query count for a Guardian list page with row actions, before and after the shared checker. Whether the grants of all rows of a list or card page are loaded in one step is decided afterwards on that measured figure, as its own change. | 7, 12.3 to verify |
 
 Consequences the plan must carry:
 
@@ -581,16 +583,35 @@ Consequences the plan must carry:
   is as good as the test coverage; delete and bulk were not audited by reading. If the plan finds another such
   place, D-37 applies to it as well, and the plan names it.
 
+- **D-38, why:** `get_objects_for_user` neither reads nor fills a checker (see below), so the row grants are not
+  loaded when the row actions are checked. Each row action calls `cv_has_access(user, row)`. From reading the code,
+  not measured: grant queries are paid per row and per action today, per row with the shared checker, and about two
+  per page with `prefetch_perms`. No existing cost test pins a Guardian list page with row actions; the probe
+  changed none.
+- **D-38, why not now:** stage 2 replaces construction sites only. Prefetching needs a new call in the list and
+  card rendering path where the page's rows are known, which changes a proven path. Guardian's `prefetch_perms`
+  derives one model and content type from the objects it is given, so a polymorphic list with mixed models needs
+  its own look.
+
 Verified by the probe:
 
 - The stage-1 decision matrix (`tests/test1/test_link_access_matrix.py` with `link_access_matrix_baseline.json`) and
   the access-trace suites pass unchanged. Apart from F-02 (D-37), no access decision changed.
 - An attribute set on `request.user` survives Django's lazy user wrapper: every client-driven test outside the
-  findings above passes. This answers the first "to verify" item of 12.3 for signed-in users. The anonymous user
-  was not tested separately and stays to verify.
+  findings above passes.
 
-Not examined: `prefetch_perms` for list and card pages (second "to verify" item of 12.3), and the interaction with
-`get_objects_for_user` list filtering (section 11).
+Verified by reading the package and the installed django-guardian 3.5.2, not by a test:
+
+- **Anonymous user.** The ancestor gate and the request gate deny an anonymous user before any checker is built.
+  Only a direct `cv_has_access(user, obj)` call reaches the checker with an `AnonymousUser`. Guardian accepts it
+  and maps it to its anonymous database user in the constructor, with one query per construction, which the shared
+  checker also saves. Django creates a new `AnonymousUser` per request, so the attribute does not pass from one
+  request to the next. The plan adds one test for this case.
+- **`get_objects_for_user` list filtering** (section 11). Guardian's shortcut runs its own query and neither reads
+  nor fills an `ObjectPermissionChecker`. List filtering stays a fresh query per request and is unchanged by
+  stage 2.
+
+Nothing in section 12.3 or 12.7 is left open or to verify.
 
 ## 13. Reviewer brief
 

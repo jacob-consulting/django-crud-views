@@ -9,6 +9,7 @@ from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.ancestors import _immediate_parent_access, _resolved_parent
 from crud_views.lib.link_access import _link_access, _link_ctx
 from crud_views.lib.view import CrudView
+from crud_views_guardian.lib.permissions import _get_guardian_checker
 
 
 def _record_guardian_actor(view, result, source, message=None):
@@ -148,9 +149,7 @@ class GuardianObjectPermissionMixin:
             allowed = True
             how = _guardian_grant_how(user, "model fallback")
         else:
-            from guardian.core import ObjectPermissionChecker
-
-            checker = ObjectPermissionChecker(user)
+            checker = _get_guardian_checker(user)
             allowed = checker.has_perm(perm.split(".")[1], obj)
             if allowed:
                 how = _guardian_grant_how(user, "object grant")
@@ -205,9 +204,7 @@ class GuardianObjectPermissionMixin:
             # obj and returns empty set when obj is passed).
             if cls.cv_guardian_accept_global_perms and user.has_perm(perm):
                 return True
-            from guardian.core import ObjectPermissionChecker
-
-            checker = ObjectPermissionChecker(user)
+            checker = _get_guardian_checker(user)
             return checker.has_perm(perm.split(".")[1], obj)
         return False
 

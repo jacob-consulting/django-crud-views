@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
 last_mapped_at: 2026-11-24
 ---
 # Testing Patterns
@@ -206,6 +206,14 @@ Use `.planning/phases/06.48-link-access-check-as-a-private-function-narrow-obj-i
 The phase summary records 1,598 targeted validation passes, including 1,179 matrix tests (1,178 cells plus completeness), the 40 direct link-access cases, and six docs tests. The 18,915 full-suite result belongs to the recorded gate revision. This mapping did not execute tests, so do not describe it as current fresh execution.
 
 For direct pytest from a `src/` layout checkout, prefix commands with `PYTHONPATH=src:.` when the active interpreter would otherwise import an installed `crud_views` distribution instead of this worktree. Nox sessions intentionally build/install the distribution and assert imports do not come from `src/`; their evidence has a different import path and scope.
+
+## Recorded Phase 06.49 Guardian Evidence
+
+`tests/test1/test_guardian_checker.py` covers shared acquisition across own/ancestor checks, distinct users/models/objects, independent destination permissions/state, configured anonymous access, direct/group mutations on retained users, and fresh normal requests observing revocation. `tests/test1/test_guardian_checker_costs.py` renders real list responses at zero/one/three rows and pins query categories plus allowed/denied row controls. Related coverage remains in `test_workflow_review.py`, `test_ancestor_boundaries.py`, `test_cancel_permissions.py`, `test_guardian_child_link_visibility.py`, `test_link_access.py` and navbar/ancestor cost modules.
+
+Recorded Phase 06.49 evidence lives in `.planning/phases/06.49-reuse-guardian-object-grants-across-navigation-checks-385/06.49-VERIFICATION.md` and `06.49-VALIDATION.md`: 21/21 must-haves, 18,934 core tests, 1,976 ancestor/trace tests, 1,833 each in cached Django 4.2/5.2 selections, 1,179 frozen matrix outcomes, 313 preservation tests, and 937 example outcomes (637 tests plus 300 subtests). The verifier independently ran 43 targeted cases. This map refresh did not rerun those tests.
+
+The preserved list baseline is 7/14/26 queries before and 7/10/14 after. These figures bind to the exact fixture/cache protocol in `06.49-COST-BASELINE.md`, not arbitrary customer pages. Checkout evidence uses `PYTHONPATH=src:.` and `CV_ACCESS_RECORD_REQUESTS=0`. Recorder-enabled CI, a rebuilt installed distribution, the full Python/Django matrix, browsers and response times remain uncertified. Broad reruns should use bounded multicore pytest when sharing resources. `.github/workflows/tests.yml` runs only for `main` pushes and PRs targeting `main`; PR #410 targets the feature branch and does not trigger that workflow.
 
 ---
 

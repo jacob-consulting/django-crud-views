@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 714a51b20e8c94266a21c432ce11063109aa9962
+last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
 last_mapped_at: 2026-11-24
 ---
 <!-- refreshed: 2026-11-24 -->
@@ -387,6 +387,16 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 **Authentication:** Django auth locally; ancestors via `ancestors.py`; per-object via Guardian.
 **Runtime CLI contracts:** `cv_manage_view` and `cv_access` are independent management-command interfaces. Their versioned Pydantic output boundaries live in `src/crud_views/lib/manage_report.py` and `src/crud_views/lib/access_trace_export.py`; command parsing/rendering/exit codes stay in `src/crud_views/management/commands/`.
 **i18n:** gettext in package code, locale `de` under each `locale/` directory (`src/crud_views/locale/de/LC_MESSAGES/django.po`).
+
+## Guardian Grant Reuse Path (Phase 06.49)
+
+1. Own-object request checks and callable destination checks in `src/crud_views_guardian/lib/mixins.py` preserve actor, permission and fallback gates before calling `_get_guardian_checker(user)`.
+2. `src/crud_views_guardian/lib/permissions.py` acquires one `ObjectPermissionChecker` through the private `_cv_guardian_checker` attribute on that Python user; the import remains optional and lazy.
+3. `src/crud_views_guardian/lib/ancestors.py::_request_checker(view, user)` delegates to the same helper. The existing view argument remains as a test seam; ownership has moved from the view to the user.
+4. Guardian reuses loaded grants for matching model/object identities. Destination permission membership and action-state evaluation remain independent; no final access answer is stored by the helper.
+5. Normal middleware requests provide fresh user/checker ownership. A user retained beyond its request retains loaded grants, including stale additions/revocations. The workflow permission-refusal reload can therefore render its error once with retained grants; the next normal request observes revocation (`src/crud_views_workflow/lib/views.py`, `tests/test1/test_workflow_review.py`).
+
+This is a bounded change to existing Guardian acquisition sites. It adds no global registry, prefetch operation, cross-request cache service or public refresh API. Backend/queryset permission paths remain independent.
 
 ---
 

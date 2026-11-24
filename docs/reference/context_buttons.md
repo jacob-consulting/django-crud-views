@@ -226,9 +226,12 @@ prove access. See [visible links and buttons](nested.md#visible-links-and-button
 For existing pages, follow the [child-link migration guide](../migrating-1.0.md#child-link-parent-permissions).
 
 An eligible plain child link adds one immediate-parent policy invocation before own access. This is not a fixed
-SQL count. In measured Django 5.2/Guardian 3.5 runs, both context and card renderers had the following totals for
-a permitted core list destination; actor setup and permission grants were outside the measurement. The
-own-access column measures own access alone, while the other columns give the total permitted-link cost:
+SQL count. On Python 3.12.3 / Django 6.0.10 / django-guardian 3.5.2 with SQLite in-memory databases, both context
+and card renderers had the following totals for a permitted core list destination. Actor setup and permission
+grants were outside measurement. Each own-access and rendered observation fetched a **separate fresh user**:
+these are first-load costs, even in the warm Django model-permission rows. The own-access column measures own
+access alone; the other columns give the total permitted-link cost. The regression is
+`test_query_plain_child_link_cost` in `tests/test1/test_guardian_child_link_visibility.py` (16 cases, both layers).
 
 | Actor / permission vocabulary | Own-access SQL | With plain model parent | With strict Guardian parent |
 |---|---|---|---|
@@ -237,13 +240,32 @@ own-access column measures own access alone, while the other columns give the to
 | fresh / warm | 2 | 2 | 4 |
 | warm / warm | 0 | 0 | 2 |
 
-Warm actors had already populated Django's model-permission cache; warm vocabulary had both ViewSets' permission
-maps and content types cached. The plain case used Book/Publisher `view`; the Guardian case used the configured
+Here fresh/warm describes Django's model-permission cache only. Warm actors had already populated it; warm
+vocabulary had both ViewSets' permission maps and content types cached. Cold discovery explicitly cleared
+Django and Guardian ContentType caches. Cold own access included one ContentType SELECT and cold rendering
+included two; every other query in those cells was a permission SELECT. Warm vocabulary produced no ContentType
+SELECTs, so all SQL in those rows was permission work. These totals also match the earlier historical
+Django 5.2/Guardian 3.5 table; the current runtime and first-load conditions above were measured separately.
+
+The plain case used Book/Publisher `view`; the Guardian case used the configured
 nearest `change` with a real parent object grant. Each integrated render called the parent helper once and
 fetched no parent, child or relation rows. These are scoped measurements, not universal query budgets: backend,
-provider and cache state matter. The hook has no rendering-view argument to reuse a request-local Guardian
-checker, so repeated Guardian links can still query permissions. See the separate
-[Guardian query-cost guidance](guardian.md#parent-to-child-collection-links); no new cache is introduced.
+provider and cache state matter.
+
+The package's own and ancestor permission paths share one checker on the Python user. Repeated links for the
+same parent reuse loaded grants even without a rendering-view argument; each destination still evaluates its
+own permission and state. A different parent object needs its own grant load. Separate same-user measurements
+in that test module distinguish first use from subsequent rendering (identical context and card results):
+
+| Guardian parent check | First total (permission / ContentType SELECTs) | Subsequent render total (permission / ContentType SELECTs) |
+|---|---:|---:|
+| Collection discovery, cold then warm vocabulary | 6 (4 / 2) | 0 (0 / 0) |
+| Create, vocabulary already warm | 2 (2 / 0) | 0 (0 / 0) |
+
+Each render still invokes the parent helper once; zero SQL does not mean a skipped gate. Normal requests have
+distinct users/checkers. Retaining a user in tests, shells or background work retains loaded grants; refetch
+the user to start a new lifetime. See [Guardian grant lifetime](guardian.md#object-grant-lifetime), including
+the independent queryset/backend paths and the refused-workflow error response. No response-time saving is claimed.
 
 The parent helper raises `ImproperlyConfigured` while the host renders a control if a required parent permission
 key is missing from its map, a nested operation lacks requirements, or reached authorization records route away

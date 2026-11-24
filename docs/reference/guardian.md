@@ -184,6 +184,57 @@ views, which return no rows, and an HTTP DELETE, which gets 403 rather than 405.
 filter. Anonymous users keep their configured `cv_guardian_anonymous_behavior`. Deactivating a user or revoking a
 grant takes effect on that user's next request.
 
+## Object grant lifetime
+
+The package's own-object and ancestor permission paths share one `ObjectPermissionChecker` on the supplied
+**Python user object**. Once that checker loads an object's direct and group grants, later package checks for
+the same model/PK reuse them, including checks through another view or an equivalent ORM instance. Different
+objects have separate grant loads. Each destination still evaluates its own required permission and action
+state: an allowed Details link does not authorize Edit, and state decisions are never cached by this checker.
+
+Normal requests receive distinct users/checkers, including through Django's lazy `request.user` wrapper, so a
+revoked grant is seen on the next request. A test, shell or background task that keeps the same user instance
+also keeps its loaded grants, including after a grant is added or removed. **Re-fetch the user** to start a new
+lifetime after changing permissions. `refresh_from_db()` is not a permission-cache reset. This lifetime is
+similar to Django's model-permission cache; warming that cache does not itself load Guardian object grants.
+
+After a workflow transition is refused, its write transaction has already unwound. The existing scoped reload
+can use the grants loaded earlier in that request to show the form and its error once more, even if the object's
+grant was revoked. No write follows that error reload. Scope and action-state checks remain active; a scope or
+state denial still denies the reload. The next normal authenticated request returns 403 after revocation.
+There is no workflow-specific checker refresh or bypass. Other repeated package checks, such as delete-page
+controls, use the same grant lifetime while keeping their existing request and write protections.
+
+This sharing is limited to the package's checker acquisition paths. `get_objects_for_user` **neither reads nor
+fills this checker**: list filtering and delete-preview related-label filtering retain their independent
+queryset policy. Arbitrary backend `user.has_perm(permission, obj)` calls are independent too, including the
+bulk item-hook recipe below. Application overrides that construct their own checkers keep their own lifetime.
+
+Protected request and ancestor gates deny anonymous actors before constructing a checker. A direct object
+`cv_has_access(AnonymousUser(), obj)` call can use Guardian's anonymous backing user only when that identity is
+configured. The `ANONYMOUS_USER_NAME = None` setup above does not provide that backing user or promise the
+direct lookup succeeds. This change does not alter anonymous-user configuration.
+
+### Measured list-row grant reuse
+
+On Python 3.12.3 / Django 6.0.10 / django-guardian 3.5.2 with SQLite in-memory, a real Guardian Publisher list
+with Details/Edit/Delete per row had these complete-response SQL counts. Each request had a fresh user and
+explicitly warmed permission vocabulary; row grants were not primed. Direct view grants showed Details, hid
+Edit/Delete and excluded an ungranted row in both versions (`tests/test1/test_guardian_checker_costs.py`).
+
+| Visible rows | Before shared grants | With shared grants | Checker user/group SELECTs, with shared grants |
+|---|---:|---:|---:|
+| 0 | 7 | 7 | 0 / 0 |
+| 1 | 14 | 10 | 1 / 1 |
+| 3 | 26 | 14 | 3 / 3 |
+
+The shared checker loads one user/group pair per row instead of one pair per action. List filtering, model
+permission reads, actor/session work and manage-group lookup retain their separate costs. These are fixture
+query counts, not response-time or customer-site savings. `prefetch_perms` is excluded: loading all page rows'
+grants together would be a separate change considered against this row-action measurement. See the separate
+[navbar](navbar.md#measured-costs) and [child-link](context_buttons.md#permission-cost-and-configuration-failures)
+measurements for their first-load and already-loaded conditions.
+
 ## Create Views
 
 `CreateView` cannot check per-object permission on an object that does not exist
@@ -464,8 +515,11 @@ parent permission, followed by state if allowed, without an additional collectio
 
 Denied actions use the target's [hide/disable mode](inaccessible_actions.md); disabled actions have the
 permission reason and no usable URL. State denial remains separate. The parent is reused without another
-parent-row fetch, but Guardian permission queries can still run for each eligible link, including repeated
-cards. No permission cache or ancestry lookup is added. Destination request authorization remains authoritative.
+parent-row fetch. The first check of a parent loads its grants on the Python user; repeated links and cards for
+that same parent reuse them, while distinct parents have separate loads. Each destination's permission/state
+checks still run, with no additional ancestry lookup. See [Object grant lifetime](#object-grant-lifetime) for
+retained-user behavior, fresh normal requests and independent filtering. Destination request authorization
+remains authoritative.
 
 #### Limits and configuration failures
 

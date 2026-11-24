@@ -320,10 +320,56 @@ Builders, resolvers and check carriers remain internal.
 
 ## Measured costs
 
-Measured on Python 3.12.3 / Django 5.2.19 / django-guardian 3.5.2 with SQLite in-memory databases. These are
+Measured on Python 3.12.3 / Django 6.0.10 / django-guardian 3.5.2 with SQLite in-memory databases. These are
 **navbar-only SQL counts after request/object/ancestor loading**, with two visible items (one owner and one child),
-at owner and grandchild depth and for tag, split and repeated placements. They are fixture measurements, not a
+at owner and grandchild depth, across five tag/include/component placements. They are fixture measurements, not a
 whole-page budget or a universal zero-query promise. The regression is `tests/test1/test_navbar_costs.py`.
+
+Each cell below is **total SQL / permission SELECTs**; ContentType SELECTs are listed separately and are included
+in the total. Plain means core owner/child; guardian means Guardian owner/child; mixed means Guardian owner with
+core child. The owner host has not loaded its Guardian object grants before rendering; the deep request has
+already loaded that owner's grants through ancestry.
+
+| Composition | Vocabulary | Django model cache | Owner page | Deep page | ContentType SELECTs (either page) |
+|---|---|---|---:|---:|---:|
+| plain | cold | cold | 6 / 4 | 6 / 4 | 2 |
+| plain | cold | warm | 4 / 2 | 4 / 2 | 2 |
+| plain | warm | cold | 2 / 2 | 2 / 2 | 0 |
+| plain | warm | warm | 0 / 0 | 0 / 0 | 0 |
+| guardian | cold | cold | 6 / 4 | 4 / 2 | 2 |
+| guardian | cold | warm | 6 / 4 | 4 / 2 | 2 |
+| guardian | warm | cold | 2 / 2 | 0 / 0 | 0 |
+| guardian | warm | warm | 2 / 2 | 0 / 0 | 0 |
+| mixed | cold | cold | 8 / 6 | 6 / 4 | 2 |
+| mixed | cold | warm | 6 / 4 | 4 / 2 | 2 |
+| mixed | warm | cold | 4 / 4 | 2 / 2 | 0 |
+| mixed | warm | warm | 2 / 2 | 0 / 0 | 0 |
+
+Cold vocabulary resets ViewSet permission caches, the shared check vocabulary, Django ContentTypes **and**
+Guardian's separate content-type cache. Warm vocabulary resolves those outside measurement, without admission
+or state calls. Cold actor clears Django's model-permission caches on the actual user; warm actor calls
+`get_all_permissions()` before measurement. Neither condition clears the user's loaded Guardian grants.
+
+The package's own and ancestor permission paths share one checker on the **Python user object**. On the owner
+page the first item loads one user/group grant pair (two SELECTs), shared with the other item. On the deep page
+the existing owner grants need no further grant SELECTs. Each destination still evaluates its own permission
+and state; Django model-cache warmth is independent of this grant reuse. A normal next request gets a distinct
+user/checker. Tests, shells or background work that retain a user also retain its loaded grants; see
+[Guardian grant lifetime](guardian.md#object-grant-lifetime) for refetch guidance and independent filtering paths.
+
+All 120 combinations built once, called owner access once and child admission once, and ran one state
+check per admitted item. They read no Publisher/Book/BookNote rows and performed no collection probes or
+actor/session reads. Repeated access added no hooks or SQL. The comparable Django 6 before/after receipts show
+two fewer grant SELECTs in each Guardian/mixed owner cell and four fewer in each deep cell; all plain controls
+are unchanged. Custom permission backends or state hooks may cost more. See also
+[child-link costs](context_buttons.md#permission-cost-and-configuration-failures) and
+[ancestor authorization](nested.md#ancestor-authorization); [breadcrumbs](breadcrumb.md) have their own work.
+
+### Historical measurements before shared grants
+
+The earlier Python 3.12.3 / Django 5.2.19 / django-guardian 3.5.2 receipt used the same two-item fixture and
+vocabulary/model-cache axes, with fresh Guardian checkers for item admission. Its owner and deep totals were
+identical. These historical figures are retained here; they are not the current costs above.
 
 | Composition | Vocabulary | Actor model cache | Total SQL | Permission SELECTs | ContentType SELECTs |
 |---|---|---|---:|---:|---:|
@@ -340,19 +386,9 @@ whole-page budget or a universal zero-query promise. The regression is `tests/te
 | mixed | warm | cold | 6 | 6 | 0 |
 | mixed | warm | warm | 4 | 4 | 0 |
 
-Cold vocabulary resets ViewSet permission caches, the shared check vocabulary, Django ContentTypes **and**
-Guardian's separate content-type cache. Warm vocabulary resolves those outside measurement, without admission
-or state calls. Cold actor clears Django's model-permission caches on the actual user; warm actor calls
-`get_all_permissions()` before measurement. Guardian admission creates fresh checkers: warm actor does **not**
-mean warm Guardian object permissions. Plain means core owner/child; guardian means Guardian owner/child;
-mixed means Guardian owner with core child. Custom permission backends or state hooks may cost more.
-
-All 72 measured combinations built once, called owner access once and child admission once, and ran one state
-check per admitted item. They read no Publisher/Book/BookNote rows and performed no collection probes or
-actor/session reads. Repeated access added no hooks or SQL. See also [child-link costs](context_buttons.md)
-and [ancestor authorization](nested.md#ancestor-authorization); [breadcrumbs](breadcrumb.md) have their own work.
-
-The component-tag follow-up separately exercises 48 additional combinations: component pairs and reversed,
+The original 72-combination receipt covered tag, split and repeated placements. The component-tag follow-up
+separately exercised 48 additional combinations: component pairs and reversed,
 mixed/repeated component, wrapper and direct-include consumers across the same depth/cache/composition axes.
-These checks retain the SQL totals above, one build and once-only per-item hooks. The historical 72-combination
-receipt describes the original placements; it is not relabeled as component-tag evidence.
+Both historical groups retained one build and once-only per-item hooks. The current 120-case measurement covers
+both groups. These SQL observations establish no response-time improvement or customer-site savings; earlier
+customer estimates of 20 or 18 total queries were projections, not measurements of this change.

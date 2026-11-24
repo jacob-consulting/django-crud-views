@@ -1151,12 +1151,15 @@ def test_query_cold_and_warm_discovery(links, world, django_user_model, monkeypa
         categories = sql_categories(capture.captured_queries)
         assert categories.get("parent_rows", 0) == 0, capture.captured_queries
         assert categories.get("child_or_relation_rows", 0) == 0, capture.captured_queries
-        assert categories.get("permissions", 0) > 0, capture.captured_queries
         assert categories.get("other", 0) == 0, capture.captured_queries
         results[temperature] = {"total": len(capture), "categories": categories}
     assert spy.call_count == 2
     assert results["cold"]["total"] > results["warm"]["total"]
     report_measurement(record_property, layer="adapter", renderer=renderer, results=results)
+    assert results == {
+        "cold": {"total": 6, "categories": {"content_type": 2, "permissions": 4}},
+        "warm": {"total": 0, "categories": {}},
+    }
 
 
 @pytest.mark.django_db
@@ -1236,7 +1239,8 @@ def test_query_card_occurrences_remain_independent(links, world, monkeypatch, re
     objects = {"distinct": parents, "repeated": [parents[0], parents[0]], "reversed": list(reversed(parents))}[order]
     configure(links)
     spy = parent_spy(monkeypatch, links.list)
-    # Both positive and negative decisions use a fresh checker each time.
+    # Each occurrence evaluates its own decision; loaded grants are shared only
+    # for the same user/object, including repeated allowed or denied occurrences.
     _ = links.parent.permissions
     view = bound(links.card, actor)
     monkeypatch.setattr(links.card, "get_queryset", lambda self: objects)
@@ -1304,17 +1308,20 @@ def test_query_create_uses_only_its_existing_parent_check(links, world, monkeypa
     with CaptureQueriesContext(connection) as rendered:
         assert rendered_data(links, renderer, actor, parent, key="create")["cv_access"] is True
     spy.assert_called_once_with(actor, parent)
-    assert sql_categories(rendered.captured_queries) == sql_categories(baseline.captured_queries)
-    assert len(rendered) == len(baseline)
     report_measurement(
         record_property,
         layer="create_baseline",
         renderer=renderer,
         baseline=len(baseline),
+        baseline_categories=sql_categories(baseline.captured_queries),
         rendered=len(rendered),
         categories=sql_categories(rendered.captured_queries),
         helper_calls=spy.call_count,
     )
+    assert len(baseline) == 2
+    assert sql_categories(baseline.captured_queries) == {"permissions": 2}
+    assert len(rendered) == 0
+    assert sql_categories(rendered.captured_queries) == {}
 
 
 @pytest.mark.django_db
@@ -1324,6 +1331,7 @@ def test_query_unaffected_core_and_ordinary_actions(links, world, monkeypatch, r
 
     actors, parents = world
     actor, parent = actors[0], parents[0]
+    user_guardian_object_perm(actor, links.parent, "view", parent)
 
     # The core target retains own policy and checks the real Guardian parent with CHANGE_READ.
     class CoreList(ListViewPermissionRequired):
@@ -1333,13 +1341,14 @@ def test_query_unaffected_core_and_ordinary_actions(links, world, monkeypatch, r
     monkeypatch.setitem(links.child._views, "list", CoreList)
     monkeypatch.setattr(CoreList, "cv_has_access", Mock(return_value=True))
     parent_check = parent_spy(monkeypatch, CoreList)
+    mixed_results = []
     for renderer in ("context", "card"):
         parent_check.reset_mock()
         with CaptureQueriesContext(connection) as capture:
             assert rendered_data(links, renderer, actor, parent)["cv_access"] is True
         parent_check.assert_called_once_with(actor, parent)
         categories = sql_categories(capture.captured_queries)
-        assert categories.get("permissions", 0) > 0
+        mixed_results.append({"total": len(capture), "categories": categories})
         assert categories.get("parent_rows", 0) == categories.get("child_or_relation_rows", 0) == 0
         report_measurement(
             record_property,
@@ -1350,8 +1359,8 @@ def test_query_unaffected_core_and_ordinary_actions(links, world, monkeypatch, r
             helper_calls=parent_check.call_count,
         )
 
-    # Ordinary Guardian row action cost is unchanged relative to the original access call.
-    user_guardian_object_perm(actor, links.parent, "view", parent)
+    # Both grants were prepared before the mixed loop loaded this parent's grants.
+    # Direct and rendered ordinary actions reuse that same actor's loaded grants.
     _ = links.parent.permissions
     view = bound(links.card, actor)
     parent_check.reset_mock()
@@ -1359,14 +1368,19 @@ def test_query_unaffected_core_and_ordinary_actions(links, world, monkeypatch, r
         assert links.detail.cv_has_access(actor, parent) is True
     with CaptureQueriesContext(connection) as rendered:
         assert view.cv_get_card_action_data(CardAction(key="detail"), parent, actor)["cv_access"] is True
-    assert len(rendered) == len(baseline)
-    assert sql_categories(rendered.captured_queries) == sql_categories(baseline.captured_queries)
+    assert len(rendered) == len(baseline) == 0
+    assert sql_categories(rendered.captured_queries) == sql_categories(baseline.captured_queries) == {}
     parent_check.assert_not_called()
     report_measurement(
         record_property,
         layer="ordinary_baseline",
         baseline=len(baseline),
+        baseline_categories=sql_categories(baseline.captured_queries),
         rendered=len(rendered),
         categories=sql_categories(rendered.captured_queries),
         helper_calls=parent_check.call_count,
     )
+    assert mixed_results == [
+        {"total": 2, "categories": {"permissions": 2}},
+        {"total": 0, "categories": {}},
+    ]

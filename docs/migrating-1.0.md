@@ -153,9 +153,14 @@ Rendering checks only the supplied immediate parent; a farther ancestor can stil
 with immediate `provider="none"`. Sibling links and ordinary row actions still carry no parent gate and keep
 their evaluation order; their hook arguments follow [Link access hooks](#link-access-hooks).
 Each eligible plain link adds one parent-policy call and reuses the parent without another row fetch.
-SQL depends on actor/vocabulary caches and provider; repeated Guardian links can still issue permission queries.
+SQL depends on Django model-permission/vocabulary caches and provider. A first Guardian check loads the parent's
+grants on the Python user; later links for that same parent reuse them, while distinct parents need separate
+loads. Every destination keeps its own permission/state checks. Normal requests get fresh users; code retaining
+a user also retains loaded grants and should re-fetch the user after permission changes to start a new lifetime.
 See [measured costs and configuration failures](reference/context_buttons.md#permission-cost-and-configuration-failures)
-and [the request boundary](reference/nested.md#visible-links-and-buttons).
+for the current and historical runtime/cache conditions,
+[Guardian grant lifetime](reference/guardian.md#object-grant-lifetime) and
+[the request boundary](reference/nested.md#visible-links-and-buttons).
 
 ## Ordinary formset row cards
 

@@ -449,6 +449,14 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Changed
 
+- **Shared Guardian object grants** (#385): package own-object and ancestor checks reuse loaded grants on the
+  Python user while each destination keeps independent permission/state checks. Normal requests get fresh
+  users; tests, shells or background work retaining a user should re-fetch it after permission changes to
+  start a new grant lifetime. After a refused workflow transition, the scoped reload can render the form's
+  error using grants already loaded in that request, with no subsequent write; after revocation the next
+  normal authenticated request returns 403. Scope and action-state checks remain active. See
+  [Guardian grant lifetime and measured costs](docs/reference/guardian.md#object-grant-lifetime).
+
 - **Compact formset gutters** (#394): heading and field rows now use Bootstrap's `gx-3` utility,
   retaining their existing component hooks and standard-spacing-scale alignment. Copied/custom headings
   must retain or add `gx-3` alongside `row` and `cv-formset-compact-headings`; the stylesheet no longer

@@ -319,11 +319,15 @@ for the remaining direct/sibling/object/filter/navigation/M2M boundaries and mis
 can fail the host page during rendering.
 
 Eligible plain child links add one parent-policy invocation before own access, with cache-dependent SQL; an
-actor whose own access is denied now pays for it as well. For permitted links, both
-renderers measured 6/4/2/0 total queries with a plain parent and 8/6/4/2 with a strict Guardian parent for
-fresh-cold/warm-cold/fresh-warm/warm-warm actor/vocabulary states. They reuse the supplied parent without a
-parent-row fetch. See [measurement conditions](context_buttons.md#permission-cost-and-configuration-failures)
-and the separate Guardian guidance above; repeated Guardian links can still query permissions.
+actor whose own access is denied now pays for it as well. The current Python 3.12.3 / Django 6.0.10 /
+django-guardian 3.5.2 measurement gives 6/4/2/0 total queries with a plain parent and 8/6/4/2 with a strict
+Guardian parent for fresh-cold/warm-cold/fresh-warm/warm-warm Django model-cache/vocabulary states, for both
+renderers. These first-load figures match the earlier historical Django 5.2/Guardian 3.5 totals: each measured
+layer fetches a fresh user, including the warm-model-cache cases. They reuse the supplied parent without a
+parent-row fetch. Subsequent links on the same Python user reuse that parent's loaded grants; distinct parents
+need separate loads, and each destination still applies its permission/state rules. See the canonical
+[measurement conditions](context_buttons.md#permission-cost-and-configuration-failures) and
+[Guardian grant lifetime](guardian.md#object-grant-lifetime) for normal fresh requests and retained-user guidance.
 
 A missing required parent permission key, a nested operation without requirements, or reached authorization
 records routed away from `default` raises `ImproperlyConfigured` while rendering, rather than producing a

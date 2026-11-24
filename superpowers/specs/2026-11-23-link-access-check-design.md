@@ -5,6 +5,7 @@ document**. It is not an implementation plan. Each stage in section 9 needs its 
 Amended on 2026-11-23 for stage 1: section 12.6 (D-25 to D-36), decided by the maintainer while #407 was planned.
 Amended on 2026-11-24 for stage 2: section 12.7, findings F-01 to F-08 from a probe after stage 1 shipped, and
 D-37 and D-38, decided by the maintainer. The "to verify" items of 12.3 are answered there.
+Amended on 2026-11-24 for stage 3: section 12.8 (D-39 to D-54), decided by the maintainer after a review of #411.
 
 Related: #385 (reuse Guardian grants), #314 (opt-in URL helper), #312/#318 (link visibility versus request gate),
 `superpowers/notes/2026-11-02-navigation-concept-exploration.md` (site menu, caching options C0–C6),
@@ -480,6 +481,9 @@ missing blocks are intentional. A planner does not fill them in; each is scoped 
 - **Stage 5 (site menu)** waits for its own design, built on
   `superpowers/notes/2026-11-02-navigation-concept-exploration.md` and its decisions of 2026-11-02.
 
+Section 12.8 scopes stage 3, now that stages 1 and 2 have shipped, and replaces the stage-3 bullet above. Stages 4
+and 5 stay unscoped.
+
 ### 12.5 Open for the planner
 
 These are the planner's to decide, within the decisions above:
@@ -612,6 +616,179 @@ Verified by reading the package and the installed django-guardian 3.5.2, not by 
   stage 2.
 
 Nothing in section 12.3 or 12.7 is left open or to verify.
+
+### 12.8 Stage 3 amendments (2026-11-24)
+
+Stage 3 was first written up as one issue, #411, with nine decisions S3-01 to S3-09 accepted by the maintainer.
+A review of #411 against the code at `e444bbfc` found three points that were undecided or contradicted each other
+(S3-08, the source of Cancel's parent, and a side effect of removing the Guardian list-page rewrite), and that the
+issue carried nine behaviour changes, a public function, nine consumer migrations and five helper removals at once.
+Two rounds of independent review of the replacement drafts raised further points. Each decision below that
+does not come unchanged from #411 is marked "review".
+
+The maintainer decided the following on 2026-11-24. The decisions replace #411 as planning input. #411 is closed
+as superseded and its body is left as it was; the "From" column says where each decision comes from. Like the
+decisions in 12.1, 12.6 and 12.7, they are settled input and are not under review (section 13, point 1).
+
+Line references in this section are `feature/link-access-check-design` @ `e444bbfc`, with package paths
+relative to `src/`. "Today" in this section means that code.
+
+Terms used below:
+
+- **Guard state:** the ancestors the request's ancestor guard resolved, kept on the view as `_cv_ancestor_state`.
+- **Class step:** `_cv_link_permission`, the per-class part of the check's permission step.
+- **The seam:** `_cv_page_link_ancestors`, by which a target class supplies its own ancestor list.
+- **The rewrite:** the key-based overwrite in `GuardianQuerysetMixin.cv_get_context` (L1, D-34).
+- **The state adapters:** `_cv_action_enabled_for_context` and `_cv_action_enabled_for_rendering`. With the removed
+  `_cv_child_link_has_access` they are the "three private adapters" of 12.4 and 12.5.
+- **Actor rule:** the requirement that the user is signed in and active.
+
+**Delivery**
+
+| # | Decision | From |
+|---|---|---|
+| D-39 | Stage 3 is delivered as three issues, in this order: 3a moves the consumers to the check, 3b removes the Guardian exceptions, 3c publishes the function. All three are in milestone 1.0.0. Their pull requests target `feature/link-access-check-design`, as #409 and #410 did; the stage issues close when that branch is merged to `main`. | review |
+
+**Stage 3a: consumers moved to the check**
+
+| # | Decision | From | Amends |
+|---|---|---|---|
+| D-40 | Every package call site moves to the check for every target, Guardian targets included: the four context button classes, actions by view key, card actions, navbar items, the `cv_context_has_permission` filter, core Cancel and the bulk toolbar. Each site hands its rendering view to the private function when that view belongs to the target's own ViewSet, and `None` otherwise, so `cv_create_has_access` only ever receives a view of its own ViewSet. This departs from S3-06, which handed the view over everywhere. A Guardian object or list target therefore gains the parent and higher-ancestor gates the request already runs. Guardian's own exceptions (D-30, D-33 with D-27, D-34, D-35 and the nested Guardian Cancel path) stay until 3b, except as the consequences below state. | review | D-28, D-29, D-31 |
+| D-41 | D-04 is completed. A consumer hands the check the immediate parent and every higher ancestor the request has already resolved, nearest first and aligned with the target's declared ancestry. A level that is not known is `None` and is not gated; it never shifts a farther object into its place. Nothing is loaded to decide a link. For a target on the page's own ViewSet the immediate parent comes from the guard state, not from `cv_get_parent_object`; for a child link it is the object or row its URL is built from. Cancel alone uses the hook (D-42). A nested target whose immediate parent is not known is denied at every consumer, also on a view that did not run the ancestor guard. | #411, review | D-13, D-26, D-36 |
+| D-42 | Cancel takes its immediate parent from `cv_get_parent_object`, as today, through the existing `_cv_cancel_parent_object`, which treats a 404 of the built-in lookup as "unavailable". On a guarded request that is the resolved parent, without a query. A project override of the hook keeps working. On a view that did not run the guard the hook's existing lookup still finds the parent, so Cancel is the one consumer that does not deny there. Higher ancestors for Cancel come from the guard state only. | review | D-41 |
+| D-43 | The bulk toolbar is a link to a view of the same ViewSet and calls the check directly, like a context button. It no longer goes through the cancel helper. | review | 9 |
+| D-44 | `cv_context_has_permission` stays permission-only. It runs the parent gates and the own permission and never the state hook, so it can answer true for an action that is disabled by state. | #411 (S3-02) | 9 |
+| D-52 | Bulk return redirects (GET, the warning POST and the Cancel button of the all-blocked page) follow Cancel's eligibility as changed by 3a and 3b. The order origin, fallback, success URL stays. The chosen `Location` may change; authorization responses and login redirects do not. This applies in 3a and again in 3b. | #411 (S3-09) | none |
+
+**Stage 3b: Guardian exceptions removed**
+
+| # | Decision | From | Amends |
+|---|---|---|---|
+| D-45 | The kept denials for a nested Guardian create end wherever the route's parent is known: the sibling button, the create control on the create page, the permission filter on a child list page and the `ManyToMany` child page. A parent is never guessed from a relation. | #411 (S3-01) | D-27, D-33 |
+| D-46 | A link to any nested Guardian view requires a signed-in, active user, under protected and unprotected ancestry alike. That is the request's rule and the rule a nested Guardian list link already has; it is extended to the nested create and to nested object views. The rule runs before `cv_create_has_access`, so an override cannot admit an anonymous user. L2 ends: an anonymous backend grant under a model-permission parent no longer shows the create link, and neither does a parent with provider `none`. A direct call to the default `cv_create_has_access` of a nested create answers the same. Top-level Guardian links keep their rules. This goes beyond S3-03, which kept the unprotected case. | #411 (S3-03), review | D-18, D-35, 5.4 |
+| D-47 | A queryset-only Guardian composition also checks its declared parent policy, for links and for Cancel to that list. Own permission and the filtering of list rows are unchanged. | #411 (S3-04) | D-30 |
+| D-48 | Nested Guardian Cancel moves onto the check for object, list and create targets, with the higher ancestors. Guardian Cancel targets keep their actor rule and the composition validation around the check. The actor rule is not loosened to the rule of an ordinary top-level Guardian list link. | #411 (S3-05), review | none |
+| D-49 | For a nested Guardian create the declared parent gates run first, at every consumer. `cv_create_has_access` is asked only when they pass; an override that answers true cannot restore a link the gates denied, and an override that answers false still denies. Cancel already works this way. No bypass flag is added to spare the default hook its second look at the parent. | #411 (S3-07) | D-28, D-32 |
+| D-50 | L1 ends. `GuardianQuerysetMixin.cv_get_context` no longer rewrites a button's result by key; each button is decided once for its actual target. | #411 | D-34 |
+| D-51 | S3-08 is not adopted. It would have made an ordinary link to a parent-only Guardian view stop asking the child model permission while still honouring an "explicit" custom denial. A nested Guardian view that is parent-only and not a create keeps today's two behaviours: an ordinary link asks its inherited `cv_has_access`, which requires the child model permission the request does not require, and Cancel does not ask `cv_has_access` at all. The first is a documented known limit: a link can be hidden that the request would allow. No detection of "explicit" against "inherited" overrides is built. It is decided again when a project reports the case. Cancel keeps its own branch for this shape, because the check would ask the child model permission. In 3b that branch gains the higher-ancestor gates; not asking `cv_has_access` is then its one difference from the check. | review | 5.6 |
+
+**Stage 3c: the public function**
+
+| # | Decision | From | Amends |
+|---|---|---|---|
+| D-53 | `check_link_access` is published in 1.0 as a standalone function, stable, after 3a and 3b. Its inputs are the target view class, the user, the target's own object and the known ancestors. It answers allowed, denied by permission or denied by state. It takes no rendering view and passes `None` to `cv_create_has_access`; package consumers hand the real view to the private function (D-40). The permission-only function stays private. No accessor for the ancestors a request resolved is published; a project caller supplies what it has, and a level it does not supply is unchecked. No provisional status is introduced. | #411 (S3-06), review | D-17, 9 |
+| D-54 | The public function validates its inputs before it decides anything and raises `ImproperlyConfigured` when they do not fit the target: an ancestor that is not of the model of its level in the target's declared ancestry; an own object that is not of the target's model; no own object for an object target; an own object for a target without one; more ancestors than the target has levels; any ancestor for a top-level target. An object fits a level when it is an instance of that level's concrete model, so a proxy, a multi-table child and a polymorphic subclass pass; for a Resource target the own object is an instance of the Resource class. Every element counts towards the length, `None` included. A list shorter than the ancestry and `None` for a higher level stay allowed and mean "not known". The private function and its package callers are not changed by this. | review | 5.1 |
+
+Consequences the plans must carry. They follow from the decisions and from reading the code; they are not decisions.
+
+- **D-40, direction of change:** the check is built from the request gate's pieces, so a Guardian link that 3a
+  newly hides is one whose click the request refuses. This follows from reading the code. The stage-1 matrix has
+  not been run against it; 3a records every changed cell with its reason.
+- **D-40, the create seam:** `_cv_page_link_ancestors` survives 3a with one override, on the Guardian create view
+  (`crud_views_guardian/lib/views.py:282-293`). It is what keeps D-27 and D-33 until 3b removes it. Its core
+  default changes meaning from "use the page's own code path" to "use the aligned list of D-41".
+- **D-40, the state adapters:** after 3a the only production caller of `_cv_action_enabled_for_rendering` is the
+  nested Guardian Cancel path (`crud_views_guardian/lib/mixins.py:435`), which 3a does not touch. The adapters, the
+  core create view's overrides of them (`crud_views/lib/views/create.py:36-75`) included, are removed in 3b. Tests
+  call or override them by name: `tests/test1/test_ancestor_resolution.py:749, 771`,
+  `test_ancestor_helpers.py:289`, `test_guardian_parent_none.py:452, 629, 936`,
+  `test_core_nested_create_state.py:128, 180, 232` and `test_cancel_permissions.py:306, 474, 497-499`;
+  `test_link_access.py:535-562` calls the seam by name. This list is a starting point, not complete; 3b rewrites
+  and lists every such line, as D-25 did for stage 1. 3a already has to rewrite the tests that observe a migrated
+  consumer through the rendering adapter (`test_navbar_checks.py`, `test_navbar_templates.py`,
+  `test_navbar_costs.py`, `test_cancel_state.py`, `test_cancel_permissions.py`, `test_bulk_source.py`) and the two
+  lines of `test_link_access.py` that name `_page_action_object`.
+- **D-40, where a Guardian target does not yet gain a gate:** at the pages of its own ViewSet a nested Guardian
+  create is handed the immediate parent only, by its kept seam and by the list-page rewrite, so it gets no
+  higher-ancestor gate until 3b. Reached from a parent's page (child button, card child action, navbar child item)
+  it is handed the aligned list and gains the higher-ancestor gates in 3a. A queryset-only composition keeps
+  skipping the immediate parent (D-30), but the higher-ancestor gates run before that class step
+  (`crud_views/lib/link_access.py:74`), so on three or more levels D-30 is partly ended in 3a. Cancel to a
+  queryset-only nested list defers to the core check (`mixins.py:252-256`) and gains the higher-ancestor gates in
+  3a as well.
+- **D-40, the rendering view:** today the hook receives a view from the create button of the nested list or card
+  page, through the rewrite (`mixins.py:330`), and from Cancel (`mixins.py:442`), both of its own ViewSet. It
+  receives `None` everywhere else, the own ViewSet's object pages and its row and card actions included. Under D-40
+  those sites hand their view over too; pages of other ViewSets keep handing `None`. The list page still hands over
+  the list view after 3b removes the rewrite. An override that calls `rendering_view.cv_get_parent_object()`
+  therefore always gets its own parent.
+- **D-41, the hook and the buttons:** today a core nested create button takes its state object, and the parent
+  button its object, from `cv_get_parent_object` (`crud_views/lib/views/create.py:63-64`,
+  `crud_views/lib/view/buttons.py:177-181`). From 3a on they use the guard state. A project override of the hook no
+  longer reaches them; a project that annotates the parent does it in the parent ViewSet's queryset, which the
+  guard uses.
+- **D-40 with D-48:** nested Guardian Cancel keeps its own path through 3a (`mixins.py:414-435`), which gates the
+  immediate parent only. It gains the higher ancestors in 3b. Between the two, a nested Guardian button and the
+  Cancel link to the same view can differ on a higher ancestor.
+- **D-41 with D-35:** the higher-ancestor gates deny an anonymous or inactive actor as soon as one higher level is
+  gated (`crud_views/lib/link_access.py:53-54`). A child link to a nested Guardian create below a gated higher
+  ancestor is therefore denied for an anonymous actor from 3a on. L2 remains where no higher level is gated, until
+  D-46.
+- **D-41, views without guard state:** a nested list or object view that has a request but no guard state raises
+  before it renders (`crud_views/lib/ancestors.py:598-605`). The shapes that reach a link decision without guard
+  state are create and form pages, Resource leaves, non-CRUD views and direct calls.
+- **D-42:** the hook and its lookup exist today (`crud_views/lib/view/base.py:1005-1017, 1198-1217`). One call is
+  new: Cancel to a nested object target did not ask for the parent (`base.py:82-83`) and now does. On a guarded
+  request that costs no query. On a view without guard state it is one lookup, and an exception raised by a project
+  override of the hook now reaches this path. No test pins a project override here; 3a adds one.
+- **D-43:** the documented Guardian bulk view subclasses the core bulk view and carries no Guardian mixin
+  (`docs/reference/bulk_actions.md`, "With Guardian"), so the Guardian Cancel overrides never applied to it.
+- **D-40 with D-19:** permission before state is D-19. It changes the three button classes, actions by view key and
+  the card own action; Cancel, the bulk toolbar and navbar owner items already follow it. With the second branch
+  gone from each call site, `_page_action_object` has no caller and is removed in 3a.
+- **D-40, configuration errors:** a missing ancestor permission key, a view without operation requirements and
+  authorization records on another database are raised when the link is decided. A missing own permission key
+  denies, as today.
+- **D-45, the own child:** `cv_create_has_access` keeps accepting an own child of a single-foreign-key nesting and
+  resolving its parent (`crud_views_guardian/lib/views.py:311-317`). That is the hook's documented input, not a
+  parent guessed to decide a link.
+- **D-46, who can see a difference:** probed at `e444bbfc` under a provider-`none` parent, with Guardian's
+  anonymous user holding `view` on one child: the link check answers allowed for the nested detail and for the
+  nested create, denied for the nested list, and the detail request answers with the login redirect. Pages built
+  from the shipped Guardian view classes refuse an anonymous user themselves, so no such page changes. A ViewSet
+  that mixes in a plain view without a permission mixin under fully unprotected ancestry admits everybody, and no
+  system check forbids that mix; on such a page the link disappears. That last part is from reading.
+- **D-45 with D-50:** the rewrite is also what gives the plain create button on a nested Guardian list or card page
+  its parent, because the seam answers `()` for a page without an object
+  (`crud_views_guardian/lib/views.py:287-291`). The two decisions land in one change; the rewrite is not removed
+  first. With them the create control gains the higher-ancestor gates on every page of its own ViewSet.
+- **Order inside 3b:** D-49 lands with or before the move of Cancel onto the check (D-48); otherwise an override
+  that answers true restores a Cancel link, because the create's class step is the hook alone (`views.py:387`).
+  D-46 lands with or before D-45, so that no newly shown create link is shown to an anonymous user. The adapters go
+  after the Cancel move. 3b is one pull request; these are constraints on its commits.
+- **D-50:** the rewrite applies to a button of any class on a nested page (`mixins.py:313-330`). A project
+  `ContextButton` subclass with its own `get_context` that links to a nested Guardian create is corrected by it
+  today and is hidden once it is gone. The migration note names this and points to `cv_create_has_access`; 3c
+  changes the pointer to `check_link_access`.
+- **D-51:** the child model permission is asked only by a view built on a `...PermissionRequired` base; on a plain
+  `CrudView` base `cv_has_access` answers true. The ordinary link to this shape gains the parent and
+  higher-ancestor gates in 3a like any other target. What remains of `_cv_cancel_parent_target_access`
+  (`mixins.py:438-443`) after 3b is listed as a retained helper with this reason. The only view of this shape found
+  in the repository is a test fixture (`tests/test1/test_cancel_permissions.py:462`).
+- **D-53:** a project override of `cv_create_has_access` that reads the rendering view can answer differently for a
+  project call than for a package button on the same page. The reference says so. Without the view the default hook
+  only loses the swap of an equal parent for the request's own instance (`crud_views/lib/ancestors.py:676-679`);
+  its answer is the same. A rendering-view argument can be added later without a breaking change. What is frozen is
+  the representation of the three outcomes.
+- **D-53, what a project caller cannot match:** on a CRUD page a project has `cv_get_parent_object` and nothing
+  public for the levels above. A custom button therefore differs from a package button where the target asks a
+  stricter higher-level permission than the page; with the default policies it does not. The function also does not
+  check membership: it accepts a child with another parent than its own, where the request answers 404.
+- **D-54, same exception type:** the gates raise `ImproperlyConfigured` for configuration errors as well, so a
+  caller cannot tell the two apart by type. The validation messages start with the function's name. Counting levels
+  walks the declared ancestry, so a broken ancestry is reported during validation, with its own message. No new
+  exception class is added.
+- **D-54:** a model-permission parent ignores the object (`crud_views/lib/viewset/__init__.py:507-509`), so without
+  the check any object would count as a known parent, and the project's state hook would receive it. A parent
+  ViewSet is never a Resource (system check `viewset.E261`), so every ancestor level has a model.
+
+Carried over from #411 without change, as constraints on all three issues: the request gate, its responses, its
+trace and the published `cv_access` / `cv_manage_view` formats are unchanged; configuration errors are raised, not
+turned into hidden links; only grants are shared and no decision is stored; no ancestor is loaded to decide a
+link; breadcrumb and site menu are not built; `prefetch_perms`, `force_full_hierarchy_check` and a cross-request
+cache stay out.
+
+No decision in section 12.8 is open. What each issue leaves to its planner is listed in the issue.
 
 ## 13. Reviewer brief
 

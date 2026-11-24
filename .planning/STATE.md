@@ -1,25 +1,24 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.49"
+current_phase_name: Reuse Guardian object grants across navigation checks
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.48 complete, ready to plan Phase 7
-last_updated: "2026-11-24T07:24:28.674Z"
+stopped_at: Phase 06.49 context gathered
+last_updated: "2026-11-24T09:01:56.249Z"
 last_activity: 2026-11-24
-last_activity_desc: "Phase 06.48 shipped as PR #409 targeting feature/link-access-check-design"
-state_head: 971ac67e12b8b797fbbdfad51c4df5a2a228fb4a
+last_activity_desc: "Phase 06.49 context captured from the approved issue #385 handover; ready to plan"
+state_head: 145eb61af0635d2b7c81f391ca86499378cdda28
 progress:
-  total_phases: 55
+  total_phases: 56
   completed_phases: 54
   total_plans: 294
   completed_plans: 294
-  percent: 98
 milestone_name: milestone
 ---
 
-Total Phases: 55
+Total Phases: 56
 Completed Phases: 54
 
 # Project State
@@ -29,17 +28,17 @@ Completed Phases: 54
 See: .planning/PROJECT.md (updated 2026-11-23)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.49 — Reuse Guardian object grants across navigation checks (#385)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.49 — Reuse Guardian object grants across navigation checks (#385)
 Current Plan: Not started
 Total Plans in Phase: 0 (not planned)
 Status: Ready to plan
-Last activity: 2026-11-24 -- Phase 06.48 shipped as PR #409 targeting feature/link-access-check-design
+Last activity: 2026-11-24 -- Phase 06.49 context captured from the approved issue #385 handover; ready to plan
 
-Next: $gsd-discuss-phase 7
+Next: $gsd-plan-phase 06.49
 
 ### Phase 06.48 completion — 2026-11-23
 
@@ -2403,6 +2402,7 @@ None yet.
 - Phase 06.46 inserted after Phase 06.44: Issue #399: bulk toolbar destination entry gates; approved D-01–D-06 handover amends #387. Requested 06.46 retained; 06.45 remains unallocated in this checkout. (URGENT)
 - Phase 06.47 inserted after Phase 06.45: Semantic variants for bulk toolbar buttons (#400); explicitly assigned 06.47 by the maintainer, approved D-01–D-05, depends on 06.41, before Phase 7 freeze (URGENT)
 - Phase 06.48 inserted after Phase 6: Issue #407: link access check as a private function; narrow obj in cv_has_access and cv_action_enabled. Stage 1 of the approved link access concept (settled D-01–D-24, spec at dbf1e6c4); explicitly assigned 06.48 by the maintainer, before the 1.0 hook freeze (URGENT)
+- Phase 06.49 inserted after Phase 06.48: Reuse Guardian object grants across navigation checks (#385); approved stage 2, concept sections 12.1, 12.3 and 12.7 at 4b65990f, including D-37 and D-38 (URGENT)
 
 ## Deferred Items
 
@@ -2412,6 +2412,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-23T21:41:16.482890+00:00
-Stopped at: Phase 06.48 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-24T09:01:50.632Z
+Stopped at: Phase 06.49 context gathered
+Resume file: .planning/phases/06.49-reuse-guardian-object-grants-across-navigation-checks-385/06.49-CONTEXT.md

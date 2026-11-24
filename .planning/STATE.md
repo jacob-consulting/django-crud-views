@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.49"
 current_phase_name: Reuse Guardian object grants across navigation checks
 current_plan: 5
-status: executing
-stopped_at: Completed 06.49-04-PLAN.md
-last_updated: "2026-11-24T12:41:58.746Z"
+status: verifying
+stopped_at: Completed 06.49-05-PLAN.md
+last_updated: "2026-11-24T13:05:54.282Z"
 last_activity: 2026-11-24
-last_activity_desc: Phase 06.49 plan 04 complete; measured list/navbar/child costs and ancestor receipts committed
-state_head: 5fe3b5cca42e1c49b81130ef26487a1ca20b16d9
+last_activity_desc: Phase 06.49 plan 05 complete; all five plans executed, independent review and verification pending
+state_head: 41d4a52872c225af3f00bbf9d3b4f0503b287a3a
 progress:
   total_phases: 56
   completed_phases: 54
   total_plans: 299
-  completed_plans: 298
+  completed_plans: 299
 milestone_name: milestone
 ---
 
@@ -32,13 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-23)
 
 ## Current Position
 
-Phase: 06.49 (Reuse Guardian object grants across navigation checks) — EXECUTING
+Phase: 06.49 (Reuse Guardian object grants across navigation checks) — IN PROGRESS
 Current Plan: 5
 Total Plans in Phase: 5
-Status: Executing Phase 06.49; plan 05 next
-Last activity: 2026-11-24 — Phase 06.49 plan 04 complete; measured list/navbar/child costs and ancestor receipts committed
+Status: All five plans executed; independent phase review and verification pending
+Last activity: 2026-11-24 — Phase 06.49 plan 05 complete; final documentation and regression evidence committed
 
-Next: $gsd-execute-phase 06.49
+Next: Independent review and verification of Phase 06.49
+
+### Phase 06.49 plan 05 — 2026-11-24
+
+- Canonical and duplicated cost guidance now uses measured runtime/cache conditions, preserves historical figures, and explains Python-user grant lifetime and D-37's scoped error render followed by fresh-request denial. The existing migration paragraph and non-Breaking #385 release note are aligned; no source/test changes in this plan.
+- Final product source 0f7b17546ccc5353fb3d536cc21ac6e53e26c000 passed full core 18,934, ancestor/trace 1,976, Django 4.2/5.2 preservation plus all affected costs 1,833 each, frozen matrix 1,179, Guardian/delete/bulk 313, and examples 637 plus 300 subtests. Documentation selections 97/48, strict MkDocs, repository Ruff and source compileall passed. No product changes followed the final gates.
+- VALIDATION maps all eleven tasks and fifteen authored threats to actual evidence. Original before/after baseline bytes and all eighteen artifact digests remain intact; all published navbar and child numeric cells match receipts. Existing workflow/example warnings are recorded. Recorder-enabled CI (CV_ACCESS_RECORD_REQUESTS=1), installed-distribution and full Python/version matrix certification remain explicitly unexecuted and uncertified.
+- Task commits 0f5e3bb0, 0f7b1754 and e32cafef and immediate SUMMARY commit 41d4a528 precede tracking. ROADMAP is 5/5 In Progress; current plan 5, completed plans 299. SDK progress/metrics/decisions/session handlers ran; the known unscoped progress-refresh decline and stale dotted row were reconciled. Current dirty state.json bytes were restored and verified; unrelated configuration/index edits remain untouched. No phase completion handler ran; independent orchestrator review/verification is pending.
 
 ### Phase 06.49 plan 04 — 2026-11-24
 
@@ -1992,6 +1999,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.49 P02 | 7 min | 2 tasks | 5 files |
 | Phase 06.49 P03 | 5 min | 2 tasks | 5 files |
 | Phase 06.49 P04 | 9 min | 2 tasks | 4 files |
+| Phase 06.49 P05 | 20 min | 3 tasks | 9 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2356,6 +2364,9 @@ Recent decisions affecting current work:
 - [Phase 06.49]: Keep original user/cache lifetimes and attribute savings only to measured grant SELECTs.
 - [Phase 06.49]: Prepare the ordinary control view grant before its first load; label this setup change separately.
 - [Phase 06.49]: Preserve standalone ancestor counts and label the combined Guardian ContentType-cache observation without changing pins.
+- [Phase 06.49]: Publish first-load child costs under the measured Django 6 runtime and distinguish Django model-permission warmth from retained Guardian grants.
+- [Phase 06.49]: Preserve historical before/after receipts and label the combined ContentType observation and H-01 setup adaptation separately.
+- [Phase 06.49]: Certify only executed checkout gates; recorder-enabled CI, installed-distribution and full-version matrix certification remain excluded.
 
 ### Pending Todos
 
@@ -2459,6 +2470,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-24T12:41:52.382Z
-Stopped at: Completed 06.49-04-PLAN.md
+Last session: 2026-11-24T13:05:47.535Z
+Stopped at: Completed 06.49-05-PLAN.md
 Resume file: None

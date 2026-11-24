@@ -3,19 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.49"
 current_phase_name: Reuse Guardian object grants across navigation checks
-current_plan: Not started
+current_plan: 2
 status: executing
-stopped_at: Phase 06.49 plan review converged in 5 cycles; ready to execute
-last_updated: "2026-11-24T11:14:12.534Z"
+stopped_at: Completed 06.49-01-PLAN.md
+last_updated: "2026-11-24T12:09:40.554Z"
 last_activity: 2026-11-24
-last_activity_desc: Phase 06.49 plans converged after 5 external-review cycles; 5 plans and 11 tasks ready to execute
-state_head: 91eb29c4bc1df848dca3b8e6e72f8f9233f1d985
+last_activity_desc: Phase 06.49 plan 01 complete; before receipts committed
+state_head: 55fb5d2c40f83a3e9834476bd239f2326318540f
 progress:
   total_phases: 56
   completed_phases: 54
   total_plans: 299
-  completed_plans: 294
-  percent: 96
+  completed_plans: 295
 milestone_name: milestone
 ---
 
@@ -29,17 +28,23 @@ Completed Phases: 54
 See: .planning/PROJECT.md (updated 2026-11-23)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.49 — Reuse Guardian object grants across navigation checks (#385)
+**Current focus:** Phase 06.49 — Reuse Guardian object grants across navigation checks
 
 ## Current Position
 
-Phase: 06.49 (Reuse Guardian object grants across navigation checks) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.49 (Reuse Guardian object grants across navigation checks) — EXECUTING
+Current Plan: 2
 Total Plans in Phase: 5
-Status: Ready to execute
-Last activity: 2026-11-24 -- Phase 06.49 plans converged after 5 external-review cycles; 5 plans and 11 tasks ready to execute
+Status: Executing Phase 06.49; plan 02 next
+Last activity: 2026-11-24 — Phase 06.49 plan 01 complete; before receipts committed
 
 Next: $gsd-execute-phase 06.49
+
+### Phase 06.49 plan 01 — 2026-11-24
+
+- Real Guardian Publisher list responses are pinned at 7/14/26 total queries for 0/1/3 rows, with direct view grants, excluded ungranted rows, Details allowed and Edit/Delete denied inside each action cell. Explicit reset/warm vocabulary keeps fresh request users unprimed.
+- Isolated list 3, navbar 120, ancestor 9 and affected child 5 passed; combined four-module run 385 passed. All list pins, 120 navbar properties and five affected child cases agree across their receipts. Nine ancestor slices and raw SQL supplements are preserved with SHA-256 digests in COST-BASELINE. Production is unchanged from 37d98d0d.
+- Two task commits and SUMMARY 55fb5d2c precede tracking. ROADMAP is 1/5 In Progress; current plan 2, completed plans 295. Generic progress refresh retains its known unscoped-requirements decline; plan-count progress is recorded. Original state.json bytes and unrelated staged configuration changes are preserved. No phase completion handler ran.
 
 ### Phase 06.49 plan convergence — 2026-11-24
 
@@ -1962,6 +1967,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.48 P07 | 15min | 2 tasks | 8 files |
 | Phase 06.48 P08 | 10min | 2 tasks | 8 files |
 | Phase 06.48 P09 | 12min | 2 tasks | 5 files |
+| Phase 06.49 P01 | 9 min | 2 tasks | 2 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2318,6 +2324,8 @@ Recent decisions affecting current work:
 - [Phase 06.46]: Keep the existing template guard internal and defer promote/replace/retain decision to stability work.
 - [Phase 06.46]: Follow-up evaluates bulk buttons in Python before template rendering and guards the toolbar snippet itself; supersedes the N6-01 deferral.
 - [Phase 06.47]: Followed approved local adapter and dedicated bulk leaf; generic action/form dispatch remains bounded.
+- [Phase 06.49]: Preserve unchanged production and exact isolated/combined list pins before checker replacement.
+- [Phase 06.49]: Attribute outer list-filter SELECTs separately from Guardian user/group checker loads.
 
 ### Pending Todos
 
@@ -2421,6 +2429,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-24T11:13:22.668Z
-Stopped at: Phase 06.49 plan review converged in 5 cycles; ready to execute
-Resume file: .planning/phases/06.49-reuse-guardian-object-grants-across-navigation-checks-385/06.49-01-PLAN.md
+Last session: 2026-11-24T12:09:34.703Z
+Stopped at: Completed 06.49-01-PLAN.md
+Resume file: None

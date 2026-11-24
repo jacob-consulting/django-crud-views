@@ -3,8 +3,8 @@
 Date: 2026-11-23. Status: concept approved by the maintainer on 2026-11-23; **no implementation is authorized by this
 document**. It is not an implementation plan. Each stage in section 9 needs its own issue, plan and approval.
 Amended on 2026-11-23 for stage 1: section 12.6 (D-25 to D-36), decided by the maintainer while #407 was planned.
-Amended on 2026-11-24 for stage 2: section 12.7 (F-01 to F-08), findings from a probe after stage 1 shipped. They
-are findings, not decisions; F-02 is open for the maintainer.
+Amended on 2026-11-24 for stage 2: section 12.7, findings F-01 to F-08 from a probe after stage 1 shipped, and
+D-37, decided by the maintainer on F-02.
 
 Related: #385 (reuse Guardian grants), #314 (opt-in URL helper), #312/#318 (link visibility versus request gate),
 `superpowers/notes/2026-11-02-navigation-concept-exploration.md` (site menu, caching options C0–C6),
@@ -464,8 +464,8 @@ To verify during planning:
 - Whether loading the grants for all rows of a list or card page in one step (`prefetch_perms`) belongs in this
   stage. The saving is expected, not measured; the planner includes it only with a pinned before-and-after count.
 
-Section 12.7 adds what a probe found after stage 1 shipped: one stage-1 test that contradicts D-09, one open
-decision on the write-time re-check, and the tests and passages the plan must list.
+Section 12.7 adds what a probe found after stage 1 shipped: one stage-1 test that contradicts D-09, the tests and
+passages the plan must list, and D-37, which states one exception to the first constraint above.
 
 ### 12.4 Stages 3 to 5 are deliberately unscoped
 
@@ -548,12 +548,13 @@ ran in a scratch worktree at `63e8e07d` and was discarded. `pytest tests/test1 -
 
 Nothing in the stage-1 code blocks stage 2. The link check reaches Guardian only through
 `_ancestor_has_permission` and `cv_has_access`, which is where the helper goes. The findings below are input for
-the stage-2 plan. They are findings, not maintainer decisions. F-02 needs a decision before planning.
+the stage-2 plan. They are findings, not maintainer decisions. F-02 raised a question, which the maintainer
+decided as D-37 below. No decision is open.
 
 | # | Finding | Kind | Amends |
 |---|---|---|---|
 | F-01 | `test_no_decision_is_stored` (`tests/test1/test_link_access.py:469, 476`, added in stage 1) asserts that a link check leaves no new attribute with `cv` in its name on the user object. A checker kept on the user (D-09) fails it when the attribute is named in the `cv` style. D-20 forbids stored decisions only; grants are shared. Stage 2 rewrites the assertion to exempt the checker attribute by name and keeps the rest of the test. | contradiction with stage 1 | D-09, D-20 |
-| F-02 | `test_guardian_workflow_late_refusal_retains_scoped_authorization[permission-*]` (`tests/test1/test_workflow_review.py:259`) revokes a grant inside the request and expects the re-check inside the write to raise `PermissionDenied`. With the shared checker the re-check reads the grants loaded earlier in the same request and does not raise. This is a changed access decision, which 12.3 forbids, although D-02 as worded allows same-request grants. **Open for the maintainer:** whether the write-time re-check (`GuardianObjectPermissionMixin._check_object_perm` reached from `get_object`) reads grants fresh, or the test's expectation is given up. | open decision | 12.3 constraints, D-02 |
+| F-02 | `test_guardian_workflow_late_refusal_retains_scoped_authorization[permission-*]` (`tests/test1/test_workflow_review.py:259`) revokes a grant inside the request and expects `PermissionDenied`. The second check is not a guard inside the write. When a business rule refuses the transition, the transaction unwinds and `WorkflowView.post` reloads the object to render the form with the error (`src/crud_views_workflow/lib/views.py:101`); on a Guardian view that reload runs `_check_object_perm` again through `get_object`. No write follows it. With the shared checker the reload reads the grants loaded earlier in the same request and the form is shown. Settled by D-37. | decided | 12.3 constraints, D-02 |
 | F-03 | Count pins outside the two files 12.3 names: five tests in `tests/test1/test_guardian_child_link_visibility.py` (`test_query_cold_and_warm_discovery[context, card]`, `test_query_create_uses_only_its_existing_parent_check[context, card]`, `test_query_unaffected_core_and_ordinary_actions`) pin `permissions: 2` or `permissions > 0` and see none. The plan lists them with the new figures. | expected, scope addition | 12.3 scope |
 | F-04 | `test_navbar_isolated_costs` (`tests/test1/test_navbar_costs.py:165`): all 80 cases drop from 4 queries to 2 or 0. `tests/test1/test_ancestor_costs.py` did not fail; its counts may not change, because the ancestor gate already reuses one checker per view. | expected | 12.3 scope |
 | F-05 | Tests that grant a permission and then reuse the same Python user object see the old grants: `test_parity_child_collection` (8 cases, `test_guardian_child_link_visibility.py:615`) and `test_guardian_child_object_state_once_after_parent_and_object_policy` (`tests/test1/test_cancel_permissions.py:637`). This is the lifetime cost of section 7. The tests re-fetch the user after the grant; the expected results stay. | expected, test shape | 7 |
@@ -561,10 +562,29 @@ the stage-2 plan. They are findings, not maintainer decisions. F-02 needs a deci
 | F-07 | Three passages describe fresh or view-local checkers and are rewritten: `docs/reference/navbar.md:346` ("Guardian admission creates fresh checkers"), `docs/reference/context_buttons.md:245` ("no rendering-view argument to reuse a request-local Guardian checker"), and the module docstring of `src/crud_views_guardian/lib/ancestors.py`. | documentation | 12.3 scope |
 | F-08 | Line drift: stage 1 removed two lines from `crud_views_guardian/lib/mixins.py`, so the checker sites 12.3 gives as `mixins.py:156, 213` are at 153 and 210. `ancestors.py:67, 70` are unchanged. | drift | 12.3 scope |
 
+Decided by the maintainer on 2026-11-24. Like the decisions in 12.1 and 12.6, it is settled input and is not under
+review (section 13, point 1).
+
+| # | Decision | Amends |
+|---|---|---|
+| D-37 | A second check of the same object in one request uses the grants that request already loaded. A grant changed during a request is seen from the next request on. The workflow reload after a refused transition therefore shows the form with the error once more; the next request answers 403. No fresh checker, flag or bypass is added for it. This is the one stated exception to "every access decision is unchanged" in 12.3. | 12.3 constraints, D-02 |
+
+Consequences the plan must carry:
+
+- **Test:** only the `permission` case of the F-02 test is rewritten, to expect the rendered form with the error.
+  The `scope` and `action` cases and the assertions on the scoped reload stay as they are.
+- **Reasons, for the documentation of the lifetime (12.3):** nothing is protected by the second check, because the
+  actor passed the gate in this request and the write was refused. The model-permission path already behaves this
+  way: with `cv_guardian_accept_global_perms`, `user.has_perm` answers from Django's permission set on the user
+  object. D-37 makes object grants consistent with it.
+- **Limit of the evidence:** the probe found no other place that checks the same object twice in one request. That
+  is as good as the test coverage; delete and bulk were not audited by reading. If the plan finds another such
+  place, D-37 applies to it as well, and the plan names it.
+
 Verified by the probe:
 
 - The stage-1 decision matrix (`tests/test1/test_link_access_matrix.py` with `link_access_matrix_baseline.json`) and
-  the access-trace suites pass unchanged. Apart from F-02, no access decision changed.
+  the access-trace suites pass unchanged. Apart from F-02 (D-37), no access decision changed.
 - An attribute set on `request.user` survives Django's lazy user wrapper: every client-driven test outside the
   findings above passes. This answers the first "to verify" item of 12.3 for signed-in users. The anonymous user
   was not tested separately and stays to verify.

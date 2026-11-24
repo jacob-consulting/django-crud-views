@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.49"
 current_phase_name: Reuse Guardian object grants across navigation checks
-current_plan: 3
+current_plan: 4
 status: executing
-stopped_at: Completed 06.49-02-PLAN.md
-last_updated: "2026-11-24T12:20:56.192Z"
+stopped_at: Completed 06.49-03-PLAN.md
+last_updated: "2026-11-24T12:29:30.423Z"
 last_activity: 2026-11-24
-last_activity_desc: Phase 06.49 plan 02 complete; shared Guardian grants and preservation tests committed
-state_head: f9547f14b0ce73decc9a5e9dccd07e2c5129f71f
+last_activity_desc: Phase 06.49 plan 03 complete; grant lifetime and workflow/request boundary tests committed
+state_head: aee1598b923290da9932f683b1c7d6ad854acdb2
 progress:
   total_phases: 56
   completed_phases: 54
   total_plans: 299
-  completed_plans: 296
+  completed_plans: 297
 milestone_name: milestone
 ---
 
@@ -33,12 +33,19 @@ See: .planning/PROJECT.md (updated 2026-11-23)
 ## Current Position
 
 Phase: 06.49 (Reuse Guardian object grants across navigation checks) — EXECUTING
-Current Plan: 3
+Current Plan: 4
 Total Plans in Phase: 5
-Status: Executing Phase 06.49; plan 03 next
-Last activity: 2026-11-24 — Phase 06.49 plan 02 complete; shared Guardian grants and preservation tests committed
+Status: Executing Phase 06.49; plan 04 next
+Last activity: 2026-11-24 — Phase 06.49 plan 03 complete; grant lifetime and workflow/request boundary tests committed
 
 Next: $gsd-execute-phase 06.49
+
+### Phase 06.49 plan 03 — 2026-11-24
+
+- Direct/group grant additions and revocations preserve loaded answers on retained users; normal Client requests get distinct actual users/checkers and enforce next-request revocation. Both workflow permission-refusal variants render the error once (200/modal 422) and then deny a fresh authenticated request to the same class with 403. Scope/action/initial-denial, scoped reload, default alias and no-write assertions remain unchanged.
+- Two narrow F-05 refetches preserve all visibility/state outcomes, with the Cancel request rebound to the fresh actor. Four F-06 cases positively assert actual user/checker separation while retaining distinct views and resolved ancestors; classes/ViewSets forbid both checker names. Only five test files changed; production, trace/matrix data, query pins and COST-BASELINE are untouched.
+- Final required checks: 8 lifetime, 10 workflow and 13 fixture/isolation tests passed; all five files pass Ruff. Existing F-02 RED was exactly two failures/eight passes and received RED_EVIDENCE_OK; this test-only plan adds no artificial production RED/GREEN cycle. Three task commits through bba9db2b and SUMMARY aee1598b precede tracking.
+- ROADMAP is 3/5 In Progress; current plan 4, completed plans 297. SDK progress/metrics/decision/session handlers ran; the known unscoped progress-refresh decline and stale dotted row were reconciled. Current dirty state.json bytes were restored and checked, with unrelated configuration preserved. No phase completion handler ran. Plan 04 owns measured cost changes/H-01 setup; plan 05 owns broad regression closure. Full-suite and recorder-enabled certification remain unclaimed here.
 
 ### Phase 06.49 plan 02 — 2026-11-24
 
@@ -1976,6 +1983,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.48 P09 | 12min | 2 tasks | 5 files |
 | Phase 06.49 P01 | 9 min | 2 tasks | 2 files |
 | Phase 06.49 P02 | 7 min | 2 tasks | 5 files |
+| Phase 06.49 P03 | 5 min | 2 tasks | 5 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2336,6 +2344,7 @@ Recent decisions affecting current work:
 - [Phase 06.49]: Attribute outer list-filter SELECTs separately from Guardian user/group checker loads.
 - [Phase 06.49]: Keep _request_checker(view, user) as a thin private compatibility delegate without view-owned state.
 - [Phase 06.49]: Exempt exactly _cv_guardian_checker from both user-attribute checks while retaining all decision-freshness assertions.
+- [Phase 06.49]: Follow D-37 for retained users and refused workflow rendering; fresh authenticated requests enforce revocation.
 
 ### Pending Todos
 
@@ -2439,6 +2448,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-24T12:20:50.009Z
-Stopped at: Completed 06.49-02-PLAN.md
+Last session: 2026-11-24T12:29:24.106Z
+Stopped at: Completed 06.49-03-PLAN.md
 Resume file: None

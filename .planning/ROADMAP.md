@@ -76,6 +76,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.47: Semantic variants for bulk toolbar buttons (#400) (INSERTED)** (completed 2026-11-21)
 - [x] **Phase 06.48: Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)** (completed 2026-11-23)
 - [x] **Phase 06.49: Reuse Guardian object grants across navigation checks (#385) (INSERTED)** (completed 2026-11-24)
+- [ ] **Phase 06.50: Move remaining link consumers to the shared link check - stage 3a (#412) (INSERTED)**
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2449,6 +2450,44 @@ Plans:
 **Wave 5** *(blocked on Wave 4 completion)*
 - [x] 06.49-05-PLAN.md
 
+### Phase 06.50: Move remaining link consumers to the shared link check - stage 3a (#412) (INSERTED)
+
+**Goal:** Route every in-scope link consumer through the shared private check, with permission before state and known ancestors aligned to the actual target, while preserving the Guardian exceptions reserved for stage 3b.
+**Source:** [Issue #412](https://github.com/jacob-consulting/django-crud-views/issues/412), stage 3a of `superpowers/specs/2026-11-23-link-access-check-design.md`: section 12.8 at commit `ba1465c8d9361ca08d6d97c9a4ddb47fa83082c9`, settled decisions D-39–D-44, D-52 and D-55. Full issue snapshot: `06.50-ISSUE-412.md`.
+**Requirements**: None assigned; use the approved issue acceptance criteria and stage-3a concept decisions.
+**Depends on:** Phase 06.49
+**Ordering:** Assigned 06.50 after stage 2 (#385), before Phase 7 and the 1.0.0 freeze. Stage 3a (#412), stage 3b (#413) and stage 3c (#414) run in that order and together supersede #411. Code baseline: `feature/link-access-check-design` at `e444bbfc`; the implementation PR targets that branch. D-39 closes the stage issues when that branch merges to `main`.
+**Scope:** Context, parent, sibling and child buttons; actions by view key; card own/child actions; navbar owner/child items; the permission-only `cv_context_has_permission` filter; core Cancel; and the bulk toolbar. Add one private ancestor-alignment helper, remove `_page_action_object` and the migrated second branches, and retain the ancestor seam and state adapters needed by stage 3b. Pass a rendering view only when it belongs to the target's own ViewSet. Cancel alone resolves its immediate parent through the existing hook; other consumers use known guard state and the child link's own row/object without fetching ancestors.
+**Acceptance:** Carry all nine issue criteria into planning: permission-before-state at each migrated site, permission-only filter behavior, two- and three-level parent gates, correctly aligned cross-ViewSet ancestors, missing-guard-state and Cancel-hook behavior, same-ViewSet rendering arguments, the enumerated eight behavior changes and retained Guardian exceptions, and unchanged request-gate/ancestor/access-trace expectations. Pin before/after gate calls and permission queries separately, explain every changed stage-1 matrix/golden cell, and list remaining production `cv_has_access`/`cv_action_enabled` calls with reasons. Publish one `### Breaking` entry, matching `docs/migrating-1.0.md` guidance and affected reference updates.
+**Out of scope:** Stage-3b Guardian exception removal, stage-3c public API/documentation, request-gate responses/trace, breadcrumb/site menu, prefetch or cache changes, table link columns, DataPanel/DataView and other off-page components. New exceptions, skipped gates, ancestor fetches or request-response changes require a maintainer decision.
+**Plans:** 9 plans
+
+Plans:
+**Wave 1**
+- [ ] 06.50-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.50-02-PLAN.md
+- [ ] 06.50-03-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.50-04-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.50-05-PLAN.md
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 06.50-06-PLAN.md
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 06.50-09-PLAN.md
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [ ] 06.50-07-PLAN.md
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [ ] 06.50-08-PLAN.md
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -2592,4 +2631,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.47. Semantic variants for bulk toolbar buttons (#400) | 3/3 | Complete | 2026-11-21 |
 | 06.48. Private link access and narrowed hook objects (#407) | 9/9 | Complete | 2026-11-23 |
 | 06.49. Reuse Guardian object grants across navigation checks (#385) | 5/5 | Complete | 2026-11-24 |
+| 06.50. Move remaining link consumers to the shared link check - stage 3a (#412) | 0/9 | Planned | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

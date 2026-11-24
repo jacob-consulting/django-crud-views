@@ -2,18 +2,18 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.50"
-current_phase_name: Move remaining link consumers to the shared link check - stage 3a
+current_phase_name: "Move remaining link consumers to the shared link check - stage 3a (#412)"
 current_plan: Not started
-status: planning
-stopped_at: Phase 06.50 context gathered
-last_updated: "2026-11-24T18:39:04.963Z"
+status: executing
+stopped_at: Phase 06.50 planned; external review convergence pending
+last_updated: "2026-11-24T19:46:26.264Z"
 last_activity: 2026-11-24
-last_activity_desc: "Phase 06.50 inserted for issue #412; ready to plan"
-state_head: 9b5e5f6b2929b8740019a3ca4fd855beebcf31f3
+last_activity_desc: Phase 06.50 planned; external review convergence pending
+state_head: ba1465c8d9361ca08d6d97c9a4ddb47fa83082c9
 progress:
   total_phases: 57
   completed_phases: 55
-  total_plans: 299
+  total_plans: 308
   completed_plans: 299
   percent: 96
 milestone_name: milestone
@@ -33,10 +33,10 @@ See: .planning/PROJECT.md (updated 2026-11-24)
 
 ## Current Position
 
-Phase: 06.50 — Move remaining link consumers to the shared link check - stage 3a (#412)
+Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — READY TO EXECUTE
 Current Plan: Not started
-Total Plans in Phase: TBD
-Status: Ready to plan
+Total Plans in Phase: 9
+Status: Ready to execute
 Last activity: 2026-11-24 -- Phase 06.50 inserted for issue #412; ready to plan
 
 Next: $gsd-plan-phase 06.50
@@ -2483,6 +2483,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-24T18:38:58.172Z
-Stopped at: Phase 06.50 context gathered
-Resume file: .planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-CONTEXT.md
+Last session: 2026-11-24T19:46:20.192Z
+Stopped at: Phase 06.50 planned; external review convergence pending
+Resume file: .planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-01-PLAN.md

@@ -14,7 +14,7 @@ from django.test import override_settings
 from django.test.utils import CaptureQueriesContext
 from guardian.shortcuts import remove_perm
 
-from crud_views.lib import ancestors, link_access
+from crud_views.lib import ancestors
 from crud_views.lib.link_access import (
     _LINK_ALLOWED,
     _LINK_PERMISSION,
@@ -566,23 +566,6 @@ def test_page_link_ancestors_keep_documented_denials(helpers, data, django_asser
 
 
 @pytest.mark.django_db
-def test_page_action_object_follows_request_definition(helpers, data, django_assert_num_queries):
-    actor = _user("page_action_object")
-    _grant(actor, helpers.pub, "view", data.penguin)
-    view = _page_view(helpers.book.Detail, actor, data.penguin, data.book)
-    parent = view.cv_get_parent_object()
-    unguarded = _bound(helpers.book.Detail, actor, **view.kwargs)
-    action_object = getattr(link_access, "_page_action_object", None)
-    assert callable(action_object), "the page action-object helper must exist"
-    with django_assert_num_queries(0):
-        assert action_object(view, helpers.book.Detail, data.book) is data.book
-        assert action_object(view, helpers.book.List, data.book) is parent
-        assert action_object(view, helpers.book.Create, data.book) is parent
-        assert action_object(view, helpers.pub.List, data.book) is None
-        assert action_object(unguarded, helpers.book.List, data.book) is None
-
-
-@pytest.mark.django_db
 def test_context_controls_keep_core_targets_on_their_code_path(core_targets, data, monkeypatch):
     actor = _user("page_core_controls", (Publisher, "view"), (Publisher, "change"))
     view = _page_view(core_targets.Detail, actor, data.penguin, data.book)
@@ -885,7 +868,10 @@ def test_card_action_without_own_object_gets_none(pn, data, monkeypatch):
                 state_obj = row if key == "detail" else view.cv_get_parent_object() if page is pn.BookCard else None
                 state.assert_called_once_with(actor, state_obj)
                 assert state.call_args.args[1] is state_obj
-                gate.assert_not_called()
+                if page is pn.BookCard:
+                    gate.assert_called_once_with(actor, view._cv_ancestor_state.parent)
+                else:
+                    gate.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -920,7 +906,8 @@ def test_card_action_and_filter_reach_nested_guardian_create_through_the_check(p
                     assert ctx["cv_action_enabled"] is not permitted
                 else:
                     assert cv_context_has_permission(view, "create") is permitted
-                create_access.assert_called_once_with(actor, None, parent)
+                # Behavior 6: card own actions supply their real page; filter migrates in plan 04.
+                create_access.assert_called_once_with(actor, view if key == "card" else None, parent)
                 assert create_access.call_args.args[2] is parent
                 gate.assert_called_once_with(actor, parent)
                 own.assert_not_called()

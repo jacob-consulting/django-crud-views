@@ -145,16 +145,14 @@ def test_create_rendering_entry_points_keep_parent_and_adapter(
 
     from crud_views.lib.view import CardAction, ChildContextButton, SiblingContextButton
     from crud_views.lib.views.card import CardListView
-    from tests.test1.app.views import BookCreateView, BookListView, PublisherCardListView, cv_book
+    from tests.test1.app.views import BookCreateView, BookListView, PublisherCardListView
 
     parent = book_hitchhiker.publisher
     calls = []
-    # Buttons observe the public hook; own-card retains the adapter until plan 02.
+    # Observation rewrite: all migrated consumers use the public state hook.
     monkeypatch.setattr(
         BookCreateView,
-        "cv_action_enabled"
-        if entry in {"child-card", "child-button", "sibling-button"}
-        else "_cv_action_enabled_for_context",
+        "cv_action_enabled",
         classmethod(lambda cls, user, obj=None: calls.append(obj) or enabled),
     )
     if entry in {"child-card", "child-button"}:
@@ -171,22 +169,23 @@ def test_create_rendering_entry_points_keep_parent_and_adapter(
                 view.cv_get_view_context(object=parent)
             )
     else:
-        view = _view(BookListView, {cv_book.parent.get_pk_name(): parent.pk})
+        # Behaviors 2/8: positive own-card and sibling controls have an authorized URL parent.
+        view = _guarded_button_view(BookListView, parent)
         if entry == "card":
             data = CardListView.cv_get_card_action_data(
                 view, CardAction(key="create", label_mode="both"), book_hitchhiker, view.request.user
             )
         else:
-            view = _guarded_button_view(BookListView, parent)
             data = SiblingContextButton(key="new_book", sibling_name="book", sibling_key="create").get_context(
                 view.cv_get_view_context(object=book_hitchhiker)
             )
     assert data["cv_action_enabled"] is enabled
     assert calls == [parent]
-    if entry in {"child-button", "sibling-button"}:
-        assert data["cv_access"] is True
-    if entry == "sibling-button":
+    assert data["cv_access"] is True
+    if entry in {"card", "sibling-button"}:
         assert calls[0] is view._cv_ancestor_state.parent
+    else:
+        assert calls[0] is parent
 
 
 @pytest.mark.django_db

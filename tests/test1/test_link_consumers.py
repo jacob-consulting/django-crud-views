@@ -626,3 +626,179 @@ def test_view_key_configuration_errors_remain_observable(problem, monkeypatch):
             page.cv_get_context("update", obj=world.note, user=actor)
         own.assert_not_called()
         state.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+@pytest.mark.parametrize("consumer,key", [("own", "update"), ("own", "list"), ("child", "list")])
+@pytest.mark.parametrize("outcome", ["allowed", "ancestor", "own", "state"])
+def test_card_actions_order_and_row_identity(composition, consumer, key, outcome, monkeypatch):
+    from crud_views.lib.view import CardAction
+    from tests.test1.app.models import Book, BookNote
+
+    with isolated_routes(lambda s: consumer_routes(s, composition)) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.note if consumer == "own" else ns.book, "Card", actor, world)
+        row = world.note if consumer == "own" else world.book
+        # The row, not the page-level object or its relation, supplies the URL parent/own object.
+        page.object = (
+            BookNote(book=Book(), note="Different page") if consumer == "own" else Book(title="Different page")
+        )
+        target = ns.note.vs.get_view_class(key)
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={key: AncestorPermissions(nearest="change", higher="change")}
+        )
+        book = page._cv_ancestor_state.parent if consumer == "own" else row
+        publisher = ancestors._resolved_ancestor(page, ns.pub.vs.name)
+        events = []
+        provider_cls = GuardianViewSet if composition == "guardian" else ViewSet
+        original = provider_cls._ancestor_has_permission
+
+        def provider(vs, user, permission, obj, *, view):
+            events.append(("gate", vs.name, obj))
+            return outcome != "ancestor" and original(vs, user, permission, obj, view=view)
+
+        monkeypatch.setattr(provider_cls, "_ancestor_has_permission", provider)
+        own = Mock(side_effect=lambda user, obj: events.append(("own", obj)) or outcome != "own")
+        state = Mock(side_effect=lambda user, obj: events.append(("state", obj)) or outcome != "state")
+        monkeypatch.setattr(target, "cv_has_access", own)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        monkeypatch.setattr(page, "cv_get_parent_object", Mock(side_effect=AssertionError("card parent hook")))
+        options = {"key": key} if consumer == "own" else {"child_name": ns.note.vs.name, "child_key": key}
+        action = CardAction(**options, label="Target action", variant="warning", flex=True, label_mode="both")
+        with CaptureQueriesContext(connection) as queries:
+            result = page.cv_get_card_action_data(action, row, actor)
+        assert result["cv_access"] is (outcome not in {"ancestor", "own"})
+        assert result["cv_action_enabled"] is (outcome != "state")
+        assert result["cv_label"] == "Target action"
+        assert result["cv_variant"] == "warning"
+        assert result["cv_flex"] is True
+        assert result["cv_label_mode"] == "both"
+        assert result["cv_icon_action"] == target.cv_icon_action
+        assert result["cv_list_action_method"] == "get"
+        expected_url = (
+            page.cv_get_url(key, obj=row) if consumer == "own" else page.cv_get_child_url(ns.note.vs.name, key, row)
+        )
+        assert result["cv_url"] == expected_url
+        if consumer == "own":
+            assert result["cv_oid"] == page.cv_get_oid(key, obj=row)
+        gates = [("gate", ns.pub.vs.name, publisher), ("gate", ns.book.vs.name, book)]
+        own_obj = row if target.cv_object else None
+        if outcome == "ancestor":
+            assert events == gates[:1]
+            own.assert_not_called()
+            state.assert_not_called()
+        else:
+            assert events[:2] == gates
+            own.assert_called_once_with(actor, own_obj)
+            assert own.call_args.args[1] is own_obj
+            if outcome == "own":
+                assert events[2:] == [("own", own_obj)]
+                state.assert_not_called()
+            else:
+                state_obj = row if target.cv_object else book
+                assert events[2:] == [("own", own_obj), ("state", state_obj)]
+                assert state.call_args.args[1] is state_obj
+        assert not any(
+            f'from "app_{model}"' in query["sql"].lower()
+            for query in queries
+            for model in ("publisher", "book", "booknote")
+        )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+@pytest.mark.parametrize("consumer", ["own", "child"])
+@pytest.mark.parametrize("far_allowed", [True, False])
+def test_card_create_seam_and_rendering_view(composition, consumer, far_allowed, monkeypatch):
+    from crud_views.lib.view import CardAction
+    from guardian.shortcuts import remove_perm
+
+    with isolated_routes(lambda s: consumer_routes(s, composition)) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        if not far_allowed:
+            actor.user_permissions.remove(Permission.objects.get(codename="change_publisher"))
+            if composition == "guardian":
+                remove_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+            actor = User.objects.get(pk=actor.pk)
+        page = consumer_view(ns.note if consumer == "own" else ns.book, "Card", actor, world)
+        target = ns.note.Create
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={"create": AncestorPermissions(nearest="change", higher="change")}
+        )
+        row = world.note if consumer == "own" else world.book
+        action = (
+            CardAction(key="create")
+            if consumer == "own"
+            else CardAction(child_name=ns.note.vs.name, child_key="create")
+        )
+        state = Mock(return_value=True)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        monkeypatch.setattr(page, "cv_get_parent_object", Mock(side_effect=AssertionError("card parent hook")))
+        # The create hook exists on Guardian; core still uses its regular own permission.
+        create = Mock(wraps=target.cv_create_has_access) if composition == "guardian" else None
+        if create is not None:
+            monkeypatch.setattr(target, "cv_create_has_access", create)
+        result = page.cv_get_card_action_data(action, row, actor)
+        permitted = far_allowed or (composition == "guardian" and consumer == "own")
+        assert result["cv_access"] is permitted
+        if permitted:
+            parent = page._cv_ancestor_state.parent if consumer == "own" else row
+            state.assert_called_once_with(actor, parent)
+            assert state.call_args.args[1] is parent
+            if create is not None:
+                create.assert_called_once_with(actor, page if consumer == "own" else None, parent)
+        else:
+            state.assert_not_called()
+            if create is not None:
+                create.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("reason", ["unguarded", "permission"])
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+def test_own_card_create_denied_skips_state(composition, reason, monkeypatch):
+    from crud_views.lib.view import CardAction
+    from tests.test1.test_ancestor_authorization import _user
+
+    with isolated_routes(lambda s: consumer_routes(s, composition)) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.note, "Card", actor, world, guarded=reason != "unguarded")
+        if reason == "permission":
+            actor = _user("denied_card")
+        state = Mock(return_value=True)
+        monkeypatch.setattr(ns.note.Create, "cv_action_enabled", state)
+        result = page.cv_get_card_action_data(CardAction(key="create"), world.note, actor)
+        assert result["cv_access"] is False
+        assert result["cv_action_enabled"] is True
+        state.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "nested,key", [(False, "detail"), (False, "list"), (True, "detail"), (True, "list"), (True, "create")]
+)
+@pytest.mark.parametrize("surface", ["view_key", "card"])
+def test_action_object_follows_request_definition(nested, key, surface, monkeypatch):
+    from crud_views.lib.view import CardAction
+
+    with isolated_routes(consumer_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        family, row = (ns.book, world.book) if nested else (ns.pub, world.pub)
+        page = consumer_view(family, "Card", actor, world)
+        target = family.vs.get_view_class(key)
+        state = Mock(return_value=True)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        result = (
+            page.cv_get_context(key, obj=row, user=actor)
+            if surface == "view_key"
+            else page.cv_get_card_action_data(CardAction(key=key), row, actor)
+        )
+        assert result["cv_access"] is True
+        expected = row if target.cv_object else page._cv_ancestor_state.parent if nested else None
+        state.assert_called_once_with(actor, expected)
+        assert state.call_args.args[1] is expected

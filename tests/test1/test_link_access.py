@@ -603,15 +603,11 @@ def test_context_controls_keep_core_targets_on_their_code_path(core_targets, dat
             ctx = view.cv_get_context(key, obj=data.book, user=actor, location="list" if key == "detail" else "context")
             assert ctx["cv_access"] is False
             assert ctx["cv_action_enabled"] is True
-            assert calls == (["own"] if key == "home" else ["state", "own"])
+            # Behaviors 1/2: every view key now gates permission before state.
+            assert calls == ["own"]
             own.assert_called_once_with(actor, own_obj)
-            if key == "home":
-                state.assert_not_called()
-                gate.assert_called_once_with(actor, parent)
-            else:  # View-key/row consumers migrate in plan 02.
-                state.assert_called_once_with(actor, state_obj)
-                assert state.call_args.args[1] is state_obj
-                gate.assert_not_called()
+            state.assert_not_called()
+            gate.assert_called_once_with(actor, parent)
 
 
 @pytest.mark.django_db
@@ -644,7 +640,8 @@ def test_context_controls_send_nested_guardian_create_through_the_check(helpers,
                     ctx = view.cv_get_context(key, obj=mismatched, user=actor)
                 assert ctx["cv_access"] is permitted
                 assert ctx["cv_action_enabled"] is True
-                create_access.assert_called_once_with(actor, view if key == "new_book" else None, parent)
+                # Behavior 6: view keys and buttons supply their actual same-ViewSet page.
+                create_access.assert_called_once_with(actor, view, parent)
                 assert create_access.call_args.args[2] is parent
                 gate.assert_called_once_with(actor, parent)
                 assert gate.call_args.args[1] is parent
@@ -692,14 +689,11 @@ def test_unguarded_view_keeps_core_controls(helpers, core_targets, data, monkeyp
             patch.setattr(target, "cv_has_access", own)
             patch.setattr(target, "cv_action_enabled", state)
             ctx = view.cv_get_context(key, obj=data.book, user=actor)
-            assert ctx["cv_access"] is (key != "home")
+            # Behavior 3: missing guard parent denies both consumers before own/state.
+            assert ctx["cv_access"] is False
             assert ctx["cv_action_enabled"] is True
-            if key == "home":
-                own.assert_not_called()
-                state.assert_not_called()
-            else:  # View-key create retains its adapter until plan 02.
-                own.assert_called_once_with(actor, None)
-                state.assert_called_once_with(actor, data.penguin)
+            own.assert_not_called()
+            state.assert_not_called()
             gate.assert_not_called()
 
     _grant(actor, helpers.pub, "change", data.penguin)

@@ -435,3 +435,163 @@ def test_guardian_child_create_anonymous_exception_only_without_higher_gate(prot
         else:
             create.assert_called_once_with(page.request.user, None, world.book)
             state.assert_called_once_with(page.request.user, world.book)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+@pytest.mark.parametrize("surface", ["view_key", "table_row"])
+@pytest.mark.parametrize("key", ["update", "list"])
+@pytest.mark.parametrize("outcome", ["allowed", "ancestor", "own", "state"])
+def test_view_key_and_table_row_order(composition, surface, key, outcome, monkeypatch):
+    """Each surface checks the actual target's stricter far gate before own permission/state."""
+    with isolated_routes(lambda s: consumer_routes(s, composition)) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.note, "Detail" if surface == "view_key" else "List", actor, world)
+        target = ns.note.vs.get_view_class(key)
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={key: AncestorPermissions(nearest="change", higher="change")}
+        )
+        book, publisher = page._cv_ancestor_state.objects
+        events = []
+        provider_cls = GuardianViewSet if composition == "guardian" else ViewSet
+        original = provider_cls._ancestor_has_permission
+
+        def provider(vs, user, permission, obj, *, view):
+            events.append(("gate", vs.name, obj, permission))
+            return outcome != "ancestor" and original(vs, user, permission, obj, view=view)
+
+        monkeypatch.setattr(provider_cls, "_ancestor_has_permission", provider)
+        own = Mock(side_effect=lambda user, obj: events.append(("own", obj)) or outcome != "own")
+        state = Mock(side_effect=lambda user, obj: events.append(("state", obj)) or outcome != "state")
+        monkeypatch.setattr(target, "cv_has_access", own)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        monkeypatch.setattr(page, "cv_get_parent_object", Mock(side_effect=AssertionError("parent hook")))
+        with CaptureQueriesContext(connection) as queries:
+            result = page.cv_get_context(
+                key, obj=world.note, user=actor, location="context" if surface == "view_key" else "list"
+            )
+        assert result["cv_access"] is (outcome not in {"ancestor", "own"})
+        assert result["cv_action_enabled"] is (outcome != "state")
+        gates = [
+            ("gate", ns.pub.vs.name, publisher, ns.pub.vs.permissions["change"]),
+            ("gate", ns.book.vs.name, book, ns.book.vs.permissions["change"]),
+        ]
+        if outcome == "ancestor":
+            assert events == gates[:1]
+            own.assert_not_called()
+            state.assert_not_called()
+        else:
+            own_obj = world.note if key == "update" else None
+            assert events[:2] == gates
+            own.assert_called_once_with(actor, own_obj)
+            assert own.call_args.args[1] is own_obj
+            if outcome == "own":
+                assert events[2:] == [("own", own_obj)]
+                state.assert_not_called()
+            else:
+                state_obj = world.note if key == "update" else book
+                assert events[2:] == [("own", own_obj), ("state", state_obj)]
+                assert state.call_args.args[1] is state_obj
+        assert not any(
+            f'from "app_{model}"' in query["sql"].lower()
+            for query in queries for model in ("publisher", "book", "booknote")
+        )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("surface", ["view_key", "table_row"])
+@pytest.mark.parametrize("key", ["update", "delete", "create"])
+def test_view_key_table_row_rendered_default_parent_denial(surface, key, monkeypatch):
+    from django.template import RequestContext, Template
+    from django.template.loader import render_to_string
+
+    with isolated_routes(consumer_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        actor.user_permissions.remove(Permission.objects.get(codename="change_publisher"))
+        actor = User.objects.get(pk=actor.pk)
+        page = consumer_view(ns.book, "Detail" if surface == "view_key" else "List", actor, world)
+        target = ns.book.vs.get_view_class(key)
+        state = Mock(return_value=True)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        page.cv_context_actions = [key, "list"]
+        page.cv_list_actions = [key, "detail"]
+
+        def rendered():
+            context = {"view": page, "record": world.book, "object": world.book}
+            if surface == "table_row":
+                return render_to_string("crud_views/columns/actions.html", context, page.request)
+            return Template("{% load crud_views %}{% cv_context_actions object %}").render(
+                RequestContext(page.request, context)
+            )
+
+        target_url = page.cv_get_url(key, obj=world.book).split("?", 1)[0]
+        markup = rendered()
+        assert target_url not in markup
+        state.assert_not_called()
+        client = Client()
+        client.force_login(actor)
+        assert client.get(target_url).status_code == 403
+        state.assert_not_called()
+        page.request.user = consumer_actor_for_editor(actor)
+        assert target_url in rendered()
+        state.assert_called_once()
+        expected = world.book if target.cv_object else page._cv_ancestor_state.parent
+        assert state.call_args.args[1] is expected
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("actor_input", ["omitted", "none", "allowed", "denied"])
+def test_view_key_direct_actor_is_explicit(actor_input, monkeypatch):
+    from tests.test1.test_ancestor_authorization import _user
+
+    with isolated_routes(consumer_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.note, "Detail", actor, world)
+        state = Mock(return_value=True)
+        monkeypatch.setattr(ns.note.Update, "cv_action_enabled", state)
+        denied = _user("denied_view_key")
+        kwargs = {} if actor_input == "omitted" else {
+            "user": {"none": None, "allowed": actor, "denied": denied}[actor_input]
+        }
+        if actor_input in {"omitted", "none"}:
+            with pytest.raises(AttributeError, match="is_authenticated"):
+                page.cv_get_context("update", obj=world.note, **kwargs)
+            state.assert_not_called()
+        else:
+            result = page.cv_get_context("update", obj=world.note, **kwargs)
+            assert result["cv_access"] is (actor_input == "allowed")
+            if actor_input == "allowed":
+                state.assert_called_once_with(actor, world.note)
+            else:
+                state.assert_not_called()
+        assert page.request.user is actor
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("case", ["guardian_unguarded_list_view_key", "guardian_guarded_list_view_key"])
+def test_guardian_list_view_key_requires_guard(case, user_guardian, cv_guardian_publisher, publisher_a, monkeypatch):
+    from tests.lib.helper.guardian import user_guardian_object_perm
+    from tests.test1.app.views import GuardianBookCreateView, GuardianBookListView
+    from tests.test1.test_guardian import _make_book_list_view
+
+    guarded = case == "guardian_guarded_list_view_key"
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    page = _make_book_list_view(user_guardian, publisher_a, guarded=guarded)
+    own = Mock(wraps=GuardianBookListView.cv_has_access)
+    state = Mock(return_value=True)
+    create = Mock(side_effect=AssertionError("non-create must not use rewrite"))
+    monkeypatch.setattr(GuardianBookListView, "cv_has_access", own)
+    monkeypatch.setattr(GuardianBookListView, "cv_action_enabled", state)
+    monkeypatch.setattr(GuardianBookCreateView, "cv_create_has_access", create)
+    result = page.cv_get_context("list", obj=None, user=user_guardian)
+    assert result["cv_access"] is guarded
+    if guarded:
+        own.assert_called_once_with(user_guardian, None)
+        state.assert_called_once_with(user_guardian, page._cv_ancestor_state.parent)
+    else:
+        own.assert_not_called()
+        state.assert_not_called()
+    create.assert_not_called()

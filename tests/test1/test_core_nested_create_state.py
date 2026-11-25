@@ -223,12 +223,20 @@ def test_url_parent_wins_over_page_child_and_missing_parent_fails_closed(monkeyp
     monkeypatch.setattr(
         BookCreateView, "cv_action_enabled", classmethod(lambda cls, user, obj=None: calls.append(obj) or True)
     )
-    view = _view(BookListView, {cv_book.parent.get_pk_name(): publisher_b.pk})
-    assert view.cv_get_context("create", obj=book_hitchhiker, user=view.request.user)["cv_action_enabled"] is True
+    # Behaviors 2/8: a real authorized guard parent wins over the page child's FK.
+    view = _guarded_button_view(BookListView, publisher_b)
+    data = view.cv_get_context("create", obj=book_hitchhiker, user=view.request.user)
+    assert data["cv_access"] is True
+    assert data["cv_action_enabled"] is True
     assert calls == [publisher_b]
+    assert calls[0] is view._cv_ancestor_state.parent
     calls.clear()
-    view.kwargs[cv_book.parent.get_pk_name()] = 999999
-    assert view.cv_get_context("create", obj=book_hitchhiker, user=view.request.user)["cv_action_enabled"] is False
+    # Behavior 3: fresh missing guard state, not mutated kwargs on an already guarded page.
+    missing = _view(BookListView, {cv_book.parent.get_pk_name(): 999999})
+    missing.request.user = view.request.user
+    data = missing.cv_get_context("create", obj=book_hitchhiker, user=view.request.user)
+    assert data["cv_access"] is False
+    assert data["cv_action_enabled"] is True
     assert calls == []
 
 
@@ -255,7 +263,7 @@ def test_parent_button_top_level_create_receives_no_state_object(monkeypatch, bo
 @pytest.mark.django_db
 def test_m2m_create_uses_explicit_url_parent_without_inferring_from_child(monkeypatch, publisher_a, publisher_b):
     from tests.test1.app.models import Genre
-    from tests.test1.app.views import GenreCreateView, GenreListView, cv_genre
+    from tests.test1.app.views import GenreCreateView, GenreListView
 
     genre = Genre.objects.create(name="Two parents")
     publisher_a.genres.add(genre)
@@ -266,7 +274,12 @@ def test_m2m_create_uses_explicit_url_parent_without_inferring_from_child(monkey
     )
     assert GenreCreateView._cv_action_enabled_for_context(None, genre) is False
     assert calls == []
-    view = _view(GenreListView, {cv_genre.parent.get_pk_name(): publisher_b.pk})
+    from django.contrib.auth.models import Permission
+
+    view = _guarded_button_view(GenreListView, publisher_b)
+    view.request.user.user_permissions.add(Permission.objects.get(codename="add_genre"))
     data = view.cv_get_context("create", obj=genre, user=view.request.user)
+    assert data["cv_access"] is True
     assert data["cv_action_enabled"] is True
     assert calls == [publisher_b]
+    assert calls[0] is view._cv_ancestor_state.parent

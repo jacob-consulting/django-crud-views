@@ -121,19 +121,31 @@ labels retain literal entity sequences: an explicit `"A &amp; B"` displays those
 Markup, including values marked safe, displays as text. Keep template autoescaping enabled; do not apply `safe`.
 Private normalization helpers are not public API.
 
-For each owner item, destination access is checked with the owner object. Each child item is decided by the
-link check with the navbar owner as its immediate parent, in the order parent gate, own access, state hook.
-Own access receives `None` in `cv_has_access`; a nested Guardian create is asked through `cv_create_has_access`
-with `rendering_view=None`. Only after permission passes does the state hook receive the navbar owner.
+For each owner item, the link check uses the owner object and that target's aligned known ancestors.
+Each child item uses the navbar owner as its immediate parent plus aligned known higher ancestors, in the order
+parent gate, own access, state hook (all applicable ancestor gates precede own access). Child own access receives
+`None` in `cv_has_access`; a nested Guardian create is asked through `cv_create_has_access`. That hook receives
+the real rendering view only when `rendering_view.cv_viewset is target.cv_viewset`, and `None` across ViewSets.
+Only after permission passes does the state hook receive the navbar owner.
 Denied or state-disabled items are
 hidden, even if ordinary action buttons would be disabled. Accessible empty collections remain visible: there
 are no row counts, badges, existence probes or row-count-based hiding.
 
+A navbar child item always uses the full known ancestor chain, even on the create target's own ViewSet page
+(D-55). It uses neither the Guardian create page seam nor the list-page rewrite. For example, on a BookNote
+list page with Book `change` but without Publisher `change`, a create destination requiring `change` at both
+levels has a hidden navbar item while the context create button remains allowed by its immediate-only rewrite.
+The create request returns 403; granting Publisher `change` enables the navbar item and the request.
+This is pinned by `test_navbar_child_create_own_viewset_higher_denial` in `tests/test1/test_navbar_permissions.py`.
+The context button difference is retained until the Guardian exceptions are removed in later work.
+
 !!! warning "Visibility is not destination authorization"
-    Child admission checks the destination and its immediate-parent policy. The navbar adds no farther-ancestor
-    gate. A visible link can still return 403 under the destination's full ancestor policy, or 404 under a project
-    queryset restriction. Requests remain authoritative for permissions, tenants and writes. The live example
-    enables ancestor cascading and uses strict Guardian Tenant object grants, plus model permissions below Tenant.
+    Admission checks known ancestors; unknown levels stay `None` and are not fetched or filled with another
+    level's object. Missing immediate-parent state denies a nested target. No ancestor/membership lookup is added.
+    A visible link can still return 403 for unknown levels or retained Guardian exceptions, or 404 under a project
+    queryset restriction. Requests remain authoritative for permissions, tenants and writes; their authorization
+    responses and login redirects are unchanged. The live example enables ancestor cascading and uses strict
+    Guardian Tenant object grants, plus model permissions below Tenant.
 
 Reached configuration errors propagate; invalid policy or URL configuration is not silently treated as denial.
 The child item's parent policy is evaluated before the destination's own access, so malformed parent policy
@@ -320,7 +332,8 @@ Builders, resolvers and check carriers remain internal.
 
 ## Measured costs
 
-Measured on Python 3.12.3 / Django 6.0.10 / django-guardian 3.5.2 with SQLite in-memory databases. These are
+Remeasured for stage 3a on 2026-11-25 using Python 3.12.3 / Django 6.0.10 / django-guardian 3.5.2 with SQLite
+in-memory databases. These are
 **navbar-only SQL counts after request/object/ancestor loading**, with two visible items (one owner and one child),
 at owner and grandchild depth, across five tag/include/component placements. They are fixture measurements, not a
 whole-page budget or a universal zero-query promise. The regression is `tests/test1/test_navbar_costs.py`.
@@ -357,11 +370,18 @@ and state; Django model-cache warmth is independent of this grant reuse. A norma
 user/checker. Tests, shells or background work that retain a user also retain its loaded grants; see
 [Guardian grant lifetime](guardian.md#object-grant-lifetime) for refetch guidance and independent filtering paths.
 
-All 120 combinations built once, called owner access once and child admission once, and ran one state
-check per admitted item. They read no Publisher/Book/BookNote rows and performed no collection probes or
-actor/session reads. Repeated access added no hooks or SQL. The comparable Django 6 before/after receipts show
-two fewer grant SELECTs in each Guardian/mixed owner cell and four fewer in each deep cell; all plain controls
-are unchanged. Custom permission backends or state hooks may cost more. See also
+All 120 combinations built once, called owner access once and child admission once, ran one immediate-parent
+gate with the exact owner object, and ran one state check per admitted item. They read no Publisher/Book/BookNote
+rows and performed no collection probes or actor/session reads. Repeated access added no hooks or SQL.
+Every total/category/build/own-state count has **zero delta against the stage-3a before receipt**; the
+[stage-3a cost record](https://github.com/jacob-consulting/django-crud-views/blob/feature/link-access-check-design/.planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-COST-BASELINE.md#after-measurements)
+contains all 120 observations. This fixture has a top-level owner, so it does not measure the new higher gates
+of a nested owner. The separate consumer harness warms all consumer grants by repeating the consumer; its warm
+user is different from this table's warm Django model cache. Its nested targets can add gates and grant loads.
+
+The historical stage-2 Django 6 before/after receipts showed two fewer grant SELECTs in each Guardian/mixed owner
+cell and four fewer in each deep cell; all plain controls were unchanged. That is the earlier shared-grant
+change, not a further stage-3a saving. Custom permission backends or state hooks may cost more. See also
 [child-link costs](context_buttons.md#permission-cost-and-configuration-failures) and
 [ancestor authorization](nested.md#ancestor-authorization); [breadcrumbs](breadcrumb.md) have their own work.
 

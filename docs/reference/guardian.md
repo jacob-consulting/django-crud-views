@@ -217,8 +217,9 @@ direct lookup succeeds. This change does not alter anonymous-user configuration.
 
 ### Measured list-row grant reuse
 
-On Python 3.12.3 / Django 6.0.10 / django-guardian 3.5.2 with SQLite in-memory, a real Guardian Publisher list
-with Details/Edit/Delete per row had these complete-response SQL counts. Each request had a fresh user and
+The historical stage-2 shared-grant measurement on Python 3.12.3 / Django 6.0.10 / django-guardian 3.5.2 with
+SQLite in-memory used a real Guardian Publisher list with Details/Edit/Delete per row and recorded these
+complete-response SQL counts. Each request had a fresh user and
 explicitly warmed permission vocabulary; row grants were not primed. Direct view grants showed Details, hid
 Edit/Delete and excluded an ungranted row in both versions (`tests/test1/test_guardian_checker_costs.py`).
 
@@ -233,7 +234,12 @@ permission reads, actor/session work and manage-group lookup retain their separa
 query counts, not response-time or customer-site savings. `prefetch_perms` is excluded: loading all page rows'
 grants together would be a separate change considered against this row-action measurement. See the separate
 [navbar](navbar.md#measured-costs) and [child-link](context_buttons.md#permission-cost-and-configuration-failures)
-measurements for their first-load and already-loaded conditions.
+measurements for their first-load and already-loaded conditions. Stage 3a's separate 276-cell consumer record
+adds known ancestor gates: for example, a cold Guardian three-row own-action render changes from 6 permission
+queries / 0 ancestor calls to 10 / 6 when allowed, and from 6 / 0 to 4 / 6 when the ancestor denies (own/state
+calls then drop to zero). ContentTypes are warm and the source guard runs outside that isolated capture.
+Repeating on the same user yields zero permission SQL while gates still run. These are different scopes from
+the full-response table above; see the [stage-3a consumer measurements](context_buttons.md#permission-cost-and-configuration-failures).
 
 ## Create Views
 
@@ -267,13 +273,16 @@ of that hook no longer affects package links to a nested Guardian create.
 `cv_create_has_access` also decides child context buttons, child card actions, object navbar child items,
 create context actions/buttons on child object pages, create card actions on child rows, parent buttons to
 create on object pages, and the `cv_context_has_permission` filter for create on a child object page.
-At these sites `rendering_view` is `None`; at the cancel target it is the rendering view. The filter asks
-permission only; the rendered controls also check state after permission passes.
+At every consumer the real rendering view is supplied only when `rendering_view.cv_viewset is target.cv_viewset`;
+otherwise `rendering_view` is `None`. This includes own ViewSet object pages and row/card actions as well as
+the list page. Cancel uses its existing request-bound owner copy. The filter asks permission only;
+the rendered controls also check state after permission passes.
 
 The default `cv_create_has_access` checks the immediate parent with that parent's provider and fallback and the
 create's nearest Write key (`change` by default); a parent with `provider="none"` skips only that permission.
-It never evaluates a farther ancestor; the create request itself still does. Override it on the create view class
-for custom logic:
+The hook itself checks no farther ancestor. The shared link check can check known higher ancestors before
+calling it; the retained mechanisms below determine where that happens. Override the hook on the create view
+class for custom logic:
 
 ```python
 class BookCreateView(CreateViewParentMixin, GuardianCreateViewPermissionRequired):
@@ -283,8 +292,7 @@ class BookCreateView(CreateViewParentMixin, GuardianCreateViewPermissionRequired
     @classmethod
     def cv_create_has_access(cls, user, rendering_view, parent_obj):
         """
-        rendering_view: the list view for the child list page's create control;
-            otherwise None or, at the cancel target, the rendering view
+        rendering_view: real view of this create's own ViewSet, or None across ViewSets
         parent_obj: resolved parent model instance, or None if lookup failed
         """
         if parent_obj is None:
@@ -316,6 +324,30 @@ even a `ParentContextButton(key_target="create")` or a `SiblingContextButton` un
 the page's own create access and state, while its URL still goes to its real target and that request decides
 the click. This unchanged limit applies only to list pages; on object pages the parent button follows the
 parent ViewSet's create hook.
+
+### Retained create and Cancel mechanisms
+
+The nested Guardian create **page seam** supplies only the immediate parent for context buttons, actions by
+view key, card own actions and the permission filter on that create's own ViewSet pages. The **list-page
+rewrite** described above also remains immediate-only. This is not an exception for every control on the page:
+child buttons, card child actions and navbar child items receive the aligned known higher ancestors.
+
+A navbar child item uses neither seam nor rewrite, even on the create target's own ViewSet page (D-55).
+For example, a BookNote list page can show its context create button because Book `change` is granted, while
+its navbar create item is hidden because that destination also requires Publisher `change`. The request to
+create still returns 403 until the higher grant is present. The
+[navbar reference](navbar.md#labels-access-and-empty-output) describes that executable case.
+
+The queryset-only exception retains its immediate-parent skip, but known higher ancestors are gated for
+links and Cancel to a queryset-only nested list. The anonymous nested-create exception (L2) remains only
+where no higher level is gated: the immediate provider may admit the anonymous actor; a reached higher gate
+denies anonymous and inactive actors. This does not add a new actor rule at other retained paths.
+
+Cancel through `GuardianParentPermissionMixin` retains its separate immediate-only path and state adapter.
+It can therefore allow a target whose ordinary button is denied by a known higher ancestor. Core Cancel
+and queryset-only list Cancel use the shared check; they take the immediate parent through the existing
+`cv_get_parent_object()` resolver and higher objects only from guard state. No missing ancestor is fetched
+just to decide a link; Cancel retains its existing immediate-parent lookup exception.
 
 ### What the create access helpers accept
 
@@ -495,13 +527,15 @@ if the Books child ViewSet declares
 `AncestorPolicy(read=AncestorPermissions(nearest="change", higher="view"))`, its Books action is hidden or
 disabled and that collection request returns 403. Grant `change` on Publisher A: the action becomes usable and
 the collection returns 200, even with no visible Books. A grant on Publisher B does not authorize Publisher A's
-link. Farther ancestors are not evaluated while rendering; the collection request still checks them.
+link. Known higher ancestors are now evaluated while rendering too, aligned to the destination's declared
+ancestry. Unknown levels stay `None`, are not fetched, and cannot be filled by an object from another level.
 
 This applies to the shipped `GuardianListViewPermissionRequired` and `GuardianCardListViewPermissionRequired`
 and compatible queryset compositions supplying the existing parent permission helper. A legal
 `GuardianQuerysetMixin` composition without `GuardianParentPermissionMixin` retains its delegated
-`cv_has_access(user, None)` result after the actor check; rendering does not add parent authorization to it.
-Its link can stay visible while the request returns 403. Prefer the shipped classes when that gate is required.
+`cv_has_access(user, None)` result after the actor check and still skips the immediate-parent gate. It now checks
+known higher ancestors, including at Cancel to its nested list. The nearest skip can still leave a link visible
+while its request returns 403. Prefer the shipped classes when that gate is required.
 
 For a `GuardianViewSet` parent, object/group grants count, and model-level parent permissions count only with
 the parent's `AncestorPolicy(accept_global_perms=True)`; the target view's `cv_guardian_accept_global_perms`
@@ -510,8 +544,9 @@ retain the existing parent permission behavior. Anonymous and inactive actors ar
 collection links. A parent with `provider="none"` skips only the parent permission check; actor handling, custom
 access denials and the `cv_action_enabled` state check still apply. The parent gate runs first, then
 `cv_has_access(user, None)`, then state with the supplied parent, only if permission passed. Custom own-access
-overrides receive `None`. A child create link uses `cv_create_has_access(user, None, parent_obj)` for its
-parent permission, followed by state if allowed, without an additional collection check.
+overrides receive `None`. A child create link uses `cv_create_has_access` for its parent permission, followed by
+state if allowed, without an additional collection check. Its rendering view is supplied only on the target's
+own ViewSet; cross-ViewSet calls supply `None`.
 
 Denied actions use the target's [hide/disable mode](inaccessible_actions.md); disabled actions have the
 permission reason and no usable URL. State denial remains separate. The parent is reused without another
@@ -523,11 +558,18 @@ remains authoritative.
 
 #### Limits and configuration failures
 
-The collection-link check does not extend to general `cv_has_access(user, child)` calls, child-page sibling
-links, object detail/update/delete/action destinations, independent table columns, permission filters,
-navigation, DataPanel/DataView or other off-page callers. In particular, `LinkChildColumn` does not gain this
-check. Supplying an explicit parent works for M2M rendering without inferring ancestry or proving child
-membership; matching model types likewise does not establish a parent relationship.
+Stage 3a also routes context/parent/sibling buttons, view-key and row/card actions, navbar items, the permission-only
+filter, core Cancel and bulk toolbar through the shared private check. Parent gates precede own permission and
+state; the filter never evaluates state. General direct `cv_has_access(user, child)` calls, independent table
+columns, breadcrumbs, site menus, DataPanel/DataView and other off-page callers do not gain this check.
+In particular, `LinkChildColumn` remains outside it. Supplying an explicit parent works for M2M rendering
+without inferring ancestry or proving child membership; matching model types likewise does not establish a
+parent relationship. No public checker or ancestor accessor is introduced.
+
+Missing guard state denies nested targets, except Cancel's retained hook-based parent path. With default
+policies, parent `view` without `change` now hides child write links whose requests already deny. Unknown
+higher levels and the [retained mechanisms](#retained-create-and-cancel-mechanisms) still leave possible
+render/click differences; request authorization responses and login redirects remain unchanged.
 
 A configuration error in the parent check — a required key missing from the parent's permission map, or
 authorization records on another database than `default` — raises `ImproperlyConfigured` while the **hosting page renders its child action**, because this collection

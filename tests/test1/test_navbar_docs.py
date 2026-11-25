@@ -282,3 +282,85 @@ def test_component_recipes_preserve_empty_and_modal_contracts(mode, empty, monke
             data = {}
         output = Template(recipes()[mode]).render(Context(data))
         assert output.strip() == ("<main></main>" if mode in {"split", "split-includes"} else "")
+
+
+def test_navbar_docs_explain_same_page_guardian_create_difference():
+    from tests.test1.test_label_mode_docs import _flat, _section
+    from tests.test1.test_navbar_permissions import test_navbar_child_create_own_viewset_higher_denial as regression
+
+    section = _flat(_section(REFERENCE.read_text(), "## Labels, access and empty output"))
+    assert regression.__name__ in section
+    for phrase in (
+        "even on the create target's own ViewSet page (D-55)",
+        "neither the Guardian create page seam nor the list-page rewrite",
+        "context create button remains allowed",
+        "create request returns 403",
+        "rendering_view.cv_viewset is target.cv_viewset",
+        "unknown levels stay None",
+        "No ancestor/membership lookup is added",
+    ):
+        assert phrase in section
+
+
+def test_navbar_cost_docs_separate_stage_three_receipts_from_historical_savings():
+    from tests.test1.test_label_mode_docs import _flat, _section
+
+    section = _flat(_section(REFERENCE.read_text(), "## Measured costs"))
+    for phrase in (
+        "Remeasured for stage 3a on 2026-11-25",
+        "one immediate-parent gate with the exact owner object",
+        "zero delta against the stage-3a before receipt",
+        "fixture has a top-level owner",
+        "warm user is different from this table's warm Django model cache",
+        "historical stage-2 Django 6 before/after receipts",
+        "06.50-COST-BASELINE.md#after-measurements",
+        "normal next request gets a distinct user/checker",
+    ):
+        assert phrase in section
+    assert "| guardian | warm | warm | 2 / 2 | 0 / 0 | 0 |" in section
+
+
+@pytest.mark.parametrize(
+    ("path", "heading", "statements"),
+    (
+        (
+            "reference/guardian.md",
+            "### Retained create and Cancel mechanisms",
+            (
+                "page seam",
+                "list-page rewrite",
+                "known higher ancestors are gated",
+                "L2) remains only where no higher level is gated",
+                "GuardianParentPermissionMixin retains its separate immediate-only path",
+                "even on the create target's own ViewSet page (D-55)",
+            ),
+        ),
+        (
+            "reference/nested.md",
+            "### Visible links and buttons",
+            (
+                "immediate parent and known higher ancestors",
+                "permission-only filter never calls it",
+                "parent ViewSet's get_queryset()",
+                "custom-hook exceptions propagate",
+                "No request response or login redirect changes",
+            ),
+        ),
+        (
+            "faq.md",
+            "### Gate surrounding markup by permission",
+            (
+                "never calls the state hook",
+                "cv_create_has_access(user, view, parent)",
+                "navbar child-create item checks the full known chain even on the same page",
+                "Two False answers are kept on purpose",
+            ),
+        ),
+    ),
+)
+def test_related_references_keep_target_specific_stage_three_contracts(path, heading, statements):
+    from tests.test1.test_label_mode_docs import _flat, _section
+
+    section = _flat(_section((ROOT / "docs" / path).read_text(), heading))
+    for statement in statements:
+        assert statement in section

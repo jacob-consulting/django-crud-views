@@ -562,13 +562,16 @@ this URL path, not every parent an object belongs to.
 
 ### Visible links and buttons
 
-`ChildContextButton` and child `CardAction` use the package's link check once. Plain nested targets first check
-the supplied immediate parent using the destination operation's nearest key, then call `cv_has_access(user, None)`,
-then state with the parent if permission passed. The parent owns the provider and `accept_global_perms` policy: core
+Context/parent/sibling buttons, view-key actions and table rows, card own/child actions, navbar items,
+the permission filter, core Cancel and bulk toolbar use the shared private link check. Nested targets check
+the immediate parent and known higher ancestors under the destination's policy, then own permission, then state.
+Permission denial skips state; the permission-only filter never calls it. Object targets pass their own object
+to `cv_has_access`; list/create targets pass `None`. State receives the own object, immediate parent for a nested
+list/create, or `None` for a top-level collection. The parent owns the provider and `accept_global_perms` policy: core
 parents use model permissions; Guardian parents use object/group grants with model fallback only when that
 parent's `AncestorPolicy(accept_global_perms=True)` allows it. `provider="none"` bypasses only this parent gate.
 Shipped Guardian collection/create paths retain one parent check and their existing actor/create policy;
-standalone queryset-only compositions keep their documented exception. See
+standalone queryset-only compositions skip the immediate parent but now check known higher ancestors. See
 [Guardian collection links](guardian.md#parent-to-child-collection-links).
 
 A user with Book `view` and Publisher `change`, but without Publisher `view`, can open Publisher update while
@@ -577,9 +580,20 @@ to the destination's setting, with no usable disabled URL. Grant Publisher `view
 Books collection is accessible. Custom own denials and action-state policy still apply; state is asked only
 after permission passes. Nested Guardian create links use `cv_create_has_access` for their parent permission.
 
-Each eligible plain link adds one parent-policy call, not necessarily one SQL query, and reuses the supplied
-parent without another parent-row fetch. The current Python 3.12.3 / Django 6.0.10 / django-guardian 3.5.2
-measurement gives 6/4/2/0 SQL queries with a plain parent and 8/6/4/2 with a strict Guardian parent, for both
+With default policies, parent `view` without `change` also removes child update/delete/create links and the bulk
+toolbar; their destination requests already return 403. For a child control its URL's object/row supplies the
+immediate parent; other known objects come from guard state and are aligned to the actual target. Unknown
+levels stay `None`, unchecked, without shifting farther objects into them. Rendering performs no ancestor
+or membership lookup. Missing immediate-parent state denies, including on unguarded create/form pages,
+Resource leaves, non-CRUD views and direct calls. Cancel alone uses the existing parent-hook resolver:
+guarded requests reuse the parent without SQL; an unguarded view retains its one lookup. Built-in missing rows
+mean unavailable, while custom-hook exceptions propagate. Higher Cancel ancestors come only from guard state.
+Core create state and parent-button objects now use guard state; put shared annotations/scope in the parent
+ViewSet's `get_queryset()`, not a view's `cv_get_parent_object()` override.
+
+Each eligible plain child link invokes its immediate-parent policy plus reached higher gates, not necessarily
+one SQL query per gate. The retained stage-2 child cases, remeasured for stage 3a on Python 3.12.3 / Django 6.0.10 /
+django-guardian 3.5.2, give 6/4/2/0 SQL queries with a plain parent and 8/6/4/2 with a strict Guardian parent, for both
 renderers in fresh-cold/warm-cold/fresh-warm/warm-warm Django model-cache/vocabulary states. These first-load
 figures match the earlier historical Django 5.2/Guardian 3.5 totals. Each measured layer fetches a fresh user;
 a warm Django model cache does not mean loaded Guardian grants. Repeated links on the same Python user reuse
@@ -594,12 +608,17 @@ records routed away from `default`. The parent gate runs before own access, so m
 for an actor whose own access is denied; `provider="none"` retains its early
 helper bypass before these validations. These failures are not ordinary hidden/disabled denials.
 
-Request enforcement remains authoritative for the full ancestor chain. Rendering checks only the supplied
-immediate parent, so a visible link can still lead to a 403 from a farther ancestor, including when the immediate
-provider is `"none"`. A queryset-only Guardian composition can also show a child link without a parent check
-while its request returns 403. Sibling links and ordinary row actions still carry no parent gate and keep
-their evaluation order, while their hook arguments follow [the narrowed meaning](../migrating-1.0.md#link-access-hooks).
-URL construction proves no authorization. The manage page shows declared policy, not whether a user can pass it.
+These retained two-level costs do not describe all newly gated consumers; the linked stage-3a record separates
+gate calls, permission SQL and Cancel's parent lookup. Normal requests still receive fresh Python users/checkers.
+
+Request enforcement remains authoritative for unknown levels and retained Guardian exceptions. The create page
+seam/list rewrite and `GuardianParentPermissionMixin` Cancel remain immediate-only; queryset-only links and
+Cancel now gate known higher levels, and the anonymous-create exception survives only with no higher gate.
+Navbar child items use the full known chain even on the create target's own page, so a navbar create item can
+deny while the context create button allows. See [exact Guardian mechanisms](guardian.md#retained-create-and-cancel-mechanisms).
+A visible link can still lead to 403 or a queryset-based 404; URL construction proves no authorization. No
+request response or login redirect changes, public checker, or public ancestor accessor are introduced.
+The manage page shows declared policy, not whether a user can pass it.
 
 ## See also
 

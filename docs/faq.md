@@ -139,17 +139,22 @@ when the user may access a key:
 {% endif %}
 ```
 
-The filter passes the target view's own object for an object target and `None` for a target without one,
-including a create target. It returns `False` for unknown keys.
+The filter checks the immediate parent and known higher ancestors, then passes the target view's own object
+to own permission for an object target and `None` for a target without one, including create. It returns
+`False` for unknown keys. Missing immediate-parent state denies nested targets; unknown higher levels are
+unchecked and are not loaded just to decide a link.
 
-It is a permission check only. A key can be permitted while its action is disabled by state, in which case
-`cv_context_button` renders nothing (or a disabled button), so the wrapper can end up empty. To wrap only buttons that
-actually render, use the loop below.
+It is a permission check only and never calls the state hook. A key can be permitted while its action is
+disabled by state, in which case `cv_context_button` renders nothing (or a disabled button), so the wrapper
+can end up empty. To wrap only buttons that actually render, use the loop below.
 
 For the `create` key of a nested Guardian ViewSet with a `ForeignKey` parent, the filter on a child object page
-asks `cv_create_has_access(user, None, parent)`. This is the parent the request resolved from the URL, not the
-page object's foreign key. On a view that did not run the ancestor guard, the control is denied without a
-resolved parent.
+asks `cv_create_has_access(user, view, parent)` with the real same-ViewSet rendering view. This is the parent the
+request resolved from the URL, not the page object's foreign key. The retained Guardian create page seam supplies
+only the immediate parent at this filter; a navbar child-create item checks the full known chain even on the
+same page and can deny when the context create control allows. On a view that did not run the ancestor guard,
+the control is denied without a resolved parent. At consumers targeting another ViewSet the create hook receives
+`None` for the rendering view. See [the exact retained mechanisms](reference/guardian.md#retained-create-and-cancel-mechanisms).
 
 Two `False` answers are kept on purpose:
 

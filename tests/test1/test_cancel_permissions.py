@@ -649,9 +649,10 @@ def test_guardian_invalid_child_composition_rejected(pn, publisher_a, monkeypatc
     InvalidChild = type("InvalidChild", bases, {})
 
     InvalidChild.cv_viewset = pn.book_vs
-    monkeypatch.setitem(pn.book_vs._views, "detail", InvalidChild)
+    key = "detail" if shape == "object" else "list"
+    monkeypatch.setitem(pn.book_vs._views, key, InvalidChild)
     view = bound(pn.BookUpdate, AnonymousUser(), publisher_a, **{pn.book_vs.parent.get_pk_name(): publisher_a.pk})
-    view.cv_cancel_key = "detail"
+    view.cv_cancel_key = key
     message = f"require {mixin.__name__}" if problem == "missing" else f"Place {mixin.__name__} before"
     with pytest.raises(ImproperlyConfigured, match=message):
         view.cv_get_cancel_url()

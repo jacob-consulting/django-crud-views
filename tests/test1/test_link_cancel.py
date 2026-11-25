@@ -414,6 +414,9 @@ def test_guardian_cancel_create_override_boundaries(denial, monkeypatch):
         page = consumer_view(ns.note, "Detail", actor, world)
         page.cv_cancel_key = "create"
         page.cv_cancel_keys = None
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={"create": AncestorPermissions(nearest="change", higher="change")}
+        )
         hook = Mock(return_value=denial != "hook")
         state = Mock(return_value=True)
         monkeypatch.setattr(ns.note.Create, "cv_create_has_access", hook)

@@ -42,7 +42,7 @@ from crud_views.lib.check import (
     CheckUnknownAttributes,
 )
 from crud_views.lib.exceptions import CrudViewError, ParentViewSetError, ViewSetKeyFoundError, cv_raise
-from crud_views.lib.link_access import _known_link_ancestors, _link_access, _link_ctx
+from crud_views.lib.link_access import _LINK_ALLOWED, _known_link_ancestors, _link_access, _link_ctx
 
 from ..settings import crud_views_settings
 from .action_menu import (
@@ -75,18 +75,22 @@ def cv_is_modal_request(request) -> bool:
 
 
 def _cancel_target_available(target, user, obj, rendering_view):
-    """Evaluate the concrete destination's access and state hooks, including overrides."""
-    target_obj = obj if target.cv_object else None
-    if not target.cv_has_access(user, target_obj):
-        return False
-    if target.cv_object:
-        return target._cv_action_enabled_for_rendering(user, target_obj, rendering_view)
-    action_obj = None
+    """Check the destination using Cancel's parent hook and already-known higher ancestors."""
+    known = ()
     if target.cv_viewset.has_parent:
-        action_obj = rendering_view._cv_cancel_parent_object()
-        if action_obj is None:
-            return False
-    return target._cv_action_enabled_for_rendering(user, action_obj, rendering_view)
+        known = _known_link_ancestors(
+            target, rendering_view, immediate_parent=rendering_view._cv_cancel_parent_object()
+        )
+    return (
+        _link_access(
+            target,
+            user,
+            obj if target.cv_object else None,
+            known,
+            rendering_view=rendering_view if rendering_view.cv_viewset is target.cv_viewset else None,
+        )
+        == _LINK_ALLOWED
+    )
 
 
 class CrudView(metaclass=CrudViewMetaClass):

@@ -5,11 +5,11 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.51 complete; stage 3c (#414) must settle before Phase 7
-last_updated: "2026-11-25T20:42:03Z"
+stopped_at: "Phase 06.51 complete; stage 3c (#414) must settle before Phase 7"
+last_updated: "2026-11-25T20:47:17.297Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.51 complete; independent verification 28/28 passed, clean review, 19/19 threats closed
-state_head: 36ade82edcb8568c7823ee4ee5b2ab7a6c85a478
+last_activity_desc: "Phase 06.51 shipped as PR #415 to feature/link-access-check-design"
+state_head: 8576aa5f16fbe1afd5978f55704bd42155e32a1a
 progress:
   total_phases: 58
   completed_phases: 57
@@ -36,9 +36,9 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: TBD
 Status: Awaiting stage 3c (#414) before planning Phase 7
-Last activity: 2026-11-25 — Phase 06.51 complete; independent verification 28/28 passed, clean review, 19/19 threats closed
+Last activity: 2026-11-25 -- Phase 06.51 shipped as PR #415 to feature/link-access-check-design
 
-Next: Prepare the stage 3b PR to `feature/link-access-check-design` when requested, then add/plan stage 3c (#414) before Phase 7 and the 1.0 freeze. Phase 7 is the next numbered roadmap phase, but its stage-3c prerequisite is not complete. Auto-advance is disabled. Issues #412/#413 close only when the feature branch merges to `main`.
+Next: Review PR #415 (`https://github.com/jacob-consulting/django-crud-views/pull/415`) targeting `feature/link-access-check-design` and merge after checks pass, then add/plan stage 3c (#414) before Phase 7 and the 1.0 freeze. Phase 7 is the next numbered roadmap phase, but its stage-3c prerequisite is not complete. Auto-advance is disabled. Issues #412/#413 close only when the feature branch merges to `main`.
 
 ### Phase 06.51 completion — 2026-11-25
 

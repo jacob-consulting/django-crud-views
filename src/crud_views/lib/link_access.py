@@ -12,6 +12,21 @@ from crud_views.lib.ancestor_db import _check_nested_auth
 _LINK_ALLOWED = "allowed"
 _LINK_PERMISSION = "permission"
 _LINK_STATE = "state"
+_PARENT_UNSET = object()
+
+
+def _known_link_ancestors(target, rendering_view, *, immediate_parent=_PARENT_UNSET):
+    """Align already-resolved objects to the target's ancestry, preserving unknown levels.
+
+    Child links supply their URL object explicitly. An explicit None is an unknown
+    parent, not permission to fall back to guard state, relations, or a lookup.
+    """
+    return tuple(
+        immediate_parent
+        if index == 0 and immediate_parent is not _PARENT_UNSET
+        else ancestors._resolved_ancestor(rendering_view, ancestor.name)
+        for index, (_, ancestor) in enumerate(ancestors._walk_ancestors(target.cv_viewset))
+    )
 
 
 def _page_action_object(rendering_view, target, page_obj):

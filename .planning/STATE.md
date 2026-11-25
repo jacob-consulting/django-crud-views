@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.51"
 current_phase_name: Remove retained Guardian link exceptions - stage 3b
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 06.51-01-PLAN.md
-last_updated: "2026-11-25T18:27:56.738Z"
+stopped_at: Completed 06.51-02-PLAN.md
+last_updated: "2026-11-25T18:43:43.661Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.51 plan 01 complete; nested Guardian actor and parent admission; 915 final focused tests pass
-state_head: d4df96702ebeae32424849fabaaa3e1fbabcf56f
+last_activity_desc: Phase 06.51 plan 02 complete; target-aligned Guardian create controls; required selections pass 552/9/116/640
+state_head: 6db9b96bcf9ce0f50c09aff5913c759f337438a6
 progress:
   total_phases: 58
   completed_phases: 56
   total_plans: 315
-  completed_plans: 309
+  completed_plans: 310
 milestone_name: milestone
 ---
 
@@ -33,12 +33,19 @@ See: .planning/PROJECT.md (updated 2026-11-25)
 ## Current Position
 
 Phase: 06.51 (Remove retained Guardian link exceptions - stage 3b) — EXECUTING
-Current Plan: 2
+Current Plan: 3
 Total Plans in Phase: 7
 Status: executing
-Last activity: 2026-11-25 — Phase 06.51 plan 01 complete; nested Guardian actor and parent admission; 915 final focused tests pass
+Last activity: 2026-11-25 — Phase 06.51 plan 02 complete; target-aligned Guardian create controls; required selections pass 552/9/116/640
 
-Next: Continue plan 06.51-02 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+Next: Continue plan 06.51-03 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+
+### Phase 06.51 plan 02 — 2026-11-25
+
+- Completed D-45/D-50 together in `5abd1d82`: all six consumers use target-aligned known ancestry, both page-seam definitions and Guardian's key rewrite are removed. Ordinary list create keeps its real rendering view; parent/sibling/custom buttons retain their actual output. D-40/D-41/D-44/D-46/D-49/D-55 and request methods remain intact.
+- Task 1 required checks pass **552** link tests, **9** ancestor-cost tests and **116** Guardian/label/ancestor-helper tests. Task 2's combined selection passes **640 in 9.98s**, covering four formerly hidden page shapes, strict far denial on real list/detail/card pages, fresh grants, child/filter overrides, four-level ancestry and holes without lookups. Scoped Ruff/format/diff checks pass. Historical matrix/cost bytes are unchanged; no full-suite, version-matrix, recorder-enabled or dependency-installation run.
+- Task commits `5e2b1199`, `5abd1d82`, `b8f600e8`; immediate SUMMARY `6db9b96b` precedes tracking and lists every renamed/replaced test plus C3-L2/C2-L1/L1 prose locations. Task 1 has validated assertion-level RED/GREEN; task 2 is a passing test-only expansion of behavior already shipped by task 1, explicitly documented without manufacturing RED or another product change.
+- ROADMAP accepted 2/7; its stale dotted progress row was reconciled. STATE advanced once to plan 3, with one metric and three decisions recorded. Global unscoped percentage remains unset. Only the SDK's `state.json` next.reason/updated_at delta was restored after comparison with the snapshot; original config/config.default/state.json hashes and unrelated dirt are preserved. Cancel, adapter, matrix/cost and final documentation/reviews remain with plans 03–07. No phase.complete, push, PR, merge or issue closure ran.
 
 ### Phase 06.51 plan 01 — 2026-11-25
 
@@ -2092,6 +2099,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.50 P07 | 8min | 2 tasks | 9 files |
 | Phase 06.50 P08 | 22min | 2 tasks | 11 files |
 | Phase 06.51 P01 | 11min | 2 tasks | 9 files |
+| Phase 06.51 P02 | 11min | 2 tasks | 14 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2484,6 +2492,9 @@ Recent decisions affecting current work:
 - [Phase 06.51]: D-46 and D-49 land before create-seam removal: nested actors and the immediate parent gate precede every create override.
 - [Phase 06.51]: D-47 delegates queryset-only links through the existing class-step chain; own access and row filtering remain untouched.
 - [Phase 06.51]: Count the default create hook parent-helper invocations separately from permission SQL: two helpers, cold direct=2 queries, warmed render=0.
+- [Phase 06.51]: D-45/D-50 landed together in 5abd1d82: direct target-aligned ancestry and actual/custom button results without Guardian key correction.
+- [Phase 06.51]: Known higher gates precede create hooks; full Guardian render events are outermost-first plus the deliberate default-hook immediate duplicate, with guard accounting unchanged.
+- [Phase 06.51]: D-40/D-41 retain real same-ViewSet rendering views or None, explicit URL parents, unknown ancestor positions and no link-only lookup.
 
 ### Pending Todos
 
@@ -2589,6 +2600,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T18:27:19.156Z
-Stopped at: Completed 06.51-01-PLAN.md
+Last session: 2026-11-25T18:43:19.618Z
+Stopped at: Completed 06.51-02-PLAN.md
 Resume file: None

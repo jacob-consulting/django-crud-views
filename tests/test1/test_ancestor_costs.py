@@ -23,9 +23,9 @@ The assertions are about attribution and prohibited work, never a query budget:
 * warm requests still query permission rows inside the guard: no persistent access cache hides the cost;
 * top-level requests do no ancestor work at all.
 
-A supplementary set renders the leaf list with its create button: migrated core actions gate the known ancestors
-selected by the target's cascade mode, while retained Guardian create handling gates the immediate parent twice
-(the pre-hook gate and default hook). Only that declared render sequence may duplicate a gate.
+A supplementary set renders the leaf list with its create button: both providers gate the known ancestors
+selected by the target's cascade mode, outermost first. Guardian's default create hook repeats only the immediate
+gate after shared admission. Only that declared render sequence may duplicate a gate.
 Both reuse guard-resolved objects without a lookup, separate from the guard. Set ``CV_ANCESTOR_COSTS_DIR`` to write
 one JSON file per depth/provider (06.18-COSTS.md is generated from those files). Cold cells clear the ViewSet
 vocabulary, ContentType and ``_VOCAB_CACHE`` caches before one request; the warm cell repeats it immediately.
@@ -270,12 +270,12 @@ def test_cost_matrix_against_the_pre_edit_baseline(depth, provider, probe):
 @pytest.mark.parametrize("provider", PROVIDERS)
 @pytest.mark.parametrize("depth", DEPTHS)
 def test_render_helper_work_is_separate_from_the_guard(depth, provider, probe):
-    """Core gates selected known levels; retained Guardian create checks the nearest before and in its hook.
+    """Both providers gate selected known levels; Guardian's default hook repeats the immediate gate.
     Renderer gates reuse guard objects without lookup and remain distinct from request guard work."""
     with _chain_context(depth, provider) as chain:
         chain.leaf_vs.get_all_views()["list"].cv_context_actions = ["create"]
         helper_gates = {
-            "full": [-1, -1] if provider == "guardian" else list(range(depth)),
+            "full": list(range(depth)) + ([-1] if provider == "guardian" else []),
             "nearest": [-1, -1] if provider == "guardian" else [-1],
         }
         _run_matrix(

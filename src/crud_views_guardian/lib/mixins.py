@@ -7,7 +7,6 @@ from django.views.generic.list import MultipleObjectMixin
 from crud_views.lib.access_trace import _object_identity, get_recorder
 from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.ancestors import _immediate_parent_access, _resolved_parent
-from crud_views.lib.link_access import _link_access, _link_ctx
 from crud_views.lib.view import CrudView
 from crud_views_guardian.lib.permissions import _get_guardian_checker
 
@@ -302,39 +301,6 @@ class GuardianQuerysetMixin:
         if not user.is_authenticated or _guardian_inactive_actor(user):
             return False
         return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
-
-    def cv_get_context(self, key=None, obj=None, user=None, request=None, *, location=None):
-        """Decide nested Guardian create controls from the request-resolved parent.
-
-        Stamp permission and state through the private link check; a missing parent denies permission
-        without calling the state hook. Other context fields keep their already-built values.
-        The existing key-based selection also replaces parent/sibling buttons with the page's own create
-        result when their resolved key matches it (known limit L1, retained for stage 1).
-        """
-        assert not isinstance(user, str)
-
-        ctx = super().cv_get_context(key=key, obj=obj, user=user, request=request, location=location)
-
-        if obj is None and key is not None and self.cv_viewset.has_parent:
-            # A custom ContextButton may target the create view via key_target while
-            # using a different key (e.g. a second, differently-styled create button).
-            # Resolve key_target so the create-access re-derivation finds the view.
-            context_button = self.cv_get_context_button(key)
-            target_key = context_button.key_target if context_button and context_button.key_target else key
-            if self.cv_viewset.is_view_registered(target_key):
-                target_cls = self.cv_viewset.get_view_class(target_key)
-            else:
-                target_cls = None
-            if (
-                target_cls
-                and getattr(target_cls, "cv_permission", None) == "add"
-                and hasattr(target_cls, "cv_create_has_access")
-            ):
-                parent_obj = _resolved_parent(self)
-                known = (parent_obj,) if parent_obj is not None else ()
-                ctx.update(_link_ctx(_link_access(target_cls, user, None, known, rendering_view=self)))
-
-        return ctx
 
     def get_queryset(self):
         from guardian.shortcuts import get_objects_for_user

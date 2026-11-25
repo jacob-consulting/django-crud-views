@@ -20,6 +20,7 @@ from crud_views.lib.link_access import (
     _LINK_PERMISSION,
     _LINK_STATE,
     _higher_ancestor_gates,
+    _known_link_ancestors,
     _link_access,
     _link_ctx,
     _link_permission,
@@ -610,7 +611,7 @@ def _page_view(target, actor, parent, obj=None, *, guarded=True):
 
 
 @pytest.mark.django_db
-def test_page_link_ancestors_only_for_nested_guardian_create(helpers, core_targets, data):
+def test_page_link_ancestors_align_every_target_directly(helpers, core_targets, data):
     actor = _user("page_seam", (Publisher, "view"))
     _grant(actor, helpers.pub, "view", data.penguin)
     view = _page_view(helpers.book.Detail, actor, data.penguin, data.book)
@@ -621,17 +622,17 @@ def test_page_link_ancestors_only_for_nested_guardian_create(helpers, core_targe
         helpers.book.Detail,
         helpers.pub.Create,
     ):
-        seam = getattr(target, "_cv_page_link_ancestors", None)
-        assert callable(seam), "the private page seam must exist"
-        assert seam(view, data.book) is None
-    known = helpers.book.Create._cv_page_link_ancestors(view, data.book)
+        assert not hasattr(target, "_cv_page_link_ancestors")
+        known = _known_link_ancestors(target, view)
+        assert len(known) == len(ancestors._walk_ancestors(target.cv_viewset))
+    known = _known_link_ancestors(helpers.book.Create, view)
     assert isinstance(known, tuple)
     assert len(known) == 1
     assert known[0] is view.cv_get_parent_object()
 
 
 @pytest.mark.django_db
-def test_page_link_ancestors_keep_documented_denials(helpers, data, django_assert_num_queries):
+def test_page_link_ancestors_use_known_route_without_relation_lookup(helpers, data, django_assert_num_queries):
     actor = _user("page_seam_denials")
     _grant(actor, helpers.pub, "view", data.penguin)
     view = _page_view(helpers.book.Detail, actor, data.penguin, data.book)
@@ -643,12 +644,11 @@ def test_page_link_ancestors_keep_documented_denials(helpers, data, django_asser
     mismatched = Book(pk=data.book.pk, title="Different FK", publisher=data.other)
     assert mismatched.publisher is data.other
     with django_assert_num_queries(0):
-        for obj in (None, data.author, data.penguin):
-            assert target._cv_page_link_ancestors(view, obj) == ()
-        assert helpers.genre.Create._cv_page_link_ancestors(genre_view, data.genre) == ()
-        assert target._cv_page_link_ancestors(unguarded, data.book) == ()
-        for obj in (data.book, mismatched):
-            known = target._cv_page_link_ancestors(view, obj)
+        assert _known_link_ancestors(helpers.genre.Create, genre_view) == (genre_view._cv_ancestor_state.parent,)
+        assert _known_link_ancestors(target, unguarded) == (None,)
+        for obj in (None, data.author, data.penguin, data.book, mismatched):
+            view.object = obj
+            known = _known_link_ancestors(target, view)
             assert len(known) == 1
             assert known[0] is parent
             assert known[0] is not data.other
@@ -729,7 +729,7 @@ def test_context_controls_send_nested_guardian_create_through_the_check(helpers,
                     for clause in ("from", "join"):
                         assert f'{clause} "{Publisher._meta.db_table}"' not in query["sql"].lower()
 
-    actor = _user("page_guardian_kept_hidden")
+    actor = _user("page_guardian_known_parent")
     _grant(actor, helpers.pub, "view", data.penguin)
     _grant(actor, helpers.pub, "change", data.penguin)
     for page, obj, create in (
@@ -746,11 +746,12 @@ def test_context_controls_send_nested_guardian_create_through_the_check(helpers,
             patch.setattr(create, "cv_action_enabled", state)
             for key in ("create", "new_book"):
                 ctx = view.cv_get_context(key, obj=obj, user=actor)
-                assert ctx["cv_access"] is False
+                assert ctx["cv_access"] is True
                 assert ctx["cv_action_enabled"] is True
-            gate.assert_not_called()
-            create_access.assert_not_called()
-            state.assert_not_called()
+            parent = view._cv_ancestor_state.parent
+            assert [call.args for call in gate.call_args_list] == [(actor, parent)] * 4
+            assert [call.args for call in create_access.call_args_list] == [(actor, view, parent)] * 2
+            assert [call.args for call in state.call_args_list] == [(actor, parent)] * 2
 
 
 @pytest.mark.django_db
@@ -900,15 +901,8 @@ def test_parent_button_reaches_nested_guardian_create_through_the_check(helpers,
                     state.assert_called_once_with(actor, parent)
                 else:
                     state.assert_not_called()
-                if page is helpers.note.Detail:
-                    assert ctx["cv_access"] is book_create_allowed
-                    gates[helpers.note.Create].assert_not_called()
-                else:
-                    # L1 / D-34 remains through 3a: the page's own create answer still overwrites the button.
-                    assert ctx["cv_access"] is not book_create_allowed
-                    assert [call.args for call in gates[helpers.note.Create].call_args_list] == [(actor, data.book)] * (
-                        1 if book_create_allowed else 2
-                    )
+                assert ctx["cv_access"] is book_create_allowed
+                gates[helpers.note.Create].assert_not_called()
                 assert ctx["cv_url"] == _url(
                     helpers.book.vs, "create", **{helpers.book.vs.parent.get_pk_name(): data.penguin.pk}
                 )
@@ -917,8 +911,8 @@ def test_parent_button_reaches_nested_guardian_create_through_the_check(helpers,
 @pytest.mark.django_db
 @pytest.mark.parametrize("sibling_key", ["list", "create"])
 @pytest.mark.parametrize("create_grant", [False, True])
-def test_sibling_button_under_create_key_gets_page_create_result(pn, data, monkeypatch, sibling_key, create_grant):
-    # L1 / D-34 remains through 3a: retain the page's create answer and sibling URL.
+def test_sibling_button_under_create_key_uses_actual_target(pn, data, monkeypatch, sibling_key, create_grant):
+    # The sibling target uses its own operation's parent permission, without a page-create rewrite.
     parent_none._strict_policy(pn, monkeypatch)
     actor = parent_none._child_page_actor(pn, data.penguin, data.book, create_grant=create_grant)
     target = pn.free_genre_vs.get_view_class(sibling_key)
@@ -933,15 +927,19 @@ def test_sibling_button_under_create_key_gets_page_create_result(pn, data, monke
     assert response.status_code == 200
     contexts = parent_none._create_contexts(records)
     assert len(contexts) == 1
-    assert contexts[0]["cv_access"] is create_grant
+    assert contexts[0]["cv_access"] is (sibling_key == "list" or create_grant)
     assert contexts[0]["cv_url"] == parent_none._url(pn.free_genre_vs, sibling_key, data.penguin.pk)
-    assert [call.args for call in page_gate.call_args_list] == [(actor, data.penguin)] * (2 if create_grant else 1)
+    page_gate.assert_not_called()
     if sibling_key == "list":
-        # The actual list target now passes its parent gate before the retained rewrite.
         sibling_gate.assert_called_once_with(actor, response.context["view"]._cv_ancestor_state.parent)
+        sibling_create.assert_not_called()
     else:
-        sibling_gate.assert_not_called()  # The create seam still returns ().
-    sibling_create.assert_not_called()
+        parent = response.context["view"]._cv_ancestor_state.parent
+        assert [call.args for call in sibling_gate.call_args_list] == [(actor, parent)] * (2 if create_grant else 1)
+        if create_grant:
+            sibling_create.assert_called_once_with(actor, None, parent)
+        else:
+            sibling_create.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -1029,7 +1027,7 @@ def test_card_action_and_filter_reach_nested_guardian_create_through_the_check(p
 
 
 @pytest.mark.django_db
-def test_nested_guardian_create_filter_and_sibling_button_stay_denied(helpers, data, monkeypatch):
+def test_nested_guardian_create_filter_and_sibling_button_use_known_parent(helpers, data, monkeypatch):
     actor = _user("filter_sibling_denials")
     _grant(actor, helpers.pub, "view", data.penguin)
     _grant(actor, helpers.pub, "change", data.penguin)
@@ -1047,10 +1045,11 @@ def test_nested_guardian_create_filter_and_sibling_button_stay_denied(helpers, d
             own, create_access = Mock(wraps=target.cv_has_access), Mock(wraps=target.cv_create_has_access)
             patch.setattr(target, "cv_has_access", own)
             patch.setattr(target, "cv_create_has_access", create_access)
-            assert cv_context_has_permission(view, "create") is False
+            assert cv_context_has_permission(view, "create") is True
             own.assert_not_called()
-            create_access.assert_not_called()
-            gate.assert_not_called()
+            parent = view._cv_ancestor_state.parent
+            create_access.assert_called_once_with(actor, view, parent)
+            assert [call.args for call in gate.call_args_list] == [(actor, parent)] * 2
         assert target.cv_has_access(actor, None) is False
 
     target = helpers.book.Create
@@ -1059,10 +1058,11 @@ def test_nested_guardian_create_filter_and_sibling_button_stay_denied(helpers, d
     monkeypatch.setattr(target, "cv_has_access", own)
     monkeypatch.setattr(target, "cv_create_has_access", create_access)
     button = SiblingContextButton(key="new_book", sibling_name=helpers.book.vs.name, sibling_key="create")
-    assert button.get_context(view.cv_get_view_context(object=data.genre))["cv_access"] is False
+    assert button.get_context(view.cv_get_view_context(object=data.genre))["cv_access"] is True
     own.assert_not_called()
-    create_access.assert_not_called()
-    gate.assert_not_called()
+    parent = view._cv_ancestor_state.parent
+    create_access.assert_called_once_with(actor, None, parent)
+    assert [call.args for call in gate.call_args_list] == [(actor, parent)] * 2
 
 
 @pytest.mark.django_db

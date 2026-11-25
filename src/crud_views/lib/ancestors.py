@@ -657,9 +657,9 @@ def _immediate_parent_access(
     """Bounded parent gate for rendering and access helpers of a nested ``view_class``.
 
     Only the immediate structural parent is consulted: its own provider (and Guardian fallback) with the
-    *nearest* key of ``view_class``'s operation pair. A farther ancestor is never evaluated and nothing is
-    looked up — the request itself still runs the full ancestor guard, so a visible control can lead to a
-    request denied higher up (first-wave UI limitation).
+    *nearest* key of ``view_class``'s operation pair. This helper never evaluates a farther ancestor or
+    performs a lookup. Shared link callers separately gate supplied known higher ancestors. A direct
+    bounded-helper call or an unknown higher ancestor can still differ from the full request guard.
 
     * ``parent_obj`` None (context unavailable) → False.
     * Immediate parent provider ``"none"`` → True: only this gate is skipped; callers keep their actor, state

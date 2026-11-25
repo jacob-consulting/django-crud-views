@@ -429,8 +429,11 @@ def test_guardian_list_and_card_use_actual_parent_and_sibling_targets(
         page.cv_context_buttons = [button]
         actual = Mock(return_value=not page_create_allowed)
         rewritten = Mock(return_value=page_create_allowed)
+        state, page_state = Mock(return_value=True), Mock(return_value=True)
         monkeypatch.setattr(target, "cv_create_has_access" if button_kind == "parent" else "cv_has_access", actual)
         monkeypatch.setattr(ns.note.Create, "cv_create_has_access", rewritten)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        monkeypatch.setattr(ns.note.Create, "cv_action_enabled", page_state)
         result = page.cv_get_context("create", user=actor)
         assert result["cv_access"] is not page_create_allowed
         assert result["cv_action_enabled"] is True
@@ -445,7 +448,13 @@ def test_guardian_list_and_card_use_actual_parent_and_sibling_targets(
             actual.assert_called_once_with(actor, None, page._cv_ancestor_state.objects[1])
         else:
             actual.assert_called_once_with(actor, None)
+        if page_create_allowed:
+            state.assert_not_called()
+        else:
+            parent = ancestors._resolved_ancestor(page, target.cv_viewset.parent.name)
+            state.assert_called_once_with(actor, parent)
         rewritten.assert_not_called()
+        page_state.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -667,7 +676,7 @@ def test_permission_filter_keeps_lookup_and_configuration_error_boundaries(probl
 
 
 @pytest.mark.django_db
-def test_permission_filter_guardian_create_retains_immediate_only_seam(monkeypatch):
+def test_permission_filter_guardian_create_gates_known_higher_ancestors(monkeypatch):
     from guardian.shortcuts import remove_perm
 
     with isolated_routes(lambda s: consumer_routes(s, "guardian")) as ns:
@@ -684,9 +693,8 @@ def test_permission_filter_guardian_create_retains_immediate_only_seam(monkeypat
         state = Mock(side_effect=AssertionError("filter state"))
         monkeypatch.setattr(ns.note.Create, "cv_create_has_access", create)
         monkeypatch.setattr(ns.note.Create, "cv_action_enabled", state)
-        assert cv_context_has_permission(page, "create") is True
-        create.assert_called_once_with(actor, page, page._cv_ancestor_state.parent)
-        assert create.call_args.args[1] is page
+        assert cv_context_has_permission(page, "create") is False
+        create.assert_not_called()
         state.assert_not_called()
 
 
@@ -970,7 +978,7 @@ def test_default_parent_view_without_change_hides_write_button_and_request(key, 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("consumer", ["context", "parent", "sibling", "child"])
-def test_guardian_create_buttons_keep_seam_and_rendering_view_identity(consumer, monkeypatch):
+def test_guardian_create_buttons_keep_aligned_parent_and_rendering_view_identity(consumer, monkeypatch):
     with isolated_routes(lambda s: consumer_routes(s, "guardian")) as ns:
         world = consumer_world()
         actor = consumer_actor(ns, world)
@@ -994,18 +1002,13 @@ def test_guardian_create_buttons_keep_seam_and_rendering_view_identity(consumer,
         monkeypatch.setattr(target, "cv_create_has_access", create)
         monkeypatch.setattr(target, "cv_action_enabled", state)
         result = button.get_context(page.cv_get_view_context(object=page.object))
-        if consumer == "sibling":
-            assert result["cv_access"] is False  # The retained seam's () stays authoritative.
-            create.assert_not_called()
-            state.assert_not_called()
-        else:
-            parent = (
-                world.book if consumer == "child" else ancestors._resolved_ancestor(page, target.cv_viewset.parent.name)
-            )
-            assert result["cv_access"] is True
-            create.assert_called_once_with(actor, page if consumer == "context" else None, parent)
-            assert create.call_args.args[2] is parent
-            state.assert_called_once_with(actor, parent)
+        parent = (
+            world.book if consumer == "child" else ancestors._resolved_ancestor(page, target.cv_viewset.parent.name)
+        )
+        assert result["cv_access"] is True
+        create.assert_called_once_with(actor, page if consumer == "context" else None, parent)
+        assert create.call_args.args[2] is parent
+        state.assert_called_once_with(actor, parent)
 
 
 @pytest.mark.django_db
@@ -1406,7 +1409,7 @@ def test_card_actions_order_and_row_identity(composition, consumer, key, outcome
 @pytest.mark.parametrize("composition", ["core", "guardian"])
 @pytest.mark.parametrize("consumer", ["own", "child"])
 @pytest.mark.parametrize("far_allowed", [True, False])
-def test_card_create_seam_and_rendering_view(composition, consumer, far_allowed, monkeypatch):
+def test_card_create_aligned_ancestors_and_rendering_view(composition, consumer, far_allowed, monkeypatch):
     from guardian.shortcuts import remove_perm
 
     from crud_views.lib.view import CardAction
@@ -1438,7 +1441,7 @@ def test_card_create_seam_and_rendering_view(composition, consumer, far_allowed,
         if create is not None:
             monkeypatch.setattr(target, "cv_create_has_access", create)
         result = page.cv_get_card_action_data(action, row, actor)
-        permitted = far_allowed or (composition == "guardian" and consumer == "own")
+        permitted = far_allowed
         assert result["cv_access"] is permitted
         if permitted:
             parent = page._cv_ancestor_state.parent if consumer == "own" else row

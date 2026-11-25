@@ -553,15 +553,6 @@ class CrudView(metaclass=CrudViewMetaClass):
         return cls.cv_has_access(user, obj)
 
     @classmethod
-    def _cv_page_link_ancestors(cls, rendering_view, page_obj):
-        """Private seam, not an extension point: None requests target-aligned known ancestors.
-
-        An explicit tuple, including an empty tuple, supplies the link check's ancestors instead.
-        The nested Guardian create override retains its immediate-parent-only handling until stage 3b.
-        """
-        return None
-
-    @classmethod
     def cv_action_enabled(cls, user: User, obj: Model | None = None) -> bool:
         """Whether the action is applicable to its current object, independently of permission.
 
@@ -936,9 +927,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         # set up the view context
         context = self.cv_get_view_context(object=obj)
 
-        known = cls._cv_page_link_ancestors(self, obj)
-        if known is None:
-            known = _known_link_ancestors(cls, self)
+        known = _known_link_ancestors(cls, self)
         dict_kwargs.update(
             _link_ctx(
                 _link_access(

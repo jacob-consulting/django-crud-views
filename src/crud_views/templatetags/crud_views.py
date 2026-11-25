@@ -654,9 +654,7 @@ def cv_context_has_permission(view, key) -> bool:
     except Exception:
         return False
     page_obj = getattr(view, "object", None)
-    known = cls._cv_page_link_ancestors(view, page_obj)
-    if known is None:
-        known = _known_link_ancestors(cls, view)
+    known = _known_link_ancestors(cls, view)
     return _link_permission(
         cls,
         view.request.user,

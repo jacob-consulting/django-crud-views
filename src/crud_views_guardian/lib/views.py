@@ -8,7 +8,7 @@ from django.db.models import Count
 from django.utils.translation import gettext as _
 
 from crud_views.lib.ancestor_db import _check_nested_auth
-from crud_views.lib.ancestors import _immediate_parent_access, _resolved_ancestor
+from crud_views.lib.ancestors import _immediate_parent_access
 from crud_views.lib.manage_report import SourceRecord, normalize_value
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views import (
@@ -279,20 +279,6 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
     """
 
     @classmethod
-    def _cv_page_link_ancestors(cls, rendering_view, page_obj):
-        """Supply only the URL parent of an own child in a single-FK nesting, without a lookup."""
-        parent = cls.cv_viewset.parent
-        if parent is None:
-            return super()._cv_page_link_ancestors(rendering_view, page_obj)
-        # Keep denied: the child-list permission filter and M2M child page (D-27), the create page
-        # itself and sibling button (D-33), and views without a resolved parent (D-16).
-        # GuardianQuerysetMixin.cv_get_context supplies the child list page's URL parent itself.
-        if not isinstance(page_obj, cls.cv_viewset.model) or parent.many_to_many_through_attribute:
-            return ()
-        resolved = _resolved_ancestor(rendering_view, parent.name)
-        return (resolved,) if resolved is not None else ()
-
-    @classmethod
     def _cv_guardian_create_parent(cls, obj):
         """The configured parent instance an access/state input stands for, or None.
 
@@ -332,11 +318,11 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         """
         Permission-only hook for links to this create, using its immediate parent's rule.
 
-        This is the only own-permission step for every package control currently shown that links to a
-        nested Guardian create. A sibling button to it and its create-page create control stay hidden
-        without asking this hook. One existing list-page limit remains: when a nested Guardian list's own
-        ViewSet registers a Guardian create under the same key, GuardianQuerysetMixin.cv_get_context gives
-        a parent or sibling button to this create the page's own create result.
+        This is the only own-permission step for package controls linking to a nested Guardian create.
+        A known route parent makes sibling and create-page controls, child-list permission filters and
+        M2M page controls eligible after the declared higher/immediate gates and this hook pass. Normal
+        consumers use resolved route ancestry without guessing a relation. Each button follows its actual
+        target; custom get_context output is not repaired by a page-key rewrite.
 
         Nested links require a signed-in, active actor and passing declared parent gates before this hook;
         a denied gate skips even a custom override. An override may deny after the gates pass. The default

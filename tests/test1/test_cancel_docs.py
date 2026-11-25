@@ -164,3 +164,44 @@ def test_public_surface_and_synchronized_example(cv_author, monkeypatch):
     for path in (REFERENCE, ROOT / "docs/faq.md"):
         (block,) = re.findall(r"<!-- cv-sync: library/views.py -->\n```python\n(.*?)\n```", path.read_text(), re.S)
         assert block in source
+
+
+def test_core_cancel_parent_and_bulk_return_guidance():
+    bulk = " ".join((ROOT / "docs/reference/bulk_actions.md").read_text().split())
+    state = " ".join((ROOT / "docs/reference/action_enabled.md").read_text().split())
+    for phrase in (
+        "plain GET, warning POST and the Cancel button of the all-blocked page",
+        "origin, fallback, success URL order",
+        "authorization responses and login redirects remain unchanged",
+        "nested object and collection targets",
+        "guarded request reuses its resolved parent without a query",
+        "without guard state the existing lookup can fetch it once",
+        "missing row in the built-in lookup means unavailable",
+        "exceptions from project overrides propagate",
+        "Own permission still receives the target's own object, or `None` for a collection",
+        "state receives that own object or the URL parent respectively",
+        "Higher ancestors come only from guard state",
+        "GuardianParentPermissionMixin` retains its immediate-parent-only path",
+        "queryset-only Guardian Cancel retains its immediate skip but checks known higher ancestors",
+    ):
+        assert phrase in bulk
+    assert "Core Cancel alone retains the `cv_get_parent_object` hook" in state
+    assert "custom-hook exceptions propagate" in state
+
+
+def test_guardian_create_hook_documents_same_viewset_or_none():
+    from crud_views_guardian.lib.views import GuardianCreateViewPermissionRequired
+
+    doc = " ".join(inspect.getdoc(GuardianCreateViewPermissionRequired.cv_create_has_access).split())
+    argument = doc.split("rendering_view:", 1)[1].split("parent_obj:", 1)[0]
+    for phrase in (
+        "real rendering view",
+        "own ViewSet",
+        "list, object, row/card action, navbar and permission-filter consumers",
+        "otherwise None",
+        "Retained Cancel",
+        "request-bound view of the same ViewSet",
+        "another ViewSet receives None",
+        "must not assume it is set or is a list view",
+    ):
+        assert phrase in argument

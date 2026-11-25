@@ -345,10 +345,10 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
 
         Args:
             user: the requesting user
-            rendering_view: the child list view for its create control, or the rendering view for a cancel
-                target. It is None for child context buttons, card child actions, object navbar child items,
-                parent buttons, create controls or create card actions on child object/card pages, and the
-                cv_context_has_permission filter on a child object page. Overrides must not assume it is set.
+            rendering_view: the real rendering view when it belongs to this create's own ViewSet, including
+                list, object, row/card action, navbar and permission-filter consumers; otherwise None.
+                Retained Cancel supplies its existing request-bound view of the same ViewSet. A child link
+                from another ViewSet receives None. Overrides must not assume it is set or is a list view.
             parent_obj: the resolved parent instance. An own child of a single-foreign-key nesting is also
                 accepted and resolved to its parent; None, missing relations and every other input deny.
         """

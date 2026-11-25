@@ -2500,10 +2500,28 @@ Plans:
 **Commit constraints:** D-45 and D-50 land together; D-46 lands with or before D-45; D-49 lands with or before the D-48 Cancel move; state adapters are removed only after Cancel's last caller moves. Keep D-40 rendering-view identity, D-41 ancestor alignment and D-42 Cancel parent-hook behavior.
 **Acceptance:** Carry all eight issue criteria into planning, including real-page and unchanged-request pairs, actor and override cases, colliding button keys, three-level nesting, Cancel actor/argument/configuration behavior, and direct nested-create `cv_has_access` denial. Explain every changed matrix cell by decision, preserve the original stage-3a cost receipt, list rewritten tests and removed/kept helpers with reasons, and update query-count pins. Extend the existing `Link access hooks` Breaking entry together with `docs/migrating-1.0.md` and `docs/reference/guardian.md`; remove descriptions of exceptions this stage ends.
 **Out of scope:** Request gates, authorization responses and traces; Guardian list filtering; top-level Guardian link rules; the stage-3c public function; and stage 3a's other exclusions. No new exception or request-response change without a maintainer decision. Planner discretion is limited to commit order within the constraints, placement of actor/composition checks, test selection and query-count pins.
-**Plans:** 0 plans
+**Plans:** 0/7 plans executed
 
 Plans:
+**Wave 1**
+- [ ] 06.51-01-PLAN.md
 - [ ] TBD (run $gsd-plan-phase 06.51 to break down)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.51-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.51-03-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.51-04-PLAN.md
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 06.51-05-PLAN.md
+- [ ] 06.51-06-PLAN.md
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 06.51-07-PLAN.md
 
 ### Phase 7: Theme-surface stability policy
 

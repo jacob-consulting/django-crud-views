@@ -443,6 +443,44 @@ def test_navbar_create_on_deeper_viewset_receives_no_rendering_view(helpers, dat
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("missing_higher", [False, True])
+def test_inherited_navbar_sibling_keeps_level_specific_guardian_grants(missing_higher, monkeypatch, provider_calls):
+    from tests.test1.test_link_consumer_costs import consumer_routes, consumer_view, consumer_world
+
+    with isolated_routes(lambda s: consumer_routes(s, "guardian")) as ns:
+        world = consumer_world()
+        actor = _user("navbar_sibling_levels")
+        # Different model/object grants at each level; no global grants can cover a wrong identity.
+        _grant(actor, ns.pub, "view", world.pub)
+        _grant(actor, ns.pub, "change", world.pub)
+        _grant(actor, ns.book, "view", world.book)
+        page = consumer_view(ns.note, "List", actor, world)
+        book, publisher = page._cv_ancestor_state.objects
+        ns.sibling.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, read=AncestorPermissions(nearest="view", higher="change")
+        )
+        page.cv_navbar = NavBar(viewset=ns.book.vs.name, items=[NavItem(child=ns.sibling.vs.name)])
+        if missing_higher:
+            page._cv_ancestor_state = ancestors._AncestorState((book, None))
+        monkeypatch.setattr(page, "cv_get_parent_object", Mock(side_effect=AssertionError("parent hook")))
+        monkeypatch.setattr(ViewSet, "get_queryset", Mock(side_effect=AssertionError("ancestor query")))
+        state = Mock(wraps=ns.sibling.List.cv_action_enabled)
+        monkeypatch.setattr(ns.sibling.List, "cv_action_enabled", state)
+        provider_calls.clear()
+        result = _build(page)
+        assert result["items"][0]["url"] == reverse(
+            ns.sibling.vs.get_router_name("list"),
+            kwargs={ns.book.vs.parent.get_pk_name(): world.pub.pk, ns.sibling.vs.parent.get_pk_name(): world.book.pk},
+        )
+        expected = [] if missing_higher else [(ns.pub.vs.name, "app.change_publisher", publisher)]
+        expected.append((ns.book.vs.name, "app.view_book", book))
+        assert provider_calls == expected
+        assert all(actual[2] is wanted[2] for actual, wanted in zip(provider_calls, expected, strict=True))
+        state.assert_called_once_with(actor, book)
+        assert state.call_args.args[1] is book
+
+
+@pytest.mark.django_db
 def test_visible_owner_link_does_not_bypass_project_queryset(django_user_model, monkeypatch):
     with navbar_routes(permission_routes) as ns:
         owner = Publisher.objects.create(name="Outside project scope")

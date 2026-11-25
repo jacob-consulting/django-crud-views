@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from crud_views.lib.ancestors import _resolved_ancestor, _walk_ancestors
 from crud_views.lib.check import Check
 from crud_views.lib.exceptions import ViewSetNotFoundError
-from crud_views.lib.link_access import _LINK_ALLOWED, _link_access
+from crud_views.lib.link_access import _LINK_ALLOWED, _known_link_ancestors, _link_access
 from crud_views.lib.view.base import cv_is_modal_request
 from crud_views.lib.view.context import ViewContext
 from crud_views.lib.viewset import ViewSet
@@ -83,11 +83,19 @@ def _build(view):
     for item in bar.items:
         target_viewset, key, target = _destination(owner_viewset, item)
         if item.child is None:
-            if not target.cv_has_access(view.request.user, owner):
-                continue
-            if not target._cv_action_enabled_for_rendering(view.request.user, owner, view):
-                continue
-        elif _link_access(target, view.request.user, None, (owner,)) != _LINK_ALLOWED:
+            known = _known_link_ancestors(target, view)
+        else:
+            known = _known_link_ancestors(target, view, immediate_parent=owner)
+        if (
+            _link_access(
+                target,
+                view.request.user,
+                owner if item.child is None else None,
+                known,
+                rendering_view=view if target_viewset is view.cv_viewset else None,
+            )
+            != _LINK_ALLOWED
+        ):
             continue
         kwargs = dict(target.cv_get_url_extra_kwargs())
         kwargs.update(

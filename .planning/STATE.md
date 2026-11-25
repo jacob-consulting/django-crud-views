@@ -1,25 +1,25 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.51"
-current_phase_name: Remove retained Guardian link exceptions - stage 3b
-current_plan: 7
-status: verifying
-stopped_at: Completed 06.51-07-PLAN.md; all plans executed, independent phase verification pending
-last_updated: "2026-11-25T20:07:43.340Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.51 complete; stage 3c (#414) must settle before Phase 7
+last_updated: "2026-11-25T20:42:03Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.51 plan 07 complete; 20119 core tests and 637 examples plus 300 subtests pass; all plans executed with independent verification pending
-state_head: cf7e53a8459c76b34f1258d35e6093bd67ef4cd0
+last_activity_desc: Phase 06.51 complete; independent verification 28/28 passed, clean review, 19/19 threats closed
+state_head: 36ade82edcb8568c7823ee4ee5b2ab7a6c85a478
 progress:
   total_phases: 58
-  completed_phases: 56
+  completed_phases: 57
   total_plans: 315
   completed_plans: 315
 milestone_name: milestone
 ---
 
 Total Phases: 58
-Completed Phases: 56
+Completed Phases: 57
 
 # Project State
 
@@ -28,17 +28,24 @@ Completed Phases: 56
 See: .planning/PROJECT.md (updated 2026-11-25)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.51 — Remove retained Guardian link exceptions - stage 3b (#413)
+**Current focus:** Stage 3c (#414) before Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.51 (Remove retained Guardian link exceptions - stage 3b) — EXECUTED; VERIFICATION PENDING
-Current Plan: 7
-Total Plans in Phase: 7
-Status: Ready for verification
-Last activity: 2026-11-25 — Phase 06.51 plan 07 complete; 20,119 core tests and 637 examples plus 300 subtests pass; all plans executed with independent verification pending
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: TBD
+Status: Awaiting stage 3c (#414) before planning Phase 7
+Last activity: 2026-11-25 — Phase 06.51 complete; independent verification 28/28 passed, clean review, 19/19 threats closed
 
-Next: Run independent review, validation and security gates for phase 06.51 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`. The orchestrator owns phase completion; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+Next: Prepare the stage 3b PR to `feature/link-access-check-design` when requested, then add/plan stage 3c (#414) before Phase 7 and the 1.0 freeze. Phase 7 is the next numbered roadmap phase, but its stage-3c prerequisite is not complete. Auto-advance is disabled. Issues #412/#413 close only when the feature branch merges to `main`.
+
+### Phase 06.51 completion — 2026-11-25
+
+- All seven plans are complete. Independent verification passes 28/28 must-haves and all eight acceptance criteria; its CLI fingerprint covers 236 inputs. Deep review is clean (41 files, zero findings), validation passes all 15 rows, and the security audit closes 19/19 authored threats. UI copy and experience checks pass in the documented source scope; visual dimensions remain unassessed.
+- Final source-bound evidence: 20,119 core tests, 637 examples plus 300 subtests, strict MkDocs and scoped Ruff pass. The regression gate matches all 314 prior-phase modules to those passing receipts on the unchanged product tree; the verifier adds four passing targeted checks. Browser, downstream, installed-distribution, recorder-enabled and other runtime lanes remain unclaimed.
+- `phase.complete` ran once. Its missing-file advisory combines two existing pytest paths into one string: `tests/test1/test_link_access_matrix.py` and `tests/test1/test_link_consumer_costs.py` both exist and pass; this is a parser false positive, not verification debt. The dotted ROADMAP row and stale completion prose are reconciled. Preserved milestone totals now show 57/58 phases and 315/315 authored plans, without a misleading plan-based global percentage.
+- Transition retains the stage-3c-before-Phase-7 prerequisite. No matching pending todos or stale phase handoffs exist; global learnings is disabled and the graduation scan has no learning artifacts. Original configuration and state.json dirt remains intact. No push, PR, merge or issue closure occurred.
 
 ### Phase 06.51 plan 07 — 2026-11-25
 
@@ -1851,7 +1858,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 297
+- Total plans completed: 315
 
 - Total plans completed: 186
 - Average duration: -
@@ -1913,6 +1920,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.48 | 9 | - | - |
 | 06.49 | 5 | - | - |
 | 06.50 | 9 | - | - |
+| 06.51 | 7 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2151,6 +2159,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 ## Accumulated Context
 
 ### Decisions
+
+- [Phase 06.51] Shared target-aligned link checks now enforce declared parent and known higher gates; nested Guardian create admits the actor and immediate parent before overrides. Preserve request authorization, bounded actual-Cancel parent lookup and the documented parent-only ordinary-link/Cancel distinction. Retire obsolete adapters only after their last caller moves; keep historical evidence immutable and current measurements source-bound.
 
 - [Phase 06.50] Remaining approved link consumers share target-aligned permission-before-state checks; retain explicit Guardian/Cancel seams and independent request enforcement. The single approved frozen matrix delta and measured query changes are documented. Keep raw acceptance receipts as tracked artifacts; source-distribution runs skip only absent repository-evidence checks.
 
@@ -2557,6 +2567,8 @@ None yet.
 
 ### Blockers/Concerns
 
+- Phase 7 prerequisite: stage 3c (#414) remains outstanding after verified stage 3b (06.51). Stage 3b targets `feature/link-access-check-design`; #412/#413 close only on the later feature-branch merge to `main`. Do not freeze the public link-check contract before stage 3c settles.
+
 - Phase 06.37 review (open, maintainer triage): WR-01 text output for `user == {}` prints `None (pk None, inactive)` (fix changes text bytes); WR-02 `TraceUser` accepts partial/null actors, looser than manage.md:478; WR-03 `isolated_routes` (tests/test1/test_ancestor_authorization.py) restores an emptied ViewSet registry — root cause of the xdist flake `test_published_command_examples` (pre-existing at 7daae93f; one-import fix proposed). `manage_report_floor` is not run in CI (IN-05).
 
 - Phase06.36: Pydantic2.2.1 command-corpus acceptance is blocked by pre-existing `Resource.__pydantic_init_subclass__` access to `__pydantic_fields__` at `src/crud_views/lib/resource.py:89`. Plan07's final floor has57 model passes/20 collection errors. Seven matrix combinations are unexecuted; independent code/security review and phase verification remain pending. See06.36-ACCEPTANCE.md and deferred-items.md; do not infer phase acceptance from7/7 executed plans.
@@ -2655,6 +2667,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T20:07:34.344Z
-Stopped at: Completed 06.51-07-PLAN.md; all plans executed, independent phase verification pending
+Last session: 2026-11-25T20:42:03Z
+Stopped at: Phase 06.51 complete; stage 3c (#414) must settle before Phase 7
 Resume file: None

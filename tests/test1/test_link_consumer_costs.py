@@ -411,9 +411,11 @@ def test_consumer_costs(surface, row_count, composition, allowed, actor_cache, m
 
 
 def read_cost_receipts():
-    receipt = Path(
+    receipt = Path(__file__).resolve().parents[2] / (
         ".planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-COST-BASELINE.md"
     )
+    if not receipt.is_file():
+        pytest.skip("Phase cost receipts are repository-only evidence, excluded from source distributions.")
     before, after = receipt.read_text().split("\n## After measurements", 1)
     return before, json.loads(after.split("```json\n", 1)[1].split("\n```", 1)[0])
 

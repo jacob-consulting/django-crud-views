@@ -1021,24 +1021,39 @@ def _spy_state(monkeypatch, cls):
 
 
 @pytest.mark.django_db
-def test_core_detail_page_state_hook_receives_page_object(client_user_author_view, monkeypatch, author_douglas_adams):
+@pytest.mark.parametrize("change_grant", [False, True])
+def test_core_detail_page_state_hook_receives_page_object(
+    client_user_author_view, user_author_view, cv_author, monkeypatch, author_douglas_adams, change_grant
+):
+    from tests.lib.helper.user import user_viewset_permission
     from tests.test1.app.models import Author
     from tests.test1.app.views import AuthorUpdateView
 
+    if change_grant:
+        user_viewset_permission(user_author_view, cv_author, "change")
     calls = _spy_state(monkeypatch, AuthorUpdateView)
     assert client_user_author_view.get(f"/author/{author_douglas_adams.pk}/detail/").status_code == 200
-    assert calls and all(type(obj) is Author and obj.pk == author_douglas_adams.pk for obj in calls)
+    if change_grant:
+        assert calls and all(type(obj) is Author and obj.pk == author_douglas_adams.pk for obj in calls)
+    else:
+        assert calls == []
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("change_grant", [False, True])
 def test_guardian_top_level_page_and_card_state_hooks_receive_row(
-    client_guardian, user_guardian, cv_guardian_author, monkeypatch, author_douglas_adams
+    client_guardian, user_guardian, cv_guardian_author, monkeypatch, author_douglas_adams, change_grant
 ):
     from tests.test1.app.models import Author
     from tests.test1.app.views import GuardianAuthorUpdateView
 
     user_guardian_object_perm(user_guardian, cv_guardian_author, "view", author_douglas_adams)
+    if change_grant:
+        user_guardian_object_perm(user_guardian, cv_guardian_author, "change", author_douglas_adams)
     calls = _spy_state(monkeypatch, GuardianAuthorUpdateView)
     assert client_guardian.get(f"/guardian_author/{author_douglas_adams.pk}/detail/").status_code == 200
     assert client_guardian.get("/guardian_author/card/").status_code == 200
-    assert calls and all(type(obj) is Author and obj.pk == author_douglas_adams.pk for obj in calls)
+    if change_grant:
+        assert calls and all(type(obj) is Author and obj.pk == author_douglas_adams.pk for obj in calls)
+    else:
+        assert calls == []

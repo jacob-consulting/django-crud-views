@@ -497,7 +497,7 @@ def test_bulk_guardian_visibility_preserves_all_blocked_review(card, stage, monk
 @pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
 @pytest.mark.parametrize("stage", ["review", "execute"])
 @pytest.mark.parametrize("denial", ["immediate", "farther"])
-def test_bulk_offered_action_ancestor_write_denied(card, stage, denial, monkeypatch):
+def test_bulk_hidden_action_ancestor_write_denied(card, stage, denial, monkeypatch):
     from types import SimpleNamespace
 
     parent = Publisher.objects.create(name="Read-only publisher")
@@ -519,9 +519,10 @@ def test_bulk_offered_action_ancestor_write_denied(card, stage, denial, monkeypa
         monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
         response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
         assert response.status_code == 200
-        button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
-        assert soup(response).cssselect("[data-cv-bulk-item]")
-        response = post_selection(client, button.get("formaction"), [obj], stage)
+        assert not soup(response).cssselect('[data-cv-bulk-action="mark"]')
+        assert not soup(response).cssselect("[data-cv-bulk-item]")
+        destination_url = reverse(vs.get_router_name(destination.cv_key), kwargs=kwargs)
+        response = post_selection(client, destination_url, [obj], stage)
         assert response.status_code == 403
         assert list(Publisher.objects.values_list("name", flat=True)) == ["Read-only publisher"]
         assert list(Book.objects.values_list("title", flat=True)) == ["Admitted book"]

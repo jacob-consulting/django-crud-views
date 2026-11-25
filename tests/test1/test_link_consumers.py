@@ -678,7 +678,9 @@ def test_card_actions_order_and_row_identity(composition, consumer, key, outcome
         assert result["cv_icon_action"] == target.cv_icon_action
         assert result["cv_list_action_method"] == "get"
         expected_url = (
-            page.cv_get_url(key, obj=row) if consumer == "own" else page.cv_get_child_url(ns.note.vs.name, key, row)
+            page.cv_get_link_url(target, key, row)
+            if consumer == "own"
+            else page.cv_get_child_url(ns.note.vs.name, key, row)
         )
         assert result["cv_url"] == expected_url
         if consumer == "own":
@@ -712,8 +714,9 @@ def test_card_actions_order_and_row_identity(composition, consumer, key, outcome
 @pytest.mark.parametrize("consumer", ["own", "child"])
 @pytest.mark.parametrize("far_allowed", [True, False])
 def test_card_create_seam_and_rendering_view(composition, consumer, far_allowed, monkeypatch):
-    from crud_views.lib.view import CardAction
     from guardian.shortcuts import remove_perm
+
+    from crud_views.lib.view import CardAction
 
     with isolated_routes(lambda s: consumer_routes(s, composition)) as ns:
         world = consumer_world()
@@ -802,3 +805,62 @@ def test_action_object_follows_request_definition(nested, key, surface, monkeypa
         expected = row if target.cv_object else page._cv_ancestor_state.parent if nested else None
         state.assert_called_once_with(actor, expected)
         assert state.call_args.args[1] is expected
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+@pytest.mark.parametrize(
+    "surface,key",
+    [
+        ("view_key", "update"),
+        ("view_key", "list"),
+        ("table_row", "update"),
+        ("table_row", "list"),
+        ("card-own", "update"),
+        ("card-own", "list"),
+        ("card-child", "list"),
+    ],
+)
+def test_view_key_table_row_card_real_far_denial_matches_request(composition, surface, key, monkeypatch):
+    from guardian.shortcuts import remove_perm
+
+    from crud_views.lib.view import CardAction
+
+    with isolated_routes(lambda s: consumer_routes(s, composition)) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        actor.user_permissions.remove(Permission.objects.get(codename="change_publisher"))
+        if composition == "guardian":
+            remove_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+        actor = User.objects.get(pk=actor.pk)
+        # Target-specific far write permission is stricter than either source page's Read policy.
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={key: AncestorPermissions(nearest="view", higher="change")}
+        )
+        page = consumer_view(
+            ns.book if surface == "card-child" else ns.note,
+            "Detail" if surface == "view_key" else "Card",
+            actor,
+            world,
+        )
+        target = ns.note.vs.get_view_class(key)
+        state = Mock(return_value=True)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        if surface.startswith("card"):
+            action = (
+                CardAction(child_name=ns.note.vs.name, child_key=key)
+                if surface == "card-child"
+                else CardAction(key=key)
+            )
+            result = page.cv_get_card_action_data(action, world.book if surface == "card-child" else world.note, actor)
+        else:
+            result = page.cv_get_context(
+                key, obj=world.note, user=actor, location="list" if surface == "table_row" else "context"
+            )
+        assert result["cv_access"] is False
+        assert result["cv_action_enabled"] is True
+        state.assert_not_called()
+        client = Client()
+        client.force_login(actor)
+        assert client.get(result["cv_url"]).status_code == 403
+        state.assert_not_called()

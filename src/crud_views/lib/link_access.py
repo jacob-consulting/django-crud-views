@@ -29,20 +29,6 @@ def _known_link_ancestors(target, rendering_view, *, immediate_parent=_PARENT_UN
     )
 
 
-def _page_action_object(rendering_view, target, page_obj):
-    """The request's action object for a control on its own ViewSet's page or one level below.
-
-    A nested target without an own object uses the parent this request resolved from the URL,
-    never the page object's foreign key or a lookup. No resolved parent means None.
-    Stage 3 removes this helper when these sites move to the link check.
-    """
-    if target.cv_object:
-        return page_obj
-    if target.cv_viewset.has_parent:
-        return ancestors._resolved_ancestor(rendering_view, target.cv_viewset.parent.name)
-    return None
-
-
 def _higher_ancestor_gates(target, user, known_ancestors) -> bool:
     """Gate supplied higher levels outermost first, without a rendering view.
 
@@ -52,7 +38,8 @@ def _higher_ancestor_gates(target, user, known_ancestors) -> bool:
     not report a higher level's missing permission key or non-default auth database; the nearest gate
     keeps _immediate_parent_access's validation-first order.
 
-    Stage-1 callers supply only the nearest parent; only direct tests reach the higher-level gates.
+    Migrated consumers supply known higher ancestors aligned with the target's declared ancestry.
+    Retained Guardian create seam/rewrite paths still supply only the immediate parent.
     """
     viewset = target.cv_viewset
     chain = ancestors._walk_ancestors(viewset)

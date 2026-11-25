@@ -4,7 +4,7 @@ from typing import ClassVar
 from django.views import generic
 
 from crud_views.lib.check import Check
-from crud_views.lib.link_access import _link_access, _link_ctx, _page_action_object
+from crud_views.lib.link_access import _known_link_ancestors, _link_access, _link_ctx
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.view.action_menu import ActionGroup, cv_inline_checks, cv_split_actions
@@ -61,7 +61,15 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
             child_cls = child_viewset.get_view_class(action.child_key)
             # permission is checked on the child view, like ChildContextButton (#149)
             return {
-                **_link_ctx(_link_access(child_cls, user, None, (obj,))),
+                **_link_ctx(
+                    _link_access(
+                        child_cls,
+                        user,
+                        None,
+                        _known_link_ancestors(child_cls, self, immediate_parent=obj),
+                        rendering_view=self if self.cv_viewset is child_cls.cv_viewset else None,
+                    )
+                ),
                 "cv_inaccessible_actions": child_cls.cv_get_inaccessible_actions(),
                 "cv_key": action.child_name,
                 "cv_url": url,
@@ -79,15 +87,17 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
         label = action.label or cls.cv_get_action_short_label(context=view_context)
 
         known = cls._cv_page_link_ancestors(self, obj)
-        if known is not None:
-            access = _link_ctx(_link_access(cls, user, None, known))
-        else:
-            access = {
-                "cv_access": bool(cls.cv_has_access(user, obj if cls.cv_object else None)),
-                "cv_action_enabled": cls._cv_action_enabled_for_rendering(
-                    user, _page_action_object(self, cls, obj), self
-                ),
-            }
+        if known is None:
+            known = _known_link_ancestors(cls, self)
+        access = _link_ctx(
+            _link_access(
+                cls,
+                user,
+                obj if cls.cv_object else None,
+                known,
+                rendering_view=self if self.cv_viewset is cls.cv_viewset else None,
+            )
+        )
 
         # always build the full data: disable mode renders label/icon/variant without access (#149)
         data = cls.cv_get_dict(

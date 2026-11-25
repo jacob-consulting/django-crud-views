@@ -906,8 +906,8 @@ def test_card_action_and_filter_reach_nested_guardian_create_through_the_check(p
                     assert ctx["cv_action_enabled"] is not permitted
                 else:
                     assert cv_context_has_permission(view, "create") is permitted
-                # Behavior 6: card own actions supply their real page; filter migrates in plan 04.
-                create_access.assert_called_once_with(actor, view if key == "card" else None, parent)
+                # Behavior 6: both consumers supply their real same-ViewSet page.
+                create_access.assert_called_once_with(actor, view, parent)
                 assert create_access.call_args.args[2] is parent
                 gate.assert_called_once_with(actor, parent)
                 own.assert_not_called()

@@ -14,9 +14,113 @@ from lxml import html
 from crud_views.lib import ancestors, link_access
 from crud_views.lib.view import ChildContextButton, ContextButton, ParentContextButton, SiblingContextButton
 from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ViewSet
+from crud_views.templatetags.crud_views import cv_context_has_permission
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1.test_ancestor_authorization import isolated_routes
 from tests.test1.test_link_consumer_costs import consumer_actor, consumer_routes, consumer_view, consumer_world
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("family_name", ["book", "note"])
+@pytest.mark.parametrize("outcome", ["allowed", "nearest", "higher", "own", "missing", "hole"])
+def test_permission_filter_checks_known_ancestry_without_state(family_name, outcome, monkeypatch):
+    with isolated_routes(consumer_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        family = getattr(ns, family_name)
+        page = consumer_view(family, "Detail", actor, world, guarded=outcome != "missing")
+        target = family.Update
+        family.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={"update": AncestorPermissions(nearest="change", higher="change")}
+        )
+        if outcome == "hole" and family_name == "note":
+            page._cv_ancestor_state = ancestors._AncestorState((page._cv_ancestor_state.parent, None))
+        known = link_access._known_link_ancestors(target, page)
+        events = []
+        original = ViewSet._ancestor_has_permission
+
+        def gate(vs, user, permission, obj, *, view):
+            events.append((vs.name, obj))
+            denied = (outcome == "nearest" and vs.name == family.vs.parent.name) or (
+                outcome == "higher" and family_name == "note" and vs.name == ns.pub.vs.name
+            )
+            return not denied and original(vs, user, permission, obj, view=view)
+
+        monkeypatch.setattr(ViewSet, "_ancestor_has_permission", gate)
+        own = Mock(return_value=outcome != "own")
+        state = Mock(return_value=False)
+        monkeypatch.setattr(target, "cv_has_access", own)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        monkeypatch.setattr(page, "cv_get_parent_object", Mock(side_effect=AssertionError("filter lookup")))
+        allowed = outcome in {"allowed", "hole"} or (outcome == "higher" and family_name == "book")
+        with CaptureQueriesContext(connection) as queries:
+            assert cv_context_has_permission(page, "update") is allowed
+        state.assert_not_called()  # Even a state-disabled action can pass this predicate.
+        if outcome in {"missing", "nearest"} or (outcome == "higher" and family_name == "note"):
+            own.assert_not_called()
+        else:
+            own.assert_called_once_with(actor, page.object)
+            assert own.call_args.args[1] is page.object
+        expected = [
+            (ancestor.name, obj)
+            for (_, ancestor), obj in reversed(list(zip(ancestors._walk_ancestors(family.vs), known, strict=True)))
+            if obj is not None
+        ]
+        if outcome == "higher" and family_name == "note":
+            expected = expected[:1]
+        assert events == expected
+        assert not any(
+            f'from "app_{model}"' in query["sql"].lower()
+            for query in queries
+            for model in ("publisher", "book", "booknote")
+        )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("problem", ["permission", "operation", "auth_database"])
+def test_permission_filter_keeps_lookup_and_configuration_error_boundaries(problem, monkeypatch):
+    with isolated_routes(consumer_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.note, "Detail", actor, world)
+        state = Mock(side_effect=AssertionError("filter state"))
+        monkeypatch.setattr(ns.note.Update, "cv_action_enabled", state)
+        assert cv_context_has_permission(page, "not_registered") is False
+        if problem == "permission":
+            ns.note.vs.ancestor_policy = AncestorPolicy(
+                cascade=True, actions={"update": AncestorPermissions(nearest="view", higher="missing")}
+            )
+        elif problem == "operation":
+            monkeypatch.setattr(ns.note.Update, "_cv_ancestor_operation", "unmapped", raising=False)
+        else:
+            monkeypatch.setattr(actor._state, "db", "other")
+        with pytest.raises(ImproperlyConfigured):
+            cv_context_has_permission(page, "update")
+        state.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_permission_filter_guardian_create_retains_immediate_only_seam(monkeypatch):
+    from guardian.shortcuts import remove_perm
+
+    with isolated_routes(lambda s: consumer_routes(s, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        actor.user_permissions.remove(Permission.objects.get(codename="change_publisher"))
+        remove_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+        actor = User.objects.get(pk=actor.pk)
+        page = consumer_view(ns.note, "Detail", actor, world)
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={"create": AncestorPermissions(nearest="change", higher="change")}
+        )
+        create = Mock(wraps=ns.note.Create.cv_create_has_access)
+        state = Mock(side_effect=AssertionError("filter state"))
+        monkeypatch.setattr(ns.note.Create, "cv_create_has_access", create)
+        monkeypatch.setattr(ns.note.Create, "cv_action_enabled", state)
+        assert cv_context_has_permission(page, "create") is True
+        create.assert_called_once_with(actor, page, page._cv_ancestor_state.parent)
+        assert create.call_args.args[1] is page
+        state.assert_not_called()
 
 
 @pytest.mark.django_db

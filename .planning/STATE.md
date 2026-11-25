@@ -3,19 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.50"
 current_phase_name: "Move remaining link consumers to the shared link check - stage 3a (#412)"
-current_plan: Not started
+current_plan: 2
 status: executing
-stopped_at: Phase 06.50 plan review converged in 5 cycles; ready to execute
-last_updated: "2026-11-24T23:58:35.785Z"
-last_activity: 2026-11-24
-last_activity_desc: Phase 06.50 plan review converged in 5 cycles; ready to execute
-state_head: 67f0778882a5913b7c78437fee9dcfd8ec9bda1a
+stopped_at: Completed 06.50-01-PLAN.md; remaining plans pending
+last_updated: "2026-11-25T05:48:23.077Z"
+last_activity: 2026-11-25
+last_activity_desc: Phase 06.50 plan 01 complete; plan 02 next
+state_head: 35970b576b1f17468832302f15dad61c9056d9eb
 progress:
   total_phases: 57
   completed_phases: 55
   total_plans: 308
-  completed_plans: 299
-  percent: 96
+  completed_plans: 300
 milestone_name: milestone
 ---
 
@@ -33,13 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-24)
 
 ## Current Position
 
-Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — EXECUTING
+Current Plan: 2
 Total Plans in Phase: 9
-Status: Ready to execute
-Last activity: 2026-11-24 -- Phase 06.50 plan review converged in 5 cycles; ready to execute
+Status: Executing Phase 06.50 — 1/9 plans complete
+Last activity: 2026-11-25 — Phase 06.50 plan 01 complete; plan 02 next
 
 Next: $gsd-execute-phase 06.50
+
+### Phase 06.50 plan 01 — 2026-11-25
+
+- All four buttons use target-aligned known ancestors and the shared permission/state check. Guard-resolved parent objects replace button lookups; explicit Guardian seam tuples, list rewrite, top-level None-object hooks and retained actor exceptions stay intact. No Guardian/request source changed.
+- Fresh pre-mutation receipts: 276 consumer cost scenarios, 1,179 frozen matrix tests and 120 navbar costs passed. COST-BASELINE holds measured cells, source/tree identity and raw artifact blobs/digests. All 91 protected source/golden hashes remain unchanged.
+- Task verification: 87 consumer/core-create, 8 selected shared-check, 40 full shared-check and 82 Guardian tests passed; tracer feedback rerun 4 passed. Ruff/format/diff checks pass. Both RED records received RED_EVIDENCE_OK. Later plans own view-key/cards, matrix deltas, after costs and phase-wide certification.
+- Task commits 98087cbc, 53522aea, 690ccc23 and 25be8bb4; immediate SUMMARY commit 35970b57 precedes tracking. ROADMAP accepted 1/9; stale dotted progress table corrected. STATE advanced to plan 2; unscoped progress-refresh decline left global percentage unset. Original state.json bytes restored and SHA256 verified; configuration dirt and unrelated user files preserved. No phase-completion action ran.
 
 ### Phase 06.49 completion — 2026-11-24
 
@@ -2010,6 +2016,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.49 P03 | 5 min | 2 tasks | 5 files |
 | Phase 06.49 P04 | 9 min | 2 tasks | 4 files |
 | Phase 06.49 P05 | 20 min | 3 tasks | 9 files |
+| Phase 06.50 P01 | 12min | 2 tasks | 8 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2379,6 +2386,8 @@ Recent decisions affecting current work:
 - [Phase 06.49]: Publish first-load child costs under the measured Django 6 runtime and distinguish Django model-permission warmth from retained Guardian grants.
 - [Phase 06.49]: Preserve historical before/after receipts and label the combined ContentType observation and H-01 setup adaptation separately.
 - [Phase 06.49]: Certify only executed checkout gates; recorder-enabled CI, installed-distribution and full-version matrix certification remain excluded.
+- [Phase 06.50]: Apply D-40/D-41 to all four buttons using target-aligned guard state; explicit Guardian seam tuples stay authoritative.
+- [Phase 06.50]: Retain top-level object target None-object hook semantics; nested targets without the nearest known parent deny before own/state.
 
 ### Pending Todos
 
@@ -2483,6 +2492,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-24T23:58:29.582Z
-Stopped at: Phase 06.50 plan review converged in 5 cycles; ready to execute
-Resume file: .planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-01-PLAN.md
+Last session: 2026-11-25T05:48:16.864Z
+Stopped at: Completed 06.50-01-PLAN.md; remaining plans pending
+Resume file: .planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-02-PLAN.md

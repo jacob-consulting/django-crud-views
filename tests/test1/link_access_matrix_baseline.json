@@ -33,7 +33,7 @@
     "card-action/plain/card/detail/inactive/on/disable": "page:403",
     "card-action/plain/card/detail/model/on/disable": "enabled",
     "card-action/plain/card/detail/superuser/on/disable": "enabled",
-    "card-child/core-guardian/parent/create/anonymous-backend/on/disable": "enabled",
+    "card-child/core-guardian/parent/create/anonymous-backend/on/disable": "disabled:permission",
     "card-child/core-guardian/parent/create/anonymous/on/disable": "disabled:permission",
     "card-child/core-guardian/parent/create/direct-view/on/disable": "disabled:permission",
     "card-child/core-guardian/parent/create/direct/on/disable": "disabled:permission",
@@ -43,7 +43,7 @@
     "card-child/core-guardian/parent/create/superuser/on/disable": "enabled",
     "card-child/guardian-queryset-only/parent/list/anonymous/on/disable": "disabled:permission",
     "card-child/guardian-queryset-only/parent/list/inactive/on/disable": "disabled:permission",
-    "card-child/guardian-queryset-only/parent/list/no-parent-grant/on/disable": "enabled",
+    "card-child/guardian-queryset-only/parent/list/no-parent-grant/on/disable": "disabled:permission",
     "card-child/guardian/parent/create/anonymous/off/disable": "disabled:permission",
     "card-child/guardian/parent/create/anonymous/off/hide": "hidden",
     "card-child/guardian/parent/create/anonymous/on/disable": "disabled:permission",
@@ -220,7 +220,7 @@
     "card-child/plain/parent/list/superuser/off/hide": "hidden",
     "card-child/plain/parent/list/superuser/on/disable": "enabled",
     "card-child/plain/parent/list/superuser/on/hide": "enabled",
-    "child-button/core-guardian/parent/create/anonymous-backend/on/disable": "enabled",
+    "child-button/core-guardian/parent/create/anonymous-backend/on/disable": "disabled:permission",
     "child-button/core-guardian/parent/create/anonymous/on/disable": "disabled:permission",
     "child-button/core-guardian/parent/create/direct-view/on/disable": "disabled:permission",
     "child-button/core-guardian/parent/create/direct/on/disable": "disabled:permission",
@@ -230,7 +230,7 @@
     "child-button/core-guardian/parent/create/superuser/on/disable": "enabled",
     "child-button/guardian-queryset-only/parent/list/anonymous/on/disable": "disabled:permission",
     "child-button/guardian-queryset-only/parent/list/inactive/on/disable": "disabled:permission",
-    "child-button/guardian-queryset-only/parent/list/no-parent-grant/on/disable": "enabled",
+    "child-button/guardian-queryset-only/parent/list/no-parent-grant/on/disable": "disabled:permission",
     "child-button/guardian/parent/create/anonymous/off/disable": "disabled:permission",
     "child-button/guardian/parent/create/anonymous/off/hide": "hidden",
     "child-button/guardian/parent/create/anonymous/on/disable": "disabled:permission",
@@ -411,30 +411,30 @@
     "create-control/guardian-m2m/detail/create-action/anonymous/on/disable": "page:302",
     "create-control/guardian-m2m/detail/create-action/direct-view/off/disable": "disabled:permission",
     "create-control/guardian-m2m/detail/create-action/direct-view/on/disable": "disabled:permission",
-    "create-control/guardian-m2m/detail/create-action/direct/off/disable": "disabled:permission",
-    "create-control/guardian-m2m/detail/create-action/direct/on/disable": "disabled:permission",
-    "create-control/guardian-m2m/detail/create-action/group/off/disable": "disabled:permission",
-    "create-control/guardian-m2m/detail/create-action/group/on/disable": "disabled:permission",
+    "create-control/guardian-m2m/detail/create-action/direct/off/disable": "disabled:state",
+    "create-control/guardian-m2m/detail/create-action/direct/on/disable": "enabled",
+    "create-control/guardian-m2m/detail/create-action/group/off/disable": "disabled:state",
+    "create-control/guardian-m2m/detail/create-action/group/on/disable": "enabled",
     "create-control/guardian-m2m/detail/create-action/inactive/off/disable": "page:403",
     "create-control/guardian-m2m/detail/create-action/inactive/on/disable": "page:403",
     "create-control/guardian-m2m/detail/create-action/model/off/disable": "page:403",
     "create-control/guardian-m2m/detail/create-action/model/on/disable": "page:403",
-    "create-control/guardian-m2m/detail/create-action/superuser/off/disable": "disabled:permission",
-    "create-control/guardian-m2m/detail/create-action/superuser/on/disable": "disabled:permission",
+    "create-control/guardian-m2m/detail/create-action/superuser/off/disable": "disabled:state",
+    "create-control/guardian-m2m/detail/create-action/superuser/on/disable": "enabled",
     "create-control/guardian-m2m/detail/create-alias/anonymous/off/disable": "page:302",
     "create-control/guardian-m2m/detail/create-alias/anonymous/on/disable": "page:302",
     "create-control/guardian-m2m/detail/create-alias/direct-view/off/disable": "disabled:permission",
     "create-control/guardian-m2m/detail/create-alias/direct-view/on/disable": "disabled:permission",
-    "create-control/guardian-m2m/detail/create-alias/direct/off/disable": "disabled:permission",
-    "create-control/guardian-m2m/detail/create-alias/direct/on/disable": "disabled:permission",
-    "create-control/guardian-m2m/detail/create-alias/group/off/disable": "disabled:permission",
-    "create-control/guardian-m2m/detail/create-alias/group/on/disable": "disabled:permission",
+    "create-control/guardian-m2m/detail/create-alias/direct/off/disable": "disabled:state",
+    "create-control/guardian-m2m/detail/create-alias/direct/on/disable": "enabled",
+    "create-control/guardian-m2m/detail/create-alias/group/off/disable": "disabled:state",
+    "create-control/guardian-m2m/detail/create-alias/group/on/disable": "enabled",
     "create-control/guardian-m2m/detail/create-alias/inactive/off/disable": "page:403",
     "create-control/guardian-m2m/detail/create-alias/inactive/on/disable": "page:403",
     "create-control/guardian-m2m/detail/create-alias/model/off/disable": "page:403",
     "create-control/guardian-m2m/detail/create-alias/model/on/disable": "page:403",
-    "create-control/guardian-m2m/detail/create-alias/superuser/off/disable": "disabled:permission",
-    "create-control/guardian-m2m/detail/create-alias/superuser/on/disable": "disabled:permission",
+    "create-control/guardian-m2m/detail/create-alias/superuser/off/disable": "disabled:state",
+    "create-control/guardian-m2m/detail/create-alias/superuser/on/disable": "enabled",
     "create-control/guardian-m2m/list/create-action/anonymous/off/disable": "page:302",
     "create-control/guardian-m2m/list/create-action/anonymous/on/disable": "page:302",
     "create-control/guardian-m2m/list/create-action/direct-view/off/disable": "disabled:permission",
@@ -468,29 +468,29 @@
     "create-control/guardian/create/create-action/direct-view/off/disable": "page:403",
     "create-control/guardian/create/create-action/direct-view/on/disable": "page:403",
     "create-control/guardian/create/create-action/direct/off/disable": "page:403",
-    "create-control/guardian/create/create-action/direct/on/disable": "disabled:permission",
+    "create-control/guardian/create/create-action/direct/on/disable": "enabled",
     "create-control/guardian/create/create-action/group/off/disable": "page:403",
-    "create-control/guardian/create/create-action/group/on/disable": "disabled:permission",
+    "create-control/guardian/create/create-action/group/on/disable": "enabled",
     "create-control/guardian/create/create-action/inactive/off/disable": "page:403",
     "create-control/guardian/create/create-action/inactive/on/disable": "page:403",
     "create-control/guardian/create/create-action/model/off/disable": "page:403",
     "create-control/guardian/create/create-action/model/on/disable": "page:403",
     "create-control/guardian/create/create-action/superuser/off/disable": "page:403",
-    "create-control/guardian/create/create-action/superuser/on/disable": "disabled:permission",
+    "create-control/guardian/create/create-action/superuser/on/disable": "enabled",
     "create-control/guardian/create/create-alias/anonymous/off/disable": "page:302",
     "create-control/guardian/create/create-alias/anonymous/on/disable": "page:302",
     "create-control/guardian/create/create-alias/direct-view/off/disable": "page:403",
     "create-control/guardian/create/create-alias/direct-view/on/disable": "page:403",
     "create-control/guardian/create/create-alias/direct/off/disable": "page:403",
-    "create-control/guardian/create/create-alias/direct/on/disable": "disabled:permission",
+    "create-control/guardian/create/create-alias/direct/on/disable": "enabled",
     "create-control/guardian/create/create-alias/group/off/disable": "page:403",
-    "create-control/guardian/create/create-alias/group/on/disable": "disabled:permission",
+    "create-control/guardian/create/create-alias/group/on/disable": "enabled",
     "create-control/guardian/create/create-alias/inactive/off/disable": "page:403",
     "create-control/guardian/create/create-alias/inactive/on/disable": "page:403",
     "create-control/guardian/create/create-alias/model/off/disable": "page:403",
     "create-control/guardian/create/create-alias/model/on/disable": "page:403",
     "create-control/guardian/create/create-alias/superuser/off/disable": "page:403",
-    "create-control/guardian/create/create-alias/superuser/on/disable": "disabled:permission",
+    "create-control/guardian/create/create-alias/superuser/on/disable": "enabled",
     "create-control/guardian/delete/create-action/anonymous/off/disable": "page:302",
     "create-control/guardian/delete/create-action/anonymous/on/disable": "page:302",
     "create-control/guardian/delete/create-action/direct-view/off/disable": "disabled:permission",
@@ -745,11 +745,11 @@
     "create-control/plain/update/create-alias/superuser/on/disable": "enabled",
     "filter/guardian-m2m/detail/create/anonymous/on/disable": "page:302",
     "filter/guardian-m2m/detail/create/direct-view/on/disable": "False",
-    "filter/guardian-m2m/detail/create/direct/on/disable": "False",
-    "filter/guardian-m2m/detail/create/group/on/disable": "False",
+    "filter/guardian-m2m/detail/create/direct/on/disable": "True",
+    "filter/guardian-m2m/detail/create/group/on/disable": "True",
     "filter/guardian-m2m/detail/create/inactive/on/disable": "page:403",
     "filter/guardian-m2m/detail/create/model/on/disable": "page:403",
-    "filter/guardian-m2m/detail/create/superuser/on/disable": "False",
+    "filter/guardian-m2m/detail/create/superuser/on/disable": "True",
     "filter/guardian-m2m/detail/update/anonymous/on/disable": "page:302",
     "filter/guardian-m2m/detail/update/direct-view/on/disable": "False",
     "filter/guardian-m2m/detail/update/direct/on/disable": "True",
@@ -759,11 +759,11 @@
     "filter/guardian-m2m/detail/update/superuser/on/disable": "True",
     "filter/guardian-m2m/list/create/anonymous/on/disable": "page:302",
     "filter/guardian-m2m/list/create/direct-view/on/disable": "False",
-    "filter/guardian-m2m/list/create/direct/on/disable": "False",
-    "filter/guardian-m2m/list/create/group/on/disable": "False",
+    "filter/guardian-m2m/list/create/direct/on/disable": "True",
+    "filter/guardian-m2m/list/create/group/on/disable": "True",
     "filter/guardian-m2m/list/create/inactive/on/disable": "page:403",
     "filter/guardian-m2m/list/create/model/on/disable": "page:403",
-    "filter/guardian-m2m/list/create/superuser/on/disable": "False",
+    "filter/guardian-m2m/list/create/superuser/on/disable": "True",
     "filter/guardian-m2m/list/update/anonymous/on/disable": "page:302",
     "filter/guardian-m2m/list/update/direct-view/on/disable": "False",
     "filter/guardian-m2m/list/update/direct/on/disable": "False",
@@ -787,11 +787,11 @@
     "filter/guardian/detail/update/superuser/on/disable": "True",
     "filter/guardian/list/create/anonymous/on/disable": "page:302",
     "filter/guardian/list/create/direct-view/on/disable": "False",
-    "filter/guardian/list/create/direct/on/disable": "False",
-    "filter/guardian/list/create/group/on/disable": "False",
+    "filter/guardian/list/create/direct/on/disable": "True",
+    "filter/guardian/list/create/group/on/disable": "True",
     "filter/guardian/list/create/inactive/on/disable": "page:403",
     "filter/guardian/list/create/model/on/disable": "page:403",
-    "filter/guardian/list/create/superuser/on/disable": "False",
+    "filter/guardian/list/create/superuser/on/disable": "True",
     "filter/guardian/list/update/anonymous/on/disable": "page:302",
     "filter/guardian/list/update/direct-view/on/disable": "False",
     "filter/guardian/list/update/direct/on/disable": "False",
@@ -1021,11 +1021,11 @@
     "parent-button/guardian-3/list/parent-create/anonymous/on/disable": "page:302",
     "parent-button/guardian-3/list/parent-create/direct-view/on/disable": "disabled:permission",
     "parent-button/guardian-3/list/parent-create/direct/on/disable": "enabled",
-    "parent-button/guardian-3/list/parent-create/far-change/on/disable": "disabled:permission",
+    "parent-button/guardian-3/list/parent-create/far-change/on/disable": "enabled",
     "parent-button/guardian-3/list/parent-create/group/on/disable": "enabled",
     "parent-button/guardian-3/list/parent-create/inactive/on/disable": "page:403",
     "parent-button/guardian-3/list/parent-create/model/on/disable": "page:403",
-    "parent-button/guardian-3/list/parent-create/near-change/on/disable": "enabled",
+    "parent-button/guardian-3/list/parent-create/near-change/on/disable": "disabled:permission",
     "parent-button/guardian-3/list/parent-create/superuser/on/disable": "enabled",
     "parent-button/guardian/list/parent-detail/anonymous/on/disable": "page:302",
     "parent-button/guardian/list/parent-detail/direct-view/on/disable": "enabled",
@@ -1075,16 +1075,16 @@
     "sibling-button/guardian/detail/sibling-create/anonymous/on/disable": "page:302",
     "sibling-button/guardian/detail/sibling-create/direct-view/off/disable": "disabled:permission",
     "sibling-button/guardian/detail/sibling-create/direct-view/on/disable": "disabled:permission",
-    "sibling-button/guardian/detail/sibling-create/direct/off/disable": "disabled:permission",
-    "sibling-button/guardian/detail/sibling-create/direct/on/disable": "disabled:permission",
-    "sibling-button/guardian/detail/sibling-create/group/off/disable": "disabled:permission",
-    "sibling-button/guardian/detail/sibling-create/group/on/disable": "disabled:permission",
+    "sibling-button/guardian/detail/sibling-create/direct/off/disable": "disabled:state",
+    "sibling-button/guardian/detail/sibling-create/direct/on/disable": "enabled",
+    "sibling-button/guardian/detail/sibling-create/group/off/disable": "disabled:state",
+    "sibling-button/guardian/detail/sibling-create/group/on/disable": "enabled",
     "sibling-button/guardian/detail/sibling-create/inactive/off/disable": "page:403",
     "sibling-button/guardian/detail/sibling-create/inactive/on/disable": "page:403",
     "sibling-button/guardian/detail/sibling-create/model/off/disable": "page:403",
     "sibling-button/guardian/detail/sibling-create/model/on/disable": "page:403",
-    "sibling-button/guardian/detail/sibling-create/superuser/off/disable": "disabled:permission",
-    "sibling-button/guardian/detail/sibling-create/superuser/on/disable": "disabled:permission",
+    "sibling-button/guardian/detail/sibling-create/superuser/off/disable": "disabled:state",
+    "sibling-button/guardian/detail/sibling-create/superuser/on/disable": "enabled",
     "sibling-button/guardian/detail/sibling-list/anonymous/off/disable": "page:302",
     "sibling-button/guardian/detail/sibling-list/anonymous/on/disable": "page:302",
     "sibling-button/guardian/detail/sibling-list/direct-view/off/disable": "disabled:state",
@@ -1103,16 +1103,16 @@
     "sibling-button/guardian/list/sibling-create/anonymous/on/disable": "page:302",
     "sibling-button/guardian/list/sibling-create/direct-view/off/disable": "disabled:permission",
     "sibling-button/guardian/list/sibling-create/direct-view/on/disable": "disabled:permission",
-    "sibling-button/guardian/list/sibling-create/direct/off/disable": "disabled:permission",
-    "sibling-button/guardian/list/sibling-create/direct/on/disable": "disabled:permission",
-    "sibling-button/guardian/list/sibling-create/group/off/disable": "disabled:permission",
-    "sibling-button/guardian/list/sibling-create/group/on/disable": "disabled:permission",
+    "sibling-button/guardian/list/sibling-create/direct/off/disable": "disabled:state",
+    "sibling-button/guardian/list/sibling-create/direct/on/disable": "enabled",
+    "sibling-button/guardian/list/sibling-create/group/off/disable": "disabled:state",
+    "sibling-button/guardian/list/sibling-create/group/on/disable": "enabled",
     "sibling-button/guardian/list/sibling-create/inactive/off/disable": "page:403",
     "sibling-button/guardian/list/sibling-create/inactive/on/disable": "page:403",
     "sibling-button/guardian/list/sibling-create/model/off/disable": "page:403",
     "sibling-button/guardian/list/sibling-create/model/on/disable": "page:403",
-    "sibling-button/guardian/list/sibling-create/superuser/off/disable": "disabled:permission",
-    "sibling-button/guardian/list/sibling-create/superuser/on/disable": "disabled:permission",
+    "sibling-button/guardian/list/sibling-create/superuser/off/disable": "disabled:state",
+    "sibling-button/guardian/list/sibling-create/superuser/on/disable": "enabled",
     "sibling-button/guardian/list/sibling-list/anonymous/off/disable": "page:302",
     "sibling-button/guardian/list/sibling-list/anonymous/on/disable": "page:302",
     "sibling-button/guardian/list/sibling-list/direct-view/off/disable": "disabled:state",
@@ -1195,6 +1195,380 @@
         "decisions": ["D-41", "D-44"],
         "behavior_change": 2,
         "reason": "The detail page requires parent view; the update filter now requires parent change, absent for the direct-view actor. Its own Genre change grant does not waive that gate."
+      }
+    }
+  },
+  "stage3b": {
+    "before_raw_sha256": "4c29f3f493c4b71ed0791a8e3d5c2898d31fb84ff493d8bee22d1d5ee5eb2b14",
+    "before_reconstruction_sha256": "317e5e7cee728c67ad97a25bfd8c8d99270a1bd0bb541a8a9bd3dab36ec57d8e",
+    "changes": {
+      "card-child/core-guardian/parent/create/anonymous-backend/on/disable": {
+        "before": "enabled",
+        "after": "disabled:permission",
+        "decisions": [
+          "D-46"
+        ],
+        "reason": "Nested Guardian create rejects the anonymous actor before the create hook despite the core parent's anonymous-granting backend."
+      },
+      "card-child/guardian-queryset-only/parent/list/no-parent-grant/on/disable": {
+        "before": "enabled",
+        "after": "disabled:permission",
+        "decisions": [
+          "D-47"
+        ],
+        "reason": "The queryset-only destination now checks its declared immediate parent policy; this actor has no parent grant."
+      },
+      "child-button/core-guardian/parent/create/anonymous-backend/on/disable": {
+        "before": "enabled",
+        "after": "disabled:permission",
+        "decisions": [
+          "D-46"
+        ],
+        "reason": "Nested Guardian create rejects the anonymous actor before the create hook despite the core parent's anonymous-granting backend."
+      },
+      "child-button/guardian-queryset-only/parent/list/no-parent-grant/on/disable": {
+        "before": "enabled",
+        "after": "disabled:permission",
+        "decisions": [
+          "D-47"
+        ],
+        "reason": "The queryset-only destination now checks its declared immediate parent policy; this actor has no parent grant."
+      },
+      "create-control/guardian-m2m/detail/create-action/direct/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state disables the permitted link."
+      },
+      "create-control/guardian-m2m/detail/create-action/direct/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "create-control/guardian-m2m/detail/create-action/group/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state disables the permitted link."
+      },
+      "create-control/guardian-m2m/detail/create-action/group/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "create-control/guardian-m2m/detail/create-action/superuser/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state disables the permitted link."
+      },
+      "create-control/guardian-m2m/detail/create-action/superuser/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "create-control/guardian-m2m/detail/create-alias/direct/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state disables the permitted link."
+      },
+      "create-control/guardian-m2m/detail/create-alias/direct/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "create-control/guardian-m2m/detail/create-alias/group/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state disables the permitted link."
+      },
+      "create-control/guardian-m2m/detail/create-alias/group/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "create-control/guardian-m2m/detail/create-alias/superuser/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state disables the permitted link."
+      },
+      "create-control/guardian-m2m/detail/create-alias/superuser/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its M2M detail page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "create-control/guardian/create/create-action/direct/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its own create page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "create-control/guardian/create/create-action/group/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its own create page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "create-control/guardian/create/create-action/superuser/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its own create page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "create-control/guardian/create/create-alias/direct/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its own create page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "create-control/guardian/create/create-alias/group/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its own create page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "create-control/guardian/create/create-alias/superuser/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The create control receives the known URL parent on its own create page; declared gates and the default create hook pass. Public state allows the link."
+      },
+      "filter/guardian-m2m/detail/create/direct/on/disable": {
+        "before": "False",
+        "after": "True",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The permission-only create filter receives the known URL parent on this M2M detail page; declared gates and the create hook pass, without a state check."
+      },
+      "filter/guardian-m2m/detail/create/group/on/disable": {
+        "before": "False",
+        "after": "True",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The permission-only create filter receives the known URL parent on this M2M detail page; declared gates and the create hook pass, without a state check."
+      },
+      "filter/guardian-m2m/detail/create/superuser/on/disable": {
+        "before": "False",
+        "after": "True",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The permission-only create filter receives the known URL parent on this M2M detail page; declared gates and the create hook pass, without a state check."
+      },
+      "filter/guardian-m2m/list/create/direct/on/disable": {
+        "before": "False",
+        "after": "True",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The permission-only create filter receives the known URL parent on this M2M list page; declared gates and the create hook pass, without a state check."
+      },
+      "filter/guardian-m2m/list/create/group/on/disable": {
+        "before": "False",
+        "after": "True",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The permission-only create filter receives the known URL parent on this M2M list page; declared gates and the create hook pass, without a state check."
+      },
+      "filter/guardian-m2m/list/create/superuser/on/disable": {
+        "before": "False",
+        "after": "True",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The permission-only create filter receives the known URL parent on this M2M list page; declared gates and the create hook pass, without a state check."
+      },
+      "filter/guardian/list/create/direct/on/disable": {
+        "before": "False",
+        "after": "True",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The permission-only create filter receives the known URL parent on this list page; declared gates and the create hook pass, without a state check."
+      },
+      "filter/guardian/list/create/group/on/disable": {
+        "before": "False",
+        "after": "True",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The permission-only create filter receives the known URL parent on this list page; declared gates and the create hook pass, without a state check."
+      },
+      "filter/guardian/list/create/superuser/on/disable": {
+        "before": "False",
+        "after": "True",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The permission-only create filter receives the known URL parent on this list page; declared gates and the create hook pass, without a state check."
+      },
+      "parent-button/guardian-3/list/parent-create/far-change/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45",
+          "D-50"
+        ],
+        "reason": "The list page no longer rewrites the parent-create button using its own create permission; the actual parent-create destination requires Publisher change, which this actor has."
+      },
+      "parent-button/guardian-3/list/parent-create/near-change/on/disable": {
+        "before": "enabled",
+        "after": "disabled:permission",
+        "decisions": [
+          "D-45",
+          "D-50"
+        ],
+        "reason": "The list page no longer rewrites the parent-create button using its own create permission; the actual parent-create destination requires Publisher change, which this actor lacks."
+      },
+      "sibling-button/guardian/detail/sibling-create/direct/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Its public state disables the permitted link."
+      },
+      "sibling-button/guardian/detail/sibling-create/direct/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Its public state allows the link."
+      },
+      "sibling-button/guardian/detail/sibling-create/group/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Its public state disables the permitted link."
+      },
+      "sibling-button/guardian/detail/sibling-create/group/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Its public state allows the link."
+      },
+      "sibling-button/guardian/detail/sibling-create/superuser/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Its public state disables the permitted link."
+      },
+      "sibling-button/guardian/detail/sibling-create/superuser/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Its public state allows the link."
+      },
+      "sibling-button/guardian/list/sibling-create/direct/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45",
+          "D-50"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Removing the list rewrite preserves that actual sibling result. Its public state disables the permitted link."
+      },
+      "sibling-button/guardian/list/sibling-create/direct/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45",
+          "D-50"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Removing the list rewrite preserves that actual sibling result. Its public state allows the link."
+      },
+      "sibling-button/guardian/list/sibling-create/group/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45",
+          "D-50"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Removing the list rewrite preserves that actual sibling result. Its public state disables the permitted link."
+      },
+      "sibling-button/guardian/list/sibling-create/group/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45",
+          "D-50"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Removing the list rewrite preserves that actual sibling result. Its public state allows the link."
+      },
+      "sibling-button/guardian/list/sibling-create/superuser/off/disable": {
+        "before": "disabled:permission",
+        "after": "disabled:state",
+        "decisions": [
+          "D-45",
+          "D-50"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Removing the list rewrite preserves that actual sibling result. Its public state disables the permitted link."
+      },
+      "sibling-button/guardian/list/sibling-create/superuser/on/disable": {
+        "before": "disabled:permission",
+        "after": "enabled",
+        "decisions": [
+          "D-45",
+          "D-50"
+        ],
+        "reason": "The sibling create destination receives its known route parent instead of the ended seam denial. Removing the list rewrite preserves that actual sibling result. Its public state allows the link."
       }
     }
   }

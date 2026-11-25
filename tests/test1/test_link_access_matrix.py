@@ -268,7 +268,10 @@ def _parent_control(case, family, parent, actor, monkeypatch):
         raw = rendered_data(family, renderer, actor, parent, key=key)
     if control == "request":
         # Request authorization is independent of whether its link is available.
-        destination = reverse(family.child.get_router_name(key), kwargs={family.child.parent.get_pk_name(): parent.pk})
+        kwargs = {family.child.parent.get_pk_name(): parent.pk}
+        if composition == "plain-3":
+            kwargs[family.parent.parent.get_pk_name()] = parent.publisher_id
+        destination = reverse(family.child.get_router_name(key), kwargs=kwargs)
         return f"page:{_get(actor, destination).status_code}"
     return _outcome(raw)
 

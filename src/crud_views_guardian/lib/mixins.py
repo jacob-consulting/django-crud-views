@@ -296,13 +296,11 @@ class GuardianQuerysetMixin:
 
     @classmethod
     def _cv_link_permission(cls, user, obj, parent_obj, *, rendering_view=None):
-        """Keep Guardian's actor rule and the bounded queryset-only link exception."""
+        """Admit the nested actor, then apply the declared parent policy and own list access."""
         if not cls.cv_viewset.has_parent:
             return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
         if not user.is_authenticated or _guardian_inactive_actor(user):
             return False
-        if not issubclass(cls, GuardianParentPermissionMixin):
-            return cls.cv_has_access(user, obj)
         return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
 
     def cv_get_context(self, key=None, obj=None, user=None, request=None, *, location=None):

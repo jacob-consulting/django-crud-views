@@ -751,7 +751,7 @@
     "filter/guardian-m2m/detail/create/model/on/disable": "page:403",
     "filter/guardian-m2m/detail/create/superuser/on/disable": "False",
     "filter/guardian-m2m/detail/update/anonymous/on/disable": "page:302",
-    "filter/guardian-m2m/detail/update/direct-view/on/disable": "True",
+    "filter/guardian-m2m/detail/update/direct-view/on/disable": "False",
     "filter/guardian-m2m/detail/update/direct/on/disable": "True",
     "filter/guardian-m2m/detail/update/group/on/disable": "True",
     "filter/guardian-m2m/detail/update/inactive/on/disable": "page:403",
@@ -1183,5 +1183,19 @@
     "sibling-button/plain/list/sibling-list/model/on/disable": "enabled",
     "sibling-button/plain/list/sibling-list/superuser/off/disable": "disabled:state",
     "sibling-button/plain/list/sibling-list/superuser/on/disable": "enabled"
+  },
+  "stage3a": {
+    "before_revision": "98087cbc4bcbf61ad13a62be5185ad810edaf16f",
+    "before_blob": "4057d0c0d29fb2fba2021f20d2a2d5f8df332125",
+    "before_sha256": "c72c34ac59cc48281d897d3ab81292dd2d262bca6e2be0722ab51b278dfea43c",
+    "changes": {
+      "filter/guardian-m2m/detail/update/direct-view/on/disable": {
+        "before": "True",
+        "after": "False",
+        "decisions": ["D-41", "D-44"],
+        "behavior_change": 2,
+        "reason": "The detail page requires parent view; the update filter now requires parent change, absent for the direct-view actor. Its own Genre change grant does not waive that gate."
+      }
+    }
   }
 }

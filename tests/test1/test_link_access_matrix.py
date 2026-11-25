@@ -1,8 +1,13 @@
-"""Frozen link outcomes from the pre-refactor tree; this module never updates its snapshot."""
+"""Frozen link outcomes with individually ledgered stage-3a permission denials.
+
+The original snapshot is reconstructible from the current cells and explicit
+before values. Runtime checks require no historical Git checkout or planning files.
+"""
 
 import json
 import re
 from contextlib import contextmanager, nullcontext
+from hashlib import sha256
 from itertools import product
 from pathlib import Path
 from types import SimpleNamespace
@@ -524,3 +529,28 @@ def test_link_matrix_snapshot_is_complete():
         for control, composition, page, target, actor, state, mode in _page_cases()
         if actor == "inactive"
     )
+
+
+def test_stage3a_matrix_changes_are_permission_denials():
+    """Verify the whole frozen before dataset, not only the listed changed cells."""
+    receipt = BASELINE["stage3a"]
+    changes = receipt["changes"]
+    cells = BASELINE["cells"]
+    assert changes
+    assert changes.keys() <= cells.keys()
+    for cell_id, change in changes.items():
+        assert change["after"] == cells[cell_id]
+        if cell_id.startswith("filter/"):
+            assert (change["before"], change["after"]) == ("True", "False")
+        else:
+            assert change["before"] in {"enabled", "disabled:state"}
+            assert change["after"] in {"hidden", "disabled:permission"}
+        assert set(change["decisions"]) <= {"D-40", "D-41", "D-42", "D-43", "D-44", "D-52", "D-55"}
+        assert change["decisions"] and change["reason"]
+        assert change["behavior_change"] in range(1, 9)
+
+    before = {key: value for key, value in BASELINE.items() if key != "stage3a"}
+    before["cells"] = {cell_id: changes.get(cell_id, {}).get("before", outcome) for cell_id, outcome in cells.items()}
+    original_sha256 = "c72c34ac59cc48281d897d3ab81292dd2d262bca6e2be0722ab51b278dfea43c"
+    assert receipt["before_sha256"] == original_sha256
+    assert sha256((json.dumps(before, indent=2) + "\n").encode()).hexdigest() == original_sha256

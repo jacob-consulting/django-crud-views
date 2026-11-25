@@ -77,6 +77,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.48: Link access check as a private function; narrow obj in cv_has_access and cv_action_enabled (#407)** (completed 2026-11-23)
 - [x] **Phase 06.49: Reuse Guardian object grants across navigation checks (#385) (INSERTED)** (completed 2026-11-24)
 - [x] **Phase 06.50: Move remaining link consumers to the shared link check - stage 3a (#412) (INSERTED)** (completed 2026-11-25)
+- [ ] **Phase 06.51: Remove retained Guardian link exceptions - stage 3b (#413) (INSERTED)**
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2488,6 +2489,22 @@ Plans:
 **Wave 8** *(blocked on Wave 7 completion)*
 - [x] 06.50-08-PLAN.md
 
+### Phase 06.51: Remove retained Guardian link exceptions - stage 3b (#413) (INSERTED)
+
+**Goal:** Remove the retained Guardian link exceptions so nested links and Cancel honor the declared parent and known higher-ancestor gates, while preserving request authorization and the documented parent-only limitation.
+**Source:** [Issue #413](https://github.com/jacob-consulting/django-crud-views/issues/413), stage 3b of `superpowers/specs/2026-11-23-link-access-check-design.md`: section 12.8 at commit `55dce6f6`, settled decisions D-45–D-52, with D-39–D-44 and D-55 carried forward from stage 3a. Full issue snapshot: `06.51-ISSUE-413.md`. The concept applies where it differs from the issue; settled decisions are not reopened.
+**Requirements**: None assigned; use the approved issue acceptance criteria and concept constraints.
+**Depends on:** Phase 06.50
+**Ordering:** Assigned 06.51 after completed stage 3a (#412), before stage 3c (#414), Phase 7 and the 1.0.0 freeze. Code baseline: `feature/link-access-check-design` at `350adaae`; the implementation PR targets that branch. Stage 3a landed there as direct commits. D-39 closes the stage issues when that branch merges to `main`.
+**Scope:** Show nested Guardian create links wherever the route's parent is known and all gates pass; require a signed-in, active actor for every nested Guardian link before the create hook; enforce declared parent gates for queryset-only compositions; remove the key-based button rewrite; and move nested Guardian Cancel to the shared check with known higher ancestors. Preserve the parent-only non-create Cancel branch without `cv_has_access`, add its higher-ancestor gates, and document the ordinary-link child-permission limitation. Bulk return redirects follow the changed Cancel eligibility without changing origin/fallback/success priority.
+**Commit constraints:** D-45 and D-50 land together; D-46 lands with or before D-45; D-49 lands with or before the D-48 Cancel move; state adapters are removed only after Cancel's last caller moves. Keep D-40 rendering-view identity, D-41 ancestor alignment and D-42 Cancel parent-hook behavior.
+**Acceptance:** Carry all eight issue criteria into planning, including real-page and unchanged-request pairs, actor and override cases, colliding button keys, three-level nesting, Cancel actor/argument/configuration behavior, and direct nested-create `cv_has_access` denial. Explain every changed matrix cell by decision, preserve the original stage-3a cost receipt, list rewritten tests and removed/kept helpers with reasons, and update query-count pins. Extend the existing `Link access hooks` Breaking entry together with `docs/migrating-1.0.md` and `docs/reference/guardian.md`; remove descriptions of exceptions this stage ends.
+**Out of scope:** Request gates, authorization responses and traces; Guardian list filtering; top-level Guardian link rules; the stage-3c public function; and stage 3a's other exclusions. No new exception or request-response change without a maintainer decision. Planner discretion is limited to commit order within the constraints, placement of actor/composition checks, test selection and query-count pins.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run $gsd-plan-phase 06.51 to break down)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -2498,6 +2515,7 @@ Phase 06.42 must also settle before this freeze; include the theme data-prefix r
 Phase 06.44 must also settle before this freeze; include the six CSS tokens with Bootstrap fallback behavior from #394.
 Phase 06.45 must also settle before this freeze; include the namespace and tooltip-placement registrations and browser configuration contract from #398.
 Phase 06.47 must also settle before this freeze; inventory the four bulk variant keys, bulk mode-key support and dedicated bulk button leaf from #400.
+Stage 3b (Phase 06.51, #413) and stage 3c (#414) must settle in that order before this freeze; carry their final Guardian link, Cancel and public link-check contracts into the stability review.
 **Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
 bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
@@ -2632,4 +2650,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.48. Private link access and narrowed hook objects (#407) | 9/9 | Complete | 2026-11-23 |
 | 06.49. Reuse Guardian object grants across navigation checks (#385) | 5/5 | Complete | 2026-11-24 |
 | 06.50. Move remaining link consumers to the shared link check - stage 3a (#412) | 9/9 | Complete | 2026-11-25 |
+| 06.51. Remove retained Guardian link exceptions - stage 3b (#413) | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

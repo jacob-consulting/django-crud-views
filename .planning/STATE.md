@@ -1,44 +1,53 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.50"
-current_phase_name: "Move remaining link consumers to the shared link check - stage 3a (#412)"
-current_plan: 9
-status: executing
-stopped_at: Completed 06.50-08-PLAN.md; pending independent review and verification
-last_updated: "2026-11-25T08:01:07.585Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.50 complete, ready to plan Phase 7
+last_updated: "2026-11-25T08:49:36.875Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.50 execution complete; independent review and verification pending
-state_head: 88bb570826326bac4acde8993aa654451ebe16d9
+last_activity_desc: Phase 06.50 complete, transitioned to Phase 7
+state_head: b9541988fa69a231ffd9b3a857d51df0bc3f3c36
 progress:
   total_phases: 57
-  completed_phases: 55
+  completed_phases: 56
   total_plans: 308
   completed_plans: 308
+  percent: 98
 milestone_name: milestone
 ---
 
 Total Phases: 57
-Completed Phases: 55
+Completed Phases: 56
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-24)
+See: .planning/PROJECT.md (updated 2026-11-25)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.50 — Move remaining link consumers to the shared link check - stage 3a (#412)
+**Current focus:** Phase 7 — Theme-surface stability policy (next roadmap phase; settle remaining stage-3 ordering before the freeze)
 
 ## Current Position
 
-Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — IN PROGRESS
-Current Plan: 9
-Total Plans in Phase: 9
-Status: In Progress — 9/9 plans executed; independent review and verification pending
-Last activity: 2026-11-25 — Phase 06.50 execution complete; independent review and verification pending
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: 0 (not yet planned)
+Status: Ready to plan
+Last activity: 2026-11-25 — Phase 06.50 complete, transitioned to Phase 7
 
-Next: Independent code review and phase verification for 06.50; do not mark the phase complete before both finish.
+Next: `$gsd-discuss-phase 7` for the next roadmap phase; first reconcile the already-decided stage 3b (#413) / stage 3c (#414) ordering before the 1.0 freeze. Auto-advance is disabled.
+
+### Phase 06.50 completion — 2026-11-25
+
+- Completed all nine plans and 18 tasks on the approved `feature/link-access-check-design` branch. Independent verification passes **34/34 must-haves, 9/9 acceptance criteria, eight decisions and 15 key links**, including 506 fresh tests. The final product full core run passes **19,786**; examples pass **637 plus 300 subtests**. Strict docs and scoped Ruff checks pass. No global requirement IDs were assigned to this issue-scoped phase.
+- Deep review WR-01 is fixed: missing repository-only cost receipts skip only six receipt audits in a source-distribution layout; all 276 runtime cost scenarios still run. Rechecks pass 282 in the checkout and 276 with six expected skips in the extracted source layout. Independent re-review confirms zero open findings; all 84 raw evidence blobs are now tracked, reachable and digest-verified. The extracted layout check is not installed-distribution certification.
+- Security closes all 23 authored threats; validation covers every task and acceptance criterion. UI review has zero source/HTML findings; visual dimensions remain unassessed without a representative running Django app. Browser/downstream certification, the full version matrix and recorder-enabled CI were not executed. Prior-phase regression coverage is recorded in the final core/examples receipts.
+- `phase.complete` accepted canonical passed verification and advanced to roadmap Phase 7. Its four nonblocking missing-file warnings are parser false positives: summaries 01/04/05/07 contain shell commands or flags that the advisory treats as paths. Referenced source modules exist; actual receipts are retained. The stale dotted ROADMAP row and preserved progress counters were reconciled to **56/57 phases and 308/308 currently planned plans**; Phase 7 has no plans yet.
+- Global learnings are disabled; there are no LEARNINGS files to graduate, matching pending todos or phase handoffs. Optional WINDOWS append remains unavailable due to its pre-existing header/JSON mismatch. Original configuration/state.json bytes and unrelated working-tree files are preserved. Phase completion does not close #412: D-39 ties issue closure to the feature branch merging into main. Stage 3b (#413) and 3c (#414) still precede the freeze.
 
 ### Phase 06.50 plan 08 — 2026-11-25
 
@@ -1794,7 +1803,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 288
+- Total plans completed: 297
 
 - Total plans completed: 186
 - Average duration: -
@@ -1855,6 +1864,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.46 | 2 | - | - |
 | 06.48 | 9 | - | - |
 | 06.49 | 5 | - | - |
+| 06.50 | 9 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2086,6 +2096,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 ## Accumulated Context
 
 ### Decisions
+
+- [Phase 06.50] Remaining approved link consumers share target-aligned permission-before-state checks; retain explicit Guardian/Cancel seams and independent request enforcement. The single approved frozen matrix delta and measured query changes are documented. Keep raw acceptance receipts as tracked artifacts; source-distribution runs skip only absent repository-evidence checks.
 
 - [Phase 06.49] Share Guardian grants only through a private user-owned checker; each destination independently evaluates permission/state. Retained users retain loaded grants; normal fresh requests observe revocation. Preserve actual before measurements and distinguish ContentType warm-up from grant savings.
 
@@ -2566,6 +2578,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T08:01:00.373Z
-Stopped at: Completed 06.50-08-PLAN.md; pending independent review and verification
+Last session: 2026-11-25T08:49:36.875Z
+Stopped at: Phase 06.50 complete, ready to plan Phase 7
 Resume file: None

@@ -136,6 +136,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - ✓ Developer-only core/Guardian diagnostics, explicit group setup, bounded read-only demo developer and write-gated example actions; transactional seed conflict rollback and paired migration guidance — Phase 06.31; 21/21 verified, UAT 1/1 passed, clean independent re-review.
 - ✓ **6.32** Button-only workflow transition variants and icons through existing registries, with visible labels, exact fallbacks and preserved workflow behavior — Phase 06.32; canonical 7/7, decisions 9/9, clean deep review and security 6/6.
 
+- ✓ Remaining approved button, action, card, navbar, filter, core Cancel and bulk link consumers share private target-aligned checks, with retained Guardian seams, independent request authorization and paired migration guidance — Phase 06.50 (#412), stage 3a; 34/34 verified, nine acceptance criteria met. Stage 3b/3c and feature-branch merge remain separate.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -185,6 +187,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Migrate approved link consumers to the private shared check with explicit target ancestry and permission before state | Reuse existing guards and retain bounded Guardian/Cancel behavior, public hook ownership and independent request gates | Validated Phase 06.50; eight approved behaviors, one frozen matrix delta, 34/34 must-haves; measured cost changes retained |
 | Keep one private Guardian checker on the supplied Python user; share grants, never destination decisions | Remove repeated grant reads while preserving existing gates; retained users explicitly retain loaded grants and fresh requests observe revocation | Validated Phase 06.49; list 7/14/26 → 7/10/14 queries, Guardian navbar saves 2 owner/4 deep queries |
 | Keep stage-1 link authorization private, pass parents separately, and narrow public hook objects before the 1.0 freeze | Preserve request gates and proven core paths while migrating only approved consumers; no new cache or public surface | Validated Phase 06.48; frozen rendering and cost comparisons pass, with approved parent-first own-denial cost and documented L1/L2 limits |
 | Reuse the existing non-object destination gate and cache effective bulk actions per request | Keep access/state policy aligned with Cancel without scanning selected rows or changing POST enforcement | Validated Phase 06.46; N6-01 fixed in follow-up: buttons are evaluated before template rendering |
@@ -285,4 +288,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-24 after Phase 06.49 completion*
+*Last updated: 2026-11-25 after Phase 06.50 completion*

@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.50"
 current_phase_name: "Move remaining link consumers to the shared link check - stage 3a (#412)"
-current_plan: 8
+current_plan: 9
 status: executing
-stopped_at: Completed 06.50-07-PLAN.md; next 06.50-08
-last_updated: "2026-11-25T07:33:18.723Z"
+stopped_at: Completed 06.50-08-PLAN.md; pending independent review and verification
+last_updated: "2026-11-25T08:01:07.585Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.50 plan 07 complete; plan 08 next
-state_head: 454728e81d31652a563afc6c7134e6612561857f
+last_activity_desc: Phase 06.50 execution complete; independent review and verification pending
+state_head: 88bb570826326bac4acde8993aa654451ebe16d9
 progress:
   total_phases: 57
   completed_phases: 55
   total_plans: 308
-  completed_plans: 307
+  completed_plans: 308
 milestone_name: milestone
 ---
 
@@ -32,13 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-24)
 
 ## Current Position
 
-Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — EXECUTING
-Current Plan: 8
+Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — IN PROGRESS
+Current Plan: 9
 Total Plans in Phase: 9
-Status: Executing Phase 06.50 — 8/9 plans complete
-Last activity: 2026-11-25 — Phase 06.50 plan 07 complete; plan 08 next
+Status: In Progress — 9/9 plans executed; independent review and verification pending
+Last activity: 2026-11-25 — Phase 06.50 execution complete; independent review and verification pending
 
-Next: $gsd-execute-phase 06.50
+Next: Independent code review and phase verification for 06.50; do not mark the phase complete before both finish.
+
+### Phase 06.50 plan 08 — 2026-11-25
+
+- Finished bulk/card/state/theme and Cancel reference contracts, the permitted Guardian create-hook argument docstring, and exact retained-call/test/source inventories. VALIDATION now maps all 18 tasks, nine acceptance criteria, eight decisions, eight behaviors and 23 threats to actual execution evidence. Plan 09's sibling migration is explicitly classified under D-41.
+- Final product `3747ca6418999ef342851a0fc80a2bc408746a2b`: full core **19,786 passed in 417.80s**. Protected ancestor/trace **1,976**, retained Guardian/Cancel/return **182**, docs **204**, examples **637 plus 300 subtests**, strict docs and Ruff pass. Earlier focused/examples/docs receipts name the source-identical `36d8cc27` revision. The initial full run's ten stale renderer expectations were reproduced and corrected in three functions with every direct 403/no-mutation assertion retained; both affected modules pass 97. Raw failed/passing outputs are preserved in VALIDATION's 15 artifact receipts.
+- Exactly one authorized matrix cell changes; 1,177 others, all 34 original goldens and five original artifacts remain unchanged. The H1/L1/C2-L2 source comparison passes; Guardian implementation/request/ancestor/trace boundaries remain intact. Recorder-enabled CI, full version matrix, installed distribution, browser and downstream certification remain unexecuted. No dependencies installed or runtime implementation changed in this plan.
+- Task commits `7533380b`, `36d8cc27`, `3747ca64`, `1ca9034c`; immediate SUMMARY `88bb5708` precedes tracking. Five deliverables classify as automated coverage. ROADMAP accepted 9/9 and In Progress; its stale dotted table row is corrected. STATE advanced once to plan 9, with unscoped global percentage left unset. Original state.json/configuration hashes are preserved. Optional WINDOWS append again declined on its existing header/JSON mismatch. Requirements remain intentionally empty. No phase.complete, push, PR or merge ran; the orchestrator still owns independent review and phase verification.
 
 ### Phase 06.50 plan 07 — 2026-11-25
 
@@ -2067,6 +2074,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.50 P06 | 14 min | 2 tasks | 4 files |
 | Phase 06.50 P09 | 14min | 2 tasks | 5 files |
 | Phase 06.50 P07 | 8min | 2 tasks | 9 files |
+| Phase 06.50 P08 | 22min | 2 tasks | 11 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2452,6 +2460,8 @@ Recent decisions affecting current work:
 - [Phase 06.50]: Retain historical Guardian cost attribution and disclose the approved D-41 sibling-test migration separately.
 - [Phase 06.50]: Describe Guardian exceptions by their actual seam/rewrite/Cancel mechanisms, never as a page-wide exemption.
 - [Phase 06.50]: Keep historical stage-2 savings separate from stage-3a zero-delta navbar and changed consumer costs.
+- [Phase 06.50]: Preserve direct request denial and mutation assertions when migrating renderer expectations under approved behaviors 1/2/4.
+- [Phase 06.50]: All nine plans executed; keep phase In Progress pending independent review and verification, with recorder-enabled and full-matrix certification unexecuted.
 
 ### Pending Todos
 
@@ -2556,6 +2566,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T07:33:11.825Z
-Stopped at: Completed 06.50-07-PLAN.md; next 06.50-08
+Last session: 2026-11-25T08:01:00.373Z
+Stopped at: Completed 06.50-08-PLAN.md; pending independent review and verification
 Resume file: None

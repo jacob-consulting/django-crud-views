@@ -199,9 +199,25 @@ def test_guardian_create_hook_documents_same_viewset_or_none():
         "own ViewSet",
         "list, object, row/card action, navbar and permission-filter consumers",
         "otherwise None",
-        "Retained Cancel",
+        "Cancel uses the shared known-ancestor check",
         "request-bound view of the same ViewSet",
         "another ViewSet receives None",
         "must not assume it is set or is a list view",
     ):
         assert phrase in argument
+    for phrase in (
+        "signed-in, active actor",
+        "passing declared parent gates before this hook",
+        "a denied gate skips even a custom override",
+        "deliberately repeats the bounded immediate-parent check",
+        "Direct calls to this default hook also enforce actor admission",
+        "do not discover or check higher ancestors",
+        "known route parent makes sibling and create-page controls",
+        "child-list permission filters and M2M page controls eligible",
+        "Each button follows its actual target",
+        "custom get_context output is not repaired by a page-key rewrite",
+        "own child of a single-foreign-key nesting",
+        "M2M own children remain ambiguous and deny",
+        "Action state is evaluated separately",
+    ):
+        assert phrase in doc

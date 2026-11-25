@@ -263,18 +263,13 @@ def test_consumer_grid_real_far_denial_and_fresh_grant(composition, surface, key
         state = Mock(return_value=True)
         monkeypatch.setattr(target, "cv_has_access", own)
         monkeypatch.setattr(target, "cv_action_enabled", state)
-        retained_cancel = composition == "guardian" and surface == "cancel"
-        assert render() is retained_cancel
+        assert render() is False
         expected_far = (ns.pub.vs.name, far, ns.pub.vs.permissions["change"])
         expected_near = (ns.book.vs.name, nearest, ns.book.vs.permissions["view"])
-        assert events == ([expected_near] if retained_cancel else [expected_far])
-        assert events[0][1] is (nearest if retained_cancel else far)
-        if not retained_cancel:
-            own.assert_not_called()
-            state.assert_not_called()
-        else:
-            own.assert_called_once_with(actor, own_obj)
-            state.assert_called_once_with(actor, own_obj if target.cv_object else nearest)
+        assert events == [expected_far]
+        assert events[0][1] is far
+        own.assert_not_called()
+        state.assert_not_called()
         destination = reverse(
             target.cv_viewset.get_router_name(key),
             kwargs={
@@ -298,13 +293,8 @@ def test_consumer_grid_real_far_denial_and_fresh_grant(composition, surface, key
         events.clear()
         own.reset_mock()
         assert render() is True
-        assert events == ([expected_near] if retained_cancel else [expected_far, expected_near])
-        assert all(
-            event[1] is wanted[1]
-            for event, wanted in zip(
-                events, [expected_near] if retained_cancel else [expected_far, expected_near], strict=True
-            )
-        )
+        assert events == [expected_far, expected_near]
+        assert all(event[1] is wanted[1] for event, wanted in zip(events, [expected_far, expected_near], strict=True))
         own.assert_called_once_with(fresh, own_obj)
         assert own.call_args.args[1] is own_obj
         if surface == "filter":

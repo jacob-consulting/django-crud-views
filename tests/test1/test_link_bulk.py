@@ -98,10 +98,13 @@ def test_bulk_stricter_far_gate_matches_request(composition, source, far_allowed
         monkeypatch.setattr(ns.note.Bulk, "cv_has_access", own)
         monkeypatch.setattr(ns.note.Bulk, "cv_action_enabled", state)
         monkeypatch.setattr(ns.note.Bulk, "_cv_link_permission", step)
+        cancel = Mock(side_effect=AssertionError("Toolbar must use the shared check directly"))
+        monkeypatch.setattr(ns.note.Bulk, "_cv_cancel_target_available", cancel)
         client = _client(actor)
         response = client.get(page.cv_get_url(page.cv_key))
         assert response.status_code == 200
         assert action_keys(response) == (["mark"] if far_allowed else [])
+        cancel.assert_not_called()
         rendered = response.context_data["view"]
         if far_allowed:
             own.assert_called_once_with(response.wsgi_request.user, None)

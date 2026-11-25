@@ -227,7 +227,7 @@ def test_guardian_cancel_parent_path_and_queryset_only_have_distinct_gates(key, 
     with isolated_routes(guardian_cancel_routes) as ns:
         world = consumer_world()
         actor = consumer_actor(ns, world)
-        # No Book change grant: queryset-only must retain its immediate-gate exception.
+        # D-47: without Book change, queryset-only denies after a successful far gate too.
         remove_perm(ns.book.vs.permissions["change"], actor, world.book)
         if not far_allowed:
             remove_perm(ns.pub.vs.permissions["change"], actor, world.pub)
@@ -249,16 +249,17 @@ def test_guardian_cancel_parent_path_and_queryset_only_have_distinct_gates(key, 
             return original(vs, user, permission, obj, view=view)
 
         monkeypatch.setattr(GuardianViewSet, "_ancestor_has_permission", gate)
-        allowed = key != "queryset" or far_allowed
+        allowed = key != "queryset"
         destination = page.cv_get_url(key, obj=world.note)
         assert page.cv_get_cancel_url() == (destination if allowed else None)
-        expected = (
-            (ns.pub.vs.name, page._cv_ancestor_state.objects[1])
-            if key == "queryset"
-            else (ns.book.vs.name, page._cv_ancestor_state.parent)
-        )
-        assert gates == [expected]
-        assert gates[0][1] is expected[1]
+        if key == "queryset":
+            expected = [(ns.pub.vs.name, page._cv_ancestor_state.objects[1])]
+            if far_allowed:
+                expected.append((ns.book.vs.name, page._cv_ancestor_state.parent))
+        else:
+            expected = [(ns.book.vs.name, page._cv_ancestor_state.parent)]
+        assert gates == expected
+        assert all(event[1] is wanted[1] for event, wanted in zip(gates, expected, strict=True))
         if allowed:
             state.assert_called_once_with(actor, world.note if target.cv_object else page._cv_ancestor_state.parent)
         else:

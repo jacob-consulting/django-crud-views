@@ -453,7 +453,7 @@ def test_guardian_list_and_card_rewrite_parent_and_sibling_keys(
 @pytest.mark.django_db
 @pytest.mark.parametrize("surface", ["button", "filter", "card"])
 @pytest.mark.parametrize("far_allowed", [False, True])
-def test_queryset_only_links_keep_nearest_skip_but_gate_higher(surface, far_allowed, monkeypatch):
+def test_queryset_only_links_gate_nearest_after_higher(surface, far_allowed, monkeypatch):
     from guardian.shortcuts import remove_perm
 
     from crud_views.lib.view import CardAction
@@ -492,17 +492,16 @@ def test_queryset_only_links_keep_nearest_skip_but_gate_higher(surface, far_allo
             result = ContextButton(key="only", key_target="queryset").get_context(page.cv_get_view_context())[
                 "cv_access"
             ]
-        assert result is far_allowed
-        assert gates == [(ns.pub.vs.name, page._cv_ancestor_state.objects[1])]
+        assert result is False
+        expected = [(ns.pub.vs.name, page._cv_ancestor_state.objects[1])]
+        if far_allowed:
+            expected.append((ns.book.vs.name, page._cv_ancestor_state.parent))
+        assert gates == expected
         assert gates[0][1] is page._cv_ancestor_state.objects[1]
         if far_allowed:
-            own.assert_called_once_with(actor, None)
-        else:
-            own.assert_not_called()
-        if far_allowed and surface != "filter":
-            state.assert_called_once_with(actor, page._cv_ancestor_state.parent)
-        else:
-            state.assert_not_called()
+            assert gates[1][1] is page._cv_ancestor_state.parent
+        own.assert_not_called()
+        state.assert_not_called()
         client = Client()
         client.force_login(actor)
         assert client.get(page.cv_get_url("queryset")).status_code == 403

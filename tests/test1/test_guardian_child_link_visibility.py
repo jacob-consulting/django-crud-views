@@ -784,14 +784,16 @@ def test_preservation_queryset_only_composition(links, client, django_user_model
     parent = Publisher.objects.create(name="No parent grant")
     actor = django_user_model.objects.create_user(username="queryset_only")
     client.force_login(actor)
-    data = rendered_data(links, renderer, actor, parent)
-    assert data["cv_url"] == child_url(links, "list", parent)
-    # D-03/D-19: the request now runs the shared ancestor guard (parent change, the child's Read pair) although
-    # the bounded link helper of a queryset-only composition does not consult the parent: a visible link can be
-    # denied (first-wave limitation)
-    assert client.get(data["cv_url"]).status_code == 403
+    destination = child_url(links, "list", parent)
+    assert QuerysetOnly.cv_has_access(actor, None) is True
+    assert rendered_data(links, renderer, actor, parent) is None
+    # D-47 applies the declared parent policy while preserving the independent request and row filter.
+    assert client.get(destination).status_code == 403
     user_guardian_object_perm(actor, links.parent, "change", parent)
-    response = client.get(data["cv_url"])
+    actor = django_user_model.objects.get(pk=actor.pk)
+    assert QuerysetOnly.cv_has_access(actor, None) is True
+    assert rendered_data(links, renderer, actor, parent)["cv_url"] == destination
+    response = client.get(destination)
     assert response.status_code == 200
     assert list(response.context["object_list"]) == []
 

@@ -1,0 +1,305 @@
+{
+  "baseline_sha": "d5567ba2964b1375be2292ffa414bfb2f5cd6292",
+  "cell": "depth3-plain-list-with-create-button",
+  "meta": {
+    "crud_views_path": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+    "django": "6.0.10",
+    "python": "3.12.3",
+    "source_sha": "29a014d92fb0e7bcad76b88e7231cfd3c0d70169",
+    "src_dirty": true
+  },
+  "observations": {
+    "full/list": {
+      "cold": {
+        "by_table": {
+          "app_ancestorobservationleaf": 1,
+          "app_book": 1,
+          "app_booknote": 1,
+          "app_publisher": 1,
+          "auth_permission": 5,
+          "auth_user": 1,
+          "django_content_type": 3,
+          "django_session": 1
+        },
+        "gates": [
+          [
+            "guard",
+            "obsp052617675",
+            "app.view_publisher",
+            1
+          ],
+          [
+            "guard",
+            "obsp152617675",
+            "app.view_book",
+            1
+          ],
+          [
+            "guard",
+            "obsp252617675",
+            "app.view_booknote",
+            1
+          ],
+          [
+            "rest",
+            "obsp052617675",
+            "app.view_publisher",
+            1
+          ],
+          [
+            "rest",
+            "obsp152617675",
+            "app.view_book",
+            1
+          ],
+          [
+            "rest",
+            "obsp252617675",
+            "app.change_booknote",
+            1
+          ]
+        ],
+        "guard": 13,
+        "guard_by_table": {
+          "app_book": 1,
+          "app_booknote": 1,
+          "app_publisher": 1,
+          "auth_permission": 5,
+          "auth_user": 1,
+          "django_content_type": 3,
+          "django_session": 1
+        },
+        "guard_calls": 1,
+        "querysets": [
+          [
+            "guard",
+            "obsp052617675"
+          ],
+          [
+            "guard",
+            "obsp152617675"
+          ],
+          [
+            "guard",
+            "obsp252617675"
+          ],
+          [
+            "rest",
+            "obsp352617675"
+          ]
+        ],
+        "rest": 1,
+        "rest_by_table": {
+          "app_ancestorobservationleaf": 1
+        },
+        "status": 200,
+        "total": 14
+      },
+      "warm": {
+        "by_table": {
+          "app_ancestorobservationleaf": 1,
+          "app_book": 1,
+          "app_booknote": 1,
+          "app_publisher": 1,
+          "auth_permission": 2,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "gates": [
+          [
+            "guard",
+            "obsp052617675",
+            "app.view_publisher",
+            1
+          ],
+          [
+            "guard",
+            "obsp152617675",
+            "app.view_book",
+            1
+          ],
+          [
+            "guard",
+            "obsp252617675",
+            "app.view_booknote",
+            1
+          ],
+          [
+            "rest",
+            "obsp052617675",
+            "app.view_publisher",
+            1
+          ],
+          [
+            "rest",
+            "obsp152617675",
+            "app.view_book",
+            1
+          ],
+          [
+            "rest",
+            "obsp252617675",
+            "app.change_booknote",
+            1
+          ]
+        ],
+        "guard": 7,
+        "guard_by_table": {
+          "app_book": 1,
+          "app_booknote": 1,
+          "app_publisher": 1,
+          "auth_permission": 2,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "guard_calls": 1,
+        "querysets": [
+          [
+            "guard",
+            "obsp052617675"
+          ],
+          [
+            "guard",
+            "obsp152617675"
+          ],
+          [
+            "guard",
+            "obsp252617675"
+          ],
+          [
+            "rest",
+            "obsp352617675"
+          ]
+        ],
+        "rest": 1,
+        "rest_by_table": {
+          "app_ancestorobservationleaf": 1
+        },
+        "status": 200,
+        "total": 8
+      }
+    },
+    "nearest/list": {
+      "cold": {
+        "by_table": {
+          "app_ancestorobservationleaf": 1,
+          "app_book": 1,
+          "app_booknote": 1,
+          "app_publisher": 1,
+          "auth_permission": 3,
+          "auth_user": 1,
+          "django_content_type": 1,
+          "django_session": 1
+        },
+        "gates": [
+          [
+            "guard",
+            "obsp252617675",
+            "app.view_booknote",
+            1
+          ],
+          [
+            "rest",
+            "obsp252617675",
+            "app.change_booknote",
+            1
+          ]
+        ],
+        "guard": 9,
+        "guard_by_table": {
+          "app_book": 1,
+          "app_booknote": 1,
+          "app_publisher": 1,
+          "auth_permission": 3,
+          "auth_user": 1,
+          "django_content_type": 1,
+          "django_session": 1
+        },
+        "guard_calls": 1,
+        "querysets": [
+          [
+            "guard",
+            "obsp052617675"
+          ],
+          [
+            "guard",
+            "obsp152617675"
+          ],
+          [
+            "guard",
+            "obsp252617675"
+          ],
+          [
+            "rest",
+            "obsp352617675"
+          ]
+        ],
+        "rest": 1,
+        "rest_by_table": {
+          "app_ancestorobservationleaf": 1
+        },
+        "status": 200,
+        "total": 10
+      },
+      "warm": {
+        "by_table": {
+          "app_ancestorobservationleaf": 1,
+          "app_book": 1,
+          "app_booknote": 1,
+          "app_publisher": 1,
+          "auth_permission": 2,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "gates": [
+          [
+            "guard",
+            "obsp252617675",
+            "app.view_booknote",
+            1
+          ],
+          [
+            "rest",
+            "obsp252617675",
+            "app.change_booknote",
+            1
+          ]
+        ],
+        "guard": 7,
+        "guard_by_table": {
+          "app_book": 1,
+          "app_booknote": 1,
+          "app_publisher": 1,
+          "auth_permission": 2,
+          "auth_user": 1,
+          "django_session": 1
+        },
+        "guard_calls": 1,
+        "querysets": [
+          [
+            "guard",
+            "obsp052617675"
+          ],
+          [
+            "guard",
+            "obsp152617675"
+          ],
+          [
+            "guard",
+            "obsp252617675"
+          ],
+          [
+            "rest",
+            "obsp352617675"
+          ]
+        ],
+        "rest": 1,
+        "rest_by_table": {
+          "app_ancestorobservationleaf": 1
+        },
+        "status": 200,
+        "total": 8
+      }
+    }
+  }
+}

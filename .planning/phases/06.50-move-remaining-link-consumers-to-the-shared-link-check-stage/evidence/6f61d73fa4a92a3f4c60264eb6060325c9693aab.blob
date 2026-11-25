@@ -1,0 +1,29 @@
+bringing up nodes...
+bringing up nodes...
+
+.....uuuu................uu......uu..u..uuu.uuu....uu.uuuu..........uu.. [  7%]
+..uuuuu..uu..uu..u..uu..u.uuu.u.u...u..u.uuuu.........u....u............ [ 14%]
+....uuuuuuuuuuuuuuuu...uu.uuu.uu.uu.uuu.........uuuu.u.......uu......... [ 20%]
+............uu.uu.u.uuu.uu.u.uu..................u.u.uu.........uu.u.uuu [ 28%]
+uuuu.uu....uuuuuu..uuu...uuuuuuuuuuu................................uuu. [ 35%]
+............uu.uu........uuuuuu....u.....u.......u.uuuu.uuuuuu.......... [ 42%]
+.uuuuuuu.........................uuu..uuuuuuuu....uuuuuuuuuuuu...uu..... [ 49%]
+.....uuuuu.uu.uuu..u..........uu...uuuu.uuuuuu.u.................uuu...u [ 56%]
+u..uu.uuu.....uu.uuuuuuu.uuuuuuu.uuuuuuu.........uuuuuu.uuuuuuuu.u.uuuuu [ 59%]
+uuuuuu.u.......................uu.uu.................................... [ 69%]
+........................................................................ [ 80%]
+........................................................................ [ 91%]
+...uuuu..................................uuuuuuuuu.uuuuuu.........uu.... [ 99%]
+.                                                                        [100%]
+=============================== warnings summary ===============================
+project/tests.py::NavGroupsTest::test_feature_page_marks_its_group_active
+project/tests.py::ExampleAboutTest::test_every_feature_page_shows_about
+project/tests.py::BreadcrumbAdoptionTest::test_every_feature_landing_page_shows_breadcrumb
+project/tests.py::DocRefsPanelTest::test_every_feature_page_lists_its_doc_refs
+workflow/tests.py::CampaignWorkflowTest::test_list_renders_with_snippets
+project/tests.py::HomePageTest::test_every_feature_landing_page_renders
+  /home/alex/projects/alex/django-crud-views/.nox/examples-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/list.py:91: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'workflow.models.Campaign'> QuerySet.
+    return self.paginator_class(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+637 passed, 6 warnings, 300 subtests passed in 87.28s (0:01:27)

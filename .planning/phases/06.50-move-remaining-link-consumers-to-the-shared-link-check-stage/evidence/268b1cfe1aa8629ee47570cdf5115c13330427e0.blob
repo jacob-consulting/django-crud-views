@@ -1,0 +1,107 @@
+{
+  "product_head": "3747ca6418999ef342851a0fc80a2bc408746a2b",
+  "result": "passed",
+  "before_bytes": 32282,
+  "before_artifacts": 5,
+  "goldens_unchanged": 34,
+  "protected_hashes": 91,
+  "permitted_hash_differences": {
+    "src/crud_views_guardian/lib/views.py": "0ede4dec769dd79df38edc8f7839cef156654345f643ceca1228b89bb664465d",
+    "tests/test1/link_access_matrix_baseline.json": "4c29f3f493c4b71ed0791a8e3d5c2898d31fb84ff493d8bee22d1d5ee5eb2b14",
+    "tests/test1/test_ancestor_costs.py": "aee6692a2452980758c6bbaa90b0e950763749deeebbe457633901f179b4892f"
+  },
+  "public_calls": [
+    {
+      "file": "src/crud_views/lib/link_access.py",
+      "line": 87,
+      "caller": "_link_access",
+      "method": "cv_action_enabled"
+    },
+    {
+      "file": "src/crud_views/lib/view/base.py",
+      "line": 553,
+      "caller": "CrudView._cv_link_permission",
+      "method": "cv_has_access"
+    },
+    {
+      "file": "src/crud_views/lib/view/base.py",
+      "line": 591,
+      "caller": "CrudView._cv_action_enabled_for_context",
+      "method": "cv_action_enabled"
+    },
+    {
+      "file": "src/crud_views/lib/view/base.py",
+      "line": 1358,
+      "caller": "CrudViewPermissionRequiredMixin.has_permission",
+      "method": "cv_action_enabled"
+    },
+    {
+      "file": "src/crud_views/lib/views/create.py",
+      "line": 49,
+      "caller": "CreateView._cv_action_enabled_for_context",
+      "method": "cv_action_enabled"
+    },
+    {
+      "file": "src/crud_views_guardian/lib/mixins.py",
+      "line": 180,
+      "caller": "GuardianObjectPermissionMixin.get_object",
+      "method": "cv_action_enabled"
+    },
+    {
+      "file": "src/crud_views_guardian/lib/mixins.py",
+      "line": 298,
+      "caller": "GuardianQuerysetMixin._cv_link_permission",
+      "method": "cv_has_access"
+    },
+    {
+      "file": "src/crud_views_guardian/lib/mixins.py",
+      "line": 427,
+      "caller": "GuardianParentPermissionMixin._cv_cancel_target_available",
+      "method": "cv_has_access"
+    },
+    {
+      "file": "src/crud_views_guardian/lib/mixins.py",
+      "line": 440,
+      "caller": "GuardianParentPermissionMixin._cv_cancel_parent_target_access",
+      "method": "cv_has_access"
+    },
+    {
+      "file": "src/crud_views_guardian/lib/mixins.py",
+      "line": 504,
+      "caller": "GuardianParentPermissionMixin.dispatch",
+      "method": "cv_action_enabled"
+    },
+    {
+      "file": "src/crud_views_guardian/lib/views.py",
+      "line": 328,
+      "caller": "GuardianCreateViewPermissionRequired._cv_action_enabled_for_context",
+      "method": "cv_action_enabled"
+    },
+    {
+      "file": "src/crud_views_guardian/lib/views.py",
+      "line": 356,
+      "caller": "GuardianCreateViewPermissionRequired.cv_create_has_access",
+      "method": "cv_has_access"
+    },
+    {
+      "file": "src/crud_views_guardian/lib/views.py",
+      "line": 374,
+      "caller": "GuardianCreateViewPermissionRequired.cv_has_access",
+      "method": "cv_has_access"
+    }
+  ],
+  "rendering_adapter_calls": [
+    {
+      "file": "src/crud_views_guardian/lib/mixins.py",
+      "line": 435,
+      "caller": "GuardianParentPermissionMixin._cv_cancel_target_available",
+      "method": "_cv_action_enabled_for_rendering"
+    }
+  ],
+  "removed_helper_references": [],
+  "base_request_nodes_unchanged": [
+    "CrudView.dispatch",
+    "CrudViewPermissionRequiredMixin.has_permission"
+  ],
+  "source_tree": "641679654a771e68123d124bea7199bb31f747a7"
+}

@@ -1,0 +1,10 @@
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 25%]
+........................................................................ [ 51%]
+........................................................................ [ 76%]
+......................................................ss.s..s.ss..       [100%]
+=========================== short test summary info ============================
+SKIPPED [6] tests/test1/test_link_consumer_costs.py:418: Phase cost receipts are repository-only evidence, excluded from source distributions.
+276 passed, 6 skipped in 3.95s

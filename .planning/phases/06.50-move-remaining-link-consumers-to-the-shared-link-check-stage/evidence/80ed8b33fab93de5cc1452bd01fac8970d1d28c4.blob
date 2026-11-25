@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "block": false,
+  "verdict": "RED_EVIDENCE_OK",
+  "reason": "target_test_failed",
+  "evidence": {
+    "command": "PYTHONPATH=src:. CV_ACCESS_RECORD_REQUESTS=0 .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_navbar_permissions.py tests/test1/test_navbar_checks.py -n 6 -q -o junit_family=legacy --junitxml=/tmp/cv0650-p03-task1-red.xml",
+    "exit_code": 1,
+    "target_test": "test_navbar_child_create_own_viewset_higher_denial[False]",
+    "tests": 114,
+    "pass": 102,
+    "fail": 12,
+    "failing_tests": [
+      "tests.test1.test_navbar_permissions#test_navbar_child_create_own_viewset_higher_denial[True]",
+      "tests.test1.test_navbar_permissions#test_navbar_target_stricter_far_gate[False-child-list-guardian]",
+      "tests.test1.test_navbar_permissions#test_reachable_nested_host_does_not_predict_farther_policy",
+      "tests.test1.test_navbar_permissions#test_inherited_navbar_uses_each_guardian_level[None-child]",
+      "tests.test1.test_navbar_permissions#test_navbar_target_stricter_far_gate[False-child-create-core]",
+      "tests.test1.test_navbar_permissions#test_inherited_navbar_uses_each_guardian_level[None-owner]",
+      "tests.test1.test_navbar_permissions#test_navbar_target_stricter_far_gate[False-child-create-guardian]",
+      "tests.test1.test_navbar_permissions#test_navbar_child_create_own_viewset_higher_denial[False]",
+      "tests.test1.test_navbar_permissions#test_navbar_target_stricter_far_gate[False-owner-core]",
+      "tests.test1.test_navbar_permissions#test_inherited_navbar_uses_each_guardian_level[publisher-owner]",
+      "tests.test1.test_navbar_permissions#test_navbar_target_stricter_far_gate[False-owner-guardian]",
+      "tests.test1.test_navbar_permissions#test_navbar_target_stricter_far_gate[False-child-list-core]"
+    ],
+    "matched_test": "tests.test1.test_navbar_permissions#test_navbar_child_create_own_viewset_higher_denial[False]",
+    "format": "junit",
+    "report_errors": []
+  },
+  "record": {
+    "command": "PYTHONPATH=src:. CV_ACCESS_RECORD_REQUESTS=0 .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_navbar_permissions.py tests/test1/test_navbar_checks.py -n 6 -q -o junit_family=legacy --junitxml=/tmp/cv0650-p03-task1-red.xml",
+    "exit_code": 1,
+    "failing_test": "tests.test1.test_navbar_permissions#test_navbar_child_create_own_viewset_higher_denial[False]",
+    "target_test": "test_navbar_child_create_own_viewset_higher_denial[False]",
+    "expected": "Navbar absent when Publisher change is denied; context create retains the Book-only exception.",
+    "actual": "Navbar contains the create item because the farther Publisher gate was omitted.",
+    "verdict": "RED_EVIDENCE_OK",
+    "reason": "target_test_failed"
+  },
+  "message": "RED evidence verified: target test \"test_navbar_child_create_own_viewset_higher_denial[False]\" failed as expected (exit 1). GREEN authorized."
+}

@@ -1,0 +1,17 @@
+HEAD 3747ca6418999ef342851a0fc80a2bc408746a2b
+Python 3.12.3
+{'Django': '6.0.10', 'django-guardian': '3.5.2', 'pydantic': '2.14.3', 'django-crispy-forms': '2.7', 'crispy-bootstrap5': '2026.9', 'pytest': '9.2.0', 'pytest-xdist': '3.8.0'}
+crud_views src/crud_views/__init__.py
+crud_views_guardian src/crud_views_guardian/__init__.py
+crud_views_object_detail src/crud_views_object_detail/__init__.py
+crud_views_workflow src/crud_views_workflow/__init__.py
+crud_views_polymorphic src/crud_views_polymorphic/__init__.py
+crud_views.lib.link_access src/crud_views/lib/link_access.py
+crud_views.lib.view.base src/crud_views/lib/view/base.py
+crud_views.lib.view.buttons src/crud_views/lib/view/buttons.py
+crud_views.lib.views.card src/crud_views/lib/views/card.py
+crud_views.lib.navbar src/crud_views/lib/navbar.py
+crud_views.lib.bulk src/crud_views/lib/bulk/__init__.py
+crud_views.templatetags.crud_views src/crud_views/templatetags/crud_views.py
+crud_views_guardian.lib.mixins src/crud_views_guardian/lib/mixins.py
+crud_views_guardian.lib.views src/crud_views_guardian/lib/views.py

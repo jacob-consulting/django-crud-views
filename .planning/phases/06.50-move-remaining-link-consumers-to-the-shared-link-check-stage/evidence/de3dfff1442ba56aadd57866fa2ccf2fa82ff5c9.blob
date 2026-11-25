@@ -1,0 +1,9 @@
+{
+  "baseline": "ba1465c8d9361ca08d6d97c9a4ddb47fa83082c9",
+  "result": "passed",
+  "scope": "H1 renderer observations; L1 Guardian create-hook docstring; C2-L2 module renderer prose",
+  "source_sha256": {
+    "tests/test1/test_ancestor_costs.py": "aee6692a2452980758c6bbaa90b0e950763749deeebbe457633901f179b4892f",
+    "src/crud_views_guardian/lib/views.py": "0ede4dec769dd79df38edc8f7839cef156654345f643ceca1228b89bb664465d"
+  }
+}

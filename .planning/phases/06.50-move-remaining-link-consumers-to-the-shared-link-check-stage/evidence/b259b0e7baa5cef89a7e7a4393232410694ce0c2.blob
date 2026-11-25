@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "block": false,
+  "verdict": "RED_EVIDENCE_OK",
+  "reason": "target_test_failed",
+  "evidence": {
+    "command": "PYTHONPATH=src:. CV_ACCESS_RECORD_REQUESTS=0 .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_link_consumers.py -k 'context_tracer or alignment' -n 6 -q -o junit_family=legacy --junitxml=/tmp/cv0650-red01.xml",
+    "exit_code": 1,
+    "target_test": "test_context_tracer",
+    "tests": 4,
+    "pass": 0,
+    "fail": 4,
+    "failing_tests": [
+      "tests.test1.test_link_consumers#test_alignment_missing_parent_denies_and_configuration_errors_propagate",
+      "tests.test1.test_link_consumers#test_alignment_target_levels_holes_and_explicit_parent[core]",
+      "tests.test1.test_link_consumers#test_alignment_target_levels_holes_and_explicit_parent[guardian]",
+      "tests.test1.test_link_consumers#test_context_tracer"
+    ],
+    "matched_test": "tests.test1.test_link_consumers#test_context_tracer",
+    "format": "junit",
+    "report_errors": []
+  },
+  "record": {
+    "command": "PYTHONPATH=src:. CV_ACCESS_RECORD_REQUESTS=0 .nox/tests-3-12-django-6-0/bin/python -m pytest tests/test1/test_link_consumers.py -k 'context_tracer or alignment' -n 6 -q -o junit_family=legacy --junitxml=/tmp/cv0650-red01.xml",
+    "exit_code": 1,
+    "failing_test": "tests.test1.test_link_consumers#test_context_tracer",
+    "target_test": "test_context_tracer",
+    "expected": "Update URL absent when parent view exists without parent change; target direct request remains 403.",
+    "actual": "Update URL appears in rendered links while direct target request returned 403.",
+    "verdict": "RED_EVIDENCE_OK",
+    "reason": "target_test_failed"
+  },
+  "message": "RED evidence verified: target test \"test_context_tracer\" failed as expected (exit 1). GREEN authorized."
+}

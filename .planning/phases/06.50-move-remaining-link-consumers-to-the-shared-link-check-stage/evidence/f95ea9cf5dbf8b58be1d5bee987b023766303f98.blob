@@ -1,0 +1,795 @@
+bringing up nodes...
+bringing up nodes...
+
+FFFFFFFFFF                                                               [100%]
+=================================== FAILURES ===================================
+____ test_bulk_offered_action_ancestor_write_denied[immediate-review-table] ____
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+card = False, stage = 'review', denial = 'immediate'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72dc62484d10>
+
+    @pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
+    @pytest.mark.parametrize("stage", ["review", "execute"])
+    @pytest.mark.parametrize("denial", ["immediate", "farther"])
+    def test_bulk_offered_action_ancestor_write_denied(card, stage, denial, monkeypatch):
+        from types import SimpleNamespace
+    
+        parent = Publisher.objects.create(name="Read-only publisher")
+        book = Book.objects.create(publisher=parent, title="Admitted book")
+        note = BookNote.objects.create(book=book, note="Unchanged note")
+        actor = _user(
+            "ancestor_offer",
+            (Publisher, "view"),
+            (Book, "view"),
+            (Book, "change"),
+            (BookNote, "view"),
+            (BookNote, "change"),
+        )
+        client = _client(actor)
+    
+        def assert_denied(vs, destination, obj, kwargs):
+            monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+            response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+            assert response.status_code == 200
+            button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+            assert soup(response).cssselect("[data-cv-bulk-item]")
+            response = post_selection(client, button.get("formaction"), [obj], stage)
+            assert response.status_code == 403
+            assert list(Publisher.objects.values_list("name", flat=True)) == ["Read-only publisher"]
+            assert list(Book.objects.values_list("title", flat=True)) == ["Admitted book"]
+            assert list(BookNote.objects.values_list("note", flat=True)) == ["Unchanged note"]
+    
+        if denial == "immediate":
+>           assert_denied(cv_bulk_book, BulkBookMarkView, book, {"bulk_publisher_pk": parent.pk})
+
+tests/test1/test_bulk_scope.py:531: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+vs = ViewSet(bulk_book)
+destination = <class 'tests.test1.app.views_bulk.BulkBookMarkView'>
+obj = <Book: Admitted book>, kwargs = {'bulk_publisher_pk': 1}
+
+    def assert_denied(vs, destination, obj, kwargs):
+        monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+        response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+        assert response.status_code == 200
+>       button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_bulk_scope.py:522: IndexError
+____ test_bulk_offered_action_ancestor_write_denied[immediate-execute-card] ____
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+card = True, stage = 'execute', denial = 'immediate'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b6f320645f0>
+
+    @pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
+    @pytest.mark.parametrize("stage", ["review", "execute"])
+    @pytest.mark.parametrize("denial", ["immediate", "farther"])
+    def test_bulk_offered_action_ancestor_write_denied(card, stage, denial, monkeypatch):
+        from types import SimpleNamespace
+    
+        parent = Publisher.objects.create(name="Read-only publisher")
+        book = Book.objects.create(publisher=parent, title="Admitted book")
+        note = BookNote.objects.create(book=book, note="Unchanged note")
+        actor = _user(
+            "ancestor_offer",
+            (Publisher, "view"),
+            (Book, "view"),
+            (Book, "change"),
+            (BookNote, "view"),
+            (BookNote, "change"),
+        )
+        client = _client(actor)
+    
+        def assert_denied(vs, destination, obj, kwargs):
+            monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+            response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+            assert response.status_code == 200
+            button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+            assert soup(response).cssselect("[data-cv-bulk-item]")
+            response = post_selection(client, button.get("formaction"), [obj], stage)
+            assert response.status_code == 403
+            assert list(Publisher.objects.values_list("name", flat=True)) == ["Read-only publisher"]
+            assert list(Book.objects.values_list("title", flat=True)) == ["Admitted book"]
+            assert list(BookNote.objects.values_list("note", flat=True)) == ["Unchanged note"]
+    
+        if denial == "immediate":
+>           assert_denied(cv_bulk_book, BulkBookMarkView, book, {"bulk_publisher_pk": parent.pk})
+
+tests/test1/test_bulk_scope.py:531: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+vs = ViewSet(bulk_book)
+destination = <class 'tests.test1.app.views_bulk.BulkBookMarkView'>
+obj = <Book: Admitted book>, kwargs = {'bulk_publisher_pk': 1}
+
+    def assert_denied(vs, destination, obj, kwargs):
+        monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+        response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+        assert response.status_code == 200
+>       button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_bulk_scope.py:522: IndexError
+____ test_bulk_offered_action_ancestor_write_denied[immediate-review-card] _____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+card = True, stage = 'review', denial = 'immediate'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7cc7eb9a0ef0>
+
+    @pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
+    @pytest.mark.parametrize("stage", ["review", "execute"])
+    @pytest.mark.parametrize("denial", ["immediate", "farther"])
+    def test_bulk_offered_action_ancestor_write_denied(card, stage, denial, monkeypatch):
+        from types import SimpleNamespace
+    
+        parent = Publisher.objects.create(name="Read-only publisher")
+        book = Book.objects.create(publisher=parent, title="Admitted book")
+        note = BookNote.objects.create(book=book, note="Unchanged note")
+        actor = _user(
+            "ancestor_offer",
+            (Publisher, "view"),
+            (Book, "view"),
+            (Book, "change"),
+            (BookNote, "view"),
+            (BookNote, "change"),
+        )
+        client = _client(actor)
+    
+        def assert_denied(vs, destination, obj, kwargs):
+            monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+            response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+            assert response.status_code == 200
+            button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+            assert soup(response).cssselect("[data-cv-bulk-item]")
+            response = post_selection(client, button.get("formaction"), [obj], stage)
+            assert response.status_code == 403
+            assert list(Publisher.objects.values_list("name", flat=True)) == ["Read-only publisher"]
+            assert list(Book.objects.values_list("title", flat=True)) == ["Admitted book"]
+            assert list(BookNote.objects.values_list("note", flat=True)) == ["Unchanged note"]
+    
+        if denial == "immediate":
+>           assert_denied(cv_bulk_book, BulkBookMarkView, book, {"bulk_publisher_pk": parent.pk})
+
+tests/test1/test_bulk_scope.py:531: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+vs = ViewSet(bulk_book)
+destination = <class 'tests.test1.app.views_bulk.BulkBookMarkView'>
+obj = <Book: Admitted book>, kwargs = {'bulk_publisher_pk': 1}
+
+    def assert_denied(vs, destination, obj, kwargs):
+        monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+        response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+        assert response.status_code == 200
+>       button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_bulk_scope.py:522: IndexError
+_____ test_bulk_offered_action_ancestor_write_denied[farther-review-card] ______
+[gw5] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+card = True, stage = 'review', denial = 'farther'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x720b922593a0>
+
+    @pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
+    @pytest.mark.parametrize("stage", ["review", "execute"])
+    @pytest.mark.parametrize("denial", ["immediate", "farther"])
+    def test_bulk_offered_action_ancestor_write_denied(card, stage, denial, monkeypatch):
+        from types import SimpleNamespace
+    
+        parent = Publisher.objects.create(name="Read-only publisher")
+        book = Book.objects.create(publisher=parent, title="Admitted book")
+        note = BookNote.objects.create(book=book, note="Unchanged note")
+        actor = _user(
+            "ancestor_offer",
+            (Publisher, "view"),
+            (Book, "view"),
+            (Book, "change"),
+            (BookNote, "view"),
+            (BookNote, "change"),
+        )
+        client = _client(actor)
+    
+        def assert_denied(vs, destination, obj, kwargs):
+            monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+            response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+            assert response.status_code == 200
+            button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+            assert soup(response).cssselect("[data-cv-bulk-item]")
+            response = post_selection(client, button.get("formaction"), [obj], stage)
+            assert response.status_code == 403
+            assert list(Publisher.objects.values_list("name", flat=True)) == ["Read-only publisher"]
+            assert list(Book.objects.values_list("title", flat=True)) == ["Admitted book"]
+            assert list(BookNote.objects.values_list("note", flat=True)) == ["Unchanged note"]
+    
+        if denial == "immediate":
+            assert_denied(cv_bulk_book, BulkBookMarkView, book, {"bulk_publisher_pk": parent.pk})
+            return
+    
+        def build(suffix):
+            root = ViewSet(model=Publisher, name=f"offered_root_{suffix}", prefix=f"offered-root-{suffix}")
+            middle = ViewSet(
+                model=Book,
+                name=f"offered_book_{suffix}",
+                prefix="book",
+                parent=ParentViewSet(name=root.name, attribute="publisher"),
+            )
+            leaf = ViewSet(
+                model=BookNote,
+                name=f"offered_note_{suffix}",
+                prefix="note",
+                parent=ParentViewSet(name=middle.name, attribute="book"),
+                ancestor_policy=AncestorPolicy(cascade=True, write=AncestorPermissions(nearest="change", higher="change")),
+            )
+    
+            class OfferedNoteTable(Table):
+                note = tables.Column()
+    
+            class OfferedNoteListView(BulkSelectionMixin, ListViewTableMixin, ListViewPermissionRequired):
+                cv_viewset = leaf
+                table_class = OfferedNoteTable
+                cv_bulk_actions = ("mark",)
+                cv_context_actions = ["home"]
+                cv_list_actions = []
+    
+            class OfferedNoteCardView(BulkSelectionMixin, CardListViewPermissionRequired):
+                cv_viewset = leaf
+                cv_bulk_actions = ("mark",)
+                cv_context_actions = ["home"]
+                cv_card_actions = []
+                cv_order_fields = ["note"]
+    
+            class OfferedNoteMarkView(BulkFormViewPermissionRequired):
+                cv_viewset = leaf
+                cv_key = "mark"
+                cv_path = "mark"
+                cv_permission = "change"
+                cv_cancel_keys = ["list", "card"]
+                cv_success_key = "list"
+                cv_action_label_template_code = "Mark selected"
+                cv_action_short_label_template_code = "Mark"
+    
+                def cv_form_valid(self, context):
+                    for selected in self.cv_bulk_objects:
+                        selected.note += " (marked)"
+                        selected.save(using=self.cv_get_db_alias())
+    
+            return SimpleNamespace(root=root, middle=middle, leaf=leaf, destination=OfferedNoteMarkView), [
+                root,
+                middle,
+                leaf,
+            ]
+    
+        with isolated_routes(build) as fixture:
+>           assert_denied(
+                fixture.leaf,
+                fixture.destination,
+                note,
+                {f"{fixture.root.name}_pk": parent.pk, f"{fixture.middle.name}_pk": book.pk},
+            )
+
+tests/test1/test_bulk_scope.py:589: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+vs = ViewSet(offered_note_3816bcef)
+destination = <class 'tests.test1.test_bulk_scope.test_bulk_offered_action_ancestor_write_denied.<locals>.build.<locals>.OfferedNoteMarkView'>
+obj = <BookNote: Unchanged note>
+kwargs = {'offered_root_3816bcef_pk': 1, 'offered_book_3816bcef_pk': 1}
+
+    def assert_denied(vs, destination, obj, kwargs):
+        monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+        response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+        assert response.status_code == 200
+>       button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_bulk_scope.py:522: IndexError
+___ test_bulk_offered_action_ancestor_write_denied[immediate-execute-table] ____
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+card = False, stage = 'execute', denial = 'immediate'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7540298f1850>
+
+    @pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
+    @pytest.mark.parametrize("stage", ["review", "execute"])
+    @pytest.mark.parametrize("denial", ["immediate", "farther"])
+    def test_bulk_offered_action_ancestor_write_denied(card, stage, denial, monkeypatch):
+        from types import SimpleNamespace
+    
+        parent = Publisher.objects.create(name="Read-only publisher")
+        book = Book.objects.create(publisher=parent, title="Admitted book")
+        note = BookNote.objects.create(book=book, note="Unchanged note")
+        actor = _user(
+            "ancestor_offer",
+            (Publisher, "view"),
+            (Book, "view"),
+            (Book, "change"),
+            (BookNote, "view"),
+            (BookNote, "change"),
+        )
+        client = _client(actor)
+    
+        def assert_denied(vs, destination, obj, kwargs):
+            monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+            response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+            assert response.status_code == 200
+            button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+            assert soup(response).cssselect("[data-cv-bulk-item]")
+            response = post_selection(client, button.get("formaction"), [obj], stage)
+            assert response.status_code == 403
+            assert list(Publisher.objects.values_list("name", flat=True)) == ["Read-only publisher"]
+            assert list(Book.objects.values_list("title", flat=True)) == ["Admitted book"]
+            assert list(BookNote.objects.values_list("note", flat=True)) == ["Unchanged note"]
+    
+        if denial == "immediate":
+>           assert_denied(cv_bulk_book, BulkBookMarkView, book, {"bulk_publisher_pk": parent.pk})
+
+tests/test1/test_bulk_scope.py:531: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+vs = ViewSet(bulk_book)
+destination = <class 'tests.test1.app.views_bulk.BulkBookMarkView'>
+obj = <Book: Admitted book>, kwargs = {'bulk_publisher_pk': 1}
+
+    def assert_denied(vs, destination, obj, kwargs):
+        monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+        response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+        assert response.status_code == 200
+>       button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_bulk_scope.py:522: IndexError
+_____ test_bulk_offered_action_ancestor_write_denied[farther-review-table] _____
+[gw4] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+card = False, stage = 'review', denial = 'farther'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x758892e966f0>
+
+    @pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
+    @pytest.mark.parametrize("stage", ["review", "execute"])
+    @pytest.mark.parametrize("denial", ["immediate", "farther"])
+    def test_bulk_offered_action_ancestor_write_denied(card, stage, denial, monkeypatch):
+        from types import SimpleNamespace
+    
+        parent = Publisher.objects.create(name="Read-only publisher")
+        book = Book.objects.create(publisher=parent, title="Admitted book")
+        note = BookNote.objects.create(book=book, note="Unchanged note")
+        actor = _user(
+            "ancestor_offer",
+            (Publisher, "view"),
+            (Book, "view"),
+            (Book, "change"),
+            (BookNote, "view"),
+            (BookNote, "change"),
+        )
+        client = _client(actor)
+    
+        def assert_denied(vs, destination, obj, kwargs):
+            monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+            response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+            assert response.status_code == 200
+            button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+            assert soup(response).cssselect("[data-cv-bulk-item]")
+            response = post_selection(client, button.get("formaction"), [obj], stage)
+            assert response.status_code == 403
+            assert list(Publisher.objects.values_list("name", flat=True)) == ["Read-only publisher"]
+            assert list(Book.objects.values_list("title", flat=True)) == ["Admitted book"]
+            assert list(BookNote.objects.values_list("note", flat=True)) == ["Unchanged note"]
+    
+        if denial == "immediate":
+            assert_denied(cv_bulk_book, BulkBookMarkView, book, {"bulk_publisher_pk": parent.pk})
+            return
+    
+        def build(suffix):
+            root = ViewSet(model=Publisher, name=f"offered_root_{suffix}", prefix=f"offered-root-{suffix}")
+            middle = ViewSet(
+                model=Book,
+                name=f"offered_book_{suffix}",
+                prefix="book",
+                parent=ParentViewSet(name=root.name, attribute="publisher"),
+            )
+            leaf = ViewSet(
+                model=BookNote,
+                name=f"offered_note_{suffix}",
+                prefix="note",
+                parent=ParentViewSet(name=middle.name, attribute="book"),
+                ancestor_policy=AncestorPolicy(cascade=True, write=AncestorPermissions(nearest="change", higher="change")),
+            )
+    
+            class OfferedNoteTable(Table):
+                note = tables.Column()
+    
+            class OfferedNoteListView(BulkSelectionMixin, ListViewTableMixin, ListViewPermissionRequired):
+                cv_viewset = leaf
+                table_class = OfferedNoteTable
+                cv_bulk_actions = ("mark",)
+                cv_context_actions = ["home"]
+                cv_list_actions = []
+    
+            class OfferedNoteCardView(BulkSelectionMixin, CardListViewPermissionRequired):
+                cv_viewset = leaf
+                cv_bulk_actions = ("mark",)
+                cv_context_actions = ["home"]
+                cv_card_actions = []
+                cv_order_fields = ["note"]
+    
+            class OfferedNoteMarkView(BulkFormViewPermissionRequired):
+                cv_viewset = leaf
+                cv_key = "mark"
+                cv_path = "mark"
+                cv_permission = "change"
+                cv_cancel_keys = ["list", "card"]
+                cv_success_key = "list"
+                cv_action_label_template_code = "Mark selected"
+                cv_action_short_label_template_code = "Mark"
+    
+                def cv_form_valid(self, context):
+                    for selected in self.cv_bulk_objects:
+                        selected.note += " (marked)"
+                        selected.save(using=self.cv_get_db_alias())
+    
+            return SimpleNamespace(root=root, middle=middle, leaf=leaf, destination=OfferedNoteMarkView), [
+                root,
+                middle,
+                leaf,
+            ]
+    
+        with isolated_routes(build) as fixture:
+>           assert_denied(
+                fixture.leaf,
+                fixture.destination,
+                note,
+                {f"{fixture.root.name}_pk": parent.pk, f"{fixture.middle.name}_pk": book.pk},
+            )
+
+tests/test1/test_bulk_scope.py:589: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+vs = ViewSet(offered_note_b6cf8fc7)
+destination = <class 'tests.test1.test_bulk_scope.test_bulk_offered_action_ancestor_write_denied.<locals>.build.<locals>.OfferedNoteMarkView'>
+obj = <BookNote: Unchanged note>
+kwargs = {'offered_root_b6cf8fc7_pk': 1, 'offered_book_b6cf8fc7_pk': 1}
+
+    def assert_denied(vs, destination, obj, kwargs):
+        monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+        response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+        assert response.status_code == 200
+>       button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_bulk_scope.py:522: IndexError
+____ test_bulk_offered_action_ancestor_write_denied[farther-execute-table] _____
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+card = False, stage = 'execute', denial = 'farther'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72dc62583e60>
+
+    @pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
+    @pytest.mark.parametrize("stage", ["review", "execute"])
+    @pytest.mark.parametrize("denial", ["immediate", "farther"])
+    def test_bulk_offered_action_ancestor_write_denied(card, stage, denial, monkeypatch):
+        from types import SimpleNamespace
+    
+        parent = Publisher.objects.create(name="Read-only publisher")
+        book = Book.objects.create(publisher=parent, title="Admitted book")
+        note = BookNote.objects.create(book=book, note="Unchanged note")
+        actor = _user(
+            "ancestor_offer",
+            (Publisher, "view"),
+            (Book, "view"),
+            (Book, "change"),
+            (BookNote, "view"),
+            (BookNote, "change"),
+        )
+        client = _client(actor)
+    
+        def assert_denied(vs, destination, obj, kwargs):
+            monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+            response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+            assert response.status_code == 200
+            button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+            assert soup(response).cssselect("[data-cv-bulk-item]")
+            response = post_selection(client, button.get("formaction"), [obj], stage)
+            assert response.status_code == 403
+            assert list(Publisher.objects.values_list("name", flat=True)) == ["Read-only publisher"]
+            assert list(Book.objects.values_list("title", flat=True)) == ["Admitted book"]
+            assert list(BookNote.objects.values_list("note", flat=True)) == ["Unchanged note"]
+    
+        if denial == "immediate":
+            assert_denied(cv_bulk_book, BulkBookMarkView, book, {"bulk_publisher_pk": parent.pk})
+            return
+    
+        def build(suffix):
+            root = ViewSet(model=Publisher, name=f"offered_root_{suffix}", prefix=f"offered-root-{suffix}")
+            middle = ViewSet(
+                model=Book,
+                name=f"offered_book_{suffix}",
+                prefix="book",
+                parent=ParentViewSet(name=root.name, attribute="publisher"),
+            )
+            leaf = ViewSet(
+                model=BookNote,
+                name=f"offered_note_{suffix}",
+                prefix="note",
+                parent=ParentViewSet(name=middle.name, attribute="book"),
+                ancestor_policy=AncestorPolicy(cascade=True, write=AncestorPermissions(nearest="change", higher="change")),
+            )
+    
+            class OfferedNoteTable(Table):
+                note = tables.Column()
+    
+            class OfferedNoteListView(BulkSelectionMixin, ListViewTableMixin, ListViewPermissionRequired):
+                cv_viewset = leaf
+                table_class = OfferedNoteTable
+                cv_bulk_actions = ("mark",)
+                cv_context_actions = ["home"]
+                cv_list_actions = []
+    
+            class OfferedNoteCardView(BulkSelectionMixin, CardListViewPermissionRequired):
+                cv_viewset = leaf
+                cv_bulk_actions = ("mark",)
+                cv_context_actions = ["home"]
+                cv_card_actions = []
+                cv_order_fields = ["note"]
+    
+            class OfferedNoteMarkView(BulkFormViewPermissionRequired):
+                cv_viewset = leaf
+                cv_key = "mark"
+                cv_path = "mark"
+                cv_permission = "change"
+                cv_cancel_keys = ["list", "card"]
+                cv_success_key = "list"
+                cv_action_label_template_code = "Mark selected"
+                cv_action_short_label_template_code = "Mark"
+    
+                def cv_form_valid(self, context):
+                    for selected in self.cv_bulk_objects:
+                        selected.note += " (marked)"
+                        selected.save(using=self.cv_get_db_alias())
+    
+            return SimpleNamespace(root=root, middle=middle, leaf=leaf, destination=OfferedNoteMarkView), [
+                root,
+                middle,
+                leaf,
+            ]
+    
+        with isolated_routes(build) as fixture:
+>           assert_denied(
+                fixture.leaf,
+                fixture.destination,
+                note,
+                {f"{fixture.root.name}_pk": parent.pk, f"{fixture.middle.name}_pk": book.pk},
+            )
+
+tests/test1/test_bulk_scope.py:589: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+vs = ViewSet(offered_note_8fbb344e)
+destination = <class 'tests.test1.test_bulk_scope.test_bulk_offered_action_ancestor_write_denied.<locals>.build.<locals>.OfferedNoteMarkView'>
+obj = <BookNote: Unchanged note>
+kwargs = {'offered_root_8fbb344e_pk': 1, 'offered_book_8fbb344e_pk': 1}
+
+    def assert_denied(vs, destination, obj, kwargs):
+        monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+        response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+        assert response.status_code == 200
+>       button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_bulk_scope.py:522: IndexError
+_____ test_bulk_offered_action_ancestor_write_denied[farther-execute-card] _____
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+card = True, stage = 'execute', denial = 'farther'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7cc7f013a630>
+
+    @pytest.mark.parametrize("card", [False, True], ids=["table", "card"])
+    @pytest.mark.parametrize("stage", ["review", "execute"])
+    @pytest.mark.parametrize("denial", ["immediate", "farther"])
+    def test_bulk_offered_action_ancestor_write_denied(card, stage, denial, monkeypatch):
+        from types import SimpleNamespace
+    
+        parent = Publisher.objects.create(name="Read-only publisher")
+        book = Book.objects.create(publisher=parent, title="Admitted book")
+        note = BookNote.objects.create(book=book, note="Unchanged note")
+        actor = _user(
+            "ancestor_offer",
+            (Publisher, "view"),
+            (Book, "view"),
+            (Book, "change"),
+            (BookNote, "view"),
+            (BookNote, "change"),
+        )
+        client = _client(actor)
+    
+        def assert_denied(vs, destination, obj, kwargs):
+            monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+            monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+            response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+            assert response.status_code == 200
+            button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+            assert soup(response).cssselect("[data-cv-bulk-item]")
+            response = post_selection(client, button.get("formaction"), [obj], stage)
+            assert response.status_code == 403
+            assert list(Publisher.objects.values_list("name", flat=True)) == ["Read-only publisher"]
+            assert list(Book.objects.values_list("title", flat=True)) == ["Admitted book"]
+            assert list(BookNote.objects.values_list("note", flat=True)) == ["Unchanged note"]
+    
+        if denial == "immediate":
+            assert_denied(cv_bulk_book, BulkBookMarkView, book, {"bulk_publisher_pk": parent.pk})
+            return
+    
+        def build(suffix):
+            root = ViewSet(model=Publisher, name=f"offered_root_{suffix}", prefix=f"offered-root-{suffix}")
+            middle = ViewSet(
+                model=Book,
+                name=f"offered_book_{suffix}",
+                prefix="book",
+                parent=ParentViewSet(name=root.name, attribute="publisher"),
+            )
+            leaf = ViewSet(
+                model=BookNote,
+                name=f"offered_note_{suffix}",
+                prefix="note",
+                parent=ParentViewSet(name=middle.name, attribute="book"),
+                ancestor_policy=AncestorPolicy(cascade=True, write=AncestorPermissions(nearest="change", higher="change")),
+            )
+    
+            class OfferedNoteTable(Table):
+                note = tables.Column()
+    
+            class OfferedNoteListView(BulkSelectionMixin, ListViewTableMixin, ListViewPermissionRequired):
+                cv_viewset = leaf
+                table_class = OfferedNoteTable
+                cv_bulk_actions = ("mark",)
+                cv_context_actions = ["home"]
+                cv_list_actions = []
+    
+            class OfferedNoteCardView(BulkSelectionMixin, CardListViewPermissionRequired):
+                cv_viewset = leaf
+                cv_bulk_actions = ("mark",)
+                cv_context_actions = ["home"]
+                cv_card_actions = []
+                cv_order_fields = ["note"]
+    
+            class OfferedNoteMarkView(BulkFormViewPermissionRequired):
+                cv_viewset = leaf
+                cv_key = "mark"
+                cv_path = "mark"
+                cv_permission = "change"
+                cv_cancel_keys = ["list", "card"]
+                cv_success_key = "list"
+                cv_action_label_template_code = "Mark selected"
+                cv_action_short_label_template_code = "Mark"
+    
+                def cv_form_valid(self, context):
+                    for selected in self.cv_bulk_objects:
+                        selected.note += " (marked)"
+                        selected.save(using=self.cv_get_db_alias())
+    
+            return SimpleNamespace(root=root, middle=middle, leaf=leaf, destination=OfferedNoteMarkView), [
+                root,
+                middle,
+                leaf,
+            ]
+    
+        with isolated_routes(build) as fixture:
+>           assert_denied(
+                fixture.leaf,
+                fixture.destination,
+                note,
+                {f"{fixture.root.name}_pk": parent.pk, f"{fixture.middle.name}_pk": book.pk},
+            )
+
+tests/test1/test_bulk_scope.py:589: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+vs = ViewSet(offered_note_ebb2d0f8)
+destination = <class 'tests.test1.test_bulk_scope.test_bulk_offered_action_ancestor_write_denied.<locals>.build.<locals>.OfferedNoteMarkView'>
+obj = <BookNote: Unchanged note>
+kwargs = {'offered_root_ebb2d0f8_pk': 1, 'offered_book_ebb2d0f8_pk': 1}
+
+    def assert_denied(vs, destination, obj, kwargs):
+        monkeypatch.setattr(destination, "cv_bulk_has_permission", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_bulk_check", forbidden_hook)
+        monkeypatch.setattr(destination, "cv_form_valid", forbidden_hook)
+        response = client.get(reverse(vs.get_router_name("card" if card else "list"), kwargs=kwargs))
+        assert response.status_code == 200
+>       button = soup(response).cssselect('[data-cv-bulk-action="mark"]')[0]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/test1/test_bulk_scope.py:522: IndexError
+________ test_guardian_top_level_page_and_card_state_hooks_receive_row _________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+client_guardian = <django.test.client.Client object at 0x7b6f323eb4d0>
+user_guardian = <User: user_guardian>
+cv_guardian_author = ViewSet(guardian_author)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b6f323ea3c0>
+author_douglas_adams = <Author: Douglas Adams>
+
+    @pytest.mark.django_db
+    def test_guardian_top_level_page_and_card_state_hooks_receive_row(
+        client_guardian, user_guardian, cv_guardian_author, monkeypatch, author_douglas_adams
+    ):
+        from tests.test1.app.models import Author
+        from tests.test1.app.views import GuardianAuthorUpdateView
+    
+        user_guardian_object_perm(user_guardian, cv_guardian_author, "view", author_douglas_adams)
+        calls = _spy_state(monkeypatch, GuardianAuthorUpdateView)
+        assert client_guardian.get(f"/guardian_author/{author_douglas_adams.pk}/detail/").status_code == 200
+        assert client_guardian.get("/guardian_author/card/").status_code == 200
+>       assert calls and all(type(obj) is Author and obj.pk == author_douglas_adams.pk for obj in calls)
+E       assert ([])
+
+tests/test1/test_guardian_parent_none.py:1044: AssertionError
+____________ test_core_detail_page_state_hook_receives_page_object _____________
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+client_user_author_view = <django.test.client.Client object at 0x754029921070>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x754029921520>
+author_douglas_adams = <Author: Douglas Adams>
+
+    @pytest.mark.django_db
+    def test_core_detail_page_state_hook_receives_page_object(client_user_author_view, monkeypatch, author_douglas_adams):
+        from tests.test1.app.models import Author
+        from tests.test1.app.views import AuthorUpdateView
+    
+        calls = _spy_state(monkeypatch, AuthorUpdateView)
+        assert client_user_author_view.get(f"/author/{author_douglas_adams.pk}/detail/").status_code == 200
+>       assert calls and all(type(obj) is Author and obj.pk == author_douglas_adams.pk for obj in calls)
+E       assert ([])
+
+tests/test1/test_guardian_parent_none.py:1030: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_bulk_scope.py::test_bulk_offered_action_ancestor_write_denied[immediate-review-table]
+FAILED tests/test1/test_bulk_scope.py::test_bulk_offered_action_ancestor_write_denied[immediate-execute-card]
+FAILED tests/test1/test_bulk_scope.py::test_bulk_offered_action_ancestor_write_denied[immediate-review-card]
+FAILED tests/test1/test_bulk_scope.py::test_bulk_offered_action_ancestor_write_denied[farther-review-card]
+FAILED tests/test1/test_bulk_scope.py::test_bulk_offered_action_ancestor_write_denied[immediate-execute-table]
+FAILED tests/test1/test_bulk_scope.py::test_bulk_offered_action_ancestor_write_denied[farther-review-table]
+FAILED tests/test1/test_bulk_scope.py::test_bulk_offered_action_ancestor_write_denied[farther-execute-table]
+FAILED tests/test1/test_bulk_scope.py::test_bulk_offered_action_ancestor_write_denied[farther-execute-card]
+FAILED tests/test1/test_guardian_parent_none.py::test_guardian_top_level_page_and_card_state_hooks_receive_row
+FAILED tests/test1/test_guardian_parent_none.py::test_core_detail_page_state_hook_receives_page_object
+10 failed in 2.55s

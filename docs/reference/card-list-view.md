@@ -311,15 +311,16 @@ The parent gate runs even for an actor whose own access is denied; state runs on
 A child create action to a nested Guardian create is decided by `cv_create_has_access`. The real rendering
 view is supplied only when it belongs to the target's own ViewSet; otherwise `rendering_view` is `None`.
 This same rule covers own card actions, object pages, row actions and navbar items.
-Shipped Guardian collection and create paths perform the immediate-parent check once.
-Custom `cv_has_access` overrides receive `None`. Queryset-only Guardian compositions without the parent helper
-retain delegated `cv_has_access(user, None)` after the actor check and skip the immediate parent, but check
-known higher ancestors.
+Guardian create runs declared parent gates before the hook; the default hook deliberately repeats its bounded
+immediate-parent check. Every nested Guardian link requires a signed-in, active actor before any create override.
+Custom collection `cv_has_access` overrides receive `None`. Queryset-only Guardian compositions without the
+parent helper now check their declared immediate-parent policy and known higher ancestors; their delegated
+own access and row filtering remain unchanged.
 `LinkChildColumn` in tables still renders without this permission check.
 
 Ordinary denial follows [Hide or disable inaccessible actions](inaccessible_actions.md): disabled actions have
 no usable URL. Read the [Guardian collection-link limits and configuration failures](guardian.md#parent-to-child-collection-links)
-for the remaining direct/sibling/object/filter/navigation/M2M boundaries and missing parent declarations that
+for direct-hook and parent-only limitations, unknown ancestry and missing parent declarations that
 can fail the host page during rendering.
 
 Eligible child links invoke the selected known ancestor gates before own access, with cache-dependent SQL;
@@ -341,10 +342,14 @@ Own card actions, sibling links and ordinary row actions also check target-align
 own permission and state. An earlier denial skips later hooks. Object targets receive their own object for
 permission and state; non-object targets receive `None` for own permission and the URL parent for state.
 Unknown higher levels stay unknown without shifting objects or fetching rows. A missing immediate parent
-denies a nested link, including on a view without guard state. The retained Guardian create seam on own
-ViewSet pages and the list-page rewrite remain immediate-only; card child actions and navbar child items
-do not use that exception. Cancel through `GuardianParentPermissionMixin` also remains immediate-only.
-See [Link consumer migration](../migrating-1.0.md#eight-consumer-changes-in-stage-3a) and
+denies a nested link, including on a view without guard state. Own card create actions use the resolved URL
+parent; child card actions use the row their URL is built from. Both check all known declared higher gates
+before the create hook, including M2M pages with an explicit route parent, without following child relations.
+Navbar child items already used this aligned ancestry. Each action follows its actual target without key-based
+correction. Guardian Cancel also checks known higher gates; its parent-only non-create branch omits only
+`cv_has_access`, retaining actor, ancestor and state checks. See
+[the parent-only limitation](guardian.md#parent-only-non-create-limitation),
+[Link consumer migration](../migrating-1.0.md#link-access-hooks) and
 [the narrowed hook meaning](../migrating-1.0.md#link-access-hooks). URL construction is not an access proof;
 [full request authorization](nested.md#visible-links-and-buttons) remains authoritative.
 

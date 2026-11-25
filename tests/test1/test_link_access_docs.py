@@ -245,13 +245,30 @@ def test_reference_pages_state_the_narrowed_meaning():
                 "ambiguous M2M own child denies",
             ),
         ),
-        ("reference/action_enabled.md", "## The `obj` Parameter", ("nested list",)),
+        (
+            "reference/action_enabled.md",
+            "## The `obj` Parameter",
+            (
+                "nested list",
+                "Cancel (core and Guardian) alone retains",
+                "Higher ancestors still come only from guard state",
+            ),
+        ),
         (
             "reference/navbar.md",
             "## Labels, access and empty output",
             ("link check", "parent gate, own access, state hook"),
         ),
-        ("reference/card-list-view.md", "## Child ViewSet Actions", ("cv_create_has_access",)),
+        (
+            "reference/card-list-view.md",
+            "## Child ViewSet Actions",
+            (
+                "cv_create_has_access",
+                "Own card create actions use the resolved URL parent",
+                "child card actions use the row their URL is built from",
+                "Both check all known declared higher gates before the create hook",
+            ),
+        ),
         (
             "faq.md",
             "### Gate surrounding markup by permission",

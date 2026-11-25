@@ -181,11 +181,15 @@ def test_core_cancel_parent_and_bulk_return_guidance():
         "Own permission still receives the target's own object, or `None` for a collection",
         "state receives that own object or the URL parent respectively",
         "Higher ancestors come only from guard state",
-        "GuardianParentPermissionMixin` retains its immediate-parent-only path",
-        "queryset-only Guardian Cancel retains its immediate skip but checks known higher ancestors",
+        "Guardian object/list/create Cancel check known ancestors",
+        "queryset-only Guardian Cancel now checks the declared immediate-parent policy "
+        "as well as known higher ancestors",
+        "parent-only non-create branch of `GuardianParentPermissionMixin` omits `cv_has_access`, "
+        "including custom overrides",
+        "but checks actor, known higher ancestors, immediate parent and state",
     ):
         assert phrase in bulk
-    assert "Core Cancel alone retains the `cv_get_parent_object` hook" in state
+    assert "Cancel (core and Guardian) alone retains the `cv_get_parent_object` hook" in state
     assert "custom-hook exceptions propagate" in state
 
 

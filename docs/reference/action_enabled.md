@@ -2,7 +2,8 @@
 
 `cv_action_enabled` is a state gate beside permission. Package link consumers check permission first and skip
 state after denial, as listed under [Enforcement Points](#enforcement-points). Calling this hook directly does
-not grant permission.
+not grant permission. A direct state call is independent of package permission admission: it can return `True`
+even when a link is denied by actor or permission gates.
 The two hooks answer different questions:
 
 | Hook | Question |
@@ -66,7 +67,7 @@ own-ViewSet links use the resolved guard state. The immediate and known higher a
 target's declared ancestry; unknown levels stay unknown and are not fetched. A missing immediate parent denies
 a nested link without calling state, even on a custom or non-CRUD view without guard state.
 
-Core Cancel alone retains the `cv_get_parent_object` hook for its immediate parent, including nested object
+Cancel (core and Guardian) alone retains the `cv_get_parent_object` hook for its immediate parent, including nested object
 targets. Guarded requests reuse the resolved parent without a query; unguarded views retain the existing
 lookup. A missing built-in parent row means unavailable; custom-hook exceptions propagate. Higher ancestors
 still come only from guard state. Move parent annotations needed by ordinary create controls to the parent
@@ -105,15 +106,19 @@ class PersonCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, Cre
 The `cv_action_enabled` flag is injected into the template context by the rendering
 infrastructure.
 Context, parent, sibling and child buttons, view-key context/table actions, own/child card actions, navbar
-items, core Cancel and the bulk toolbar use the shared permission-first check. Known ancestor gates precede
+items, core/Guardian Cancel and the bulk toolbar use the shared permission-first check. Known ancestor gates precede
 own access and state. A permission denial skips the state hook and leaves the context flag
 `cv_action_enabled=True`, meaning not evaluated; the permission result still hides or disables the control.
 The `cv_context_has_permission` filter checks ancestors and own permission but never evaluates state; it can
-return true for an action that state would disable. The retained Guardian create seam and list rewrite use
-only the immediate parent, while child buttons, card child actions and navbar child items use known higher
-ancestors too, even on the create target's own ViewSet page. Cancel through `GuardianParentPermissionMixin`
-retains its immediate-parent-only path. Queryset-only Guardian links and Cancel retain their immediate skip
-but gain known higher gates. See [Link consumer migration](../migrating-1.0.md#eight-consumer-changes-in-stage-3a).
+return true for an action that state would disable. All known-parent Guardian create controls and Guardian
+Cancel check declared immediate and known higher gates; queryset-only Guardian links and Cancel now check
+the declared immediate policy too. Nested Guardian actor admission and parent gates run before any create
+override. The default create hook deliberately repeats its bounded immediate-parent check and never evaluates
+state itself. Parent-only non-create Guardian Cancel omits `cv_has_access`, including overrides, but keeps
+actor, ancestor and state checks; ordinary links keep their own hook and its
+[documented limitation](guardian.md#parent-only-non-create-limitation). No state adapter resolves a parent from
+a page object: ordinary consumers use supplied ancestry, while Cancel retains the parent hook above.
+See [Link consumer migration](../migrating-1.0.md#link-access-hooks).
 
 **Request enforcement (plain views)** — `CrudViewPermissionRequiredMixin.has_permission()`
 calls `cv_get_action_object()` then `cv_action_enabled()`. Returning `False` causes

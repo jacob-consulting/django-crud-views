@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.51"
 current_phase_name: Remove retained Guardian link exceptions - stage 3b
-current_plan: 5
+current_plan: 6
 status: executing
-stopped_at: Completed 06.51-04-PLAN.md
-last_updated: "2026-11-25T19:07:24.505Z"
+stopped_at: Completed 06.51-05-PLAN.md
+last_updated: "2026-11-25T19:26:54.353Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.51 plan 04 complete; five retired state adapters removed with twelve-entry replacement inventory; required selections pass 128/111/193/128
-state_head: 8c1aab05ea5146958e29513c165139c456bddfc8
+last_activity_desc: Phase 06.51 plan 05 complete; 45 reversible matrix deltas and 444 measured cost scenarios; matrix1197/cost468 pass with immutable historical evidence
+state_head: 00f3ddd3a835ed3b9dec97d0344a7beed69ccf39
 progress:
   total_phases: 58
   completed_phases: 56
   total_plans: 315
-  completed_plans: 312
+  completed_plans: 313
 milestone_name: milestone
 ---
 
@@ -33,12 +33,19 @@ See: .planning/PROJECT.md (updated 2026-11-25)
 ## Current Position
 
 Phase: 06.51 (Remove retained Guardian link exceptions - stage 3b) — EXECUTING
-Current Plan: 5
+Current Plan: 6
 Total Plans in Phase: 7
 Status: executing
-Last activity: 2026-11-25 — Phase 06.51 plan 04 complete; five retired state adapters removed with twelve-entry replacement inventory; required selections pass 128/111/193/128
+Last activity: 2026-11-25 — Phase 06.51 plan 05 complete; 45 reversible matrix deltas and 444 measured cost scenarios; matrix1197/cost468 pass with immutable historical evidence
 
-Next: Continue plan 06.51-05 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+Next: Continue plan 06.51-06 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+
+### Phase 06.51 plan 05 — 2026-11-25
+
+- Completed AC-7 in `0653a907`/`453159be`: 45 measured rendering deltas with decision-backed before/after values, all 1,178 keys and request/page outcomes preserved, both historical reconstruction hashes verified. The entire stage3a cost receipt and its 276 historical keys remain immutable and independent of live pins.
+- Required selections pass **1,197** matrix tests, **444** cost measurements and **468** complete cost tests. The 444 scenarios retain 276 old coordinates plus 168 create/Cancel controls; only six comparable guarded Guardian Cancel cost rows change. Raw XML SHA256 `647f3dcf…ae565` and working-source/runtime identities are recorded. Source layout without `.planning`/`.git` passes **445 with 23 expected receipt-audit skips**; all runtime scenarios run. No production edit, full suite, recorder/version matrix, install or browser certification.
+- Task commits `7fc9a5d7`, `0653a907`, `ac711985`, `453159be`; immediate SUMMARY `00f3ddd3` precedes tracking. Both RED targets failed the intended assertions and passed machine/semantic validation. Current corruption tests reject damaged rows, XML SQL/events/identities and provenance, and a changed current pin cannot reinterpret history. Scoped Ruff/format/diff and preservation checks pass.
+- ROADMAP accepted 5/7 and its stale dotted progress row was reconciled. STATE advanced once from plan 5 to 6, with one metric and three decisions recorded; global unscoped percentage stays unset. Only SDK state.json next.reason/updated_at changes are restored after exact snapshot/hash checks. Four deliverables classify as automated. No phase.complete, push, PR, merge or issue closure ran.
 
 ### Phase 06.51 plan 04 — 2026-11-25
 
@@ -2116,6 +2123,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.51 P02 | 11min | 2 tasks | 14 files |
 | Phase 06.51 P03 | 7min | 2 tasks | 9 files |
 | Phase 06.51 P04 | 6min | 2 tasks | 8 files |
+| Phase 06.51 P05 | 15min | 2 tasks | 6 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2517,6 +2525,9 @@ Recent decisions affecting current work:
 - [Phase 06.51]: D-40/D-41: replace state normalization observations with explicit aligned parents and unknown-parent denial; ordinary links perform no parent lookup.
 - [Phase 06.51]: D-42: preserve the unguarded single-parent lookup through actual Cancel, with request-resolved object identity retained for guarded links.
 - [Phase 06.51]: D-45/D-48: remove five state adapters only after Cancel migration; retain public create-hook FK normalization and all request-side action-object handling.
+- [Phase 06.51]: AC-7: retain all 1178 coordinates, original metadata and request outcomes; record 45 actual rendering deltas with applicable D-45/D-46/D-47/D-50 decisions.
+- [Phase 06.51]: AC-7: preserve full historical receipt bytes and validate its frozen payload/276 keys independently of current scenarios and pins.
+- [Phase 06.51]: D-48/D-49: measure higher Cancel gates and default create duplicate immediate invocation independently of SQL; retain grant reuse and bounded parent lookup.
 
 ### Pending Todos
 
@@ -2622,6 +2633,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T19:07:16.022Z
-Stopped at: Completed 06.51-04-PLAN.md
+Last session: 2026-11-25T19:26:45.399Z
+Stopped at: Completed 06.51-05-PLAN.md
 Resume file: None

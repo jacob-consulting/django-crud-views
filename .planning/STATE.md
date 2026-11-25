@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.50"
 current_phase_name: "Move remaining link consumers to the shared link check - stage 3a (#412)"
-current_plan: 6
+current_plan: 9
 status: executing
-stopped_at: Completed 06.50-05-PLAN.md; remaining plans pending
-last_updated: "2026-11-25T06:42:02.605Z"
+stopped_at: Completed 06.50-06-PLAN.md; next 06.50-09 then 07 then 08
+last_updated: "2026-11-25T06:59:27.956Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.50 plan 05 complete; plan 06 next
-state_head: f0dec08df26d9ba0dacea199acd29ff52a8045a3
+last_activity_desc: Phase 06.50 plan 06 complete; dependency order continues with 09 then 07 then 08
+state_head: a7c5c331e9ebb7c545d1d580681c9844abf4627d
 progress:
   total_phases: 57
   completed_phases: 55
   total_plans: 308
-  completed_plans: 304
+  completed_plans: 305
 milestone_name: milestone
 ---
 
@@ -33,12 +33,18 @@ See: .planning/PROJECT.md (updated 2026-11-24)
 ## Current Position
 
 Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — EXECUTING
-Current Plan: 6
+Current Plan: 9
 Total Plans in Phase: 9
-Status: Executing Phase 06.50 — 5/9 plans complete
-Last activity: 2026-11-25 — Phase 06.50 plan 05 complete; plan 06 next
+Status: Executing Phase 06.50 — 6/9 plans complete
+Last activity: 2026-11-25 — Phase 06.50 plan 06 complete; plan 09 next, then 07 and 08
 
 Next: $gsd-execute-phase 06.50
+
+### Phase 06.50 plan 06 — 2026-11-25
+
+- Added 272 real consumer-grid cases across 20 supported route shapes, including exact Guardian exceptions, fresh actors, repeated public decisions, configuration failures and own-key denial. Only one frozen matrix cell changes: Guardian M2M detail-to-update filter True to False for missing parent change permission (D-41/D-44 behavior 2); the other 1,177 cells and all request outcomes remain unchanged.
+- Task checks pass 619 consumer and 1,180 matrix tests; final combined run passes 1,799 in 14.60s. Ruff/format/diff checks pass. All 34 original goldens and five before artifacts remain identical. CHANGE-LEDGER records exact test rewrites, all retained calls, H1 renderer observations and L1 documentation boundaries. Original completeness assertions are AST-identical; reconstructed fixture bytes match the frozen SHA256. No production source changed.
+- Task commits bc2d9e94 and 7c6c5262; immediate SUMMARY a7c5c331 and coverage metadata 0749d97f. Five deliverables classify as automated coverage. ROADMAP accepted 6/9 and its stale dotted table row was reconciled. STATE's numeric advance was reconciled to dependency-next plan 09, then 07 and 08; unscoped global progress refresh remains unset. Original state.json bytes and configuration hashes preserved. Requirements are intentionally empty. No phase-completion action ran.
 
 ### Phase 06.50 plan 05 — 2026-11-25
 
@@ -2046,6 +2052,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.50 P03 | 9min | 2 tasks | 5 files |
 | Phase 06.50 P04 | 9 min | 2 tasks | 7 files |
 | Phase 06.50 P05 | 8 min | 2 tasks | 4 files |
+| Phase 06.50 P06 | 14 min | 2 tasks | 4 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2424,6 +2431,8 @@ Recent decisions affecting current work:
 - [Phase 06.50]: Follow D-44 with _link_permission only; preserve the target-lookup exception boundary and retained Guardian create seam.
 - [Phase 06.50]: Follow D-42 for both Cancel target shapes; keep hook parent distinct from target-own object and preserve Guardian-owned overrides.
 - [Phase 06.50]: Bulk toolbar uses aligned guard state directly; existing Cancel-derived bulk return wiring preserves origin/fallback/success priority.
+- [Phase 06.50]: One Guardian M2M update filter cell changes True to False under D-41/D-44; all other 1177 frozen cells and all 34 original goldens remain unchanged.
+- [Phase 06.50]: Reconstruct the complete original matrix from explicit before values and a fixed digest without historical Git or planning-file dependencies; final source comparison remains owned by plan 08.
 
 ### Pending Todos
 
@@ -2528,6 +2537,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T06:41:55.711Z
-Stopped at: Completed 06.50-05-PLAN.md; remaining plans pending
+Last session: 2026-11-25T06:59:21.253Z
+Stopped at: Completed 06.50-06-PLAN.md; next 06.50-09 then 07 then 08
 Resume file: None

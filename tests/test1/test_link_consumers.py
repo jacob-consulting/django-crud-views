@@ -495,7 +495,8 @@ def test_view_key_and_table_row_order(composition, surface, key, outcome, monkey
                 assert state.call_args.args[1] is state_obj
         assert not any(
             f'from "app_{model}"' in query["sql"].lower()
-            for query in queries for model in ("publisher", "book", "booknote")
+            for query in queries
+            for model in ("publisher", "book", "booknote")
         )
 
 
@@ -553,9 +554,11 @@ def test_view_key_direct_actor_is_explicit(actor_input, monkeypatch):
         state = Mock(return_value=True)
         monkeypatch.setattr(ns.note.Update, "cv_action_enabled", state)
         denied = _user("denied_view_key")
-        kwargs = {} if actor_input == "omitted" else {
-            "user": {"none": None, "allowed": actor, "denied": denied}[actor_input]
-        }
+        kwargs = (
+            {}
+            if actor_input == "omitted"
+            else {"user": {"none": None, "allowed": actor, "denied": denied}[actor_input]}
+        )
         if actor_input in {"omitted", "none"}:
             with pytest.raises(AttributeError, match="is_authenticated"):
                 page.cv_get_context("update", obj=world.note, **kwargs)
@@ -595,3 +598,31 @@ def test_guardian_list_view_key_requires_guard(case, user_guardian, cv_guardian_
         own.assert_not_called()
         state.assert_not_called()
     create.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("problem", ["ancestry", "permission", "operation", "auth_database"])
+def test_view_key_configuration_errors_remain_observable(problem, monkeypatch):
+    with isolated_routes(consumer_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.note, "Detail", actor, world)
+        assert page.cv_get_context("not_registered", obj=world.note, user=actor) == {}
+        own, state = Mock(return_value=True), Mock(return_value=True)
+        monkeypatch.setattr(ns.note.Update, "cv_has_access", own)
+        monkeypatch.setattr(ns.note.Update, "cv_action_enabled", state)
+        if problem == "ancestry":
+            monkeypatch.setattr(ns.note.vs.parent, "name", "not_registered")
+        elif problem == "permission":
+            ns.note.vs.ancestor_policy = AncestorPolicy(
+                cascade=True, actions={"update": AncestorPermissions(nearest="missing", higher="view")}
+            )
+        elif problem == "operation":
+            # An unrecognized operation marker reaches the existing configuration error.
+            monkeypatch.setattr(ns.note.Update, "_cv_ancestor_operation", "unmapped", raising=False)
+        else:
+            monkeypatch.setattr(actor._state, "db", "other")
+        with pytest.raises(ImproperlyConfigured):
+            page.cv_get_context("update", obj=world.note, user=actor)
+        own.assert_not_called()
+        state.assert_not_called()

@@ -584,14 +584,14 @@ def test_page_action_object_follows_request_definition(helpers, data, django_ass
 
 @pytest.mark.django_db
 def test_context_controls_keep_core_targets_on_their_code_path(core_targets, data, monkeypatch):
-    actor = _user("page_core_controls", (Publisher, "view"))
+    actor = _user("page_core_controls", (Publisher, "view"), (Publisher, "change"))
     view = _page_view(core_targets.Detail, actor, data.penguin, data.book)
     parent = view.cv_get_parent_object()
-    for target, key, own_obj, state_obj in (
-        (core_targets.List, "home", None, parent),
-        (core_targets.List, "list", None, parent),
-        (core_targets.Detail, "detail", data.book, data.book),
-        (core_targets.Create, "create", None, parent),
+    for target, key, own_obj in (
+        (core_targets.List, "home", None),
+        (core_targets.List, "list", None),
+        (core_targets.Detail, "detail", data.book),
+        (core_targets.Create, "create", None),
     ):
         with monkeypatch.context() as patch:
             gate = parent_spy(patch, target)

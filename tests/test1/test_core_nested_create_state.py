@@ -274,10 +274,11 @@ def test_m2m_create_uses_explicit_url_parent_without_inferring_from_child(monkey
     )
     assert GenreCreateView._cv_action_enabled_for_context(None, genre) is False
     assert calls == []
-    from django.contrib.auth.models import Permission
+    from django.contrib.auth.models import Permission, User
 
     view = _guarded_button_view(GenreListView, publisher_b)
-    view.request.user.user_permissions.add(Permission.objects.get(codename="add_genre"))
+    view.request.user.user_permissions.add(*Permission.objects.filter(codename__in=["view_genre", "add_genre"]))
+    view.request.user = User.objects.get(pk=view.request.user.pk)
     data = view.cv_get_context("create", obj=genre, user=view.request.user)
     assert data["cv_access"] is True
     assert data["cv_action_enabled"] is True

@@ -42,7 +42,7 @@ from crud_views.lib.check import (
     CheckUnknownAttributes,
 )
 from crud_views.lib.exceptions import CrudViewError, ParentViewSetError, ViewSetKeyFoundError, cv_raise
-from crud_views.lib.link_access import _link_access, _link_ctx, _page_action_object
+from crud_views.lib.link_access import _known_link_ancestors, _link_access, _link_ctx
 
 from ..settings import crud_views_settings
 from .action_menu import (
@@ -550,10 +550,10 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     @classmethod
     def _cv_page_link_ancestors(cls, rendering_view, page_obj):
-        """Private seam, not an extension point: None keeps the page's own code path.
+        """Private seam, not an extension point: None requests target-aligned known ancestors.
 
-        A tuple supplies ancestors to the link check. In stage 1 only a nested Guardian create
-        returns a tuple; every other target keeps the page's existing permission and state calls.
+        An explicit tuple, including an empty tuple, supplies the link check's ancestors instead.
+        The nested Guardian create override retains its immediate-parent-only handling until stage 3b.
         """
         return None
 
@@ -569,13 +569,12 @@ class CrudView(metaclass=CrudViewMetaClass):
 
         The request's cv_get_action_object defines obj: the view's own object, the immediate parent for a
         nested view without an own object (list or create), otherwise None. Package links pass that same
-        object, except that a nested list receives None on a view that did not run the ancestor guard.
+        object. A nested target with no known immediate parent is denied without calling state.
 
-        Requests and links decided by the private link check call this only after permission passes:
-        child context buttons, card child actions, object navbar child items and every link to a nested
-        Guardian create. Other context buttons, row actions, parent buttons, sibling buttons and non-child
-        card actions still evaluate state independently of permission. Overrides must not rely on
-        permission having passed.
+        Requests and migrated link consumers call this only after permission passes. This includes context,
+        parent, sibling and child buttons, actions by view key in context and table rows, and card actions.
+        Retained Guardian paths may still use their state adapters. Direct calls to this public hook do
+        not check permission, so overrides must not assume that every caller has authorized the action.
         """
         return True
 
@@ -934,15 +933,19 @@ class CrudView(metaclass=CrudViewMetaClass):
         context = self.cv_get_view_context(object=obj)
 
         known = cls._cv_page_link_ancestors(self, obj)
-        if known is not None:
-            dict_kwargs.update(_link_ctx(_link_access(cls, user, None, known)))
-        else:
-            # State stays independent of permission except for the nested Guardian create above.
-            dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
-                user, _page_action_object(self, cls, obj), self
+        if known is None:
+            known = _known_link_ancestors(cls, self)
+        dict_kwargs.update(
+            _link_ctx(
+                _link_access(
+                    cls,
+                    user,
+                    obj if cls.cv_object else None,
+                    known,
+                    rendering_view=self if self.cv_viewset is cls.cv_viewset else None,
+                )
             )
-            if cls.cv_has_access(user, obj if cls.cv_object else None):
-                dict_kwargs.update(cv_access=True)
+        )
 
         # prepare dict
         data = cls.cv_get_dict(context=context, **dict_kwargs)

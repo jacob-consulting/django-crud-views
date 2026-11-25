@@ -23,8 +23,9 @@ The assertions are about attribution and prohibited work, never a query budget:
 * warm requests still query permission rows inside the guard: no persistent access cache hides the cost;
 * top-level requests do no ancestor work at all.
 
-A supplementary set renders the leaf list with its create button: the button's immediate-parent helper adds one
-gate on the guard-resolved parent and no lookup, separate from the guard. Set ``CV_ANCESTOR_COSTS_DIR`` to write
+A supplementary set renders the leaf list with its create button: migrated core actions gate the known ancestors
+selected by the target's cascade mode, while retained Guardian create handling gates only the immediate parent.
+Both reuse guard-resolved objects without a lookup, separate from the guard. Set ``CV_ANCESTOR_COSTS_DIR`` to write
 one JSON file per depth/provider (06.18-COSTS.md is generated from those files). Cold cells clear the ViewSet
 vocabulary, ContentType and ``_VOCAB_CACHE`` caches before one request; the warm cell repeats it immediately.
 """
@@ -171,8 +172,10 @@ def _assert_nested_cell(chain, mode, measured, *, helper_gates=0):
         assert [gate for gate in measured["gates"] if gate[1] in higher] == []
     assert len(set(measured["gates"])) == len(measured["gates"])  # no identical gate twice in one request
     rest_gates = [gate for gate in measured["gates"] if gate[0] == "rest"]
-    assert len(rest_gates) == helper_gates
-    assert all(gate[1] == ancestors_outer_first[-1] for gate in rest_gates)  # helpers: immediate parent only
+    assert len(rest_gates) == (len(helper_gates[mode]) if helper_gates else 0)
+    assert [gate[1] for gate in rest_gates] == (
+        [ancestors_outer_first[index] for index in helper_gates[mode]] if helper_gates else []
+    )
     # ancestor rows are read only by the guard (no legacy parent gate or second resolution in the local path)
     ancestor_tables = {vs.model._meta.db_table for vs in chain.viewsets[:-1]}
     assert not ancestor_tables & set(measured["rest_by_table"])
@@ -255,11 +258,14 @@ def test_cost_matrix_against_the_pre_edit_baseline(depth, provider, probe):
 @pytest.mark.parametrize("provider", PROVIDERS)
 @pytest.mark.parametrize("depth", DEPTHS)
 def test_render_helper_work_is_separate_from_the_guard(depth, provider, probe):
-    """Supplementary: the nested list renders its create button. Guardian's immediate-parent helper adds one gate
-    on the guard-resolved parent (no lookup, no farther ancestor); the core create button adds no ancestor gate."""
+    """Core create gates the selected known levels; retained Guardian create gates only the nearest.
+    Renderer gates reuse guard objects without lookup and remain distinct from request guard work."""
     with _chain_context(depth, provider) as chain:
         chain.leaf_vs.get_all_views()["list"].cv_context_actions = ["create"]
-        helper_gates = 1 if provider == "guardian" else 0
+        helper_gates = {
+            "full": [-1] if provider == "guardian" else list(range(depth)),
+            "nearest": [-1],
+        }
         _run_matrix(
             chain, depth, provider, probe, label_suffix="-list-with-create-button", helper_gates=helper_gates,
             ops={"list"},

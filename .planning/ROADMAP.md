@@ -2500,12 +2500,11 @@ Plans:
 **Commit constraints:** D-45 and D-50 land together; D-46 lands with or before D-45; D-49 lands with or before the D-48 Cancel move; state adapters are removed only after Cancel's last caller moves. Keep D-40 rendering-view identity, D-41 ancestor alignment and D-42 Cancel parent-hook behavior.
 **Acceptance:** Carry all eight issue criteria into planning, including real-page and unchanged-request pairs, actor and override cases, colliding button keys, three-level nesting, Cancel actor/argument/configuration behavior, and direct nested-create `cv_has_access` denial. Explain every changed matrix cell by decision, preserve the original stage-3a cost receipt, list rewritten tests and removed/kept helpers with reasons, and update query-count pins. Extend the existing `Link access hooks` Breaking entry together with `docs/migrating-1.0.md` and `docs/reference/guardian.md`; remove descriptions of exceptions this stage ends.
 **Out of scope:** Request gates, authorization responses and traces; Guardian list filtering; top-level Guardian link rules; the stage-3c public function; and stage 3a's other exclusions. No new exception or request-response change without a maintainer decision. Planner discretion is limited to commit order within the constraints, placement of actor/composition checks, test selection and query-count pins.
-**Plans:** 0/7 plans executed
+**Plans:** 1/7 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 06.51-01-PLAN.md
-- [ ] TBD (run $gsd-plan-phase 06.51 to break down)
+- [x] 06.51-01-PLAN.md
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.51-02-PLAN.md
@@ -2668,5 +2667,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.48. Private link access and narrowed hook objects (#407) | 9/9 | Complete | 2026-11-23 |
 | 06.49. Reuse Guardian object grants across navigation checks (#385) | 5/5 | Complete | 2026-11-24 |
 | 06.50. Move remaining link consumers to the shared link check - stage 3a (#412) | 9/9 | Complete | 2026-11-25 |
-| 06.51. Remove retained Guardian link exceptions - stage 3b (#413) | 0/TBD | Not started | - |
+| 06.51. Remove retained Guardian link exceptions - stage 3b (#413) | 1/7 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

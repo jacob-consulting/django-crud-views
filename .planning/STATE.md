@@ -3,19 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.51"
 current_phase_name: Remove retained Guardian link exceptions - stage 3b
-current_plan: Not started
+current_plan: 2
 status: executing
-stopped_at: Phase 06.51 plan review converged; ready to execute
-last_updated: "2026-11-25T18:03:08.957Z"
+stopped_at: Completed 06.51-01-PLAN.md
+last_updated: "2026-11-25T18:27:56.738Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.51 planning converged in 5 review cycles; 7 plans in 6 waves; Fable, Grok and Gemini report no unresolved actionable concerns
-state_head: 061abbdc23301b362faa1ac5279f7a87ab45d5f6
+last_activity_desc: Phase 06.51 plan 01 complete; nested Guardian actor and parent admission; 915 final focused tests pass
+state_head: d4df96702ebeae32424849fabaaa3e1fbabcf56f
 progress:
   total_phases: 58
   completed_phases: 56
   total_plans: 315
-  completed_plans: 308
-  percent: 97
+  completed_plans: 309
 milestone_name: milestone
 ---
 
@@ -33,13 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-25)
 
 ## Current Position
 
-Phase: 06.51 (Remove retained Guardian link exceptions - stage 3b) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.51 (Remove retained Guardian link exceptions - stage 3b) — EXECUTING
+Current Plan: 2
 Total Plans in Phase: 7
-Status: Ready to execute
-Last activity: 2026-11-25 — Phase 06.51 planning converged in 5 review cycles; 7 plans in 6 waves; Fable, Grok and Gemini report no unresolved actionable concerns
+Status: executing
+Last activity: 2026-11-25 — Phase 06.51 plan 01 complete; nested Guardian actor and parent admission; 915 final focused tests pass
 
-Next: `$gsd-execute-phase 06.51` on `feature/link-access-check-design`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+Next: Continue plan 06.51-02 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+
+### Phase 06.51 plan 01 — 2026-11-25
+
+- Completed D-46/D-49 nested Guardian actor and create-parent admission, then D-47 queryset-only parent policy. Real parent-page true/false overrides, anonymous object grants on a plain host, direct default hooks and five MRO compositions are covered. Request methods, own access, row filtering and checker lifetime remain unchanged.
+- Before production edits the matrix/cost selection passed **1,462**; raw matrix hash `4c29f3f4…2b14`, canonical reconstruction `317e5e7c…7d8e`, full original metadata and historical receipt identities/keys are frozen in MIGRATION-EVIDENCE. Original matrix and receipt bytes are unchanged. Default create measures two helper calls but still 2 cold-direct permission queries and 0 warmed-render queries.
+- Task 1 selections pass 549/82/247/9; post-commit tracer gate passes **887**. Task 2 passes **739**; final combined six-module run passes **915 in 13.58s**. Ruff and format pass. No full suite, recorder/version matrix, browser or dependency installation ran. Later seam/rewrite, Guardian Cancel, adapter, matrix/cost and documentation migrations remain assigned to plans 02–07.
+- TDD RED/GREEN commits: `9730a9f6`, `1ba80f18`, `d4fa0651`, `8221004a`; both RED reports machine-validated and semantically checked. SUMMARY committed immediately as `d4df9670` before tracking. ROADMAP accepted 1/7; its stale dotted progress row and obsolete TBD placeholder were reconciled. STATE's initial “Not started” plan marker was made numeric before one successful SDK advancement to plan 2; one metric and three decisions were recorded without duplication. Unscoped global percent remains unset; configuration/state.json snapshots remain preserved. Formal requirements are empty; phase completion, reviews, PR/merge and D-39 issue closure remain with the orchestrator.
 
 ### Phase 06.50 completion — 2026-11-25
 
@@ -2085,6 +2091,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.50 P09 | 14min | 2 tasks | 5 files |
 | Phase 06.50 P07 | 8min | 2 tasks | 9 files |
 | Phase 06.50 P08 | 22min | 2 tasks | 11 files |
+| Phase 06.51 P01 | 11min | 2 tasks | 9 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2474,6 +2481,9 @@ Recent decisions affecting current work:
 - [Phase 06.50]: Keep historical stage-2 savings separate from stage-3a zero-delta navbar and changed consumer costs.
 - [Phase 06.50]: Preserve direct request denial and mutation assertions when migrating renderer expectations under approved behaviors 1/2/4.
 - [Phase 06.50]: All nine plans executed; keep phase In Progress pending independent review and verification, with recorder-enabled and full-matrix certification unexecuted.
+- [Phase 06.51]: D-46 and D-49 land before create-seam removal: nested actors and the immediate parent gate precede every create override.
+- [Phase 06.51]: D-47 delegates queryset-only links through the existing class-step chain; own access and row filtering remain untouched.
+- [Phase 06.51]: Count the default create hook parent-helper invocations separately from permission SQL: two helpers, cold direct=2 queries, warmed render=0.
 
 ### Pending Todos
 
@@ -2579,6 +2589,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T18:03:00.371Z
-Stopped at: Phase 06.51 plan review converged; ready to execute
-Resume file: .planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-REVIEWS.md
+Last session: 2026-11-25T18:27:19.156Z
+Stopped at: Completed 06.51-01-PLAN.md
+Resume file: None

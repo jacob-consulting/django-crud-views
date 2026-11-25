@@ -98,15 +98,25 @@ def test_renamed_create_button_uses_url_parent(client, monkeypatch, book_hitchhi
 
 def _guarded_button_view(cls, parent, obj=None):
     """Real authorized guard state for button positives; direct adapter fixtures stay independent."""
+    from types import SimpleNamespace
+
     from tests.test1.app.models import Book, Publisher
     from tests.test1.test_ancestor_authorization import _user
     from tests.test1.test_ancestor_helpers import _bound
 
-    actor = _user("core_button_state", (Publisher, "view"), (Publisher, "change"), (Publisher, "add"), (Book, "add"))
+    actor = _user(
+        "core_button_state",
+        (Publisher, "view"),
+        (Publisher, "change"),
+        (Publisher, "add"),
+        (Book, "view"),
+        (Book, "add"),
+    )
     kwargs = {cls.cv_viewset.parent.get_pk_name(): parent.pk}
     if obj is not None:
         kwargs["pk"] = obj.pk
     view = _bound(cls, actor, **kwargs)
+    view.request.resolver_match = SimpleNamespace(url_name=cls.cv_viewset.get_router_name(cls.cv_key))
     assert view._cv_ancestor_guard() is None
     return view
 

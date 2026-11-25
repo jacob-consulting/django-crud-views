@@ -830,7 +830,7 @@ def test_parent_button_reaches_nested_guardian_create_through_the_check(helpers,
                     assert ctx["cv_access"] is book_create_allowed
                     gates[helpers.note.Create].assert_not_called()
                 else:
-                    # L1 / D-34: stage 3 may change this overwrite; stage 1 keeps the page's own create answer.
+                    # L1 / D-34 remains through 3a: the page's own create answer still overwrites the button.
                     assert ctx["cv_access"] is not book_create_allowed
                     gates[helpers.note.Create].assert_called_once_with(actor, data.book)
                 assert ctx["cv_url"] == _url(
@@ -842,7 +842,7 @@ def test_parent_button_reaches_nested_guardian_create_through_the_check(helpers,
 @pytest.mark.parametrize("sibling_key", ["list", "create"])
 @pytest.mark.parametrize("create_grant", [False, True])
 def test_sibling_button_under_create_key_gets_page_create_result(pn, data, monkeypatch, sibling_key, create_grant):
-    # L1 / D-34: stage 3 may change the override; stage 1 preserves the page's create answer and sibling URL.
+    # L1 / D-34 remains through 3a: retain the page's create answer and sibling URL.
     parent_none._strict_policy(pn, monkeypatch)
     actor = parent_none._child_page_actor(pn, data.penguin, data.book, create_grant=create_grant)
     target = pn.free_genre_vs.get_view_class(sibling_key)
@@ -860,7 +860,11 @@ def test_sibling_button_under_create_key_gets_page_create_result(pn, data, monke
     assert contexts[0]["cv_access"] is create_grant
     assert contexts[0]["cv_url"] == parent_none._url(pn.free_genre_vs, sibling_key, data.penguin.pk)
     page_gate.assert_called_once_with(actor, data.penguin)
-    sibling_gate.assert_not_called()
+    if sibling_key == "list":
+        # The actual list target now passes its parent gate before the retained rewrite.
+        sibling_gate.assert_called_once_with(actor, response.context["view"]._cv_ancestor_state.parent)
+    else:
+        sibling_gate.assert_not_called()  # The create seam still returns ().
     sibling_create.assert_not_called()
 
 

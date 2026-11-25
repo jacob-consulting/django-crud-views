@@ -346,3 +346,92 @@ def test_child_button_keeps_unknown_higher_level_and_url_parent(monkeypatch):
         assert result["cv_access"] is True
         state.assert_called_once_with(actor, world.book)
         assert state.call_args.args[1] is world.book
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("shape", ["create", "form", "non-crud", "resource", "direct"])
+def test_context_without_guard_on_reachable_shapes_denies(shape, monkeypatch):
+    from types import SimpleNamespace
+
+    from django.views.generic import TemplateView
+
+    from crud_views.lib.resource import ResourceViewMixin
+    from crud_views.lib.view import CrudView
+    from crud_views.lib.views import DetailView, ListView
+    from crud_views.lib.viewset import ParentViewSet
+    from tests.test1.test_ancestor_helpers import _bound
+    from tests.test1.test_ancestor_resources import TopFile
+
+    def build(suffix):
+        ns, routed = consumer_routes(suffix)
+        ns.Report = type(
+            "ConsumerReport",
+            (CrudView, TemplateView),
+            {
+                "cv_viewset": ns.book.vs,
+                "cv_key": "report",
+                "cv_path": "report",
+                "cv_object": False,
+            },
+        )
+        resource_vs = ViewSet(model=TopFile, name=f"consumerfile{suffix}", parent=ParentViewSet(name=ns.pub.vs.name))
+        ns.Resource = type("ConsumerResource", (ResourceViewMixin, DetailView), {"cv_viewset": resource_vs})
+        ns.ResourceList = type("ConsumerResourceList", (ResourceViewMixin, ListView), {"cv_viewset": resource_vs})
+        return ns, [*routed, resource_vs]
+
+    with isolated_routes(build) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        source = {
+            "create": ns.book.Create,
+            "form": ns.book.Bulk,
+            "non-crud": ns.Report,
+            "resource": ns.Resource,
+            "direct": ns.book.Detail,
+        }[shape]
+        target = ns.ResourceList if shape == "resource" else ns.book.List
+        kwargs = {source.cv_viewset.parent.get_pk_name(): world.pub.pk}
+        obj = TopFile(key="known-file") if shape == "resource" else world.book if shape == "direct" else None
+        if obj is not None:
+            kwargs["pk"] = obj.pk
+        page = _bound(source, actor, **kwargs)
+        page.request.resolver_match = SimpleNamespace(url_name=source.cv_viewset.get_router_name(source.cv_key))
+        own, state = Mock(return_value=True), Mock(return_value=True)
+        monkeypatch.setattr(target, "cv_has_access", own)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        monkeypatch.setattr(page, "cv_get_parent_object", Mock(side_effect=AssertionError("button parent lookup")))
+        with CaptureQueriesContext(connection) as queries:
+            result = ContextButton(key="home", key_target="list").get_context(page.cv_get_view_context(object=obj))
+        assert result["cv_access"] is False
+        assert result["cv_action_enabled"] is True
+        own.assert_not_called()
+        state.assert_not_called()
+        assert len(queries) == 0
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("protected_higher", [False, True])
+def test_guardian_child_create_anonymous_exception_only_without_higher_gate(protected_higher, monkeypatch):
+    from django.contrib.auth.models import AnonymousUser
+
+    with isolated_routes(lambda s: consumer_routes(s, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.book, "Detail", actor, world)
+        ns.book.vs.ancestor_policy = AncestorPolicy(provider="none")
+        ns.pub.vs.ancestor_policy = AncestorPolicy(provider="guardian" if protected_higher else "none")
+        page.request.user = AnonymousUser()
+        create = Mock(wraps=ns.note.Create.cv_create_has_access)
+        state = Mock(return_value=True)
+        monkeypatch.setattr(ns.note.Create, "cv_create_has_access", create)
+        monkeypatch.setattr(ns.note.Create, "cv_action_enabled", state)
+        result = ChildContextButton(key="new", child_name=ns.note.vs.name, child_key="create").get_context(
+            page.cv_get_view_context(object=world.book)
+        )
+        assert result["cv_access"] is (not protected_higher)
+        if protected_higher:
+            create.assert_not_called()
+            state.assert_not_called()
+        else:
+            create.assert_called_once_with(page.request.user, None, world.book)
+            state.assert_called_once_with(page.request.user, world.book)

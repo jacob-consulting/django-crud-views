@@ -1,13 +1,13 @@
 from typing import Any
 
-from django.http import Http404
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from pydantic import BaseModel, Field
 
+from ..ancestors import _resolved_ancestor
 from ..check import CheckExpression, CheckWarningExpression
 from ..exceptions import ViewSetNotFoundError
-from ..link_access import _known_link_ancestors, _link_access, _link_ctx, _page_action_object
+from ..link_access import _known_link_ancestors, _link_access, _link_ctx
 from ..settings import crud_views_settings
 from .action_menu import cv_is_inline_keys
 from .context import ViewContext
@@ -175,25 +175,21 @@ class ParentContextButton(ContextButton):
         # get the url for the target key
         dict_kwargs.update(cv_url=cv_url)
 
-        # The looked-up parent is an object target's own object and an input to its URL.
-        # A target without an own object receives None for own access.
-        parent_obj = None
-        if hasattr(context.view, "cv_get_parent_object"):
-            try:
-                parent_obj = context.view.cv_get_parent_object()
-            except (Http404, KeyError):
-                parent_obj = None
-
+        parent_obj = _resolved_ancestor(context.view, parent.name)
         known = cls._cv_page_link_ancestors(context.view, parent_obj)
-        if known is not None:
-            dict_kwargs.update(_link_ctx(_link_access(cls, context.view.request.user, None, known)))
-        else:
-            # Other targets keep independent state-before-permission evaluation.
-            dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
-                context.view.request.user, _page_action_object(context.view, cls, parent_obj), context.view
+        if known is None:
+            known = _known_link_ancestors(cls, context.view)
+        dict_kwargs.update(
+            _link_ctx(
+                _link_access(
+                    cls,
+                    context.view.request.user,
+                    parent_obj if cls.cv_object else None,
+                    known,
+                    rendering_view=context.view if cls.cv_viewset is context.view.cv_viewset else None,
+                )
             )
-            if cls.cv_has_access(context.view.request.user, parent_obj if cls.cv_object else None):
-                dict_kwargs.update(cv_access=True)
+        )
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 
@@ -238,7 +234,18 @@ class ChildContextButton(ContextButton):
             "cv_icon_action": child_vs.icon_header,
         }
 
-        dict_kwargs.update(_link_ctx(_link_access(cls, context.view.request.user, None, (context.object,))))
+        known = _known_link_ancestors(cls, context.view, immediate_parent=context.object)
+        dict_kwargs.update(
+            _link_ctx(
+                _link_access(
+                    cls,
+                    context.view.request.user,
+                    None,
+                    known,
+                    rendering_view=context.view if cls.cv_viewset is context.view.cv_viewset else None,
+                )
+            )
+        )
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 
@@ -293,15 +300,19 @@ class SiblingContextButton(ContextButton):
         }
 
         known = cls._cv_page_link_ancestors(context.view, None)
-        if known is not None:
-            dict_kwargs.update(_link_ctx(_link_access(cls, context.view.request.user, None, known)))
-        else:
-            # Other targets keep independent state-before-permission evaluation.
-            dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
-                context.view.request.user, _page_action_object(context.view, cls, None), context.view
+        if known is None:
+            known = _known_link_ancestors(cls, context.view)
+        dict_kwargs.update(
+            _link_ctx(
+                _link_access(
+                    cls,
+                    context.view.request.user,
+                    None,
+                    known,
+                    rendering_view=context.view if cls.cv_viewset is context.view.cv_viewset else None,
+                )
             )
-            if cls.cv_has_access(context.view.request.user, None):
-                dict_kwargs.update(cv_access=True)
+        )
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 

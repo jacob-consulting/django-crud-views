@@ -45,6 +45,57 @@ CONSUMER_SHAPES = [
 ]
 
 
+@pytest.mark.django_db
+def test_guardian_actor_tracer(monkeypatch):
+    """The real parent page cannot expose create through an override after parent denial."""
+    from guardian.shortcuts import assign_perm
+
+    with isolated_routes(lambda suffix: consumer_routes(suffix, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world, allowed=False)
+        button = ChildContextButton(key="new", child_name=ns.book.vs.name, child_key="create", label_mode="both")
+        monkeypatch.setattr(ns.pub.Detail, "cv_context_buttons", [button])
+        monkeypatch.setattr(ns.pub.Detail, "cv_context_actions", ["new"])
+        create, state = Mock(return_value=True), Mock(return_value=True)
+        monkeypatch.setattr(ns.book.Create, "cv_create_has_access", create)
+        monkeypatch.setattr(ns.book.Create, "cv_action_enabled", state)
+        destination = reverse(
+            ns.book.vs.get_router_name("create"), kwargs={ns.book.vs.parent.get_pk_name(): world.pub.pk}
+        )
+        host = reverse(ns.pub.vs.get_router_name("detail"), kwargs={"pk": world.pub.pk})
+        client = Client()
+        client.force_login(actor)
+        response = client.get(host)
+        assert response.status_code == 200
+        assert not html.fromstring(response.content).xpath("//*[@href=$url]", url=destination)
+        create.assert_not_called()
+        state.assert_not_called()
+        assert client.get(destination).status_code == 403
+        state.assert_not_called()
+
+        assign_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+        fresh = User.objects.get(pk=actor.pk)
+        client.force_login(fresh)
+        response = client.get(host)
+        assert response.status_code == 200
+        assert html.fromstring(response.content).xpath("//*[@href=$url]", url=destination)
+        create.assert_called_once()
+        assert create.call_args.args[0].pk == fresh.pk
+        assert create.call_args.args[1] is None  # A child control crosses ViewSets.
+        assert create.call_args.args[2] is response.context["view"].object
+        assert client.get(destination).status_code == 200
+
+        create.reset_mock()
+        create.return_value = False
+        state.reset_mock()
+        response = client.get(host)
+        assert response.status_code == 200
+        assert not html.fromstring(response.content).xpath("//*[@href=$url]", url=destination)
+        create.assert_called_once()
+        state.assert_not_called()
+        assert client.get(destination).status_code == 200
+
+
 def grid_routes(suffix, composition):
     """Use a Resource leaf to render a parent link to the existing three-level target."""
     from crud_views.lib.resource import ResourceViewMixin

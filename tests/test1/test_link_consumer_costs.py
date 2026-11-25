@@ -568,6 +568,12 @@ def test_cost_receipts():
     validate_cost_receipts(*read_cost_receipts())
 
 
+def test_historical_cost_receipts_are_independent_of_current_pins(monkeypatch):
+    monkeypatch.setattr(__name__ + ".consumer_cost_pin", lambda *args: {})
+    monkeypatch.setattr(__name__ + ".SCENARIOS", [])
+    validate_cost_receipts(*read_cost_receipts())
+
+
 @pytest.mark.parametrize(
     "damage", ["missing-row", "missing-category", "lost-before-hash", "wrong-pin", "missing-navbar"]
 )

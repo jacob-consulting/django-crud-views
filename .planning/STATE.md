@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.50"
 current_phase_name: "Move remaining link consumers to the shared link check - stage 3a (#412)"
-current_plan: 3
+current_plan: 4
 status: executing
-stopped_at: Completed 06.50-02-PLAN.md; remaining plans pending
-last_updated: "2026-11-25T06:05:16.083Z"
+stopped_at: Completed 06.50-03-PLAN.md; remaining plans pending
+last_updated: "2026-11-25T06:16:27.571Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.50 plan 02 complete; plan 03 next
-state_head: f0cb55ae066f6bdec0c9a8b7065d50a695658e6b
+last_activity_desc: Phase 06.50 plan 03 complete; plan 04 next
+state_head: 9dbffb8313be7f38ce7fd3db86c517f9b910bbf2
 progress:
   total_phases: 57
   completed_phases: 55
   total_plans: 308
-  completed_plans: 301
+  completed_plans: 302
 milestone_name: milestone
 ---
 
@@ -33,12 +33,18 @@ See: .planning/PROJECT.md (updated 2026-11-24)
 ## Current Position
 
 Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — EXECUTING
-Current Plan: 3
+Current Plan: 4
 Total Plans in Phase: 9
-Status: Executing Phase 06.50 — 2/9 plans complete
-Last activity: 2026-11-25 — Phase 06.50 plan 02 complete; plan 03 next
+Status: Executing Phase 06.50 — 3/9 plans complete
+Last activity: 2026-11-25 — Phase 06.50 plan 03 complete; plan 04 next
 
 Next: $gsd-execute-phase 06.50
+
+### Phase 06.50 plan 03 — 2026-11-25
+
+- Navbar owner and child items use aligned known ancestry and the shared check. D-55's same-page Guardian child-create navbar denial and retained context allowance are pinned with exact hook/gate counts, positive control and independent request 403. Cross-ViewSet Guardian identities, holes and same-ViewSet-or-None create-hook arguments are covered; no Guardian/request implementation changed.
+- Task 1 RED received RED_EVIDENCE_OK before GREEN. Task 2 is a test-only public-state observation migration with recorded pre-migration failures. Required checks passed 116 permission/startup, 275 rendering and 5 no-work tests; final five-module run passed 567. All 120 isolated numeric pins remain unchanged. Ruff/format/diff checks pass, all before artifacts match, and the sole protected-source difference remains plan 02's authorized ancestor-cost renderer file.
+- Task commits 22727e9f, 6c4ba800 and 61b099ad; immediate SUMMARY commit 9dbffb83 precedes tracking. ROADMAP accepted 3/9 and its stale dotted table row was reconciled. STATE advanced to plan 4; unscoped progress-refresh decline left global percentage unset. Duplicate own metrics/decisions from repeated SDK close-out were reconciled; original state.json bytes and both config hashes match. Unrelated user files remain untouched. No phase-completion action ran.
 
 ### Phase 06.50 plan 02 — 2026-11-25
 
@@ -2025,6 +2031,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.49 P05 | 20 min | 3 tasks | 9 files |
 | Phase 06.50 P01 | 12min | 2 tasks | 8 files |
 | Phase 06.50 P02 | 10min | 2 tasks | 7 files |
+| Phase 06.50 P03 | 9min | 2 tasks | 5 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2398,6 +2405,8 @@ Recent decisions affecting current work:
 - [Phase 06.50]: Retain top-level object target None-object hook semantics; nested targets without the nearest known parent deny before own/state.
 - [Phase 06.50]: View-key and card consumers use D-40/D-41 target-aligned gates; retain explicit Guardian create seam tuples and list rewrite.
 - [Phase 06.50]: Direct None-actor failures remain delegated to protected gates; do not substitute request.user.
+- [Phase 06.50]: Navbar child items use the full known chain on every page under D-55; Guardian context-create seam and rewrite remain unchanged.
+- [Phase 06.50]: All 120 isolated navbar numeric pins remain unchanged; plan 09 retains final cross-consumer after-cost reconciliation.
 
 ### Pending Todos
 
@@ -2502,6 +2511,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T06:05:09.629Z
-Stopped at: Completed 06.50-02-PLAN.md; remaining plans pending
-Resume file: .planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-03-PLAN.md
+Last session: 2026-11-25T06:16:20.999Z
+Stopped at: Completed 06.50-03-PLAN.md; remaining plans pending
+Resume file: .planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-04-PLAN.md

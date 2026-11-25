@@ -126,7 +126,7 @@ def test_navbar_isolated_costs(
         for target, hook in [
             (ns.detail, "cv_has_access"),
             (ns.target, "_cv_link_permission"),
-            (ns.detail, "_cv_action_enabled_for_rendering"),
+            (ns.detail, "cv_action_enabled"),
             (ns.target, "cv_action_enabled"),
         ]:
             spy = Mock(wraps=getattr(target, hook))
@@ -152,7 +152,7 @@ def test_navbar_isolated_costs(
             spies[1].assert_called_once_with(current_actor, None, resolved_owner, rendering_view=None)
             assert spies[1].call_args.args[1] is None
             assert spies[1].call_args.args[2] is resolved_owner
-            spies[2].assert_called_once_with(current_actor, resolved_owner, view)
+            spies[2].assert_called_once_with(current_actor, resolved_owner)
             assert spies[2].call_args.args[1] is resolved_owner
             spies[3].assert_called_once_with(current_actor, resolved_owner)
             assert spies[3].call_args.args[1] is resolved_owner
@@ -199,7 +199,6 @@ def test_nonparticipant_complete_response_bytes_and_queries(options, monkeypatch
         monkeypatch.setattr(navbar, "_build", build)
         forbidden = Mock(side_effect=AssertionError("nonparticipant admission"))
         monkeypatch.setattr(ns.view, "cv_has_access", forbidden)
-        monkeypatch.setattr(ns.view, "_cv_action_enabled_for_rendering", forbidden)
         monkeypatch.setattr(ns.view, "cv_action_enabled", forbidden)
         results = []
         for base in ("navbar/without.html", "navbar/base.html"):
@@ -223,7 +222,6 @@ def test_unconsumed_or_modal_has_zero_incremental_cost(mode, monkeypatch):
         forbidden = Mock(side_effect=AssertionError("unexpected navbar work"))
         monkeypatch.setattr(navbar, "_build", forbidden)
         monkeypatch.setattr(ns.view, "cv_has_access", forbidden)
-        monkeypatch.setattr(ns.view, "_cv_action_enabled_for_rendering", forbidden)
         monkeypatch.setattr(ns.view, "cv_action_enabled", forbidden)
         ns.view.cv_extends_template = "navbar/without.html"
         ns.view.cv_modal = mode == "modal"

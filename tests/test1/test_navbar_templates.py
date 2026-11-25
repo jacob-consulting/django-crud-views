@@ -217,7 +217,6 @@ def test_omitted_consumers_and_modal_direct_includes_do_no_work(modal, monkeypat
     monkeypatch.setattr(navbar, "_build", forbidden)
     with navbar_routes(owner_routes) as ns:
         monkeypatch.setattr(ns.view, "cv_has_access", forbidden)
-        monkeypatch.setattr(ns.view, "_cv_action_enabled_for_rendering", forbidden)
         monkeypatch.setattr(ns.view, "cv_action_enabled", forbidden)
         view, data = view_context(ns, modal=modal)
         assert render("Page without navigation", data) == "Page without navigation"
@@ -238,7 +237,7 @@ def test_all_hidden_renders_exactly_empty_and_is_cached(denial, monkeypatch):
         if denial == "empty":
             ns.bar.items = []
         else:
-            method = "cv_has_access" if denial == "access" else "_cv_action_enabled_for_rendering"
+            method = "cv_has_access" if denial == "access" else "cv_action_enabled"
             monkeypatch.setattr(ns.view, method, lambda *args: False)
         view, data = view_context(ns)
         for name in TEMPLATES:
@@ -341,7 +340,7 @@ def test_zero_one_many_and_partial_links_have_static_navigation_semantics(hidden
             method = (
                 ("_cv_link_permission" if item.child else "cv_has_access")
                 if reason == "access"
-                else ("cv_action_enabled" if item.child else "_cv_action_enabled_for_rendering")
+                else "cv_action_enabled"
             )
             monkeypatch.setattr(target, method, lambda *args, **kwargs: False)
         # A nonparticipating destination avoids confusing request permission with
@@ -443,7 +442,6 @@ def test_real_response_omits_all_navbar_work_without_consumers_or_in_custom_moda
         ns.view.cv_modal = modal
         ns.view.cv_extends_template = "navbar/without.html"
         monkeypatch.setattr(ns.view, "cv_has_access", forbidden)
-        monkeypatch.setattr(ns.view, "_cv_action_enabled_for_rendering", forbidden)
         monkeypatch.setattr(ns.view, "cv_action_enabled", forbidden)
         custom_modal = (
             IDENTITY + ITEMS + "".join('{% include "crud_views/tags/' + name + '.html" %}' for name in TEMPLATES)

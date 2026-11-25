@@ -1,117 +1,100 @@
 ---
-last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
-last_mapped_at: 2026-11-24
+last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
+last_mapped_at: 2026-11-25
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-24
+**Analysis Date:** 2026-11-25
 
 ## Languages
 
 **Primary:**
-- Python >=3.12 (tested on 3.12–3.15) - five installable Django apps under `src/`: `crud_views`, `crud_views_object_detail`, `crud_views_workflow`, `crud_views_polymorphic`, and `crud_views_guardian`
-- Django templates with Bootstrap 5 markup - theme templates under `src/crud_views/templates/`
+- Python >=3.12: five Django apps under `src/`; library requirements and Python classifiers are in `pyproject.toml`.
 
 **Secondary:**
-- JavaScript - browser-side enhancement scripts shipped as Django static files; the optional Node >=20 Vitest/jsdom harness is development-only (`package.json`, `vitest.config.js`, `vitest.integration.config.js`)
-- YAML - CI, task automation, deployment, docs, and dependency update configuration (`.github/workflows/`, `taskfile.yaml`, `render.yaml`, `mkdocs.yml`, `.github/dependabot.yml`)
+- Django templates/HTML and CSS: `src/*/templates/` and `src/crud_views/static/crud_views/css/`.
+- JavaScript: native browser enhancements in `src/crud_views/static/crud_views/js/` and object-detail tabs in `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`.
+- Markdown documentation built through `mkdocs.yml`.
 
 ## Runtime
 
 **Environment:**
-- CPython >=3.12; nox covers 3.12, 3.13, 3.14, and 3.15 (`noxfile.py`)
-- Django >=4.2; CI/nox matrix covers Django 4.2, 5.2, and 6.0 (`pyproject.toml`, `noxfile.py`); Django 4.2 is skipped on Python 3.14+
-- Bulk action flows are implemented inside the core Python package and use the existing Django ORM and django-tables2 dependencies; no additional runtime dependency is required (`src/crud_views/lib/bulk/`)
-- Demo runs Python 3.13 on Render (`render.yaml`)
+- Reusable Django distribution version 0.30.0, shipping core, object-detail, workflow, polymorphic, and Guardian apps (`pyproject.toml`).
+- Python classifiers: 3.12, 3.13, 3.14, 3.15; Django classifiers: 4.2, 5.2, 6.0 (`pyproject.toml`). The dependency range `django>=4.2.0` is broader than those explicit compatibility targets.
+- `noxfile.py` configures Python 3.12–3.15 × Django 4.2/5.2/6.0, skipping Django 4.2 on Python 3.14/3.15. Configured sessions do not prove every lane passed; this mapping inspects source without running environments.
+- Developer setup defaults to Python 3.12 (`taskfile.yaml`); Render demo selects Python 3.13 (`render.yaml`).
+- Node >=20 is development-only (`package.json`); JavaScript CI selects Node 22 (`.github/workflows/js.yml`). Node is not needed to serve the Python package.
 
 **Package Manager:**
-- uv for Python environments, installs, and builds (`taskfile.yaml`); nox uses its uv backend (`noxfile.py`)
-- npm for JavaScript checks (`package-lock.json`)
-- Lockfiles: `package-lock.json` present; no `uv.lock` present. Docs and CI dependencies are hash-pinned in `docs/requirements.txt` and `.github/requirements/ci.txt`; runtime Python dependencies use lower bounds in `pyproject.toml`
+- uv creates environments and installs/builds Python packages (`taskfile.yaml`); nox uses the uv backend (`noxfile.py`). No uv version pin is declared there.
+- No root Python lockfile detected. Library dependencies use ranges in `pyproject.toml`; CI tooling and docs use hash-pinned `.github/requirements/ci.txt` and `docs/requirements.txt`.
+- npm has committed `package-lock.json`; CI installs it with `npm ci --ignore-scripts` (`.github/workflows/js.yml`).
 
 ## Frameworks
 
 **Core:**
-- Django >=4.2 - generic class-based views and reusable app integration (`src/crud_views/`)
-- Django app package group: core CRUD views plus object detail, workflow, polymorphic, and guardian extensions (`src/crud_views*/apps.py`)
-- Pydantic >=2.2.1 - ViewSet/settings and typed configuration (`src/crud_views/lib/viewset/`, `src/crud_views/lib/settings.py`)
-- django-tables2 >=2.5.3 and django-filter >=21.1 - table rendering and filtering (`pyproject.toml`, `src/crud_views/lib/views/mixins.py`)
-- django-crispy-forms >=2.0 with crispy-bootstrap5 >=2023.10 - Bootstrap form rendering (`src/crud_views/lib/crispy/`)
-- Bootstrap 5-compatible JavaScript adapters - host-supplied UI library components; the package ships adapter code, not Bootstrap itself; the stock modal adapter derives its hide/hidden event names from the registered data prefix, so a fork such as CoreUI works without a custom adapter (PR #405) (`src/crud_views/static/crud_views/js/adapters.js`)
-- jQuery is required for the optional formset enhancement; the script reports a missing library and does not initialize formsets without it. The development harness declares jQuery ~3.7.1 (`src/crud_views/static/crud_views/js/formset.js`, `package.json`)
+- Django >=4.2.0: generic class-based views, ORM, auth, forms, templates, sessions, system checks and commands (`pyproject.toml`, `src/crud_views/lib/views/`).
+- Pydantic >=2.2.1: ViewSet/configuration models (`src/crud_views/lib/viewset/__init__.py`, `src/crud_views/lib/settings.py`).
+- Bootstrap 5 theme templates ship under `src/crud_views/templates/`; the example host supplies Bootstrap 5.3.3 in `examples/bootstrap5/project/templates/project/base.html`.
+- Browser adapters are shipped in `src/crud_views/static/crud_views/js/adapters.js`; UI framework assets belong to the host. Formset enhancement requires host-supplied jQuery (`src/crud_views/static/crud_views/js/formset.js`).
 
 **Testing:**
-- pytest, pytest-django, pytest-xdist, pytest-cov, pytest-mock, pytest-random-order - Python test suite (`pyproject.toml` test extra)
-- nox - Python/Django compatibility matrix and installed-distribution checks (`noxfile.py`)
-- Vitest ^5.1.0, jsdom ^31.0.0, and jQuery ~3.7.1 - static JavaScript unit and integration tests (`package.json`, `vitest.config.js`, `vitest.integration.config.js`)
+- pytest, pytest-django, pytest-cov, pytest-xdist, pytest-mock, pytest-random-order, nox: test extras in `pyproject.toml`; Django setup in `tests/test1/conftest.py`.
+- Vitest ^5.1.0, jsdom ^31.0.0, jQuery ~3.7.1: `package.json`; unit and separate integration configurations in `vitest.config.js` and `vitest.integration.config.js`. jsdom is not real-browser verification.
+- lxml, cssselect, polib and django-pipeline support markup, translation, and integration assertions (`pyproject.toml`).
 
 **Build/Dev:**
-- hatchling - wheel and sdist backend; package allowlist in `pyproject.toml`, verified by `scripts/check_dist.py`
-- Ruff >=0.17,<0.18 - lint and format, 120-character lines (`pyproject.toml`)
-- pre-commit, bump-my-version, go-task - hooks, version updates, and task commands (`.pre-commit-config.yaml`, `pyproject.toml`, `taskfile.yaml`)
-- MkDocs with awesome-pages and pymdown-extensions; Read the Docs theme (`mkdocs.yml`)
+- Hatchling builds the five apps; explicit wheel and sdist allowlists are in `pyproject.toml`, validated by `scripts/check_dist.py`.
+- Ruff >=0.17,<0.18: 120-character lines, double quotes, format/lint configuration in `pyproject.toml`. `.pre-commit-config.yaml` pins v0.17.1 and runs both ruff-check and ruff-format.
+- bump-my-version synchronizes `pyproject.toml`, `src/crud_views/__init__.py`, `docs/index.md`, and `README.md`.
+- Go Task command aliases in `taskfile.yaml`; schema version 3 is declared, a Task binary version is not pinned.
+- MkDocs >=1.6.1, awesome-pages >=2.10.1, mkdocs-get-deps >=0.2.0, pymdown-extensions >=10.0 are development extras (`pyproject.toml`); docs use the Read the Docs theme (`mkdocs.yml`).
 
 ## Key Dependencies
 
 **Critical:**
-- `python-box` >=6.0.2 and `typing-extensions` >=4.7.1 - core runtime support (`pyproject.toml`)
-- The five Django apps are built into one distribution; `object_detail` ships in the base install, while `workflow`, `polymorphic`, `ordered`, and `guardian` dependency groups are opt-in extras (`pyproject.toml`)
-- Django, Pydantic, django-tables2, django-filter, django-crispy-forms, crispy-bootstrap5 - core view and form API (`pyproject.toml`)
-- Bulk selection/action support composes Django ORM transactions and querysets, django-tables2 selection columns, Django messages, and the existing Crispy form/theme layer (`src/crud_views/lib/bulk/__init__.py`)
-- Bulk toolbar variants use a dedicated template leaf and existing semantic class registry. Read the variant from each destination's `cv_action_variant` (inherited default `secondary`), and configure `bulk:primary`, `bulk:secondary`, `bulk:tertiary`, or `bulk:danger`; all stock values are `btn btn-primary`. Review Confirm retains the separate `form:submit` contract (`src/crud_views/templates/crud_views/tags/button/bulk.html`, `src/crud_views/lib/button_classes.py`, `docs/reference/bulk_actions.md`)
-- Bulk toolbar buttons are built in Python (cached `cv_bulk_buttons`, evaluated in `get_context_data` so presentation errors surface) and offered only for destinations that pass `cv_has_access`/`cv_action_enabled` for the viewer; no extra runtime dependency (PR #404, `src/crud_views/lib/bulk/__init__.py`)
-- Bulk label mode uses the lazy `bulk` location floor (default `both`) in `CRUD_VIEWS_LABEL_MODE_DEFAULTS`. Mode-specific class keys such as `bulk:danger:icon` use the effective mode after missing/disabled icons fall back to `label`; the leaf reuses form tooltip, hidden-label, and host-icon conventions (`src/crud_views/lib/bulk/__init__.py`, `src/crud_views/lib/view/label_mode.py`, `src/crud_views/templates/crud_views/tags/button/bulk.html`)
-- Manage pages and formsets consume six optional `--cv-*` CSS custom properties with Bootstrap and literal fallbacks; the package does not define these tokens globally (`src/crud_views/static/crud_views/css/manage.css`, `src/crud_views/static/crud_views/css/formset.css`, `docs/reference/theme.md`)
-- The classic `bulk.js` script enhances current-page table/card selection through native form controls, without jQuery, a UI adapter, a network request, or persistent storage; the core JavaScript settings include it (`src/crud_views/static/crud_views/js/bulk.js`, `src/crud_views/lib/settings.py`, `docs/reference/javascript.md`)
-- Stock table sorting uses django-tables2 bound-column effective ordering for icons and `aria-sort`, including default and prefixed ordering; preserve the existing `table.thead` override for custom header semantics (`src/crud_views/templates/crud_views/table/bootstrap5.html`, `docs/reference/list_view.md`)
+- django-tables2 >=2.5.3 and django-filter >=21.1: tables/filter integration (`src/crud_views/lib/table/`, `src/crud_views/lib/views/mixins.py`, `pyproject.toml`).
+- django-crispy-forms >=2.0 and crispy-bootstrap5 >=2023.10: form layout/action integration (`src/crud_views/lib/crispy/`, `pyproject.toml`).
+- python-box >=6.0.2 and typing-extensions >=4.7.1: runtime support (`pyproject.toml`, `src/crud_views/lib/settings.py`).
+- Object detail ships with the base distribution; dependency extras enable workflow, polymorphic, ordered and Guardian integrations (`pyproject.toml`).
+- Bulk actions compose existing ORM/form/table dependencies rather than adding a service or runtime package (`src/crud_views/lib/bulk/__init__.py`).
 
-**Optional extras (one app/feature group each):**
-- `workflow`: django-fsm-2 >=4.0.0 and django-fsm-2-admin >=2.0.1 (`src/crud_views_workflow/`)
-- `polymorphic`: django-polymorphic >=3.1.0 (`src/crud_views_polymorphic/`)
-- `ordered`: django-ordered-model >=3.4.3 (`src/crud_views/lib/views/action_ordered.py`)
-- `guardian`: django-guardian >=2.4 (`src/crud_views_guardian/`)
-- `all` aggregates those extras; `object_detail` is included in the distribution without an extra (`pyproject.toml`)
-- Test extras include django-pipeline for asset-pipeline integration coverage (`pyproject.toml`)
-
-**Demo infrastructure:**
-- gunicorn, whitenoise, and django-ratelimit are declared in `requirements/demo.txt`
+**Infrastructure:**
+- Optional workflow: django-fsm-2 >=4.0.0 and django-fsm-2-admin >=2.0.1 (`pyproject.toml`, `src/crud_views_workflow/lib/`).
+- Optional polymorphic: django-polymorphic >=3.1.0 (`pyproject.toml`, `src/crud_views_polymorphic/lib/`).
+- Optional ordered: django-ordered-model >=3.4.3 (`pyproject.toml`, `src/crud_views/lib/views/action_ordered.py`).
+- Optional guardian: django-guardian >=2.4 (`pyproject.toml`, `src/crud_views_guardian/lib/`). The `all` extra aggregates these four groups.
+- django-pipeline is a test extra, not a mandatory runtime dependency; opt-in bundling uses `src/crud_views/lib/pipeline.py`.
+- Demo-only Gunicorn >=23, WhiteNoise >=6.9, django-ratelimit >=4.1 (`requirements/demo.txt`); Pygments is an examples extra (`pyproject.toml`).
 
 ## Configuration
 
 **Environment:**
-- Library configuration is Django settings with `CRUD_VIEWS_*` names, parsed by `CrudViewsSettings` in `src/crud_views/lib/settings.py`; includes theme/template and manage-view options
-- Compatible theme native data-API attributes use the process-level prefix registry in `src/crud_views/lib/data_prefix.py`, defaulting to `bs`; a theme registers its prefix during `AppConfig.ready()` through the public `crud_views.lib.register_data_prefix` API. This is startup configuration, not a `CRUD_VIEWS_*` setting or runtime theme switch
-- Bootstrap-compatible themes can independently register the JavaScript global namespace and tooltip placement defaults during `AppConfig.ready()` with `register_js_namespace()` and `register_tooltip_placements()` (`src/crud_views/lib/js_config.py`, `src/crud_views/lib/__init__.py`). Defaults are `bootstrap` and `{}`; the three values are rendered on `#cv-config` and consumed by the adapter (`src/crud_views/templates/crud_views/tags/cv_config.html`, `src/crud_views/static/crud_views/js/adapters.js`)
-- Breadcrumb styling uses the existing button-class registry keys `breadcrumb:list`, `breadcrumb:item`, and `breadcrumb:item-active`. Theme startup registration and project `CRUD_VIEWS_BUTTON_CLASSES` overrides share the existing class lookup (`src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/breadcrumb.html`, `docs/reference/theme.md`)
-- Tests set `CV_ACCESS_RECORD_REQUESTS` from `noxfile.py`
-- Local Cloudflare tunnel setup uses a local `dev/.env` file; `task cf` checks that it exists before Docker Compose starts. `dev/.env.example` is tracked; environment-file contents are not read (`taskfile.yaml`, `dev/docker-compose.yaml`)
-- Demo uses `DJANGO_SETTINGS_MODULE=project.settings_demo` and a generated `SECRET_KEY` (`render.yaml`)
+- Configure host Django settings; `src/crud_views/lib/settings.py` reads `CRUD_VIEWS_*` attributes into a module-level Pydantic model. No package-specific dotenv loader is used.
+- Key controls include `CRUD_VIEWS_EXTENDS`, manage visibility/access tracing, strictness, theme/button/icon values, ancestor permissions, and `CRUD_VIEWS_ASSETS_BUNDLED` (`src/crud_views/lib/settings.py`, `docs/reference/settings.md`).
+- Host apps, auth/messages/request context processors, crispy Bootstrap pack and tables2 template are demonstrated by `examples/bootstrap5/project/settings.py` and `tests/test1/conftest.py`.
+- Demo reads `SECRET_KEY` and `RENDER_EXTERNAL_HOSTNAME`; Render selects `DJANGO_SETTINGS_MODULE=project.settings_demo` (`examples/bootstrap5/project/settings_demo.py`, `render.yaml`).
+- `dev/.env.example` exists for optional tunnel configuration; its contents are not inspected (`taskfile.yaml`).
 
 **Build:**
-- `pyproject.toml` defines dependencies and wheel/sdist file inclusion; `scripts/check_dist.py` checks the sdist allowlist
-- `noxfile.py`, `taskfile.yaml`, `codecov.yml`, `.sonarcloud.properties`, `mkdocs.yml`, and `vitest.config.js` configure development and CI tooling
-- Demo deployment dependencies are separated into `requirements/demo.txt`; CI, docs, and package publishing dependencies are hash-pinned in `.github/requirements/ci.txt` and `docs/requirements.txt`
-- Package version is `0.30.0`; bump-my-version synchronizes `pyproject.toml`, `src/crud_views/__init__.py`, `docs/index.md`, and `README.md`. Wheel contents contain five `src/` apps; sdist uses an explicit allowlist (`pyproject.toml`)
+- `pyproject.toml`: metadata, dependencies/extras, Hatchling, Ruff, pytest, coverage threshold 88, and version bump configuration.
+- `noxfile.py`: installed-distribution verification, recorder-off/on suites, targeted crispy floor sessions, manual Pydantic 2.2.1 report-floor session.
+- `mkdocs.yml`, `docs/requirements.txt`, `.readthedocs.yaml`: docs configuration; Read the Docs selects Python 3.12, docs CI selects 3.13 (`.github/workflows/docs.yml`).
+- `package.json`, `vitest.config.js`, `vitest.integration.config.js`: development-only JS harness, separate from distribution building.
 
 ## Platform Requirements
 
 **Development:**
-- uv, go-task, Python 3.12+, and Node >=20 for JavaScript tests (`taskfile.yaml`, `pyproject.toml`, `package.json`); JavaScript CI selects Node 22 (`.github/workflows/js.yml`)
-- Cross-repo Acme example sync tooling in `superpowers/prompts/acme-example-sync/` (`drift.py` is standard-library Python that reads git blob ids from sibling theme checkouts and compares them to `baseline.json`; `PROMPT.md` drives the sync). Development-only, not shipped in the wheel
-- Optional Docker for Cloudflare tunnel in `dev/docker-compose.yaml`
-- Example application lives in `examples/bootstrap5/` and uses SQLite (`examples/bootstrap5/project/settings.py`)
+- Python >=3.12; uv/Task for the task workflow (`pyproject.toml`, `taskfile.yaml`). Node/npm are needed only for JS checks (`package.json`).
+- SQLite in-memory databases are configured for Python tests (`tests/test1/conftest.py`); broad test runs use xdist per `CLAUDE.md` and `noxfile.py`.
+- GNU gettext tools support translation extraction/compilation tasks (`taskfile.yaml`).
+- Prefer bounded, opt-in integrations that the developer can trace and maintain, as required by `CLAUDE.md`.
 
 **Production:**
-- Package distribution to PyPI using GitHub Actions (`.github/workflows/publish.yml`)
-- Documentation hosted by Read the Docs (`.readthedocs.yaml`)
-- Public example demo hosted on Render (`render.yaml`)
-
-## Guardian Grant Reuse and Local Tooling
-
-- The optional `guardian` extra remains django-guardian >=2.4; Phase 06.49 adds no dependency or setting (`pyproject.toml`).
-- `_get_guardian_checker(user)` lazily imports Guardian and stores its checker on the caller user (`src/crud_views_guardian/lib/permissions.py`). Own-object and ancestor permission paths acquire through that helper.
-- `gsd-cli.config.json` now uses schema version 2 with per-runtime blueprints and review configuration; its minimum gsd-cli version is 1.21.0. This is repository development tooling, outside the package runtime.
+- Install into a host Django deployment, configure its database/auth/templates, and serve collected static assets (`docs/reference/assets.md`, `examples/bootstrap5/project/settings.py`).
+- Public demo uses Render, one Gunicorn worker, WhiteNoise, and ephemeral SQLite; startup migrates/seeds (`render.yaml`, `examples/bootstrap5/project/settings_demo.py`). This demo architecture is not required for consuming applications.
+- Package publication uses PyPI trusted publishing; documentation uses Read the Docs (`.github/workflows/publish.yml`, `.readthedocs.yaml`).
 
 ---
 
-*Stack analysis: 2026-11-24*
+*Stack analysis: 2026-11-25*

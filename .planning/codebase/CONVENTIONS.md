@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
-last_mapped_at: 2026-11-24
+last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
+last_mapped_at: 2026-11-25
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-24
+**Analysis Date:** 2026-11-25
 
 ## Naming Patterns
 
@@ -20,7 +20,7 @@ last_mapped_at: 2026-11-24
 - Workflow transition methods use the `wf_` prefix.
 
 **Variables / class attributes:**
-- Every `CrudView` class attribute uses the `cv_` prefix: `cv_key`, `cv_path`, `cv_success_key`, `cv_context_actions`, `cv_header_template`, `cv_icon_action`, `cv_modal_supported`.
+- Package-specific `CrudView` configuration uses the `cv_` prefix; standard Django attributes such as `template_name` and `fields` retain their names (`src/crud_views/lib/views/update.py`). Examples: `cv_key`, `cv_path`, `cv_success_key`, `cv_context_actions`, `cv_header_template`, `cv_icon_action`, `cv_modal_supported`.
 - Module-level constants are UPPER_SNAKE (`TAG`, `_REGISTRY`, `_REGISTRY_LOCK`, `GOLDEN_DIR`). Sentinels are `_NAME_UNSET = object()`.
 - Process-wide theme registration is a module scalar with a public register/get API (`src/crud_views/lib/data_prefix.py`, re-exported from `src/crud_views/lib/__init__.py`); validate the complete value before assignment. This is a startup-only setting: register from `AppConfig.ready()`, and do not build runtime theme switching or request-scoped behavior on top of it.
 - View keys match CRUD operations: `list`, `detail`, `create`, `update`, `delete`, `workflow`, `manage`.
@@ -34,7 +34,7 @@ last_mapped_at: 2026-11-24
 ## Code Style
 
 **Formatting:**
-- `ruff format` (pre-commit hook `ruff-format`, `.pre-commit-config.yaml`). Line length 120, double quotes, space indent (`pyproject.toml` `[tool.ruff]`).
+- `ruff format`; `.pre-commit-config.yaml` pins Ruff v0.17.1 and runs both `ruff-check` and `ruff-format`. Line length 120, double quotes, space indent (`pyproject.toml` `[tool.ruff]`).
 - Run `task format` / `task check`.
 
 **Linting:**
@@ -57,7 +57,7 @@ last_mapped_at: 2026-11-24
 
 **Patterns:**
 - Misconfiguration raises `django.core.exceptions.ImproperlyConfigured`, or `ValueError` in Pydantic validators with messages naming the setting and the bad value (`f"... got {value!r}"`), see `src/crud_views/lib/viewset/__init__.py`.
-- `CRUD_VIEWS_STRICT` (True in tests) makes misconfigurations raise; with it off they log a warning instead.
+- `ignore_exception` catches only its declared type: strict mode re-raises, otherwise it warns with traceback and returns the declared fallback. `CRUD_VIEWS_STRICT` defaults to DEBUG (`src/crud_views/lib/exceptions.py`). This does not suppress every validation failure: `register_label_mode_defaults` validates its complete input before mutation and always raises on invalid registration (`src/crud_views/lib/view/label_mode.py`).
 - Startup validation goes through Django system checks (`src/crud_views/checks.py`, `src/crud_views/lib/check.py`): yield `Error(id="viewset.E...", msg=...)` / `Warning` objects; check classes are Pydantic models (`CheckAttribute`, `CheckMapping`, `CheckEitherAttribute`, `CheckTemplateOrCode`).
 - Custom exceptions live in `src/crud_views/lib/exceptions.py` (for example `ViewSetKeyFoundError`).
 - Delete flow guards HTTP DELETE via `_DeleteMethodGuardMixin` and returns 405.
@@ -173,12 +173,19 @@ last_mapped_at: 2026-11-24
 - Register namespace and tooltip defaults at startup through `src/crud_views/lib/js_config.py`, publicly exported by `src/crud_views/lib/__init__.py`. Validate the entire registration before replacing state; copy placement mappings on input and output. Namespace and data prefix are independent registrations (`tests/test1/test_js_config.py`).
 - Keep `cv_config` and `cv_const_js` on the shared serialization context in `src/crud_views/templatetags/crud_views.py`. The adapter in `src/crud_views/static/crud_views/js/adapters.js` consumes the registered provider namespace and location defaults; an explicit prefix-specific placement attribute, including an empty value, takes precedence. Modal hide/hidden event names are derived from the registered data prefix (`hide.<prefix>.modal`, default `bs`) (`tests/js/adapters.test.js`, `tests/js/tooltip.test.js`).
 
-## Link Access Contract Tests
+## Link Access and Guardian Consumer Contracts
 
-- Keep the shared link decision private in `src/crud_views/lib/link_access.py`; `_link_access` evaluates permission before state and returns the closed outcome constants. Callers provide the target object and already-known ancestors explicitly. Do not cache a decision or perform ancestor lookup in these link-only helpers.
-- Protect pre-refactor behavior with the immutable 1,178-cell fixture in `tests/test1/link_access_matrix_baseline.json`. `tests/test1/test_link_access_matrix.py::test_link_matrix_cell` compares current live responses with each named frozen cell, while `::test_link_matrix_snapshot_is_complete` checks fixture completeness. Do not regenerate or edit the snapshot to accept implementation changes.
-- Put direct helper and consumer contracts in `tests/test1/test_link_access.py`: assert the callable signature, permission-before-state ordering, exact object identity passed to hooks, provider call order, no persisted decisions, and named retained denials. Use real request/client checks where behavior crosses the HTTP boundary.
-- Keep migration guidance pinned by `tests/test1/test_link_access_docs.py`. Its six tests extract heading-scoped passages and assert required hook names, migration anchors, denial cases, and reference-page guidance. When changing the published guidance, update the relevant source text and its explicit assertions together; do not rely on a broad whole-file prose snapshot.
+- Keep shared link decisions private in `src/crud_views/lib/link_access.py`. These helpers neither authorize requests, load ancestors nor store decisions. Pass the actual destination, own object and aligned known ancestors explicitly.
+- Permission precedes state: known higher levels are checked outermost first; nearest-parent/own permission then uses the target's cooperative `_cv_link_permission`; denial skips `cv_action_enabled`. For state, object views receive their own object, nested collection/create views receive the immediate parent, and top-level collection/create views receive None (`src/crud_views/lib/link_access.py`).
+- Preserve omitted-versus-None parent semantics: explicit None is an unknown parent, not permission to load a relation or reuse an unrelated resolved object (`_known_link_ancestors` in `src/crud_views/lib/link_access.py`).
+- Guardian create consumers apply parent admission before `cv_create_has_access`; true overrides cannot reopen an earlier denied parent gate. Direct nested Guardian create `cv_has_access` stays false for every actor (`src/crud_views_guardian/lib/views.py`, `src/crud_views_guardian/lib/mixins.py`, `tests/test1/test_link_access.py`).
+- Use the actual target for custom-key collisions and real list destinations. Context/child/parent/sibling buttons, cards and create controls consume aligned link eligibility (`src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/views/create.py`).
+- Keep `cv_context_has_permission` permission-only: do not call the state hook from that filter (`src/crud_views/templatetags/crud_views.py`).
+- Preserve actual Cancel actor/request binding and existing selection/fallback order. Parent-only Guardian Cancel applies higher/state gates while omitting child own-permission work. Use the existing Cancel seam rather than inventing a separate navigation check (`src/crud_views/lib/view/base.py`, `src/crud_views_guardian/lib/mixins.py`, `tests/test1/test_link_cancel.py`).
+- Protect all 1,178 named matrix coordinates with `tests/test1/test_link_access_matrix.py` and `tests/test1/link_access_matrix_baseline.json`. The stage-3b ledger records 45 authorized link/filter deltas with before/after values, decision IDs and reasons; hashes reconstruct the prior baseline. Never regenerate expectations wholesale or include request outcomes in that ledger.
+- Put direct identity/order contracts in `tests/test1/test_link_access.py`, real HTML and independent destination requests in `test_link_consumers.py`, and actual Cancel/bulk navigation in `test_link_cancel.py` and `test_bulk_return.py`. Keep request authorization/access-trace expectations independent of link changes.
+- Keep current runtime SQL pins separate from immutable historical receipts. `tests/test1/test_link_consumer_costs.py` measures 444 scenarios and independently audits stage-3a/stage-3b receipts. Hook/provider event counts are not SQL counts; source hashes and raw XML establish receipt provenance.
+- Maintain published hook/custom-button guidance with `tests/test1/test_link_access_docs.py` and `docs/migrating-1.0.md`; update explicit documentation assertions alongside intentional contract changes.
 
 ## Guardian Grant Lifetime Contracts
 
@@ -189,4 +196,4 @@ last_mapped_at: 2026-11-24
 
 ---
 
-*Convention analysis: 2026-11-24*
+*Convention analysis: 2026-11-25*

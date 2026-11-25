@@ -38,7 +38,7 @@ Total Plans in Phase: TBD
 Status: Awaiting stage 3c (#414) before planning Phase 7
 Last activity: 2026-11-25 -- Phase 06.51 shipped as PR #415 to feature/link-access-check-design
 
-Next: Review PR #415 (`https://github.com/jacob-consulting/django-crud-views/pull/415`) targeting `feature/link-access-check-design` and merge after checks pass, then add/plan stage 3c (#414) before Phase 7 and the 1.0 freeze. Phase 7 is the next numbered roadmap phase, but its stage-3c prerequisite is not complete. Auto-advance is disabled. Issues #412/#413 close only when the feature branch merges to `main`.
+Next: After PR #415 (`https://github.com/jacob-consulting/django-crud-views/pull/415`) merges to `feature/link-access-check-design`, add/plan stage 3c (#414) before Phase 7 and the 1.0 freeze. All seven codebase maps were refreshed after shipping. Phase 7 is the next numbered roadmap phase, but its stage-3c prerequisite is not complete. Auto-advance is disabled. Issues #412/#413 close only when the feature branch merges to `main`.
 
 ### Phase 06.51 completion — 2026-11-25
 

@@ -1,11 +1,11 @@
 ---
-last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
-last_mapped_at: 2026-11-24
+last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
+last_mapped_at: 2026-11-25
 ---
-<!-- refreshed: 2026-11-24 -->
+<!-- refreshed: 2026-11-25 -->
 # Architecture
 
-**Analysis Date:** 2026-11-24
+**Analysis Date:** 2026-11-25
 
 Scope: reusable apps under `src/`, consumer examples under `examples/bootstrap5/`, diagnostic contracts, theme registration and bulk rendering. Follow the developer-maintainability constraint in `AGENTS.md`: prefer bounded opt-in additions, keep behavior traceable, and avoid hidden state or added queries on existing request paths.
 
@@ -118,12 +118,12 @@ Scope: reusable apps under `src/`, consumer examples under `examples/bootstrap5/
 - Request authorization remains `dispatch()` -> `_cv_ancestor_guard()` -> Django permission mixin / local `has_permission()` and state check. `src/crud_views/lib/link_access.py` is a separate presentation-time evaluator; it does not replace or weaken this request path.
 
 **Link access and action projection:**
-- Purpose: decide whether selected rendered links are visible/enabled using already-known target and ancestor objects.
-- Location: `src/crud_views/lib/link_access.py`, called from `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/navbar.py`, and `src/crud_views/templatetags/crud_views.py`.
-- `_link_access()` runs permission before state and returns an outcome; callers use `_link_ctx()` to stamp `cv_access` / `cv_action_enabled`. `_link_permission()` passes the target's own object (`obj`, or `None`) and immediate parent separately to the private `target._cv_link_permission(...)` seam. State receives the request's action object: own object, immediate parent for a nested collection, or `None` otherwise. It never discovers an object or ancestor itself.
-- `_cv_page_link_ancestors()` in `src/crud_views/lib/view/base.py` is a narrow private opt-in: `None` keeps the caller's established link behavior; a tuple (including empty tuple, which represents a deliberate deny) routes that link through `_link_access()`. `src/crud_views_guardian/lib/views.py` supplies a tuple only for a nested Guardian create linked from its own child object in single-FK nesting, reusing the request-resolved parent without a lookup. The hook does not broaden all links to the same access policy.
-- Guardian's nested create uses `cv_create_has_access()` for its parent-based permission rule; its own-object `cv_has_access()` remains false for nested creates. The parent is not passed as the own-object argument. `_cv_action_enabled_for_context()` adapts state evaluation to the real parent action object, and an unresolved parent disables the action without calling the state hook.
-- Ordinary links outside the explicit opt-in retain their local code paths, including state-before-permission evaluation where present. Request authorization, child queryset scoping, and the target request's ancestor guard remain authoritative after navigation.
+- Purpose: decide destination visibility and state using caller-supplied own objects and known ancestry.
+- Location: `src/crud_views/lib/link_access.py`; consumers are `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/navbar.py`, `src/crud_views/lib/bulk/__init__.py`, and `src/crud_views/templatetags/crud_views.py`.
+- `_known_link_ancestors()` aligns objects to the target's declared chain using request-resolved state. Child links explicitly supply their URL parent. Explicit `None` remains unknown; no relation access or query fills an unknown level. Missing immediate parents deny every nested target; unknown higher ancestors are skipped (`src/crud_views/lib/link_access.py`).
+- `_link_permission()` checks supplied higher ancestors outermost first, then the target's private `_cv_link_permission()` seam checks the immediate parent and own permission. `_link_access()` runs state only after permission passes. State receives own object for object views, immediate parent for nested non-object views, otherwise `None`. `_link_ctx()` preserves the existing permission/state visibility fields.
+- Guardian nested-create links require an active authenticated actor and passing declared higher/immediate gates before `cv_create_has_access(user, rendering_view, parent_obj)`. A custom override cannot bypass those gates. The default hook repeats its bounded immediate-parent check. Nested-create `cv_has_access()` returns false and is not called by that link path (`src/crud_views_guardian/lib/views.py`).
+- Actual link destinations drive checks. Public `cv_has_access()` receives only a destination's own object or `None`; page objects and parents are separate inputs. Shared link checks neither authorize requests nor cache final decisions (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/link_access.py`).
 
 **Resource data:**
 - Purpose: non-ORM rows through existing list/detail/action handlers.
@@ -182,8 +182,8 @@ Scope: reusable apps under `src/`, consumer examples under `examples/bootstrap5/
 
 1. Consumer URLconf includes `viewset.urlpatterns` (`src/crud_views/lib/viewset/__init__.py:435`).
 2. Django resolves to `view_class.as_view()`; class was registered by `CrudViewMetaClass`.
-3. `CrudView.dispatch` consumes cancel-restore state, calls `_cv_ancestor_guard()` (no-op for top-level ViewSets; `_authorize_ancestors` otherwise), then Django `dispatch`; modal requests add `Vary: X-CV-Modal` (`src/crud_views/lib/view/base.py:326`).
-4. `CrudViewPermissionRequiredMixin.dispatch`/`has_permission` evaluates the local permission derived from `ViewSet.permissions` and view key (`src/crud_views/lib/view/base.py:1223-1284`).
+3. Permission-required compositions enter `CrudViewPermissionRequiredMixin.dispatch` first: the ancestor guard precedes Django's local permission and state checks. Plain `CrudView.dispatch` also guards the handler; successful request-local ancestor state prevents repeated authorization (`src/crud_views/lib/view/base.py:1246`, `src/crud_views/lib/view/base.py:1307`).
+4. `CrudView.dispatch` consumes cancel-restore state and delegates to the Django handler after its guard; modal-capable responses add `Vary: X-CV-Modal`. Guardian object/queryset/parent mixins supply enforcing gates through the MRO (`src/crud_views/lib/view/base.py:331`, `src/crud_views_guardian/lib/mixins.py`).
 5. Handler builds context (`cv_get_context`, button/action data) and renders a theme template (`crud_views/view_*.html`), or the modal content template when `cv_modal` and `X-CV-Modal` are present.
 
 ### ViewSet Registration
@@ -198,19 +198,27 @@ Scope: reusable apps under `src/`, consumer examples under `examples/bootstrap5/
 3. `_authorize_ancestors` selects gates (`_selected_gates`), resolves each ancestor (`_resolve_ancestor`), applies provider-specific checks (model: `user.has_perm`; guardian: `_guardian_ancestor_has_permission`) and stores `_AncestorState`.
 4. Child querysets are scoped (`_scope_child_queryset`) and objects verified (`_validate_child_parent`); `CreateViewParentMixin` sets the parent FK.
 
-### Link Access Path (selected rendered controls)
+### Link Access Path
 
-1. A link producer has the destination view and whatever target/ancestor instances its current page or URL already resolved (`src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/view/base.py`, or `src/crud_views/templatetags/crud_views.py`).
-2. Child context buttons, child card actions and navbar child items supply their known parent directly. Selected page-control producers ask `target._cv_page_link_ancestors(rendering_view, page_obj)`: `None` preserves that producer's existing path; a tuple opts the specific control into the private link evaluator. The Guardian override in `src/crud_views_guardian/lib/views.py` is limited to the nested create/single-FK own-child case and reuses `_resolved_ancestor()`.
-3. `_link_access()` in `src/crud_views/lib/link_access.py` checks supplied ancestor gates, then target permission through `_cv_link_permission(user, own_obj_or_none, immediate_parent, ...)`, then state. Permission denial leaves state unevaluated; `_link_ctx()` maps permission/state outcomes to the existing visibility context fields.
-4. Clicking still runs the unchanged request path (`CrudView.dispatch`, `_cv_ancestor_guard`, and target permission/state checks in `src/crud_views/lib/view/base.py`). Link visibility is presentation, not a grant or request authorization.
+1. Resolve the actual registered destination; pass its own object or `None`, separately from ancestry (`src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/card.py`).
+2. Build the known chain with `_known_link_ancestors()`. Child controls supply their actual parent; sibling controls reuse resolved route ancestry. Same-ViewSet consumers supply the real rendering view to the permission hook; cross-ViewSet consumers supply `None` (`src/crud_views/lib/link_access.py`).
+3. `_link_access()` performs known higher gates, immediate gate, own permission, then state. Permission filters call `_link_permission()` and deliberately omit state. Bulk source actions and navbar items require the full allowed result (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/lib/bulk/__init__.py`, `src/crud_views/lib/navbar.py`).
+4. Producers retain their own visibility, URL and template handling. Clicking enters the target's independent request guard, own permission and state path (`src/crud_views/lib/view/base.py`).
+
+### Cancel Navigation Path
+
+1. `cv_get_cancel_url()` binds any request override to a shallow view copy, reads the signed origin/query state and tests an eligible sibling origin before the configured fallback. Availability is memoized per destination only within that call (`src/crud_views/lib/view/base.py`).
+2. Tokens are bounded, versioned, signed navigation transport bound to ViewSet identity and parent coordinates. They confer no permission; only eligible list destinations restore captured query state (`src/crud_views/lib/view/cancel.py`).
+3. For nested targets, `_cancel_target_available()` obtains the immediate parent through `_cv_cancel_parent_object()`, then supplies it and already-known higher ancestors to the shared link check. The built-in missing-row `Http404` makes a target unavailable; application-hook exceptions, missing kwargs and database errors propagate (`src/crud_views/lib/view/base.py`).
+4. Guardian object/list/create targets delegate through shared checks after actor admission. Parent-only non-create Cancel deliberately omits `cv_has_access()`: it checks composition, actor, known higher gates, immediate-parent access and state with the parent. Ordinary links retain their own-permission step (`src/crud_views_guardian/lib/mixins.py`).
+5. An unavailable origin falls back; an unusable configured fallback raises `ImproperlyConfigured`; a valid fallback denied by access/state returns `None` (`src/crud_views/lib/view/base.py`).
 
 ### Object Navbar Path
 
 1. A consumer declares `NavBar(viewset=..., items=[NavItem(...)])` and mixes `CrudViewNavBarMixin` into only the views that should render it (`src/crud_views/lib/navbar.py`). The owner attachment must require an object; descendant attachments may be collection or object views.
 2. `get_context_data()` places a request-view-owned `SimpleLazyObject` in `cv_navbar`; modal requests and views without a declaration get `None`. The navbar does no work until a rendering tag evaluates that value.
 3. `_build()` resolves the owner from `view.object` on an owner page or `_resolved_ancestor(view, owner_name)` after the normal nested request guard has populated `_cv_ancestor_state` (`src/crud_views/lib/ancestors.py`). The same owner object supplies identity, access checks, state checks, and URL coordinates.
-4. Each owner item targets a registered GET object view and runs `cv_has_access` before `_cv_action_enabled_for_rendering`. Each child item targets a registered direct child collection view and runs `_link_access(target, user, None, (owner,))`; denied or disabled items are omitted. Child-link admission only applies the existing destination/immediate-parent visibility policy; the destination request still runs the full ancestor guard and queryset scoping. URLs are reversed from ViewSet router names with current ancestor kwargs.
+4. Owner items target registered GET object views; child items target registered direct-child GET collection views. Both call the shared full link evaluator with aligned known ancestry. Owner items pass the owner as the own object; child items pass it as the immediate parent. Denied/disabled items are omitted. URLs use registered routes and current ancestor kwargs (`src/crud_views/lib/navbar.py`).
 5. `{% cv_navbar %}` renders the configured wrapper or the active theme wrapper; `{% cv_navbar_identity %}` and `{% cv_navbar_items %}` render the shared lazy data through separate theme leaves. Modal requests and empty item lists emit no navbar markup. The default leaf templates provide plain identity and accessible section links (`aria-label`, `aria-current`).
 
 The default theme contract is split into wrapper/identity/items leaves under `src/crud_views/templates/crud_views/tags/`. Theme selection comes from `CrudViewsSettings.theme_path` (`src/crud_views/lib/settings.py`); a custom wrapper can compose the two public leaf tags. A consumer template opts in by loading `crud_views` and placing `{% cv_navbar %}` in its chosen block (the independent demo uses `examples/bootstrap5/navbar_demo/templates/navbar_demo/crud_base.html`).
@@ -388,11 +396,11 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 **Runtime CLI contracts:** `cv_manage_view` and `cv_access` are independent management-command interfaces. Their versioned Pydantic output boundaries live in `src/crud_views/lib/manage_report.py` and `src/crud_views/lib/access_trace_export.py`; command parsing/rendering/exit codes stay in `src/crud_views/management/commands/`.
 **i18n:** gettext in package code, locale `de` under each `locale/` directory (`src/crud_views/locale/de/LC_MESSAGES/django.po`).
 
-## Guardian Grant Reuse Path (Phase 06.49)
+## Guardian Grant Reuse Path
 
 1. Own-object request checks and callable destination checks in `src/crud_views_guardian/lib/mixins.py` preserve actor, permission and fallback gates before calling `_get_guardian_checker(user)`.
 2. `src/crud_views_guardian/lib/permissions.py` acquires one `ObjectPermissionChecker` through the private `_cv_guardian_checker` attribute on that Python user; the import remains optional and lazy.
-3. `src/crud_views_guardian/lib/ancestors.py::_request_checker(view, user)` delegates to the same helper. The existing view argument remains as a test seam; ownership has moved from the view to the user.
+3. `src/crud_views_guardian/lib/ancestors.py::_request_checker(view, user)` delegates to the same helper. The view argument is a test seam; the user object owns the checker.
 4. Guardian reuses loaded grants for matching model/object identities. Destination permission membership and action-state evaluation remain independent; no final access answer is stored by the helper.
 5. Normal middleware requests provide fresh user/checker ownership. A user retained beyond its request retains loaded grants, including stale additions/revocations. The workflow permission-refusal reload can therefore render its error once with retained grants; the next normal request observes revocation (`src/crud_views_workflow/lib/views.py`, `tests/test1/test_workflow_review.py`).
 
@@ -400,4 +408,4 @@ This is a bounded change to existing Guardian acquisition sites. It adds no glob
 
 ---
 
-*Architecture analysis: 2026-11-24*
+*Architecture analysis: 2026-11-25*

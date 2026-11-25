@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
-last_mapped_at: 2026-11-24
+last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
+last_mapped_at: 2026-11-25
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-24
+**Analysis Date:** 2026-11-25
 
 ## Test Framework
 
@@ -13,7 +13,7 @@ last_mapped_at: 2026-11-24
 - Config: `pyproject.toml` `[tool.pytest.ini_options]`; Django is configured in code by `pytest_configure()` in `tests/test1/conftest.py` (in-memory sqlite `default` and `shard` DBs, `CRUD_VIEWS_STRICT=True`).
 
 **Assertion Library:**
-- Plain `assert`, `pytest.raises(..., match=...)`, `caplog`; HTML parsed with `lxml` / `cssselect`.
+- Plain `assert`, `pytest.raises(..., match=...)`, `caplog`; HTML parsed with `lxml` / `cssselect` (`tests/test1/test_crud.py`, `tests/test1/test_robustness.py`, `tests/lib/helper/golden.py`). Test dependencies are unpinned in `pyproject.toml`; report actual runtime versions for verification.
 
 **Run Commands:**
 ```bash
@@ -136,7 +136,7 @@ with pytest.raises(ImproperlyConfigured, match=r"form_tag=False|form_action"):
     ...
 ```
 **Warnings:** use `caplog` to assert logged warnings when `CRUD_VIEWS_STRICT` is off.
-**Async:** Not used.
+**Async:** Core Django request tests use synchronous clients; no general Python async-fixture pattern is configured in `tests/test1/conftest.py`. JavaScript asynchronous behavior uses the separate Vitest/jsdom harness in `tests/js/`.
 
 ## JavaScript Commands and Cross-Runtime Setup
 
@@ -178,43 +178,41 @@ Both integration suites import `selectedPython()` from `tests/js-integration/pyt
 - `tests/test1/test_bulk_variants.py::test_short_labels_and_escaping` and `::test_bulk_action_key_is_escaped` exercise plain, safe and lazy hostile text, escaped action URLs/keys, accessible labels, and native submit attributes. Test DOM semantics and exact escaping together.
 - `tests/test1/test_bulk_docs.py::test_bulk_modules_remain_in_maintained_crispy_floor_selection` parses `noxfile.py` to keep bulk flow/execution/source/scope/return/variants in `CRISPY_FLOOR_TESTS`. A passing local selection does not establish that the floor sessions or full supported matrix ran.
 
-## Recorded Phase 06.47 Shipping Evidence
+## Governed Link Matrix and Runtime Cost Contracts
 
-Use `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-REGRESSION.md`, `06.47-03-SUMMARY.md`, and `06.47-VERIFICATION.md` for the source/revision attribution of these recorded results. Mapping performs no test reruns.
+- `tests/test1/test_link_access_matrix.py` executes 1,178 unique coordinates against `tests/test1/link_access_matrix_baseline.json`. Its stage-3b ledger records 45 link/filter deltas with before, after, decision IDs and reasons. Hash-checked reconstruction proves the prior baseline; request coordinates are prohibited in the delta ledger.
+- Keep real rendered control outcomes and direct target requests together in `tests/test1/test_link_consumers.py`; public hook spies in `test_link_access.py` prove exact actor/object identity, parent-before-own-before-state order and short-circuiting.
+- Actual Cancel and bulk return contracts live in `tests/test1/test_link_cancel.py` and `test_bulk_return.py`. Test explicit actor/request binding, missing parent/configuration, true/false create overrides and parent-only behavior at the actual Cancel boundary.
+- Request authorization and access-trace expectations remain independently protected in `tests/test1/test_authorization_matrix.py`, `test_ancestor_authorization.py` and `test_access_trace_ancestors.py`. Link-only changes cannot justify weakening request outcomes.
+- `tests/test1/test_link_consumer_costs.py` parametrizes 444 runtime scenarios: 276 historical coordinates plus 168 additional coordinates. Capture real SQL with `CaptureQueriesContext`; classify permission/ancestor/other work separately from public hook and provider events.
+- Record row counts, composition, allow/deny, actor-cache and vocabulary-cache preparation alongside measured costs. Query counts bind to those exact fixtures; a lower count does not establish lower response time (`tests/test1/test_link_consumer_costs.py`, `test_guardian_checker_costs.py`, `test_navbar_costs.py`).
+- Historical stage-3a before/after receipts are immutable and independently checked. Stage-3b runtime pins and its receipt are separate; do not rewrite historical receipts to match current constants (`tests/test1/test_link_consumer_costs.py::test_historical_cost_receipts_are_independent_of_current_pins`).
+- The current checked-in receipt is `.planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-COST-BASELINE.md`, paired with `06.51-COST-MEASUREMENTS.xml`. Tests validate provenance, source identity, XML membership, counts and corruption rejection.
+- Missing repository-only receipts skip only their audits. Runtime parametrization and SQL tests remain active without `.planning/`, as proven by `tests/test1/test_link_consumer_costs.py::test_repository_receipt_absence_skips_only_audits`.
+- Temporary registered route fixtures must restore the ViewSet registry, permission vocabulary, ContentType cache, URL cache and temporary modules in `finally` (`isolated_routes` in `tests/test1/test_ancestor_authorization.py`). Use fresh actors where a new request/grant lifetime is intended.
 
-| Evidence scope | Recorded result | Interpretation |
+## Guardian Grant Lifetime Testing
+
+- `tests/test1/test_guardian_checker.py` covers shared acquisition, actor/model/object isolation, positive/negative grant retention, mutations and fresh requests observing revocation.
+- A retained user intentionally preserves loaded grant state. Refresh the user for a new lifetime rather than adding implicit invalidation to make a test pass (`src/crud_views_guardian/lib/permissions.py`, `tests/test1/test_guardian_checker.py`).
+- Real list responses and independent controls accompany query pins in `tests/test1/test_guardian_checker_costs.py`. Use its fixture/cache protocol rather than applying recorded counts to arbitrary pages.
+
+## Source-Bound Verification Evidence
+
+The current recorded acceptance is `.planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-ACCEPTANCE.md`; detailed inspection and scope limits are in `06.51-VERIFICATION.md`. This mapping does not rerun tests.
+
+| Evidence scope | Recorded result | Limits |
 | --- | --- | --- |
-| Original full `tests/test1 -n 4 -q` | 17,264 passed in 574.38s; Python 3.12.3 / Django 6.0.10 | Original phase acceptance; not a full run after the Phase 06.45 integration merge |
-| Original combined focused selection | 2,467 passed | Original focused gate; separately attributed from full-suite evidence |
-| Shipping integration refresh | 470 affected Python passed in 25.55s | Bulk/theme/JS-config/data-prefix coverage following the integration merge |
-| Shipping Node/jsdom lane | 541 tests across 13 files | Ordinary JavaScript suite, including runtime-contract checks (count recorded before PR #405 added modal-event cases) |
-| Shipping Django/JS lane | 3 tests across 2 files | Separate integration command and explicitly selected Python runtime |
+| Full core suite | 20,119 passed, six workers | Python 3.12 / Django 6.0, recorder off, checkout imports |
+| Example project suite | 637 passed plus 300 subtests, six workers | Same runtime; six known Campaign pagination warnings |
+| Protected selection | 2,088 passed across 39 modules | Explicit protected-module audit, not a matrix run |
+| Current measured costs | 444 passed with checked-in raw XML | Exact scenario/cache protocol and source hashes |
+| Documentation and scoped lint | Strict MkDocs build and 31-file Ruff check passed | Scope is recorded in ACCEPTANCE |
 
-The shipping verification addendum in `.planning/phases/06.47-semantic-variants-for-bulk-toolbar-buttons-400/06.47-VERIFICATION.md` also records a two-alias probe using actual bulk control output plus `cv_config`/`cv_const_js`, namespace `tabler`, independent prefix `coreui`, and form tooltip placement. The probe checks native submit identity and placement precedence through the shipped adapters/scanner. This recorded jsdom/stub-provider probe supplements the maintained context-tooltip bridge in `tests/js-integration/js-config.test.js`; it is not a committed bulk browser test or a downstream library certification. No full dependency matrix or fresh postmerge full-suite result is established by those focused checks.
-
-## Recorded Phase 06.48 Link Access Evidence
-
-Use `.planning/phases/06.48-link-access-check-as-a-private-function-narrow-obj-in-cv-has/06.48-09-SUMMARY.md`, `06.48-VALIDATION.md`, and `06.48-VERIFICATION.md` for source revision and scope. These are recorded receipts from the shipping gate, not fresh execution by this mapping refresh.
-
-| Evidence scope | Recorded result | Interpretation |
-| --- | --- | --- |
-| Frozen behavior matrix | 1,178 cells in `tests/test1/link_access_matrix_baseline.json`; the fixture remained byte-identical through the final gate | `tests/test1/test_link_access_matrix.py` compares live cases against the pre-refactor snapshot and checks completeness; do not regenerate the fixture |
-| Direct contracts | 40 active cases in `tests/test1/test_link_access.py` | Signature, ordering, object identity, provider behavior, no stored decisions, and preserved denials; recorded targeted validation also includes surrounding ancestor/access-trace tests |
-| Documentation guard | 6 active cases in `tests/test1/test_link_access_docs.py` | Pins the migration entry, override cases, explicit denials, and six heading-scoped reference passages |
-| Full Python suite at gate commit `f242c65b64fa898b0f64b9d8a23155bb329dc48c` | **18,915 passed in 499.95s** | Historical phase gate evidence, Python 3.12.3 / Django 6.0.10, six workers; not a fresh run on the current checkout or a compatibility matrix |
-
-The phase summary records 1,598 targeted validation passes, including 1,179 matrix tests (1,178 cells plus completeness), the 40 direct link-access cases, and six docs tests. The 18,915 full-suite result belongs to the recorded gate revision. This mapping did not execute tests, so do not describe it as current fresh execution.
-
-For direct pytest from a `src/` layout checkout, prefix commands with `PYTHONPATH=src:.` when the active interpreter would otherwise import an installed `crud_views` distribution instead of this worktree. Nox sessions intentionally build/install the distribution and assert imports do not come from `src/`; their evidence has a different import path and scope.
-
-## Recorded Phase 06.49 Guardian Evidence
-
-`tests/test1/test_guardian_checker.py` covers shared acquisition across own/ancestor checks, distinct users/models/objects, independent destination permissions/state, configured anonymous access, direct/group mutations on retained users, and fresh normal requests observing revocation. `tests/test1/test_guardian_checker_costs.py` renders real list responses at zero/one/three rows and pins query categories plus allowed/denied row controls. Related coverage remains in `test_workflow_review.py`, `test_ancestor_boundaries.py`, `test_cancel_permissions.py`, `test_guardian_child_link_visibility.py`, `test_link_access.py` and navbar/ancestor cost modules.
-
-Recorded Phase 06.49 evidence lives in `.planning/phases/06.49-reuse-guardian-object-grants-across-navigation-checks-385/06.49-VERIFICATION.md` and `06.49-VALIDATION.md`: 21/21 must-haves, 18,934 core tests, 1,976 ancestor/trace tests, 1,833 each in cached Django 4.2/5.2 selections, 1,179 frozen matrix outcomes, 313 preservation tests, and 937 example outcomes (637 tests plus 300 subtests). The verifier independently ran 43 targeted cases. This map refresh did not rerun those tests.
-
-The preserved list baseline is 7/14/26 queries before and 7/10/14 after. These figures bind to the exact fixture/cache protocol in `06.49-COST-BASELINE.md`, not arbitrary customer pages. Checkout evidence uses `PYTHONPATH=src:.` and `CV_ACCESS_RECORD_REQUESTS=0`. Recorder-enabled CI, a rebuilt installed distribution, the full Python/Django matrix, browsers and response times remain uncertified. Broad reruns should use bounded multicore pytest when sharing resources. `.github/workflows/tests.yml` runs only for `main` pushes and PRs targeting `main`; PR #410 targets the feature branch and does not trigger that workflow.
+- The receipt uses explicit checkout `PYTHONPATH=src:.` and `CV_ACCESS_RECORD_REQUESTS=0`. It does not certify recorder-on, other Python/Django rows, browser scenarios or rebuilt installed-distribution behavior.
+- Nox's installed-origin assertion and recorder-on/off matrix in `noxfile.py` describe configured coverage; only completed named rows establish evidence. Cached XML or a prior phase count is insufficient proof.
+- `.github/workflows/tests.yml` triggers on main pushes and PRs targeting main; `.github/workflows/js.yml` runs the separate JavaScript unit lane. Browser and Django/JS integration commands require their own explicit evidence.
 
 ---
 
-*Testing analysis: 2026-11-24*
+*Testing analysis: 2026-11-25*

@@ -1,25 +1,25 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.51"
+current_phase_name: Remove retained Guardian link exceptions - stage 3b
 current_plan: Not started
 status: planning
-stopped_at: Phase 06.50 complete, ready to plan Phase 7
-last_updated: "2026-11-25T08:49:36.875Z"
+stopped_at: Phase 06.51 context gathered
+last_updated: "2026-11-25T12:43:20.332Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.50 complete, transitioned to Phase 7
-state_head: b9541988fa69a231ffd9b3a857d51df0bc3f3c36
+last_activity_desc: Phase 06.51 approved handover captured; ready for planning
+state_head: 7444bae9d717fe05552963cf133242772c2df794
 progress:
-  total_phases: 57
+  total_phases: 58
   completed_phases: 56
   total_plans: 308
   completed_plans: 308
-  percent: 98
+  percent: 97
 milestone_name: milestone
 ---
 
-Total Phases: 57
+Total Phases: 58
 Completed Phases: 56
 
 # Project State
@@ -29,17 +29,17 @@ Completed Phases: 56
 See: .planning/PROJECT.md (updated 2026-11-25)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy (next roadmap phase; settle remaining stage-3 ordering before the freeze)
+**Current focus:** Phase 06.51 — Remove retained Guardian link exceptions - stage 3b (#413)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.51 — Remove retained Guardian link exceptions - stage 3b (#413)
 Current Plan: Not started
 Total Plans in Phase: 0 (not yet planned)
 Status: Ready to plan
-Last activity: 2026-11-25 — Phase 06.50 complete, transitioned to Phase 7
+Last activity: 2026-11-25 — Phase 06.51 approved handover captured; ready for planning
 
-Next: `$gsd-discuss-phase 7` for the next roadmap phase; first reconcile the already-decided stage 3b (#413) / stage 3c (#414) ordering before the 1.0 freeze. Auto-advance is disabled.
+Next: `$gsd-plan-phase 06.51` using the approved issue #413 handover; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
 
 ### Phase 06.50 completion — 2026-11-25
 
@@ -2569,6 +2569,7 @@ None yet.
 - Phase 06.48 inserted after Phase 6: Issue #407: link access check as a private function; narrow obj in cv_has_access and cv_action_enabled. Stage 1 of the approved link access concept (settled D-01–D-24, spec at dbf1e6c4); explicitly assigned 06.48 by the maintainer, before the 1.0 hook freeze (URGENT)
 - Phase 06.49 inserted after Phase 06.48: Reuse Guardian object grants across navigation checks (#385); approved stage 2, concept sections 12.1, 12.3 and 12.7 at 4b65990f, including D-37 and D-38 (URGENT)
 - Phase 06.50 inserted after Phase 06.49: Move remaining link consumers to the shared link check - stage 3a (#412); approved D-39–D-44 and D-52, baseline e444bbfc and PR target feature/link-access-check-design. Before stage 3b (#413), stage 3c (#414) and the 1.0.0 freeze. (URGENT)
+- Phase 06.51 inserted after Phase 06.50: Remove retained Guardian link exceptions - stage 3b (#413); approved D-45–D-52 with D-40–D-42 and D-55 preserved, concept at 55dce6f6. Before stage 3c (#414) and the 1.0 freeze; PR target feature/link-access-check-design. (URGENT)
 
 ## Deferred Items
 
@@ -2578,6 +2579,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T08:49:36.875Z
-Stopped at: Phase 06.50 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-25T12:43:04.454Z
+Stopped at: Phase 06.51 context gathered
+Resume file: .planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-CONTEXT.md

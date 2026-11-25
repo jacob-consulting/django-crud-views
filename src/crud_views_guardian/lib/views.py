@@ -303,17 +303,6 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         return candidate if isinstance(candidate, parent_model) else None
 
     @classmethod
-    def _cv_action_enabled_for_context(cls, user, obj=None) -> bool:
-        """Nested create: the action object is the parent. Resolve it from ``obj`` (parent or FK own child);
-        unresolved → False without calling a custom cv_action_enabled hook. Top-level: unchanged."""
-        if cls.cv_viewset.parent is None:
-            return super()._cv_action_enabled_for_context(user, obj)
-        parent_obj = cls._cv_guardian_create_parent(obj)
-        if parent_obj is None:
-            return False
-        return cls.cv_action_enabled(user, parent_obj)
-
-    @classmethod
     def cv_create_has_access(cls, user, rendering_view, parent_obj):
         """
         Permission-only hook for links to this create, using its immediate parent's rule.

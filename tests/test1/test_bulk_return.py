@@ -1,18 +1,23 @@
 """AC-16: bulk forms reuse ordinary origin, cancel and success navigation."""
 
+from unittest.mock import Mock
 from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 import pytest
 from django.contrib import messages
+from django.contrib.auth.models import Permission, User
 from django.contrib.messages import get_messages
 from django.urls import reverse
 
 from crud_views.lib.bulk import BulkFormViewPermissionRequired
 from crud_views.lib.button_classes import get_button_class
 from crud_views.lib.view.cancel import navigation_params
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy
 from tests.test1.app.models import Publisher
 from tests.test1.app.views_bulk import BulkFilterListView, BulkFilterMarkView, BulkPublisherListView
+from tests.test1.test_ancestor_authorization import _client, isolated_routes
 from tests.test1.test_bulk_flow import soup
+from tests.test1.test_link_consumer_costs import consumer_actor, consumer_routes, consumer_view, consumer_world
 
 pytestmark = pytest.mark.django_db
 
@@ -280,3 +285,129 @@ def test_forged_return_token_uses_local_cancel_fallback(
     location = urlsplit(response["Location"])
     assert not location.scheme and not location.netloc
     assert response["Location"] == url(cv_bulk_filter, BulkFilterMarkView.cv_cancel_key)
+
+
+@pytest.fixture
+def nested_bulk_return(monkeypatch, settings):
+    """Capture a real origin before revocation; bulk uses a less strict far gate."""
+    with isolated_routes(consumer_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True,
+            actions={
+                "list": AncestorPermissions(nearest="view", higher="change"),
+                "card": AncestorPermissions(nearest="view", higher="view"),
+                "mark": AncestorPermissions(nearest="change", higher="view"),
+            },
+        )
+        monkeypatch.setattr(ns.note.Bulk, "cv_cancel_keys", ["list"])
+        monkeypatch.setattr(ns.note.Bulk, "cv_cancel_key", "card")
+        monkeypatch.setattr(ns.note.Bulk, "cv_success_key", "source")
+        settings.CRUD_VIEWS_BUTTON_CLASSES = {"form:cancel-tag": "a"}
+        page = consumer_view(ns.note, "List", actor, world)
+        query = [
+            ("sort", "-note"),
+            ("page", "1"),
+            ("tag", "first"),
+            ("tag", "second"),
+            *zip(navigation_params(), ("stale", "invalid", "1"), strict=True),
+        ]
+        response = _client(actor).get(page.cv_get_url("list") + "?" + urlencode(query))
+        assert response.status_code == 200
+        action = response.context_data["view"].cv_get_link_url(ns.note.Bulk, "mark")
+        assert parse_qs(urlsplit(action).query)[navigation_params()[0]] == ["list"]
+        assert navigation_params()[1] in parse_qs(urlsplit(action).query)
+        yield ns, world, actor, page, action
+
+
+@pytest.mark.parametrize("surface", ["get", "warning", "all-blocked"])
+@pytest.mark.parametrize("choice", ["origin", "fallback", "success"])
+def test_nested_bulk_return_uses_cancel_ancestor_eligibility(nested_bulk_return, surface, choice, monkeypatch):
+    ns, world, actor, page, action = nested_bulk_return
+    if choice == "success":
+        ns.note.vs.ancestor_policy = ns.note.vs.ancestor_policy.model_copy(
+            update={
+                "actions": {
+                    **ns.note.vs.ancestor_policy.actions,
+                    "card": AncestorPermissions(nearest="view", higher="change"),
+                }
+            }
+        )
+    if choice != "origin":
+        actor.user_permissions.remove(Permission.objects.get(codename="change_publisher"))
+        actor = User.objects.get(pk=actor.pk)
+    client = _client(actor)
+    # The actor retains both the bulk endpoint's own grant and its distinct
+    # ancestor requirements; eligibility must not bypass request authorization.
+    assert actor.has_perm(ns.note.vs.permissions["change"])
+    assert client.get(page.cv_get_url("list")).status_code == (200 if choice == "origin" else 403)
+    assert client.get(page.cv_get_url("card")).status_code == (403 if choice == "success" else 200)
+    expected = page.cv_get_url({"origin": "list", "fallback": "card", "success": "source"}[choice])
+    if choice == "origin":
+        expected += "?" + urlencode(
+            [("sort", "-note"), ("page", "1"), ("tag", "first"), ("tag", "second"), (navigation_params()[2], "1")]
+        )
+    writes = Mock(side_effect=AssertionError("Return navigation executed a bulk write"))
+    monkeypatch.setattr(ns.note.Bulk, "cv_form_valid", writes)
+    if surface == "get":
+        response = client.get(action)
+        assert response.status_code == 302
+        assert list(get_messages(response.wsgi_request)) == []
+        actual = response["Location"]
+    elif surface == "warning":
+        response = client.post(action, {"cv_bulk_stage": "review"})
+        assert_warning(response, "Select at least one record.")
+        actual = response["Location"]
+    else:
+        monkeypatch.setattr(ns.note.Bulk, "cv_bulk_check", lambda self, obj: ["Locked for this action."])
+        response = client.post(action, {"cv_bulk_stage": "review", "cv_bulk_ids": [world.note.pk]})
+        assert response.status_code == 200
+        controls = soup(response).xpath("//a[normalize-space(.)='Cancel']")
+        assert len(controls) == 1
+        control = controls[0]
+        assert control.tag == "a"
+        assert control.get("data-cv-cancel-url") is None
+        assert control.text_content().strip() == "Cancel"
+        assert "Locked for this action." in soup(response).text_content()
+        assert not soup(response).cssselect('button[type="submit"]')
+        assert list(get_messages(response.wsgi_request)) == []
+        actual = control.get("href")
+    assert actual == expected
+    assert not urlsplit(actual).netloc
+    assert navigation_params()[0] not in parse_qs(urlsplit(actual).query)
+    assert navigation_params()[1] not in parse_qs(urlsplit(actual).query)
+    if choice != "origin":
+        assert urlsplit(actual).query == ""
+    writes.assert_not_called()
+    world.note.refresh_from_db()
+    assert world.note.note == "Consumer row 0"
+
+
+@pytest.mark.parametrize("surface", ["get", "warning", "all-blocked"])
+@pytest.mark.parametrize("anonymous", [False, True], ids=["denied", "anonymous"])
+def test_nested_bulk_returns_preserve_request_authorization(
+    nested_bulk_return, surface, anonymous, monkeypatch, settings
+):
+    ns, world, actor, _page, action = nested_bulk_return
+    actor.user_permissions.remove(Permission.objects.get(codename="change_book"))
+    actor = User.objects.get(pk=actor.pk)
+    client = _client(None if anonymous else actor)
+    returns = Mock(side_effect=AssertionError("Denied request reached return navigation"))
+    monkeypatch.setattr(ns.note.Bulk, "_bulk_back_url", returns)
+    if surface == "get":
+        response = client.get(action)
+    else:
+        post = {"cv_bulk_stage": "review"}
+        if surface == "all-blocked":
+            post["cv_bulk_ids"] = [world.note.pk]
+        response = client.post(action, post)
+    assert response.status_code == (302 if anonymous else 403)
+    if anonymous:
+        target = urlsplit(response["Location"])
+        assert target.path == settings.LOGIN_URL
+        assert parse_qs(target.query) == {"next": [action]}
+    else:
+        assert "Location" not in response
+    returns.assert_not_called()
+    assert list(get_messages(response.wsgi_request)) == []

@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.51"
 current_phase_name: Remove retained Guardian link exceptions - stage 3b
-current_plan: 3
+current_plan: 4
 status: executing
-stopped_at: Completed 06.51-02-PLAN.md
-last_updated: "2026-11-25T18:43:43.661Z"
+stopped_at: Completed 06.51-03-PLAN.md
+last_updated: "2026-11-25T18:56:25.748Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.51 plan 02 complete; target-aligned Guardian create controls; required selections pass 552/9/116/640
-state_head: 6db9b96bcf9ce0f50c09aff5913c759f337438a6
+last_activity_desc: Phase 06.51 plan 03 complete; shared Guardian Cancel and preserved bulk return priority; required selections pass 193/567/16/1/85
+state_head: dd570bded6050422db4a07f861cd8960686c1dd7
 progress:
   total_phases: 58
   completed_phases: 56
   total_plans: 315
-  completed_plans: 310
+  completed_plans: 311
 milestone_name: milestone
 ---
 
@@ -33,12 +33,19 @@ See: .planning/PROJECT.md (updated 2026-11-25)
 ## Current Position
 
 Phase: 06.51 (Remove retained Guardian link exceptions - stage 3b) — EXECUTING
-Current Plan: 3
+Current Plan: 4
 Total Plans in Phase: 7
 Status: executing
-Last activity: 2026-11-25 — Phase 06.51 plan 02 complete; target-aligned Guardian create controls; required selections pass 552/9/116/640
+Last activity: 2026-11-25 — Phase 06.51 plan 03 complete; shared Guardian Cancel and preserved bulk return priority; required selections pass 193/567/16/1/85
 
-Next: Continue plan 06.51-03 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+Next: Continue plan 06.51-04 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+
+### Phase 06.51 plan 03 — 2026-11-25
+
+- Completed D-48/D-51 in `e7b48964`: Guardian object/list/create Cancel delegates through the shared known-ancestor check; parent-only retains only its own-hook omission with higher/immediate gates before public state. Composition/actor wrappers, core binding/lookup/origin/fallback and request methods remain intact. Public create-hook docstring and its source assertion describe the final contract. Last production rendering-adapter caller is gone; definitions remain for plan 04.
+- Required selections pass **193** Cancel, **567** consumer/link, **16** ancestor helpers, **1** docstring and **85** bulk tests. New bulk cases cover all three return surfaces and origin/fallback/success across higher, queryset-nearest and create-hook denial, with unchanged source/login/query/no-mutation outcomes. D-43 toolbar remains direct. Scoped Ruff/format/diff and production AST boundaries pass. No full suite, recorder/version matrix or install ran; historical matrix/cost evidence is unchanged.
+- Four task commits `bce3f84b`, `19e4c54e`, `e7b48964`, `c56324f1`; immediate SUMMARY `dd570bde` precedes tracking. Initial RED's strict-policy fixture omission was corrected and rerun against original source; corrected JUnit evidence is machine-validated and semantically valid. Task 2 is an explicit test-only expansion of existing behavior. SUMMARY inventories every migrated test, parent-only helper rationale and decision-paired bulk outcomes for plan 05.
+- ROADMAP accepted 3/7; stale dotted progress row reconciled. STATE advanced once to plan 4, with one metric and three decisions recorded. Global unscoped percentage stays unset. Only SDK state.json next.reason/updated_at changes are restored after snapshot comparison; original configuration/state.json hashes and unrelated dirt remain preserved. No phase.complete, push, PR, merge or issue closure ran.
 
 ### Phase 06.51 plan 02 — 2026-11-25
 
@@ -2100,6 +2107,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.50 P08 | 22min | 2 tasks | 11 files |
 | Phase 06.51 P01 | 11min | 2 tasks | 9 files |
 | Phase 06.51 P02 | 11min | 2 tasks | 14 files |
+| Phase 06.51 P03 | 7min | 2 tasks | 9 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2495,6 +2503,9 @@ Recent decisions affecting current work:
 - [Phase 06.51]: D-45/D-50 landed together in 5abd1d82: direct target-aligned ancestry and actual/custom button results without Guardian key correction.
 - [Phase 06.51]: Known higher gates precede create hooks; full Guardian render events are outermost-first plus the deliberate default-hook immediate duplicate, with guard accounting unchanged.
 - [Phase 06.51]: D-40/D-41 retain real same-ViewSet rendering views or None, explicit URL parents, unknown ancestor positions and no link-only lookup.
+- [Phase 06.51]: D-48 follows D-49: Guardian object/list/create Cancel delegates through the cooperative chain with known higher gates, actor admission and composition validation intact.
+- [Phase 06.51]: D-51 retains _cv_cancel_parent_target_access solely for the immediate parent-only gate; Cancel omits inherited and custom own hooks while ordinary links keep them.
+- [Phase 06.51]: D-52 preserves origin/fallback/success priority; existing all-blocked success fallback may evaluate Cancel twice and adds no decision cache.
 
 ### Pending Todos
 
@@ -2600,6 +2611,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T18:43:19.618Z
-Stopped at: Completed 06.51-02-PLAN.md
+Last session: 2026-11-25T18:56:17.051Z
+Stopped at: Completed 06.51-03-PLAN.md
 Resume file: None

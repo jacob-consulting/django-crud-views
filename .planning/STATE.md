@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.51"
 current_phase_name: Remove retained Guardian link exceptions - stage 3b
-current_plan: 6
+current_plan: 7
 status: executing
-stopped_at: Completed 06.51-05-PLAN.md
-last_updated: "2026-11-25T19:26:54.353Z"
+stopped_at: Completed 06.51-06-PLAN.md
+last_updated: "2026-11-25T19:41:00.092Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.51 plan 05 complete; 45 reversible matrix deltas and 444 measured cost scenarios; matrix1197/cost468 pass with immutable historical evidence
-state_head: 00f3ddd3a835ed3b9dec97d0344a7beed69ccf39
+last_activity_desc: Phase 06.51 plan 06 complete; coordinated Guardian migration across 14 docs/test files; 157 documentation checks pass with historical costs preserved
+state_head: a285200fc48a2d0578c516c93ab99f8f1a2058a8
 progress:
   total_phases: 58
   completed_phases: 56
   total_plans: 315
-  completed_plans: 313
+  completed_plans: 314
 milestone_name: milestone
 ---
 
@@ -33,12 +33,19 @@ See: .planning/PROJECT.md (updated 2026-11-25)
 ## Current Position
 
 Phase: 06.51 (Remove retained Guardian link exceptions - stage 3b) — EXECUTING
-Current Plan: 6
+Current Plan: 7
 Total Plans in Phase: 7
 Status: executing
-Last activity: 2026-11-25 — Phase 06.51 plan 05 complete; 45 reversible matrix deltas and 444 measured cost scenarios; matrix1197/cost468 pass with immutable historical evidence
+Last activity: 2026-11-25 — Phase 06.51 plan 06 complete; coordinated Guardian migration across 14 docs/test files; 157 documentation checks pass with historical costs preserved
 
-Next: Continue plan 06.51-06 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+Next: Continue plan 06.51-07 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+
+### Phase 06.51 plan 06 — 2026-11-25
+
+- Completed AC-8 across the single Breaking entry, both migration sections, Guardian/FAQ and every inventoried reference. Create actor/parent admission precedes overrides; direct hooks remain bounded; custom button results follow actual targets; the parent-only ordinary-link/Cancel distinction is explicit. Navbar's existing alignment is preserved. No stage-3c API or runtime edit.
+- Required selections pass **18** primary migration checks, **48** navbar/reference checks and **157** combined documentation/recipe checks. Scoped Ruff/format/diff and all-reference prose/anchor audit pass. All original documentation tables, production/concept/matrix/cost bytes, unrelated Cancel/bulk recipes and plan 03's hook-docstring test remain unchanged. SUMMARY inventories all eleven changed prose tests and each historical cost statement.
+- Task commits `c1ea6ed6`, `eeb9e8ec`, `94388e88`; immediate SUMMARY `a285200f` precedes tracking. Four deliverables classify as automated. Initial broad negative prose assertion was narrowed to the exact ended behavior; final checks pass. Existing development Ruff used without installation.
+- ROADMAP accepted 6/7 and its stale dotted row was reconciled. STATE advanced once from plan 6 to 7 with one metric and three decisions; global unscoped percentage remains unset. SDK-only state.json changes are restored after snapshot/hash checks; original config/state dirt and unrelated files remain preserved. Strict MkDocs, complete source run and independent phase checks remain with plan 07/orchestrator. No full suite, recorder/version matrix, install, push, PR, merge, phase completion or issue closure ran.
 
 ### Phase 06.51 plan 05 — 2026-11-25
 
@@ -2124,6 +2131,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.51 P03 | 7min | 2 tasks | 9 files |
 | Phase 06.51 P04 | 6min | 2 tasks | 8 files |
 | Phase 06.51 P05 | 15min | 2 tasks | 6 files |
+| Phase 06.51 P06 | 9min | 3 tasks | 14 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2528,6 +2536,9 @@ Recent decisions affecting current work:
 - [Phase 06.51]: AC-7: retain all 1178 coordinates, original metadata and request outcomes; record 45 actual rendering deltas with applicable D-45/D-46/D-47/D-50 decisions.
 - [Phase 06.51]: AC-7: preserve full historical receipt bytes and validate its frozen payload/276 keys independently of current scenarios and pins.
 - [Phase 06.51]: D-48/D-49: measure higher Cancel gates and default create duplicate immediate invocation independently of SQL; retain grant reuse and bounded parent lookup.
+- [Phase 06.51]: D-46/D-49/D-50: document actor and declared parent gates before create overrides and migrate custom get_context correction dependencies to cv_create_has_access with explicit direct-call bounds.
+- [Phase 06.51]: D-51: ordinary parent-only PermissionRequired links retain child model permission; plain bases keep their own hook; Cancel omits every own-hook override while checking actor, ancestors and state.
+- [Phase 06.51]: D-55/AC-8: navbar already used aligned ancestry; page create controls now agree, and all retained numeric cost tables remain historical evidence.
 
 ### Pending Todos
 
@@ -2633,6 +2644,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T19:26:45.399Z
-Stopped at: Completed 06.51-05-PLAN.md
+Last session: 2026-11-25T19:40:51.274Z
+Stopped at: Completed 06.51-06-PLAN.md
 Resume file: None

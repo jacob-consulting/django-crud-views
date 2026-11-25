@@ -124,6 +124,32 @@ def test_permission_filter_guardian_create_retains_immediate_only_seam(monkeypat
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+@pytest.mark.parametrize("key", ["update", "list"])
+def test_permission_filter_real_far_denial_matches_request(composition, key, monkeypatch):
+    from guardian.shortcuts import remove_perm
+
+    with isolated_routes(lambda s: consumer_routes(s, composition)) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        actor.user_permissions.remove(Permission.objects.get(codename="change_publisher"))
+        if composition == "guardian":
+            remove_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+        actor = User.objects.get(pk=actor.pk)
+        page = consumer_view(ns.note, "Detail", actor, world)
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={key: AncestorPermissions(nearest="view", higher="change")}
+        )
+        state = Mock(side_effect=AssertionError("state after denied far permission"))
+        monkeypatch.setattr(ns.note.vs.get_view_class(key), "cv_action_enabled", state)
+        assert cv_context_has_permission(page, key) is False
+        client = Client()
+        client.force_login(actor)
+        assert client.get(page.cv_get_url(key, obj=world.note)).status_code == 403
+        state.assert_not_called()
+
+
+@pytest.mark.django_db
 def test_context_tracer(monkeypatch):
     """A real page remains permitted while its stricter target link follows request denial."""
     with isolated_routes(consumer_routes) as ns:

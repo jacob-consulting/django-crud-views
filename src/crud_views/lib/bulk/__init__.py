@@ -18,7 +18,7 @@ from crud_views.lib.ancestors import _scope_child_queryset
 from crud_views.lib.check import CheckExpression, CheckWarningExpression
 from crud_views.lib.crispy import CrispyForm, CrispyViewMixin
 from crud_views.lib.icons import _icon_available
-from crud_views.lib.view.base import _cancel_target_available
+from crud_views.lib.link_access import _LINK_ALLOWED, _known_link_ancestors, _link_access
 from crud_views.lib.view.button_data import cv_button_data
 from crud_views.lib.view.cancel import effective_cancel_keys
 from crud_views.lib.view.label_mode import default_label_mode
@@ -109,7 +109,14 @@ class BulkSelectionMixin:
         return tuple(
             key
             for key in self.cv_bulk_actions
-            if _cancel_target_available(self.cv_viewset.get_view_class(key), self.request.user, None, self)
+            if _link_access(
+                destination := self.cv_viewset.get_view_class(key),
+                self.request.user,
+                None,
+                _known_link_ancestors(destination, self),
+                rendering_view=self,
+            )
+            == _LINK_ALLOWED
         )
 
     def get_context_data(self, **kwargs):

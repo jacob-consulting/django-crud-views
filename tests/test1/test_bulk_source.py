@@ -614,12 +614,20 @@ def test_bulk_nested_custom_resolver_is_not_used_for_admission(
         Book.objects.create(publisher=parent, title=f"Book {index}")
     destination = cv_bulk_book.get_view_class("mark")
     original_access = destination.cv_has_access
+    original_resolver = source.cv_get_parent_object
     error = error_class("bulk parent resolver failure")
     events = []
     resolved = []
+    admitted = []
 
     def resolver(self):
-        raise error
+        # The source request's unchanged authorization uses the hook before
+        # toolbar admission. Any call once that admission starts is a failure.
+        if events:
+            raise error
+        obj = original_resolver(self)
+        admitted.append(obj)
+        return obj
 
     def access(cls, user, obj):
         assert obj is None
@@ -643,6 +651,7 @@ def test_bulk_nested_custom_resolver_is_not_used_for_admission(
     assert response.status_code == 200
     assert action_keys(response) == ["mark"]
     assert events == ["access", "state"]
+    assert admitted
     assert len(resolved) == 1
     assert resolved[0] is response.context_data["view"]._cv_ancestor_state.parent
 

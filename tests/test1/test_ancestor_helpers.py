@@ -286,7 +286,7 @@ def test_none_immediate_parent_retains_actor_and_state_checks(helpers, data, mon
 
     monkeypatch.setattr(create, "cv_action_enabled", classmethod(state))
     active = _user("ah_none_active")
-    assert create._cv_action_enabled_for_context(active, data.book) is False
+    assert create.cv_action_enabled(active, data.book) is False
     assert seen == [data.book]  # the custom hook still receives the structural parent
 
 

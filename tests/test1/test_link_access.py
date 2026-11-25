@@ -74,6 +74,55 @@ def test_guardian_create_gate_before_override(helpers, data, monkeypatch, provid
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("consumer", ["child-button", "filter"])
+def test_guardian_create_gate_before_override_at_consumers(helpers, data, monkeypatch, consumer):
+    actor = _user("create_override_consumer")
+    _grant(actor, helpers.pub, "view", data.penguin)
+    if consumer == "child-button":
+        view = _bound(helpers.pub.Detail, actor, pk=data.penguin.pk)
+        view.object = data.penguin
+        view.request.resolver_match = SimpleNamespace(url_name=helpers.pub.vs.get_router_name("detail"))
+    else:
+        view = _page_view(helpers.book.List, actor, data.penguin)
+    target = helpers.book.Create
+    create, state = Mock(return_value=True), Mock(return_value=True)
+    monkeypatch.setattr(target, "cv_create_has_access", create)
+    monkeypatch.setattr(target, "cv_action_enabled", state)
+    button = ChildContextButton(key="create", child_name=helpers.book.vs.name, child_key="create")
+
+    def render():
+        if consumer == "filter":
+            return cv_context_has_permission(view, "create")
+        return button.get_context(view.cv_get_view_context(object=data.penguin))["cv_access"]
+
+    assert render() is False
+    create.assert_not_called()
+    state.assert_not_called()
+    destination = _url(helpers.book.vs, "create", **{helpers.book.vs.parent.get_pk_name(): data.penguin.pk})
+    assert _client(actor).get(destination).status_code == 403
+
+    _grant(actor, helpers.pub, "change", data.penguin)
+    fresh = User.objects.get(pk=actor.pk)
+    view.request.user = fresh
+    create.return_value = False
+    assert render() is False
+    parent = data.penguin if consumer == "child-button" else view._cv_ancestor_state.parent
+    create.assert_called_once_with(fresh, None if consumer == "child-button" else view, parent)
+    state.assert_not_called()
+    assert _client(fresh).get(destination).status_code == 200
+
+    create.reset_mock()
+    state.reset_mock()
+    create.return_value = True
+    assert render() is True
+    create.assert_called_once_with(fresh, None if consumer == "child-button" else view, parent)
+    if consumer == "filter":
+        state.assert_not_called()
+    else:
+        state.assert_called_once_with(fresh, data.penguin)
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize("protected", [False, True])
 @pytest.mark.parametrize("kind", ["anonymous", "inactive", "inactive-superuser", "active"])
 @pytest.mark.parametrize("shape", ["stock-object", "stock-list", "object-only", "queryset-only", "parent-only"])

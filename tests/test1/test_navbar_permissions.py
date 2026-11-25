@@ -127,7 +127,9 @@ def test_rendered_admission_order_and_exact_owner(composition, key, outcome, dja
         original_owner = view.object
         access.assert_called_once_with(request_actor, None, original_owner, rendering_view=None)
         own.assert_called_once_with(request_actor, original_owner)
-        gate.assert_called_once_with(request_actor, original_owner)
+        assert [call.args for call in gate.call_args_list] == [(request_actor, original_owner)] * (
+            2 if composition == "guardian" and key == "create" and outcome != "denied" else 1
+        )
         assert access.call_args.args[2] is original_owner
         if outcome == "denied":
             state.assert_not_called()
@@ -266,7 +268,7 @@ def test_reachable_nested_host_does_not_predict_farther_policy(django_user_model
 @pytest.mark.django_db
 @pytest.mark.parametrize("far_allowed", [False, True])
 def test_navbar_child_create_own_viewset_higher_denial(helpers, data, monkeypatch, provider_calls, far_allowed):
-    """D-55: the navbar checks Publisher while the context create keeps its Book-only rewrite."""
+    """D-55: navbar and context create both keep the target's known higher-ancestor gate."""
     actor = _user("navbar_own_create")
     _grant(actor, helpers.pub, "view", data.penguin)
     if far_allowed:
@@ -297,8 +299,9 @@ def test_navbar_child_create_own_viewset_higher_denial(helpers, data, monkeypatc
         assert create.call_args.args[1] is view
         assert create.call_args.args[2] is book
         state.assert_called_once_with(actor, book)
-        assert len(provider_calls) == 2
+        assert len(provider_calls) == 3
         assert provider_calls[1][2] is book
+        assert provider_calls[2][2] is book
     else:
         create.assert_not_called()
         state.assert_not_called()
@@ -308,12 +311,18 @@ def test_navbar_child_create_own_viewset_higher_denial(helpers, data, monkeypatc
     state.reset_mock()
     provider_calls.clear()
     context = view.cv_get_context("create", user=actor, request=view.request)
-    assert context["cv_access"] is True
+    assert context["cv_access"] is far_allowed
     assert context["cv_action_enabled"] is True
-    create.assert_called_once_with(actor, view, book)
-    state.assert_called_once_with(actor, book)
-    assert provider_calls == [(helpers.book.vs.name, "app.change_book", book)]
-    assert provider_calls[0][2] is book
+    expected = [(helpers.pub.vs.name, "app.change_publisher", publisher)]
+    if far_allowed:
+        create.assert_called_once_with(actor, view, book)
+        state.assert_called_once_with(actor, book)
+        expected += [(helpers.book.vs.name, "app.change_book", book)] * 2
+    else:
+        create.assert_not_called()
+        state.assert_not_called()
+    assert provider_calls == expected
+    assert all(call[2] is wanted[2] for call, wanted in zip(provider_calls, expected, strict=True))
     destination = reverse(helpers.note.vs.get_router_name("create"), kwargs=kwargs)
     assert _client(actor).get(destination).status_code == (200 if far_allowed else 403)
 
@@ -352,9 +361,6 @@ def test_navbar_target_stricter_far_gate(composition, item_kind, far_allowed, mo
         state = Mock(wraps=target.cv_action_enabled)
         monkeypatch.setattr(target, "cv_has_access", own)
         monkeypatch.setattr(target, "cv_action_enabled", state)
-        monkeypatch.setattr(
-            target, "_cv_page_link_ancestors", Mock(side_effect=AssertionError("navbar used page seam"))
-        )
         result = _build(view)
         assert bool(result) is far_allowed
         if far_allowed:

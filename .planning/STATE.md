@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.50"
 current_phase_name: "Move remaining link consumers to the shared link check - stage 3a (#412)"
-current_plan: 7
+current_plan: 8
 status: executing
-stopped_at: Completed 06.50-09-PLAN.md; next 06.50-07 then 08
-last_updated: "2026-11-25T07:20:22.267Z"
+stopped_at: Completed 06.50-07-PLAN.md; next 06.50-08
+last_updated: "2026-11-25T07:33:18.723Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.50 plan 09 complete; dependency order continues with 07 then 08
-state_head: 729626d56e2a46ff6b48c7a232036991e20f86ce
+last_activity_desc: Phase 06.50 plan 07 complete; plan 08 next
+state_head: 454728e81d31652a563afc6c7134e6612561857f
 progress:
   total_phases: 57
   completed_phases: 55
   total_plans: 308
-  completed_plans: 306
+  completed_plans: 307
 milestone_name: milestone
 ---
 
@@ -33,12 +33,18 @@ See: .planning/PROJECT.md (updated 2026-11-24)
 ## Current Position
 
 Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — EXECUTING
-Current Plan: 7
+Current Plan: 8
 Total Plans in Phase: 9
-Status: Executing Phase 06.50 — 7/9 plans complete
-Last activity: 2026-11-25 — Phase 06.50 plan 09 complete; plan 07 next, then 08
+Status: Executing Phase 06.50 — 8/9 plans complete
+Last activity: 2026-11-25 — Phase 06.50 plan 07 complete; plan 08 next
 
 Next: $gsd-execute-phase 06.50
+
+### Phase 06.50 plan 07 — 2026-11-25
+
+- Published one paired Breaking/migration account for all eight stage-3a changes, explicit direct-call actors, exact same-ViewSet create-hook inputs and parent ViewSet queryset migration. Reconciled context-button, Guardian, nested, navbar and FAQ contracts; documented D-55 and retained seam/rewrite/Cancel mechanisms with the two higher-gate narrowings. Cost prose separates measured stage-3a counts from historical stage-2 savings and cache preparation.
+- Required task checks pass: 17 focused documentation checks and 108 combined documentation/recipe checks. Ruff/format/diff checks pass. All older docs assertions and recipes remain; new checks cover eight changes, actor/view identity, exceptions and cost attribution. No runtime source or golden changed; no dependency installed.
+- Task commits 4528c038 and 464ae409; immediate SUMMARY 454728e8 precedes tracking. Four deliverables classify as automated coverage. ROADMAP accepted 8/9; stale dotted table row corrected. STATE advanced to plan 08; unscoped global percentage remains unset. A repeated asynchronous SDK chain duplicated only this plan's metric/decision rows; exact duplicates were removed after both chains finished. Original state.json/configuration bytes preserved. Requirements remain intentionally empty; plan 08 owns remaining references and final phase checks. No phase-completion action ran.
 
 ### Phase 06.50 plan 09 — 2026-11-25
 
@@ -2060,6 +2066,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.50 P05 | 8 min | 2 tasks | 4 files |
 | Phase 06.50 P06 | 14 min | 2 tasks | 4 files |
 | Phase 06.50 P09 | 14min | 2 tasks | 5 files |
+| Phase 06.50 P07 | 8min | 2 tasks | 9 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2443,6 +2450,8 @@ Recent decisions affecting current work:
 - [Phase 06.50]: Preserve all 32282 original receipt bytes; append measured after records and all 276 explicit deltas.
 - [Phase 06.50]: Treat 24 bulk full-response cells as supplemental same-production controls, not a fabricated pre-migration baseline.
 - [Phase 06.50]: Retain historical Guardian cost attribution and disclose the approved D-41 sibling-test migration separately.
+- [Phase 06.50]: Describe Guardian exceptions by their actual seam/rewrite/Cancel mechanisms, never as a page-wide exemption.
+- [Phase 06.50]: Keep historical stage-2 savings separate from stage-3a zero-delta navbar and changed consumer costs.
 
 ### Pending Todos
 
@@ -2547,6 +2556,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T07:20:01.481Z
-Stopped at: Completed 06.50-09-PLAN.md; next 06.50-07 then 08
+Last session: 2026-11-25T07:33:11.825Z
+Stopped at: Completed 06.50-07-PLAN.md; next 06.50-08
 Resume file: None

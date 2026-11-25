@@ -1007,15 +1007,25 @@ def test_preservation_ordinary_row_and_sibling_actions(links, world, monkeypatch
     assert own["cv_access"] is True
     detail_gate.assert_not_called()
 
-    # A sibling collection remains on its pre-existing general access path (outside this fix).
+    # D-41: an unguarded nested sibling has no known parent, even with URL kwargs.
     list_gate = parent_spy(monkeypatch, links.list)
     sibling = SiblingContextButton(key="sibling", sibling_name=links.child.name)
     host = bound(links.target_card, actor)
     host.kwargs = {links.child.parent.get_pk_name(): parents[1].pk}
     data = sibling.get_context(host.cv_get_view_context())
-    assert data["cv_access"] is True
+    assert data["cv_access"] is False
     assert resolve(data["cv_url"]).kwargs[links.child.parent.get_pk_name()] == str(parents[1].pk)
     list_gate.assert_not_called()
+
+    # The positive control uses the permitted URL parent resolved by the real guard.
+    host.kwargs = {links.child.parent.get_pk_name(): parent.pk}
+    assert host._cv_ancestor_guard() is None
+    resolved_parent = host._cv_ancestor_state.parent
+    data = sibling.get_context(host.cv_get_view_context())
+    assert data["cv_access"] is True
+    assert resolve(data["cv_url"]).kwargs[links.child.parent.get_pk_name()] == str(parent.pk)
+    list_gate.assert_called_once_with(actor, resolved_parent)
+    assert list_gate.call_args.args[1] is resolved_parent
 
 
 @pytest.mark.django_db
@@ -1073,6 +1083,25 @@ def report_measurement(record_property, **values):
     print(text)
 
 
+def plain_child_cost_pin(is_guardian, vocabulary, actor_cache):
+    """Exact measured own/rendered cells; a warm model actor still has cold object grants."""
+    results = {}
+    for layer in ("own_access", "rendered"):
+        rendered = layer == "rendered"
+        permissions = 2 if actor_cache == "fresh" else 0
+        content_types = (2 if rendered else 1) if vocabulary == "cold" else 0
+        permissions += content_types + (2 if rendered and is_guardian else 0)
+        categories = {"permissions": permissions} if permissions else {}
+        if content_types:
+            categories["content_type"] = content_types
+        results[layer] = {
+            "total": permissions + content_types,
+            "categories": categories,
+            "helper_calls": int(rendered),
+        }
+    return results
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize("renderer", ["context", "card"])
 @pytest.mark.parametrize("actor_cache", ["fresh", "warm"])
@@ -1120,6 +1149,7 @@ def test_query_plain_child_link_cost(
         assert results["rendered"]["total"] > results["own_access"]["total"]
     elif vocabulary == "warm":
         assert results["rendered"]["total"] == results["own_access"]["total"]
+    assert results == plain_child_cost_pin(is_guardian, vocabulary, actor_cache)
     report_measurement(
         record_property,
         layer="plain_destination",
@@ -1155,7 +1185,9 @@ def test_query_cold_and_warm_discovery(links, world, django_user_model, monkeypa
         results[temperature] = {"total": len(capture), "categories": categories}
     assert spy.call_count == 2
     assert results["cold"]["total"] > results["warm"]["total"]
-    report_measurement(record_property, layer="adapter", renderer=renderer, results=results)
+    report_measurement(
+        record_property, layer="adapter", renderer=renderer, results=results, helper_calls=spy.call_count
+    )
     assert results == {
         "cold": {"total": 6, "categories": {"content_type": 2, "permissions": 4}},
         "warm": {"total": 0, "categories": {}},

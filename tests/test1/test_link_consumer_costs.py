@@ -6,6 +6,9 @@ fixtures and cache preparation; gate calls remain separate from permission SQL.
 
 import json
 from collections import Counter
+from copy import deepcopy
+from hashlib import sha256
+from itertools import product
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
@@ -42,6 +45,7 @@ from tests.test1.app.models import Book, BookNote, Publisher
 from tests.test1.test_ancestor_authorization import isolated_routes
 from tests.test1.test_ancestor_helpers import _bound
 from tests.test1.test_guardian_checker_costs import list_sql_category
+from tests.test1.test_guardian_child_link_visibility import plain_child_cost_pin
 from tests.test1.test_navbar_costs import cache_conditions
 
 
@@ -406,11 +410,178 @@ def test_consumer_costs(surface, row_count, composition, allowed, actor_cache, m
                 assert result == [] and not events and len(capture) == 0
 
 
-def test_cost_receipts():
-    """The final phase gate requires both measurements; first capture deselects this test."""
+def read_cost_receipts():
     receipt = Path(
         ".planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-COST-BASELINE.md"
     )
-    text = receipt.read_text()
-    assert "## Before measurements" in text
-    assert "## After measurements" in text
+    before, after = receipt.read_text().split("\n## After measurements", 1)
+    return before, json.loads(after.split("```json\n", 1)[1].split("\n```", 1)[0])
+
+
+def validate_cost_receipts(before, after):
+    # This fixed digest protects every original byte, including source/artifact hashes
+    # and all before cells. No historical Git, XML temp path or network is needed.
+    assert sha256(before.encode()).hexdigest() == "4e9436029aff6629e0a9c38d703beb50015b39d664e6486cb925a2fe09ab7c55"
+    expected = {}
+    for composition, cache, allowed, (surface, rows) in product(
+        ("core", "guardian", "mixed"), ("cold", "warm"), (False, True), SCENARIOS
+    ):
+        key = "|".join(map(str, (composition, cache, allowed, surface, rows)))
+        expected[key] = consumer_cost_pin(surface, rows, composition, allowed, cache)
+    assert len(expected) == 276
+    assert after["consumers"] == expected
+    original_counts = {}
+    for line in before.splitlines():
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        if len(cells) == 10 and cells[0] in {"core", "guardian", "mixed"}:
+            composition, cache, grants, surface, rows = cells[:5]
+            key = "|".join((composition, cache, str(grants == "allowed"), surface, rows))
+            original_counts[key] = list(map(int, cells[5:]))
+    assert original_counts.keys() == expected.keys()
+    assert after["deltas"] == {
+        key: [
+            a - b
+            for a, b in zip(
+                [pin["queries"], pin["permission_queries"], *pin["hooks"].values()], original_counts[key], strict=True
+            )
+        ]
+        for key, pin in expected.items()
+    }
+
+    navbar = {}
+    for composition, page, placement, vocabulary, cache in product(
+        ("plain", "guardian", "mixed"),
+        ("owner", "deep"),
+        ("tag", "split", "repeated", "components", "mixed-repeated"),
+        ("cold", "warm"),
+        ("cold", "warm"),
+    ):
+        key = f"test_navbar_isolated_costs[{cache}-{vocabulary}-{placement}-{page}-{composition}]"
+        total = 2 if composition != "plain" and page == "owner" else 0
+        total += (4 if vocabulary == "cold" else 0) + (2 if cache == "cold" and composition != "guardian" else 0)
+        content_types = 2 if vocabulary == "cold" else 0
+        categories = {
+            k: v for k, v in {"content_type": content_types, "permissions": total - content_types}.items() if v
+        }
+        navbar[key] = {
+            "composition": composition,
+            "page": page,
+            "placement": placement,
+            "vocabulary": vocabulary,
+            "actor_cache": cache,
+            "queries": total,
+            "permission_queries": total - content_types,
+            "categories": categories,
+            "builds": 1,
+            "hooks": [1, 1, 1, 1],
+            "ancestor_calls": 1,
+        }
+    assert after["navbar"] == navbar
+
+    bulk = {}
+    for nested, card, rows, actions in product((False, True), (False, True), (1, 5), (0, 1, 4)):
+        shape = f"{'card' if card else 'table'}-{'nested' if nested else 'top'}"
+        key = f"test_bulk_source_query_cost[{actions}-{rows}-{shape}]"
+        total = 8 + int(nested) - int(card)
+        categories = {"actor": 1, "session": 1, "permissions": 2, "other": 1}
+        categories["child_or_relation_rows" if nested else "parent_rows"] = 2 if card else 3
+        if nested:
+            categories["parent_rows"] = 1
+        bulk[key] = {
+            "nested": nested,
+            "card": card,
+            "rows": rows,
+            "actions": actions,
+            "queries": total,
+            "baseline_queries": total,
+            "permission_queries": 2,
+            "categories": categories,
+            "own_calls": actions,
+            "state_calls": actions,
+            "ancestor_calls": actions if nested else 0,
+        }
+    assert after["bulk"] == bulk
+
+    child = {}
+    for provider, vocabulary, cache, renderer in product(
+        ("model", "guardian"), ("cold", "warm"), ("fresh", "warm"), ("context", "card")
+    ):
+        key = f"test_query_plain_child_link_cost[{provider}-{vocabulary}-{cache}-{renderer}]"
+        child[key] = [
+            {
+                "layer": "plain_destination",
+                "parent_provider": provider,
+                "renderer": renderer,
+                "actor_cache": cache,
+                "vocabulary": vocabulary,
+                "results": plain_child_cost_pin(provider == "guardian", vocabulary, cache),
+            }
+        ]
+    for renderer in ("context", "card"):
+        child[f"test_query_cold_and_warm_discovery[{renderer}]"] = [
+            {
+                "layer": "adapter",
+                "renderer": renderer,
+                "helper_calls": 2,
+                "results": {
+                    "cold": {"total": 6, "categories": {"content_type": 2, "permissions": 4}},
+                    "warm": {"total": 0, "categories": {}},
+                },
+            }
+        ]
+        child[f"test_query_create_uses_only_its_existing_parent_check[{renderer}]"] = [
+            {
+                "layer": "create_baseline",
+                "renderer": renderer,
+                "baseline": 2,
+                "baseline_categories": {"permissions": 2},
+                "rendered": 0,
+                "categories": {},
+                "helper_calls": 1,
+            }
+        ]
+    child["test_query_unaffected_core_and_ordinary_actions"] = [
+        {
+            "layer": "mixed_core_guardian",
+            "renderer": "context",
+            "total": 2,
+            "categories": {"permissions": 2},
+            "helper_calls": 1,
+        },
+        {"layer": "mixed_core_guardian", "renderer": "card", "total": 0, "categories": {}, "helper_calls": 1},
+        {
+            "layer": "ordinary_baseline",
+            "baseline": 0,
+            "baseline_categories": {},
+            "rendered": 0,
+            "categories": {},
+            "helper_calls": 0,
+        },
+    ]
+    assert after["guardian_child"] == child
+
+
+def test_cost_receipts():
+    """All measured rows and categories agree with the independently exercised runtime pins."""
+    validate_cost_receipts(*read_cost_receipts())
+
+
+@pytest.mark.parametrize(
+    "damage", ["missing-row", "missing-category", "lost-before-hash", "wrong-pin", "missing-navbar"]
+)
+def test_cost_receipts_reject_incomplete_or_changed_evidence(damage):
+    before, original = read_cost_receipts()
+    after = deepcopy(original)
+    key = "core|cold|True|context|1"
+    if damage == "missing-row":
+        del after["consumers"][key]
+    elif damage == "missing-category":
+        del after["consumers"][key]["permission_queries"]
+    elif damage == "lost-before-hash":
+        before = before.replace("318080b9d6b53254f6c84a4b1e85ff238e8565fceba653699f0ef8883ee6420e", "lost")
+    elif damage == "wrong-pin":
+        after["consumers"][key]["hooks"]["ancestor"] += 1
+    else:
+        after["navbar"].pop(next(iter(after["navbar"])))
+    with pytest.raises(AssertionError):
+        validate_cost_receipts(before, after)

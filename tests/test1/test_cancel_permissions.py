@@ -287,7 +287,7 @@ def test_core_state_errors_propagate(cv_publisher, user_publisher_view, monkeypa
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("enabled", [False, True])
-def test_core_custom_create_and_rendering_adapter(cv_publisher, user_publisher_add, client, monkeypatch, enabled):
+def test_core_custom_create_public_state(cv_publisher, user_publisher_add, client, monkeypatch, enabled):
     target = cv_publisher.get_view_class("create")
     events = []
 
@@ -296,31 +296,24 @@ def test_core_custom_create_and_rendering_adapter(cv_publisher, user_publisher_a
         events.append(("state", obj))
         return enabled
 
-    @classmethod
-    def adapter(cls, user, obj, rendering_view):
-        events.append(("adapter", obj))
-        assert rendering_view.request.user == user
-        return cls.cv_action_enabled(user, obj)
-
     monkeypatch.setattr(target, "cv_action_enabled", state)
-    monkeypatch.setattr(target, "_cv_action_enabled_for_rendering", adapter)
     owner = bound(cv_publisher.get_view_class("update"), user_publisher_add)
     owner.cv_cancel_keys = ["create"]
     owner.cv_cancel_key = "create"
     owner.request.GET = RequestFactory().get("/", {"cv_from": "create"}).GET
     assert owner.cv_get_cancel_url() == (url(cv_publisher, "create") if enabled else None)
     # A denied origin which is also the fallback is evaluated only once.
-    assert events == [("adapter", None), ("state", None)]
+    assert events == [("state", None)]
     events.clear()
     context = owner.cv_get_context(key="create", obj=None, user=user_publisher_add, request=owner.request)
     assert context["cv_access"] is True
     assert context["cv_action_enabled"] is enabled
-    assert events == [("adapter", None), ("state", None)]
+    assert events == [("state", None)]
     events.clear()
     client.force_login(user_publisher_add)
     assert client.get(url(cv_publisher, "create")).status_code == (200 if enabled else 403)
     # Authorized GET additionally renders the page's own action metadata.
-    assert events == [("state", None)] + ([("adapter", None), ("state", None)] if enabled else [])
+    assert events == [("state", None)] + ([("state", None)] if enabled else [])
 
 
 @pytest.mark.django_db

@@ -248,19 +248,18 @@ def test_parent_binding_and_programming_errors(cv_book):
 
 @pytest.mark.django_db
 def test_parent_lookup_and_custom_failures_have_distinct_outcomes(cv_book, book_hitchhiker, monkeypatch):
-    from types import SimpleNamespace
-
     from crud_views.lib.view.base import CrudView
+    from tests.test1.test_ancestor_authorization import _user
 
     owner = cv_book.get_view_class("update")()
     owner.kwargs = {cv_book.get_parent_url_args()[0]: book_hitchhiker.publisher_id}
     target = cv_book.get_view_class("list")
-    actor = SimpleNamespace(has_perms=lambda perms: True)
+    actor = _user("cancel_parent_lookup", superuser=True)
     seen = []
     monkeypatch.setattr(
         target,
-        "_cv_action_enabled_for_rendering",
-        classmethod(lambda cls, user, obj, rendering_view: seen.append(obj) or True),
+        "cv_action_enabled",
+        classmethod(lambda cls, user, obj: seen.append(obj) or True),
     )
     assert target._cv_cancel_target_available(actor, book_hitchhiker, owner)
     assert seen == [book_hitchhiker.publisher]
@@ -270,7 +269,7 @@ def test_parent_lookup_and_custom_failures_have_distinct_outcomes(cv_book, book_
     with pytest.raises(KeyError):
         target._cv_cancel_target_available(actor, book_hitchhiker, owner)
     owner.kwargs = {cv_book.get_parent_url_args()[0]: book_hitchhiker.publisher_id}
-    for hook in ("cv_has_access", "_cv_action_enabled_for_rendering"):
+    for hook in ("cv_has_access", "cv_action_enabled"):
 
         def broken(*args):
             raise RuntimeError("application policy failed")

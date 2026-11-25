@@ -19,6 +19,446 @@ from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1.test_ancestor_authorization import isolated_routes
 from tests.test1.test_link_consumer_costs import consumer_actor, consumer_routes, consumer_view, consumer_world
 
+# Collection-only destinations are explicit: sibling/child URLs cannot supply an
+# own object, navbar owner items require one, and bulk targets are form views.
+CONSUMER_SHAPES = [
+    ("context", "update"),
+    ("context", "list"),
+    ("parent", "update"),
+    ("parent", "list"),
+    ("sibling", "list"),
+    ("child", "list"),
+    ("view_key", "update"),
+    ("view_key", "list"),
+    ("table_row", "update"),
+    ("table_row", "list"),
+    ("card_own", "update"),
+    ("card_own", "list"),
+    ("card_child", "list"),
+    ("navbar_owner", "update"),
+    ("navbar_child", "list"),
+    ("filter", "update"),
+    ("filter", "list"),
+    ("cancel", "update"),
+    ("cancel", "list"),
+    ("bulk", "mark"),
+]
+
+
+def grid_routes(suffix, composition):
+    """Use a Resource leaf to render a parent link to the existing three-level target."""
+    from crud_views.lib.resource import ResourceViewMixin
+    from crud_views.lib.views import DetailView
+    from crud_views.lib.viewset import ParentViewSet
+    from tests.test1.test_ancestor_resources import TopFile
+
+    ns, routed = consumer_routes(suffix, composition)
+    leaf = ViewSet(model=TopFile, name=f"consumerleaf{suffix}", parent=ParentViewSet(name=ns.note.vs.name))
+    ns.Leaf = type("ConsumerLeaf", (ResourceViewMixin, DetailView), {"cv_viewset": leaf})
+    return ns, [*routed, leaf]
+
+
+def grid_consumer(ns, world, actor, surface, key):
+    """Bind each named entry point independently, retaining its normal URL shape."""
+    from types import SimpleNamespace
+
+    from crud_views.lib.bulk import BulkSelectionMixin
+    from crud_views.lib.navbar import NavBar, NavItem, _build
+    from crud_views.lib.view import CardAction
+    from crud_views.lib.view.visibility import cv_resolve_action
+    from tests.test1.test_ancestor_helpers import _bound
+    from tests.test1.test_ancestor_resources import TopFile
+
+    family = ns.sibling if surface == "sibling" else ns.note
+    target = family.vs.get_view_class(key)
+    source = ns.book if surface in {"child", "card_child", "navbar_child"} else ns.note
+    page_key = "Card" if surface in {"card_own", "card_child"} else "List" if surface == "table_row" else "Detail"
+    page = consumer_view(source, page_key, actor, world)
+    if surface == "parent":
+        kwargs = {
+            edge.get_pk_name(): obj.pk
+            for (edge, _), obj in zip(
+                ancestors._walk_ancestors(ns.Leaf.cv_viewset), (world.note, world.book, world.pub), strict=True
+            )
+        }
+        page = _bound(ns.Leaf, actor, pk="known-file", **kwargs)
+        page.object = TopFile(key="known-file")
+        page.request.resolver_match = SimpleNamespace(url_name=ns.Leaf.cv_viewset.get_router_name("detail"))
+        assert page._cv_ancestor_guard() is None
+    own = ancestors._resolved_ancestor(page, ns.note.vs.name) if surface == "parent" else world.note
+    own = own if target.cv_object else None
+    nearest = world.book if source is ns.book else ancestors._resolved_ancestor(page, ns.book.vs.name)
+    far = ancestors._resolved_ancestor(page, ns.pub.vs.name)
+    page.cv_cancel_key = key
+    page.cv_bulk_actions = (key,)
+    page.cv_navbar = NavBar(
+        viewset=source.vs.name,
+        items=[NavItem(child=family.vs.name, key=key) if surface == "navbar_child" else NavItem(key=key)],
+    )
+
+    def render():
+        user = page.request.user
+        context = page.cv_get_view_context(object=page.object)
+        if surface == "context":
+            result = ContextButton(key="grid", key_target=key).get_context(context)
+        elif surface == "parent":
+            result = ParentContextButton(key="grid", key_target=key).get_context(context)
+        elif surface == "sibling":
+            result = SiblingContextButton(key="grid", sibling_name=family.vs.name, sibling_key=key).get_context(context)
+        elif surface == "child":
+            result = ChildContextButton(key="grid", child_name=family.vs.name, child_key=key).get_context(context)
+        elif surface in {"view_key", "table_row"}:
+            result = page.cv_get_context(
+                key, obj=world.note, user=user, location="list" if surface == "table_row" else "context"
+            )
+        elif surface in {"card_own", "card_child"}:
+            action = (
+                CardAction(child_name=family.vs.name, child_key=key) if surface == "card_child" else CardAction(key=key)
+            )
+            result = page.cv_get_card_action_data(action, world.book if surface == "card_child" else world.note, user)
+        elif surface.startswith("navbar"):
+            return bool(_build(page))
+        elif surface == "filter":
+            return cv_context_has_permission(page, key)
+        elif surface == "cancel":
+            return page.cv_get_cancel_url() is not None
+        elif surface == "bulk":
+            # Each observation is a fresh admission calculation, not the source
+            # page's intentionally cached effective-actions presentation property.
+            return bool(BulkSelectionMixin._cv_effective_bulk_actions.func(page))
+        else:
+            raise AssertionError(surface)
+        resolved = cv_resolve_action(result)
+        return resolved is not None and not resolved["cv_disabled"]
+
+    return page, target, own, nearest, far, render
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+@pytest.mark.parametrize("surface,key", CONSUMER_SHAPES)
+def test_consumer_grid_real_far_denial_and_fresh_grant(composition, surface, key, monkeypatch):
+    """A reachable page uses Read while its target needs change at the actual far object."""
+    from guardian.shortcuts import assign_perm, remove_perm
+
+    with isolated_routes(lambda suffix: grid_routes(suffix, composition)) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        actor.user_permissions.remove(Permission.objects.get(codename="change_publisher"))
+        if composition == "guardian":
+            remove_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+        actor = User.objects.get(pk=actor.pk)
+        page, target, own_obj, nearest, far, render = grid_consumer(ns, world, actor, surface, key)
+        target.cv_viewset.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={key: AncestorPermissions(nearest="view", higher="change")}
+        )
+        events = []
+        provider = GuardianViewSet if composition == "guardian" else ViewSet
+        original = provider._ancestor_has_permission
+
+        def gate(vs, user, permission, obj, *, view):
+            events.append((vs.name, obj, permission))
+            return original(vs, user, permission, obj, view=view)
+
+        monkeypatch.setattr(provider, "_ancestor_has_permission", gate)
+        own = Mock(wraps=target.cv_has_access)
+        state = Mock(return_value=True)
+        monkeypatch.setattr(target, "cv_has_access", own)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        retained_cancel = composition == "guardian" and surface == "cancel"
+        assert render() is retained_cancel
+        expected_far = (ns.pub.vs.name, far, ns.pub.vs.permissions["change"])
+        expected_near = (ns.book.vs.name, nearest, ns.book.vs.permissions["view"])
+        assert events == ([expected_near] if retained_cancel else [expected_far])
+        assert events[0][1] is (nearest if retained_cancel else far)
+        if not retained_cancel:
+            own.assert_not_called()
+            state.assert_not_called()
+        else:
+            own.assert_called_once_with(actor, own_obj)
+            state.assert_called_once_with(actor, own_obj if target.cv_object else nearest)
+        destination = reverse(
+            target.cv_viewset.get_router_name(key),
+            kwargs={
+                ns.book.vs.parent.get_pk_name(): world.pub.pk,
+                target.cv_viewset.parent.get_pk_name(): world.book.pk,
+                **({"pk": world.note.pk} if target.cv_object else {}),
+            },
+        )
+        client = Client()
+        client.force_login(actor)
+        state.reset_mock()
+        assert client.get(destination).status_code == 403
+        state.assert_not_called()
+
+        assign_perm(ns.pub.vs.permissions["change"], actor)
+        if composition == "guardian":
+            assign_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+        fresh = User.objects.get(pk=actor.pk)
+        assert fresh is not actor
+        page.request.user = fresh
+        events.clear()
+        own.reset_mock()
+        assert render() is True
+        assert events == ([expected_near] if retained_cancel else [expected_far, expected_near])
+        assert all(
+            event[1] is wanted[1]
+            for event, wanted in zip(
+                events, [expected_near] if retained_cancel else [expected_far, expected_near], strict=True
+            )
+        )
+        own.assert_called_once_with(fresh, own_obj)
+        assert own.call_args.args[1] is own_obj
+        if surface == "filter":
+            state.assert_not_called()
+        else:
+            state.assert_called_once_with(fresh, own_obj if target.cv_object else nearest)
+            assert state.call_args.args[1] is (own_obj if target.cv_object else nearest)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+@pytest.mark.parametrize("surface,key", CONSUMER_SHAPES)
+@pytest.mark.parametrize("problem", ["ancestor-key", "operation", "auth-database", "own-key"])
+def test_consumer_grid_errors_and_missing_own_key(composition, surface, key, problem, monkeypatch):
+    with isolated_routes(lambda suffix: grid_routes(suffix, composition)) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        _page, target, _, _, _, render = grid_consumer(ns, world, actor, surface, key)
+        state = Mock(side_effect=AssertionError("state after permission failure"))
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        if problem == "ancestor-key":
+            target.cv_viewset.ancestor_policy = AncestorPolicy(
+                cascade=True, actions={key: AncestorPermissions(nearest="absent", higher="view")}
+            )
+        elif problem == "operation":
+            monkeypatch.setattr(target, "_cv_ancestor_operation", "unmapped", raising=False)
+        elif problem == "auth-database":
+            monkeypatch.setattr(actor._state, "db", "other")
+        else:
+            monkeypatch.setattr(target, "cv_permission", "absent")
+        if problem == "own-key":
+            assert render() is False
+        else:
+            with pytest.raises(ImproperlyConfigured):
+                render()
+        state.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("surface,key", CONSUMER_SHAPES)
+@pytest.mark.parametrize("changed", ["permission", "state"])
+def test_consumer_repeated_target_rechecks_public_decisions(surface, key, changed, monkeypatch):
+    with isolated_routes(lambda suffix: grid_routes(suffix, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        _page, target, own_obj, nearest, _, render = grid_consumer(ns, world, actor, surface, key)
+        own, state = Mock(return_value=True), Mock(return_value=True)
+        changing = own if changed == "permission" else state
+        changing.side_effect = [True, False]
+        monkeypatch.setattr(target, "cv_has_access", own)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        assert render() is True
+        assert render() is (surface == "filter" and changed == "state")
+        assert own.call_count == 2
+        assert all(call.args[0] is actor and call.args[1] is own_obj for call in own.call_args_list)
+        assert state.call_count == (0 if surface == "filter" else 1 if changed == "permission" else 2)
+        assert all(call.args[1] is (own_obj if target.cv_object else nearest) for call in state.call_args_list)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("surface,key", [("parent", "update"), ("parent", "list"), ("sibling", "list")])
+@pytest.mark.parametrize("missing", ["nearest", "higher"])
+def test_guardian_cross_viewset_buttons_keep_unknown_level_positions(surface, key, missing, monkeypatch):
+    with isolated_routes(lambda suffix: grid_routes(suffix, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page, target, own_obj, nearest, _, render = grid_consumer(ns, world, actor, surface, key)
+        objects = list(page._cv_ancestor_state.objects)
+        objects[(-2 if missing == "nearest" else -1)] = None
+        page._cv_ancestor_state = ancestors._AncestorState(tuple(objects))
+        events = []
+        original = GuardianViewSet._ancestor_has_permission
+
+        def gate(vs, user, permission, obj, *, view):
+            events.append((vs.name, obj))
+            return original(vs, user, permission, obj, view=view)
+
+        monkeypatch.setattr(GuardianViewSet, "_ancestor_has_permission", gate)
+        own, state = Mock(wraps=target.cv_has_access), Mock(return_value=True)
+        monkeypatch.setattr(target, "cv_has_access", own)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        assert render() is (missing == "higher")
+        if missing == "higher":
+            assert events == [(ns.book.vs.name, nearest)]
+            assert events[0][1] is nearest
+            own.assert_called_once_with(actor, own_obj)
+            state.assert_called_once_with(actor, own_obj if target.cv_object else nearest)
+        else:
+            assert events == []
+            own.assert_not_called()
+            state.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("page_kind", ["List", "GuardianCard"])
+@pytest.mark.parametrize("button_kind", ["parent", "sibling"])
+@pytest.mark.parametrize("page_create_allowed", [False, True])
+def test_guardian_list_and_card_rewrite_parent_and_sibling_keys(
+    page_kind, button_kind, page_create_allowed, monkeypatch
+):
+    from crud_views_guardian.lib.views import GuardianCardListViewPermissionRequired
+
+    def build(suffix):
+        ns, routed = consumer_routes(suffix, "guardian")
+        ns.note.GuardianCard = type(
+            "RewriteCard",
+            (GuardianCardListViewPermissionRequired,),
+            {
+                "cv_viewset": ns.note.vs,
+                "cv_key": "guardian_card",
+                "cv_path": "guardian-card",
+                "cv_card_actions": [],
+            },
+        )
+        return ns, routed
+
+    with isolated_routes(build) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.note, page_kind, actor, world)
+        target = ns.book.Create if button_kind == "parent" else ns.sibling.List
+        button = (
+            ParentContextButton(key="create", key_target="create")
+            if button_kind == "parent"
+            else SiblingContextButton(key="create", sibling_name=ns.sibling.vs.name, sibling_key="list")
+        )
+        page.cv_context_buttons = [button]
+        actual = Mock(return_value=not page_create_allowed)
+        rewritten = Mock(return_value=page_create_allowed)
+        monkeypatch.setattr(target, "cv_create_has_access" if button_kind == "parent" else "cv_has_access", actual)
+        monkeypatch.setattr(ns.note.Create, "cv_create_has_access", rewritten)
+        result = page.cv_get_context("create", user=actor)
+        assert result["cv_access"] is page_create_allowed
+        assert result["cv_action_enabled"] is True
+        assert result["cv_url"] == reverse(
+            target.cv_viewset.get_router_name(target.cv_key),
+            kwargs={
+                ns.book.vs.parent.get_pk_name(): world.pub.pk,
+                **({ns.sibling.vs.parent.get_pk_name(): world.book.pk} if button_kind == "sibling" else {}),
+            },
+        )
+        if button_kind == "parent":
+            actual.assert_called_once_with(actor, None, page._cv_ancestor_state.objects[1])
+        else:
+            actual.assert_called_once_with(actor, None)
+        rewritten.assert_called_once_with(actor, page, page._cv_ancestor_state.parent)
+        assert rewritten.call_args.args[1] is page
+        assert rewritten.call_args.args[2] is page._cv_ancestor_state.parent
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("surface", ["button", "filter", "card"])
+@pytest.mark.parametrize("far_allowed", [False, True])
+def test_queryset_only_links_keep_nearest_skip_but_gate_higher(surface, far_allowed, monkeypatch):
+    from guardian.shortcuts import remove_perm
+
+    from crud_views.lib.view import CardAction
+    from tests.test1.test_link_cancel import guardian_cancel_routes
+
+    with isolated_routes(guardian_cancel_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        remove_perm(ns.book.vs.permissions["change"], actor, world.book)
+        if not far_allowed:
+            remove_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+        actor = User.objects.get(pk=actor.pk)
+        page = consumer_view(ns.note, "Card" if surface == "card" else "Detail", actor, world)
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True,
+            actions={
+                "queryset": AncestorPermissions(nearest="change", higher="change"),
+            },
+        )
+        own, state = Mock(wraps=ns.note.QuerysetOnly.cv_has_access), Mock(return_value=True)
+        monkeypatch.setattr(ns.note.QuerysetOnly, "cv_has_access", own)
+        monkeypatch.setattr(ns.note.QuerysetOnly, "cv_action_enabled", state)
+        gates = []
+        original = GuardianViewSet._ancestor_has_permission
+
+        def gate(vs, user, permission, obj, *, view):
+            gates.append((vs.name, obj))
+            return original(vs, user, permission, obj, view=view)
+
+        monkeypatch.setattr(GuardianViewSet, "_ancestor_has_permission", gate)
+        if surface == "filter":
+            result = cv_context_has_permission(page, "queryset")
+        elif surface == "card":
+            result = page.cv_get_card_action_data(CardAction(key="queryset"), world.note, actor)["cv_access"]
+        else:
+            result = ContextButton(key="only", key_target="queryset").get_context(page.cv_get_view_context())[
+                "cv_access"
+            ]
+        assert result is far_allowed
+        assert gates == [(ns.pub.vs.name, page._cv_ancestor_state.objects[1])]
+        assert gates[0][1] is page._cv_ancestor_state.objects[1]
+        if far_allowed:
+            own.assert_called_once_with(actor, None)
+        else:
+            own.assert_not_called()
+        if far_allowed and surface != "filter":
+            state.assert_called_once_with(actor, page._cv_ancestor_state.parent)
+        else:
+            state.assert_not_called()
+        client = Client()
+        client.force_login(actor)
+        assert client.get(page.cv_get_url("queryset")).status_code == 403
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("surface", ["button", "card", "navbar"])
+@pytest.mark.parametrize("kind", ["anonymous", "inactive"])
+@pytest.mark.parametrize("higher_protected", [False, True])
+def test_guardian_child_create_actor_exception_is_bounded(surface, kind, higher_protected, monkeypatch):
+    from django.contrib.auth.models import AnonymousUser
+
+    from crud_views.lib.navbar import NavBar, NavItem, _build
+    from crud_views.lib.view import CardAction
+
+    with isolated_routes(lambda suffix: consumer_routes(suffix, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.book, "Card" if surface == "card" else "Detail", actor, world)
+        ns.book.vs.ancestor_policy = AncestorPolicy(provider="none")
+        ns.pub.vs.ancestor_policy = AncestorPolicy(provider="guardian" if higher_protected else "none")
+        actor.is_active = False
+        page.request.user = AnonymousUser() if kind == "anonymous" else actor
+        create = Mock(wraps=ns.note.Create.cv_create_has_access)
+        state = Mock(return_value=True)
+        monkeypatch.setattr(ns.note.Create, "cv_create_has_access", create)
+        monkeypatch.setattr(ns.note.Create, "cv_action_enabled", state)
+        if surface == "button":
+            result = ChildContextButton(key="new", child_name=ns.note.vs.name, child_key="create").get_context(
+                page.cv_get_view_context(object=world.book)
+            )["cv_access"]
+        elif surface == "card":
+            result = page.cv_get_card_action_data(
+                CardAction(child_name=ns.note.vs.name, child_key="create"), world.book, page.request.user
+            )["cv_access"]
+        else:
+            page.cv_navbar = NavBar(viewset=ns.book.vs.name, items=[NavItem(child=ns.note.vs.name, key="create")])
+            result = bool(_build(page))
+        allowed = kind == "anonymous" and not higher_protected
+        assert result is allowed
+        if higher_protected:
+            create.assert_not_called()
+        else:
+            create.assert_called_once_with(page.request.user, None, world.book)
+        if allowed:
+            state.assert_called_once_with(page.request.user, world.book)
+        else:
+            state.assert_not_called()
+
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("family_name", ["book", "note"])

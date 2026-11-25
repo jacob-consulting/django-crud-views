@@ -189,9 +189,15 @@ def test_create_rendering_entry_points_keep_parent_and_adapter(
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("kind", ["parent", "child", "none", "unrelated", "missing-fk", "m2m-child"])
-def test_core_create_adapter_normalizes_only_unambiguous_parent(monkeypatch, book_hitchhiker, kind):
-    from tests.test1.app.models import Author, Book
+@pytest.mark.parametrize("known_parent", [True, False], ids=["explicit-parent", "unknown-parent"])
+@pytest.mark.parametrize("many_to_many", [False, True], ids=["fk", "m2m"])
+def test_core_create_shared_inputs_require_explicit_parent(
+    monkeypatch, book_hitchhiker, django_user_model, known_parent, many_to_many
+):
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    from crud_views.lib.link_access import _LINK_ALLOWED, _LINK_PERMISSION, _link_access
     from tests.test1.app.views import BookCreateView, cv_book
 
     parent = book_hitchhiker.publisher
@@ -199,19 +205,16 @@ def test_core_create_adapter_normalizes_only_unambiguous_parent(monkeypatch, boo
     monkeypatch.setattr(
         BookCreateView, "cv_action_enabled", classmethod(lambda cls, user, obj=None: calls.append(obj) or True)
     )
-    obj = {
-        "parent": parent,
-        "child": book_hitchhiker,
-        "none": None,
-        "unrelated": Author(),
-        "missing-fk": Book(),
-        "m2m-child": book_hitchhiker,
-    }[kind]
-    if kind == "m2m-child":
+    if many_to_many:
         monkeypatch.setattr(cv_book.parent, "many_to_many_through_attribute", "books")
-    expected = kind in {"parent", "child"}
-    assert BookCreateView._cv_action_enabled_for_context(None, obj) is expected
-    assert calls == ([parent] if expected else [])
+    actor = django_user_model.objects.create_superuser(username="explicit_create_parent", password="pw")
+    known = (parent,) if known_parent else (None,)
+    with CaptureQueriesContext(connection) as captured:
+        assert _link_access(BookCreateView, actor, None, known) == (_LINK_ALLOWED if known_parent else _LINK_PERMISSION)
+    assert captured.captured_queries == []
+    assert calls == ([parent] if known_parent else [])
+    if known_parent:
+        assert calls[0] is parent
 
 
 @pytest.mark.django_db
@@ -261,6 +264,7 @@ def test_parent_button_top_level_create_receives_no_state_object(monkeypatch, bo
 
 @pytest.mark.django_db
 def test_m2m_create_uses_explicit_url_parent_without_inferring_from_child(monkeypatch, publisher_a, publisher_b):
+    from crud_views.lib.link_access import _LINK_PERMISSION, _link_access
     from tests.test1.app.models import Genre
     from tests.test1.app.views import GenreCreateView, GenreListView
 
@@ -271,7 +275,7 @@ def test_m2m_create_uses_explicit_url_parent_without_inferring_from_child(monkey
     monkeypatch.setattr(
         GenreCreateView, "cv_action_enabled", classmethod(lambda cls, user, obj=None: calls.append(obj) or True)
     )
-    assert GenreCreateView._cv_action_enabled_for_context(None, genre) is False
+    assert _link_access(GenreCreateView, None, None, (None,)) == _LINK_PERMISSION
     assert calls == []
     from django.contrib.auth.models import Permission, User
 

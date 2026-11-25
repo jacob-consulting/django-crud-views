@@ -148,22 +148,18 @@ It is a permission check only and never calls the state hook. A key can be permi
 disabled by state, in which case `cv_context_button` renders nothing (or a disabled button), so the wrapper
 can end up empty. To wrap only buttons that actually render, use the loop below.
 
-For the `create` key of a nested Guardian ViewSet with a `ForeignKey` parent, the filter on a child object page
+For the `create` key of a nested Guardian ViewSet, the filter on a child object, list or create page
 asks `cv_create_has_access(user, view, parent)` with the real same-ViewSet rendering view. This is the parent the
-request resolved from the URL, not the page object's foreign key. The retained Guardian create page seam supplies
-only the immediate parent at this filter; a navbar child-create item checks the full known chain even on the
-same page and can deny when the context create control allows. On a view that did not run the ancestor guard,
+request resolved from the URL, not the page object's foreign key. The filter checks actor admission and declared
+immediate and known higher parent gates before the create hook, including for a `ManyToMany` child page.
+A true override cannot bypass those gates; a false override still denies. On a view that did not run the ancestor guard,
 the control is denied without a resolved parent. At consumers targeting another ViewSet the create hook receives
-`None` for the rendering view. See [the exact retained mechanisms](reference/guardian.md#retained-create-and-cancel-mechanisms).
+`None` for the rendering view. See [known ancestry and Cancel](reference/guardian.md#known-ancestry-and-cancel).
 
-Two `False` answers are kept on purpose:
-
-- On a child **list** page, the filter returns `False` even though the URL parent is resolved. The list's own
-  create control uses that parent: place it with `{% cv_context_button "create" %}` or the loop below instead
-  of gating on the filter.
-- On a **`ManyToMany`** child page, the filter and the page's create control both stay closed. Link to the child
-  list under the parent the user came from, or call `cv_create_has_access(user, None, parent)` with an explicit
-  parent instance. Never pick "the first" related parent yourself.
+Child-list and M2M filters can now return `True` for a permitted known route parent, independently of state.
+Never pick "the first" related parent yourself: a direct `cv_create_has_access(user, None, child)` call with an
+ambiguous M2M child still denies. A direct default-hook call with an explicit parent checks actor and immediate
+parent permission only, not higher ancestors or state.
 
 `cv_has_access` on a nested Guardian create denies every argument; `cv_create_has_access` is the helper that
 accepts an explicit parent instance.

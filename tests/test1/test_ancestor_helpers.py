@@ -286,7 +286,7 @@ def test_none_immediate_parent_retains_actor_and_state_checks(helpers, data, mon
 
     monkeypatch.setattr(create, "cv_action_enabled", classmethod(state))
     active = _user("ah_none_active")
-    assert create._cv_action_enabled_for_context(active, data.book) is False
+    assert create.cv_action_enabled(active, data.book) is False
     assert seen == [data.book]  # the custom hook still receives the structural parent
 
 
@@ -391,12 +391,30 @@ def test_cancel_availability_uses_the_immediate_parent_policy(helpers, data):
 
 @pytest.mark.django_db
 def test_cancel_availability_of_none_parent_retains_state(helpers, data, monkeypatch):
+    from unittest.mock import Mock
+
     nobody = _user("ah_cancel_none")
     _grant(nobody, helpers.pub, "view", data.penguin)  # reaches the open Book list (nearest protected: Publisher)
     kwargs = {f"{helpers.pub.vs.name}_pk": data.penguin.pk, f"{helpers.open_book.vs.name}_pk": data.book.pk}
     view = _bound(helpers.open_note.List, nobody, **kwargs)
     assert view._cv_ancestor_guard() is None
     create = helpers.open_note.Create
-    assert create._cv_cancel_target_available(nobody, None, view) is True
-    monkeypatch.setattr(create, "cv_action_enabled", classmethod(lambda cls, user, obj=None: False))
+    state = Mock(return_value=True)
+    monkeypatch.setattr(create, "cv_action_enabled", state)
     assert create._cv_cancel_target_available(nobody, None, view) is False
+    state.assert_not_called()
+
+    permitted = _user("ah_cancel_none_permitted")
+    _grant(permitted, helpers.pub, "view", data.penguin)
+    _grant(permitted, helpers.pub, "change", data.penguin)
+    permitted_view = _bound(helpers.open_note.List, permitted, **kwargs)
+    assert permitted_view._cv_ancestor_guard() is None
+    parent = permitted_view._cv_ancestor_state.parent
+    assert create._cv_cancel_target_available(permitted, None, permitted_view) is True
+    state.assert_called_once_with(permitted, parent)
+    assert state.call_args.args[1] is parent
+    state.reset_mock()
+    state.return_value = False
+    assert create._cv_cancel_target_available(permitted, None, permitted_view) is False
+    state.assert_called_once_with(permitted, parent)
+    assert state.call_args.args[1] is parent

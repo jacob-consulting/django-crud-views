@@ -247,7 +247,7 @@ def test_cv_get_context_without_location_is_unstamped(author_douglas_adams, monk
     assert custom_loop["cv_label_mode"] == "both"
 
 
-# the per-key tags and the guardian override each pass the location themselves (final review)
+# Per-key tags and inherited Guardian context rendering preserve the label location.
 
 
 @pytest.mark.django_db
@@ -272,10 +272,10 @@ def test_per_key_context_action_tag_follows_the_view(author_douglas_adams, monke
 
 
 @pytest.mark.django_db
-def test_guardian_override_forwards_the_location(
+def test_guardian_list_preserves_row_label_location(
     client_guardian, user_guardian, cv_guardian_author, author_douglas_adams, monkeypatch
 ):
-    # GuardianQuerysetMixin (list and card views) overrides cv_get_context(); the row path goes through it
+    # Guardian list rows use inherited context rendering with the list label location.
     monkeypatch.setattr(GuardianAuthorListView, "cv_list_actions_label_mode", {"detail": "both"})
     user_guardian_object_perm(user_guardian, cv_guardian_author, "view", author_douglas_adams)
     resp = client_guardian.get(reverse(cv_guardian_author.get_router_name("list")))

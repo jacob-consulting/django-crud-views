@@ -767,7 +767,11 @@ def test_bulk_shared_link_admission_and_return_contract():
         "origin, fallback, success URL order",
         "authorization responses and login redirects remain unchanged",
         "GuardianParentPermissionMixin",
-        "eight-consumer-changes-in-stage-3a",
+        "Guardian object/list/create Cancel check known ancestors",
+        "queryset-only Guardian Cancel now checks the declared immediate-parent policy",
+        "Create targets run actor admission and declared parent gates before `cv_create_has_access`",
+        "omits `cv_has_access`, including custom overrides",
+        "link-access-hooks",
     ):
         assert phrase in returns
 
@@ -780,9 +784,15 @@ def test_card_and_state_references_follow_target_ancestry():
             "target's declared ancestry",
             "own ViewSet",
             "missing immediate parent",
-            "GuardianParentPermissionMixin",
+            "parent-only-non-create-limitation",
+            "known higher gates",
         ):
             assert phrase in text
-        assert "eight-consumer-changes-in-stage-3a" in text
+        assert "link-access-hooks" in text
     assert "non-object targets receive `None` for own permission and the URL parent for state" in card
+    assert "Own card create actions use the resolved URL parent" in card
+    assert "child card actions use the row their URL is built from" in card
+    assert "including M2M pages with an explicit route parent" in card
     assert "never evaluates state; it can return true for an action that state would disable" in state
+    assert "direct state call is independent of package permission admission" in state
+    assert "No state adapter resolves a parent from a page object" in state

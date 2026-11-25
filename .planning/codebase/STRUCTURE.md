@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 987dfa68448cfa57d77daedf0504e872423ea4e5
-last_mapped_at: 2026-11-24
+last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
+last_mapped_at: 2026-11-25
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-24
+**Analysis Date:** 2026-11-25
 
 Scope: the reusable apps under `src/`, test harnesses under `tests/`, theme contracts under `docs/reference/`, and feature consumers under `examples/bootstrap5/`. Apply the developer-maintainability rule in `AGENTS.md` when choosing locations: use focused opt-in modules and keep shared request paths easy to trace.
 
@@ -45,7 +45,7 @@ django-crud-views/
 └── CHANGELOG.md, README.md, CLAUDE.md, AGENTS.md, CONTRIBUTING.md, SECURITY.md, AUDIT.md
 ```
 
-Root also holds untracked/ignored build and report artifacts (`site/`, `dist/`, `node_modules/`, `coverage-*.xml`, `__pycache__/`); do not edit them.
+Build and report outputs such as `site/`, `dist/`, `node_modules/`, `coverage-*.xml` and `__pycache__/` are generated artifacts; keep implementation in the source directories.
 
 Theme data-prefix registration is in `src/crud_views/lib/data_prefix.py`; four default component templates consume it across the actions menu, language selector, vertical tabs and accordion. `cv_config` supplies the same current value to the object-detail tab selector in `src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js`.
 
@@ -96,8 +96,8 @@ lib/
 **`src/crud_views/lib/link_access.py` and link producers:**
 - Purpose: private permission-then-state evaluation for a bounded set of rendered controls; this is not request authorization and does not load objects or ancestors.
 - The evaluator receives the target's own object or `None` and known ancestors supplied by callers. `_cv_link_permission()` keeps the own-object argument separate from the immediate parent (`src/crud_views/lib/view/base.py`).
-- `_cv_page_link_ancestors()` returns `None` to preserve a producer's existing behavior, or a tuple to opt that link into `_link_access()`; empty tuple is an intentional no-known-parent/deny result. The narrow Guardian override is in `src/crud_views_guardian/lib/views.py` and uses the request-resolved parent only for a nested create linked from its own child object in single-FK nesting.
-- Link producers live in `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/navbar.py`, and `src/crud_views/templatetags/crud_views.py`. Preserve the page-control seam's `None` fallback: ordinary controls keep their established permission/state ordering. The destination request still passes through `CrudView.dispatch()` and `_cv_ancestor_guard()`.
+- `_known_link_ancestors()` aligns already-resolved objects to destination ancestry; explicit unknown immediate parents deny and unknown higher levels are skipped. No relation discovery or query occurs (`src/crud_views/lib/link_access.py`).
+- Link producers in `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/navbar.py`, `src/crud_views/lib/bulk/__init__.py`, and `src/crud_views/templatetags/crud_views.py` use shared permission-before-state checks. Permission-only filters omit state; the destination request independently runs its guard.
 
 **`src/crud_views/lib/bulk/` and bulk theme leaves:**
 - Core implementation: `src/crud_views/lib/bulk/__init__.py` contains `BulkSelectionMixin`, `BulkConfirmForm`, `BulkFormViewPermissionRequired`, bounded ID normalization and request-local review data.
@@ -236,7 +236,7 @@ lib/
 **New view type or shared view behavior:**
 - Operation handler: new module in `src/crud_views/lib/views/` plus `*PermissionRequired` variant and export in `__init__.py`.
 - Shared behavior: `src/crud_views/lib/view/base.py` or a focused module in `src/crud_views/lib/view/`.
-- Do not route general request authorization through `src/crud_views/lib/link_access.py`; it is private presentation logic over already-known objects. A link access change should keep `_cv_link_permission()`'s own-object/parent arguments distinct and preserve `None` fallback behavior at link producers.
+- Keep request authorization in `src/crud_views/lib/view/base.py` and `src/crud_views/lib/ancestors.py`. Shared rendered-link checks belong in `src/crud_views/lib/link_access.py`: keep own-object and parent inputs separate, align already-known ancestors with `_known_link_ancestors()`, deny missing immediate parents, and skip unknown higher levels. Explicit `None` must not trigger a relation lookup or fallback.
 - Templates/snippets: `src/crud_views/templates/crud_views/`.
 - Validation: add `Check` objects in the view's `checks()` (`src/crud_views/lib/check.py`) or a Django check in `src/crud_views/checks.py`.
 - Tests: `tests/test1/test_<feature>.py`.
@@ -281,6 +281,15 @@ lib/
 - Theme mappings and nested theme-root behavior: `docs/reference/theme.md`. Add mappings in a consumer theme's stylesheet, not package settings or upstream `:root` declarations.
 - Compact headings and field gutters: `src/crud_views/templates/crud_views/formsets/compact_headings.html` and `src/crud_views/lib/formsets/compact.py`; keep `gx-3` on each row plus the existing `cv-formset-*` classes.
 
+**Rendered link access and Cancel changes:**
+- Shared permission/state evaluation and ancestry alignment: `src/crud_views/lib/link_access.py`. Consumers call it directly in `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/navbar.py` and `src/crud_views/lib/bulk/__init__.py`. Permission-only filters are in `src/crud_views/templatetags/crud_views.py`.
+- Link context uses the actual registered destination. Keep own-object permission input separate from action state: own object for object views, parent for nested non-object views, `None` for top-level non-object views (`src/crud_views/lib/link_access.py`).
+- Guardian nested-create access: `src/crud_views_guardian/lib/views.py` owns `cv_create_has_access()` and its gate-before-override private seam. The hook gets the real same-ViewSet rendering view or `None` across ViewSets. Actor and parent gates run before custom overrides; the default repeats the bounded immediate-parent check.
+- Cancel route selection, request-bound owner copy, availability checks and bounded immediate-parent lookup: `src/crud_views/lib/view/base.py`. Signed query transport and strict size/identity validation: `src/crud_views/lib/view/cancel.py`.
+- Guardian Cancel specialization: `src/crud_views_guardian/lib/mixins.py`. Preserve parent-only non-create Cancel's deliberate omission of `cv_has_access()`; higher/immediate gates and parent state still apply. Object/list/create Cancel uses the shared full link path.
+- Focused tests: `tests/test1/test_link_access.py`, `tests/test1/test_link_access_matrix.py`, `tests/test1/test_link_consumers.py`, `tests/test1/test_link_consumer_costs.py`, `tests/test1/test_link_bulk.py`, `tests/test1/test_link_cancel.py`, and `tests/test1/test_cancel_permissions.py`.
+- Existing browser transport harness: `tests/browser/cancel-navigation.test.cjs`, `tests/browser/cancel_navigation_server.py`. Contract references: `docs/reference/context_buttons.md`, `docs/reference/guardian.md`, `docs/reference/navbar.md`.
+
 **New authorization gate or trace fact:**
 - Record beside the enforcing gate via `get_recorder()` (`src/crud_views/lib/view/base.py`, `src/crud_views/lib/ancestors.py`, `src/crud_views_guardian/lib/mixins.py`, `src/crud_views/lib/views/manage.py`); add any new `kind`/`result`/`provider` literal to `src/crud_views/lib/access_trace_export.py`; tests in `tests/test1/test_access_trace_*.py`.
 
@@ -317,4 +326,4 @@ lib/
 
 ---
 
-*Structure analysis: 2026-11-24*
+*Structure analysis: 2026-11-25*

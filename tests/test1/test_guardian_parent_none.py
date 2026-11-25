@@ -449,7 +449,7 @@ def test_none_policy_helper_evaluation_is_side_effect_free(pn, client, publisher
     for _ in range(3):
         assert pn.BookCreate.cv_has_access(user, publisher_a) is False
         assert pn.BookCreate.cv_create_has_access(user, None, publisher_a) is True
-        assert pn.BookCreate._cv_action_enabled_for_context(user, publisher_a) is True
+        assert pn.BookCreate.cv_action_enabled(user, publisher_a) is True
 
     pn.state["enabled"] = False
     client.force_login(user)
@@ -618,6 +618,8 @@ def genre_two_parents(publisher_a, publisher_b):
 @pytest.mark.parametrize("none_policy", [False, True])
 @pytest.mark.django_db
 def test_m2m_own_child_inputs_deny_without_state_hook(pn, genre_two_parents, publisher_a, none_policy):
+    from crud_views.lib.link_access import _LINK_PERMISSION, _link_access
+
     # the None scenario is the Genre child of the unprotected parent; ambiguous M2M input still names no parent
     create = pn.FreeGenreCreate if none_policy else pn.GenreCreate
     user = _user("granted")
@@ -626,7 +628,7 @@ def test_m2m_own_child_inputs_deny_without_state_hook(pn, genre_two_parents, pub
     for actor in (user, _user("root", superuser=True)):
         assert create.cv_has_access(actor, genre_two_parents) is False
         assert create.cv_create_has_access(actor, None, genre_two_parents) is False
-        assert create._cv_action_enabled_for_context(actor, genre_two_parents) is False
+        assert _link_access(create, actor, None, (None,)) == _LINK_PERMISSION
     assert pn.hook_calls == []
 
 
@@ -933,7 +935,7 @@ def test_child_page_inactive_actor_denied(pn, client, monkeypatch, publisher_a, 
         assert client.get(_url(pn.book_vs, "detail", publisher_a.pk, child.pk)).status_code == 403
     assert pn.BookCreate.cv_has_access(user, child) is False
     assert pn.BookCreate.cv_create_has_access(user, None, child) is False
-    assert pn.BookCreate._cv_action_enabled_for_context(user, child) is True  # state is not permission
+    assert pn.BookCreate.cv_action_enabled(user, publisher_a) is True  # state is not permission
     assert pn.hook_calls and pn.hook_calls[-1].pk == publisher_a.pk
 
 

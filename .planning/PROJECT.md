@@ -18,6 +18,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Validated
 
+- ✓ Nested Guardian links and Cancel honor declared parent and known higher-ancestor gates; create actor/parent admission precedes overrides, obsolete adapters are removed, and request authorization plus the documented parent-only limitation are preserved — Phase 06.51 (#413), stage 3b. All seven plans and eight acceptance criteria complete; 28/28 verified, clean deep review, 19 authored threats closed, 20,119 core tests and 637 examples plus 300 subtests pass. Stage 3c and feature-branch integration remain separate.
+
 - ✓ User-owned Guardian grant reuse with independent destination permission/state checks, explicit retained-user lifetime, measured list/navbar savings and preserved request/trace rules — Phase 06.49. Five plans/11 tasks complete; 21/21 truths and 9/9 decisions verified, deep review clean, 15 authored threats closed, full core 18,934 passed. Recorder-enabled CI, installed distribution and full version matrix remain uncertified.
 
 - ✓ Private link permission/state check, narrowed own-object hook arguments, fail-closed nested Guardian create own access, and paired Breaking/migration guidance — Phase 06.48. Nine plans/21 tasks complete; verification 24/24 across 99 declarations, frozen 1,178 outcomes preserved, 18,915 full-suite tests passed, deep review clean, 31 authored threats closed. Approved stage-1 limitations remain documented; no browser/downstream/full-matrix certification claimed.
@@ -136,9 +138,11 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - ✓ Developer-only core/Guardian diagnostics, explicit group setup, bounded read-only demo developer and write-gated example actions; transactional seed conflict rollback and paired migration guidance — Phase 06.31; 21/21 verified, UAT 1/1 passed, clean independent re-review.
 - ✓ **6.32** Button-only workflow transition variants and icons through existing registries, with visible labels, exact fallbacks and preserved workflow behavior — Phase 06.32; canonical 7/7, decisions 9/9, clean deep review and security 6/6.
 
-- ✓ Remaining approved button, action, card, navbar, filter, core Cancel and bulk link consumers share private target-aligned checks, with retained Guardian seams, independent request authorization and paired migration guidance — Phase 06.50 (#412), stage 3a; 34/34 verified, nine acceptance criteria met. Stage 3b/3c and feature-branch merge remain separate.
+- ✓ Remaining approved button, action, card, navbar, filter, core Cancel and bulk link consumers share private target-aligned checks, with retained Guardian seams, independent request authorization and paired migration guidance — Phase 06.50 (#412), stage 3a; 34/34 verified, nine acceptance criteria met. Stage 3b is completed by Phase 06.51; stage 3c and feature-branch merge remain separate.
 
 ### Active
+
+- [ ] Stage 3c (#414): settle the public link-check contract after Phase 06.51 and before the Phase 7 stability freeze; close stage issues only with the feature-branch merge to `main`.
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
   `tests/test1/test_stability_doc.py`; closes the theme part of #89
@@ -187,6 +191,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Remove retained Guardian rendering exceptions through the existing shared check; gate actors and parents before create overrides | Keep destination-specific ancestry explicit, preserve request authorization and the bounded parent-only/Cancel limitation, and remove obsolete adapters without new public API | Validated Phase 06.51; 28/28 must-haves, eight acceptance criteria, 45 governed matrix changes with no request outcome change |
 | Migrate approved link consumers to the private shared check with explicit target ancestry and permission before state | Reuse existing guards and retain bounded Guardian/Cancel behavior, public hook ownership and independent request gates | Validated Phase 06.50; eight approved behaviors, one frozen matrix delta, 34/34 must-haves; measured cost changes retained |
 | Keep one private Guardian checker on the supplied Python user; share grants, never destination decisions | Remove repeated grant reads while preserving existing gates; retained users explicitly retain loaded grants and fresh requests observe revocation | Validated Phase 06.49; list 7/14/26 → 7/10/14 queries, Guardian navbar saves 2 owner/4 deep queries |
 | Keep stage-1 link authorization private, pass parents separately, and narrow public hook objects before the 1.0 freeze | Preserve request gates and proven core paths while migrating only approved consumers; no new cache or public surface | Validated Phase 06.48; frozen rendering and cost comparisons pass, with approved parent-first own-denial cost and documented L1/L2 limits |
@@ -288,4 +293,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-25 after Phase 06.50 completion*
+*Last updated: 2026-11-25 after Phase 06.51 completion*

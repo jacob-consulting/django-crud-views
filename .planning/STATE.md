@@ -1,26 +1,25 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.51"
-current_phase_name: Remove retained Guardian link exceptions - stage 3b
+current_phase: 7
+current_phase_name: Theme-surface stability policy
 current_plan: Not started
-status: executing
-stopped_at: Phase 06.51 plan review converged; ready to execute
-last_updated: "2026-11-25T18:03:08.957Z"
+status: planning
+stopped_at: "Phase 06.51 complete; stage 3c (#414) must settle before Phase 7"
+last_updated: "2026-11-25T20:47:17.297Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.51 planning converged in 5 review cycles; 7 plans in 6 waves; Fable, Grok and Gemini report no unresolved actionable concerns
-state_head: 061abbdc23301b362faa1ac5279f7a87ab45d5f6
+last_activity_desc: "Phase 06.51 shipped as PR #415 to feature/link-access-check-design"
+state_head: 8576aa5f16fbe1afd5978f55704bd42155e32a1a
 progress:
   total_phases: 58
-  completed_phases: 56
+  completed_phases: 57
   total_plans: 315
-  completed_plans: 308
-  percent: 97
+  completed_plans: 315
 milestone_name: milestone
 ---
 
 Total Phases: 58
-Completed Phases: 56
+Completed Phases: 57
 
 # Project State
 
@@ -29,17 +28,73 @@ Completed Phases: 56
 See: .planning/PROJECT.md (updated 2026-11-25)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.51 — Remove retained Guardian link exceptions - stage 3b (#413)
+**Current focus:** Stage 3c (#414) before Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.51 (Remove retained Guardian link exceptions - stage 3b) — READY TO EXECUTE
+Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
-Total Plans in Phase: 7
-Status: Ready to execute
-Last activity: 2026-11-25 — Phase 06.51 planning converged in 5 review cycles; 7 plans in 6 waves; Fable, Grok and Gemini report no unresolved actionable concerns
+Total Plans in Phase: TBD
+Status: Awaiting stage 3c (#414) before planning Phase 7
+Last activity: 2026-11-25 -- Phase 06.51 shipped as PR #415 to feature/link-access-check-design
 
-Next: `$gsd-execute-phase 06.51` on `feature/link-access-check-design`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+Next: After PR #415 (`https://github.com/jacob-consulting/django-crud-views/pull/415`) merges to `feature/link-access-check-design`, add/plan stage 3c (#414) before Phase 7 and the 1.0 freeze. All seven codebase maps were refreshed after shipping. Phase 7 is the next numbered roadmap phase, but its stage-3c prerequisite is not complete. Auto-advance is disabled. Issues #412/#413 close only when the feature branch merges to `main`.
+
+### Phase 06.51 completion — 2026-11-25
+
+- All seven plans are complete. Independent verification passes 28/28 must-haves and all eight acceptance criteria; its CLI fingerprint covers 236 inputs. Deep review is clean (41 files, zero findings), validation passes all 15 rows, and the security audit closes 19/19 authored threats. UI copy and experience checks pass in the documented source scope; visual dimensions remain unassessed.
+- Final source-bound evidence: 20,119 core tests, 637 examples plus 300 subtests, strict MkDocs and scoped Ruff pass. The regression gate matches all 314 prior-phase modules to those passing receipts on the unchanged product tree; the verifier adds four passing targeted checks. Browser, downstream, installed-distribution, recorder-enabled and other runtime lanes remain unclaimed.
+- `phase.complete` ran once. Its missing-file advisory combines two existing pytest paths into one string: `tests/test1/test_link_access_matrix.py` and `tests/test1/test_link_consumer_costs.py` both exist and pass; this is a parser false positive, not verification debt. The dotted ROADMAP row and stale completion prose are reconciled. Preserved milestone totals now show 57/58 phases and 315/315 authored plans, without a misleading plan-based global percentage.
+- Transition retains the stage-3c-before-Phase-7 prerequisite. No matching pending todos or stale phase handoffs exist; global learnings is disabled and the graduation scan has no learning artifacts. Original configuration and state.json dirt remains intact. No push, PR, merge or issue closure occurred.
+
+### Phase 06.51 plan 07 — 2026-11-25
+
+- Completed the named migration/helper inventory and AC-1–AC-8/15-decision acceptance evidence. Baseline `350adaae` and phase-start `6a875dad` have identical product trees; their planning histories remain distinct. All 39 protected modules retain request contracts, with only six approved link-observation functions changed in three files. Historical matrix/cost identities and 143 current cost-source hashes remain intact.
+- Required gates pass **2,088** protected tests in **86.45s**, **88** collision-module tests in **5.08s**, and the complete **20,119** core tests in **431.15s**. Examples pass **637 plus 300 subtests in 59.14s**, with six existing unordered Campaign pagination warnings. Strict MkDocs passes in **1.44s** and exact 31-file Ruff passes. Full core ran once at `a47a0f2a`; later changes are planning prose only.
+- Task commits `94966020`, `a47a0f2a`, `fb643ec2`; immediate SUMMARY `cf7e53a8` precedes tracking. The authorized seven-line test deviation adds independent destination GETs to two D-50 collision tests without removing assertions or changing production behavior. Four deliverables classify as automated. Optional WINDOWS append was rejected by its pre-existing header/separator mismatch; the unchanged ledger and separate deferred-tooling note do not hide any product failure.
+- ROADMAP accepted 7/7 and its stale dotted row was reconciled. STATE's single last-plan call set ready-for-verification without advancing to stage 3c; one metric and three decisions were recorded. Global unscoped percentage remains unset, completed phase count remains 56/58, and the phase checkbox remains open. SDK-only state.json changes are restored after snapshot/hash checks; original config/state dirt and unrelated files remain preserved. Independent phase gates remain with the orchestrator. No recorder/version matrix, installed-package/browser certification, install, phase.complete, push, PR, merge or issue closure ran.
+
+### Phase 06.51 plan 06 — 2026-11-25
+
+- Completed AC-8 across the single Breaking entry, both migration sections, Guardian/FAQ and every inventoried reference. Create actor/parent admission precedes overrides; direct hooks remain bounded; custom button results follow actual targets; the parent-only ordinary-link/Cancel distinction is explicit. Navbar's existing alignment is preserved. No stage-3c API or runtime edit.
+- Required selections pass **18** primary migration checks, **48** navbar/reference checks and **157** combined documentation/recipe checks. Scoped Ruff/format/diff and all-reference prose/anchor audit pass. All original documentation tables, production/concept/matrix/cost bytes, unrelated Cancel/bulk recipes and plan 03's hook-docstring test remain unchanged. SUMMARY inventories all eleven changed prose tests and each historical cost statement.
+- Task commits `c1ea6ed6`, `eeb9e8ec`, `94388e88`; immediate SUMMARY `a285200f` precedes tracking. Four deliverables classify as automated. Initial broad negative prose assertion was narrowed to the exact ended behavior; final checks pass. Existing development Ruff used without installation.
+- ROADMAP accepted 6/7 and its stale dotted row was reconciled. STATE advanced once from plan 6 to 7 with one metric and three decisions; global unscoped percentage remains unset. SDK-only state.json changes are restored after snapshot/hash checks; original config/state dirt and unrelated files remain preserved. Strict MkDocs, complete source run and independent phase checks remain with plan 07/orchestrator. No full suite, recorder/version matrix, install, push, PR, merge, phase completion or issue closure ran.
+
+### Phase 06.51 plan 05 — 2026-11-25
+
+- Completed AC-7 in `0653a907`/`453159be`: 45 measured rendering deltas with decision-backed before/after values, all 1,178 keys and request/page outcomes preserved, both historical reconstruction hashes verified. The entire stage3a cost receipt and its 276 historical keys remain immutable and independent of live pins.
+- Required selections pass **1,197** matrix tests, **444** cost measurements and **468** complete cost tests. The 444 scenarios retain 276 old coordinates plus 168 create/Cancel controls; only six comparable guarded Guardian Cancel cost rows change. Raw XML SHA256 `647f3dcf…ae565` and working-source/runtime identities are recorded. Source layout without `.planning`/`.git` passes **445 with 23 expected receipt-audit skips**; all runtime scenarios run. No production edit, full suite, recorder/version matrix, install or browser certification.
+- Task commits `7fc9a5d7`, `0653a907`, `ac711985`, `453159be`; immediate SUMMARY `00f3ddd3` precedes tracking. Both RED targets failed the intended assertions and passed machine/semantic validation. Current corruption tests reject damaged rows, XML SQL/events/identities and provenance, and a changed current pin cannot reinterpret history. Scoped Ruff/format/diff and preservation checks pass.
+- ROADMAP accepted 5/7 and its stale dotted progress row was reconciled. STATE advanced once from plan 5 to 6, with one metric and three decisions recorded; global unscoped percentage stays unset. Only SDK state.json next.reason/updated_at changes are restored after exact snapshot/hash checks. Four deliverables classify as automated. No phase.complete, push, PR, merge or issue closure ran.
+
+### Phase 06.51 plan 04 — 2026-11-25
+
+- Completed D-40/D-41/D-42/D-45/D-48 in `193487c1`: five obsolete state-adapter definitions removed after Cancel's caller migration. Shared inputs use explicit parents, ordinary unknown-parent links deny without lookup/state, and actual Cancel alone retains its bounded immediate-parent lookup. Public create-hook FK normalization, nested own-access denial and request-side action objects remain unchanged.
+- Required selections pass **128** migrated observations before deletion, **111** link/create, **193** Cancel and **128** migrated observations after deletion. Scoped Ruff/format/diff, production preservation and byte-identical request/mutation assertions pass. Historical matrix/cost bytes and original user-file hashes remain intact. No full suite, recorder/version matrix or install ran.
+- Task commits `af78abeb`, `ebef3808`, `193487c1`; immediate SUMMARY `8c1aab05` precedes tracking. Structural RED failed on exactly five definitions and four internal accesses; fresh JUnit evidence passed machine and semantic validation before GREEN. SUMMARY reconciles all twelve original direct-helper tests and lists removed/retained helper reasons; no additional caller module or deviation was found.
+- ROADMAP accepted 4/7 and its stale dotted progress row was reconciled. STATE advanced once from plan 4 to 5, with one metric and three decisions recorded; global unscoped percentage stays unset. Only SDK state.json next.reason/updated_at changes are restored after snapshot comparison. Four coverage deliverables classify as automated. No phase.complete, PR, push, merge or issue closure ran.
+
+### Phase 06.51 plan 03 — 2026-11-25
+
+- Completed D-48/D-51 in `e7b48964`: Guardian object/list/create Cancel delegates through the shared known-ancestor check; parent-only retains only its own-hook omission with higher/immediate gates before public state. Composition/actor wrappers, core binding/lookup/origin/fallback and request methods remain intact. Public create-hook docstring and its source assertion describe the final contract. Last production rendering-adapter caller is gone; definitions remain for plan 04.
+- Required selections pass **193** Cancel, **567** consumer/link, **16** ancestor helpers, **1** docstring and **85** bulk tests. New bulk cases cover all three return surfaces and origin/fallback/success across higher, queryset-nearest and create-hook denial, with unchanged source/login/query/no-mutation outcomes. D-43 toolbar remains direct. Scoped Ruff/format/diff and production AST boundaries pass. No full suite, recorder/version matrix or install ran; historical matrix/cost evidence is unchanged.
+- Four task commits `bce3f84b`, `19e4c54e`, `e7b48964`, `c56324f1`; immediate SUMMARY `dd570bde` precedes tracking. Initial RED's strict-policy fixture omission was corrected and rerun against original source; corrected JUnit evidence is machine-validated and semantically valid. Task 2 is an explicit test-only expansion of existing behavior. SUMMARY inventories every migrated test, parent-only helper rationale and decision-paired bulk outcomes for plan 05.
+- ROADMAP accepted 3/7; stale dotted progress row reconciled. STATE advanced once to plan 4, with one metric and three decisions recorded. Global unscoped percentage stays unset. Only SDK state.json next.reason/updated_at changes are restored after snapshot comparison; original configuration/state.json hashes and unrelated dirt remain preserved. No phase.complete, push, PR, merge or issue closure ran.
+
+### Phase 06.51 plan 02 — 2026-11-25
+
+- Completed D-45/D-50 together in `5abd1d82`: all six consumers use target-aligned known ancestry, both page-seam definitions and Guardian's key rewrite are removed. Ordinary list create keeps its real rendering view; parent/sibling/custom buttons retain their actual output. D-40/D-41/D-44/D-46/D-49/D-55 and request methods remain intact.
+- Task 1 required checks pass **552** link tests, **9** ancestor-cost tests and **116** Guardian/label/ancestor-helper tests. Task 2's combined selection passes **640 in 9.98s**, covering four formerly hidden page shapes, strict far denial on real list/detail/card pages, fresh grants, child/filter overrides, four-level ancestry and holes without lookups. Scoped Ruff/format/diff checks pass. Historical matrix/cost bytes are unchanged; no full-suite, version-matrix, recorder-enabled or dependency-installation run.
+- Task commits `5e2b1199`, `5abd1d82`, `b8f600e8`; immediate SUMMARY `6db9b96b` precedes tracking and lists every renamed/replaced test plus C3-L2/C2-L1/L1 prose locations. Task 1 has validated assertion-level RED/GREEN; task 2 is a passing test-only expansion of behavior already shipped by task 1, explicitly documented without manufacturing RED or another product change.
+- ROADMAP accepted 2/7; its stale dotted progress row was reconciled. STATE advanced once to plan 3, with one metric and three decisions recorded. Global unscoped percentage remains unset. Only the SDK's `state.json` next.reason/updated_at delta was restored after comparison with the snapshot; original config/config.default/state.json hashes and unrelated dirt are preserved. Cancel, adapter, matrix/cost and final documentation/reviews remain with plans 03–07. No phase.complete, push, PR, merge or issue closure ran.
+
+### Phase 06.51 plan 01 — 2026-11-25
+
+- Completed D-46/D-49 nested Guardian actor and create-parent admission, then D-47 queryset-only parent policy. Real parent-page true/false overrides, anonymous object grants on a plain host, direct default hooks and five MRO compositions are covered. Request methods, own access, row filtering and checker lifetime remain unchanged.
+- Before production edits the matrix/cost selection passed **1,462**; raw matrix hash `4c29f3f4…2b14`, canonical reconstruction `317e5e7c…7d8e`, full original metadata and historical receipt identities/keys are frozen in MIGRATION-EVIDENCE. Original matrix and receipt bytes are unchanged. Default create measures two helper calls but still 2 cold-direct permission queries and 0 warmed-render queries.
+- Task 1 selections pass 549/82/247/9; post-commit tracer gate passes **887**. Task 2 passes **739**; final combined six-module run passes **915 in 13.58s**. Ruff and format pass. No full suite, recorder/version matrix, browser or dependency installation ran. Later seam/rewrite, Guardian Cancel, adapter, matrix/cost and documentation migrations remain assigned to plans 02–07.
+- TDD RED/GREEN commits: `9730a9f6`, `1ba80f18`, `d4fa0651`, `8221004a`; both RED reports machine-validated and semantically checked. SUMMARY committed immediately as `d4df9670` before tracking. ROADMAP accepted 1/7; its stale dotted progress row and obsolete TBD placeholder were reconciled. STATE's initial “Not started” plan marker was made numeric before one successful SDK advancement to plan 2; one metric and three decisions were recorded without duplication. Unscoped global percent remains unset; configuration/state.json snapshots remain preserved. Formal requirements are empty; phase completion, reviews, PR/merge and D-39 issue closure remain with the orchestrator.
 
 ### Phase 06.50 completion — 2026-11-25
 
@@ -1803,7 +1858,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 297
+- Total plans completed: 315
 
 - Total plans completed: 186
 - Average duration: -
@@ -1865,6 +1920,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.48 | 9 | - | - |
 | 06.49 | 5 | - | - |
 | 06.50 | 9 | - | - |
+| 06.51 | 7 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2085,6 +2141,13 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.50 P09 | 14min | 2 tasks | 5 files |
 | Phase 06.50 P07 | 8min | 2 tasks | 9 files |
 | Phase 06.50 P08 | 22min | 2 tasks | 11 files |
+| Phase 06.51 P01 | 11min | 2 tasks | 9 files |
+| Phase 06.51 P02 | 11min | 2 tasks | 14 files |
+| Phase 06.51 P03 | 7min | 2 tasks | 9 files |
+| Phase 06.51 P04 | 6min | 2 tasks | 8 files |
+| Phase 06.51 P05 | 15min | 2 tasks | 6 files |
+| Phase 06.51 P06 | 9min | 3 tasks | 14 files |
+| Phase 06.51 P07 | 21min | 2 tasks | 4 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2096,6 +2159,8 @@ The following dated checkpoints and accumulated decisions preserve execution his
 ## Accumulated Context
 
 ### Decisions
+
+- [Phase 06.51] Shared target-aligned link checks now enforce declared parent and known higher gates; nested Guardian create admits the actor and immediate parent before overrides. Preserve request authorization, bounded actual-Cancel parent lookup and the documented parent-only ordinary-link/Cancel distinction. Retire obsolete adapters only after their last caller moves; keep historical evidence immutable and current measurements source-bound.
 
 - [Phase 06.50] Remaining approved link consumers share target-aligned permission-before-state checks; retain explicit Guardian/Cancel seams and independent request enforcement. The single approved frozen matrix delta and measured query changes are documented. Keep raw acceptance receipts as tracked artifacts; source-distribution runs skip only absent repository-evidence checks.
 
@@ -2474,12 +2539,35 @@ Recent decisions affecting current work:
 - [Phase 06.50]: Keep historical stage-2 savings separate from stage-3a zero-delta navbar and changed consumer costs.
 - [Phase 06.50]: Preserve direct request denial and mutation assertions when migrating renderer expectations under approved behaviors 1/2/4.
 - [Phase 06.50]: All nine plans executed; keep phase In Progress pending independent review and verification, with recorder-enabled and full-matrix certification unexecuted.
+- [Phase 06.51]: D-46 and D-49 land before create-seam removal: nested actors and the immediate parent gate precede every create override.
+- [Phase 06.51]: D-47 delegates queryset-only links through the existing class-step chain; own access and row filtering remain untouched.
+- [Phase 06.51]: Count the default create hook parent-helper invocations separately from permission SQL: two helpers, cold direct=2 queries, warmed render=0.
+- [Phase 06.51]: D-45/D-50 landed together in 5abd1d82: direct target-aligned ancestry and actual/custom button results without Guardian key correction.
+- [Phase 06.51]: Known higher gates precede create hooks; full Guardian render events are outermost-first plus the deliberate default-hook immediate duplicate, with guard accounting unchanged.
+- [Phase 06.51]: D-40/D-41 retain real same-ViewSet rendering views or None, explicit URL parents, unknown ancestor positions and no link-only lookup.
+- [Phase 06.51]: D-48 follows D-49: Guardian object/list/create Cancel delegates through the cooperative chain with known higher gates, actor admission and composition validation intact.
+- [Phase 06.51]: D-51 retains _cv_cancel_parent_target_access solely for the immediate parent-only gate; Cancel omits inherited and custom own hooks while ordinary links keep them.
+- [Phase 06.51]: D-52 preserves origin/fallback/success priority; existing all-blocked success fallback may evaluate Cancel twice and adds no decision cache.
+- [Phase 06.51]: D-40/D-41: replace state normalization observations with explicit aligned parents and unknown-parent denial; ordinary links perform no parent lookup.
+- [Phase 06.51]: D-42: preserve the unguarded single-parent lookup through actual Cancel, with request-resolved object identity retained for guarded links.
+- [Phase 06.51]: D-45/D-48: remove five state adapters only after Cancel migration; retain public create-hook FK normalization and all request-side action-object handling.
+- [Phase 06.51]: AC-7: retain all 1178 coordinates, original metadata and request outcomes; record 45 actual rendering deltas with applicable D-45/D-46/D-47/D-50 decisions.
+- [Phase 06.51]: AC-7: preserve full historical receipt bytes and validate its frozen payload/276 keys independently of current scenarios and pins.
+- [Phase 06.51]: D-48/D-49: measure higher Cancel gates and default create duplicate immediate invocation independently of SQL; retain grant reuse and bounded parent lookup.
+- [Phase 06.51]: D-46/D-49/D-50: document actor and declared parent gates before create overrides and migrate custom get_context correction dependencies to cv_create_has_access with explicit direct-call bounds.
+- [Phase 06.51]: D-51: ordinary parent-only PermissionRequired links retain child model permission; plain bases keep their own hook; Cancel omits every own-hook override while checking actor, ancestors and state.
+- [Phase 06.51]: D-55/AC-8: navbar already used aligned ancestry; page create controls now agree, and all retained numeric cost tables remain historical evidence.
+- [Phase 06.51]: AC-1/D-50: close both real-page collision tests with seven additive destination GET lines; every original assertion and all production code remain unchanged.
+- [Phase 06.51]: AC-7: audit historical product baseline 350adaae separately from phase-start 6a875dad; immutable histories and 143 current cost-source hashes match the final tested source.
+- [Phase 06.51]: D-39/T-18: final source acceptance is 20119 core plus 637 examples and 300 subtests; independent phase gates, delivery and unexecuted certification lanes remain explicit.
 
 ### Pending Todos
 
 None yet.
 
 ### Blockers/Concerns
+
+- Phase 7 prerequisite: stage 3c (#414) remains outstanding after verified stage 3b (06.51). Stage 3b targets `feature/link-access-check-design`; #412/#413 close only on the later feature-branch merge to `main`. Do not freeze the public link-check contract before stage 3c settles.
 
 - Phase 06.37 review (open, maintainer triage): WR-01 text output for `user == {}` prints `None (pk None, inactive)` (fix changes text bytes); WR-02 `TraceUser` accepts partial/null actors, looser than manage.md:478; WR-03 `isolated_routes` (tests/test1/test_ancestor_authorization.py) restores an emptied ViewSet registry — root cause of the xdist flake `test_published_command_examples` (pre-existing at 7daae93f; one-import fix proposed). `manage_report_floor` is not run in CI (IN-05).
 
@@ -2579,6 +2667,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T18:03:00.371Z
-Stopped at: Phase 06.51 plan review converged; ready to execute
-Resume file: .planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-REVIEWS.md
+Last session: 2026-11-25T20:42:03Z
+Stopped at: Phase 06.51 complete; stage 3c (#414) must settle before Phase 7
+Resume file: None

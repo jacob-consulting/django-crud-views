@@ -39,7 +39,6 @@ def _higher_ancestor_gates(target, user, known_ancestors) -> bool:
     keeps _immediate_parent_access's validation-first order.
 
     Migrated consumers supply known higher ancestors aligned with the target's declared ancestry.
-    Retained Guardian create seam/rewrite paths still supply only the immediate parent.
     """
     viewset = target.cv_viewset
     chain = ancestors._walk_ancestors(viewset)

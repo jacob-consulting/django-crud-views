@@ -463,11 +463,6 @@ def guardian_targets(pn, monkeypatch):
             events.append(("parent-state", obj))
             return state["enabled"]
 
-        @classmethod
-        def _cv_action_enabled_for_rendering(cls, user, obj, rendering_view):
-            events.append(("parent-adapter", obj))
-            return cls.cv_action_enabled(user, obj)
-
         def get(self, request, *args, **kwargs):
             return HttpResponse("Parent-only destination")
 
@@ -485,11 +480,6 @@ def guardian_targets(pn, monkeypatch):
         def cv_action_enabled(cls, user, obj=None):
             events.append(("create-state", obj))
             return state["enabled"]
-
-        @classmethod
-        def _cv_action_enabled_for_rendering(cls, user, obj, rendering_view):
-            events.append(("create-adapter", obj))
-            return super()._cv_action_enabled_for_rendering(user, obj, rendering_view)
 
         def get(self, request, *args, **kwargs):
             return HttpResponse("Nested create destination")
@@ -537,7 +527,6 @@ def test_guardian_parent_only_and_create_targets(
     destination = cancel_url(response)
     assert destination == _url(pn.book_vs, key, publisher_a.pk)
     expected = ([("create-access", publisher_a)] if prefix == "create" else []) + [
-        (f"{prefix}-adapter", publisher_a),
         (f"{prefix}-state", publisher_a),
     ]
     assert guardian_targets.events == expected
@@ -639,20 +628,33 @@ def test_guardian_child_object_state_once_after_parent_and_object_policy(
 
 
 @pytest.mark.django_db
-def test_guardian_invalid_child_composition_rejected(pn, publisher_a, monkeypatch):
-    from crud_views.lib.views import DetailViewPermissionRequired
-    from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin
+@pytest.mark.parametrize("shape", ["object", "list"])
+@pytest.mark.parametrize("problem", ["missing", "wrong-order"])
+def test_guardian_invalid_child_composition_rejected(pn, publisher_a, monkeypatch, shape, problem):
+    from django.contrib.auth.models import AnonymousUser
 
-    class InvalidChild(GuardianParentPermissionMixin, DetailViewPermissionRequired):
-        pass
+    from crud_views.lib.views import DetailViewPermissionRequired, ListViewPermissionRequired
+    from crud_views_guardian.lib.mixins import (
+        GuardianObjectPermissionMixin,
+        GuardianParentPermissionMixin,
+        GuardianQuerysetMixin,
+    )
+
+    base, mixin = (
+        (DetailViewPermissionRequired, GuardianObjectPermissionMixin)
+        if shape == "object"
+        else (ListViewPermissionRequired, GuardianQuerysetMixin)
+    )
+    bases = (GuardianParentPermissionMixin, base) + ((mixin,) if problem == "wrong-order" else ())
+    InvalidChild = type("InvalidChild", bases, {})
 
     InvalidChild.cv_viewset = pn.book_vs
-    monkeypatch.setitem(pn.book_vs._views, "detail", InvalidChild)
-    view = bound(
-        pn.BookUpdate, _user("invalid_composition"), publisher_a, **{pn.book_vs.parent.get_pk_name(): publisher_a.pk}
-    )
-    view.cv_cancel_key = "detail"
-    with pytest.raises(ImproperlyConfigured, match="require GuardianObjectPermissionMixin"):
+    key = "detail" if shape == "object" else "list"
+    monkeypatch.setitem(pn.book_vs._views, key, InvalidChild)
+    view = bound(pn.BookUpdate, AnonymousUser(), publisher_a, **{pn.book_vs.parent.get_pk_name(): publisher_a.pk})
+    view.cv_cancel_key = key
+    message = f"require {mixin.__name__}" if problem == "missing" else f"Place {mixin.__name__} before"
+    with pytest.raises(ImproperlyConfigured, match=message):
         view.cv_get_cancel_url()
 
 

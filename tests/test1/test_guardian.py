@@ -302,7 +302,7 @@ def test_create_cv_has_access_child_no_object_with_parent_perm(user_guardian, cv
 
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
     # Permission state does not matter here: this branch returns False unconditionally.
-    # The rendering list view (GuardianQuerysetMixin.cv_get_context) handles the real check.
+    # Shared link admission checks the known route parent before cv_create_has_access.
     assert GuardianBookCreateView.cv_has_access(user_guardian, None) is False
 
 
@@ -442,7 +442,7 @@ def test_cv_create_has_access_returns_false_without_parent_perm(user_guardian, p
     assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, publisher_a) is False
 
 
-# ── GuardianQuerysetMixin.cv_get_context create button ────────────────────────
+# ── Guardian list context uses actual-target shared admission ────────────────
 
 
 def _make_book_list_view(user_guardian, publisher_a, *, guarded=False):
@@ -492,8 +492,10 @@ def test_cv_get_context_create_without_parent_perm_hides_button(user_guardian, c
 
 
 @pytest.mark.django_db
-def test_cv_get_context_non_create_key_not_affected(user_guardian, cv_guardian_publisher, publisher_a, monkeypatch):
-    """cv_get_context override does not interfere with non-create keys (obj=None case)."""
+def test_cv_get_context_list_uses_own_access_with_none_object(
+    user_guardian, cv_guardian_publisher, publisher_a, monkeypatch
+):
+    """The shared check gates the list's parent before asking own access with no object."""
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
     from unittest.mock import Mock
 
@@ -502,34 +504,41 @@ def test_cv_get_context_non_create_key_not_affected(user_guardian, cv_guardian_p
     view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
     own = Mock(wraps=GuardianBookListView.cv_has_access)
     monkeypatch.setattr(GuardianBookListView, "cv_has_access", own)
-    # "list" is a context action with obj=None — override must not fire for non-create keys
+    # A list target has no own object.
     ctx = view.cv_get_context(key="list", obj=None, user=user_guardian)
-    # Guard state supplies the authorized parent for the shared-check migration;
-    # this non-create key must never use the create rewrite.
+    # Guard state supplies the authorized parent; the list keeps its own permission step.
     assert ctx["cv_access"] is True
     own.assert_called_once_with(user_guardian, None)
 
 
 @pytest.mark.django_db
-def test_cv_get_context_respects_cv_create_has_access_override(user_guardian, cv_guardian_publisher, publisher_a):
-    """An override of cv_create_has_access on the create view class is called by cv_get_context."""
+def test_cv_get_context_respects_cv_create_has_access_override(
+    user_guardian, cv_guardian_publisher, publisher_a, monkeypatch
+):
+    """An override can deny after the parent gate, but cannot replace that gate."""
+    from unittest.mock import Mock
+
+    from django.contrib.auth.models import User
+
     from tests.test1.app.views import GuardianBookCreateView
 
-    original = GuardianBookCreateView.cv_create_has_access
+    access = Mock(return_value=True)
+    monkeypatch.setattr(GuardianBookCreateView, "cv_create_has_access", access)
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
+    assert view.cv_get_context(key="create", obj=None, user=user_guardian)["cv_access"] is False
+    access.assert_not_called()
 
-    @classmethod
-    def always_true(cls, user, rendering_view, parent_obj):
-        return True
-
-    GuardianBookCreateView.cv_create_has_access = always_true
-    try:
-        user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
-        view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
-        # user has no change permission on publisher_a, but override returns True
-        ctx = view.cv_get_context(key="create", obj=None, user=user_guardian)
-        assert ctx["cv_access"] is True
-    finally:
-        GuardianBookCreateView.cv_create_has_access = original
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
+    fresh = User.objects.get(pk=user_guardian.pk)
+    view = _make_book_list_view(fresh, publisher_a, guarded=True)
+    parent = view.cv_get_parent_object()
+    for allowed in (True, False):
+        access.reset_mock()
+        access.return_value = allowed
+        assert view.cv_get_context(key="create", obj=None, user=fresh)["cv_access"] is allowed
+        access.assert_called_once_with(fresh, view, parent)
+        assert access.call_args.args[1] is view and access.call_args.args[2] is parent
 
 
 # ── ParentContextButton targeting an object-gated parent view ─────────────────
@@ -684,8 +693,8 @@ def test_create_button_unresolvable_parent_denied(user_guardian):
 
 
 @pytest.mark.django_db
-def test_top_level_create_unchanged_by_key_target_fix(user_guardian, cv_guardian_author):
-    """Top-level (no-parent) create access is unaffected — the override's has_parent guard skips it."""
+def test_top_level_create_uses_model_add_permission(user_guardian, cv_guardian_author):
+    """Top-level create uses its model add permission through inherited context rendering."""
     from unittest.mock import MagicMock
 
     from django.contrib.auth.models import User

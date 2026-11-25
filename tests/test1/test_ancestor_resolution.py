@@ -37,6 +37,7 @@ from django.views.generic.list import MultipleObjectMixin
 
 from crud_views.lib import ancestors
 from crud_views.lib.crispy import Column4
+from crud_views.lib.link_access import _LINK_ALLOWED, _LINK_PERMISSION, _known_link_ancestors, _link_access
 from crud_views.lib.table import Table
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import AncestorPolicy, ParentViewSet, ViewSet
@@ -746,14 +747,16 @@ def test_rendering_a_higher_create_reuses_the_resolved_ancestor(res, world, monk
     note_list = _guarded_view(res.NoteList, user, **_kw(res.pub, world.penguin), **_kw(res.book, world.book))
     resolved_publisher = note_list._cv_ancestor_state.objects[1]
     with CaptureQueriesContext(connection) as captured:
-        assert res.BookCreate._cv_action_enabled_for_rendering(user, None, note_list) is True
+        known = _known_link_ancestors(res.BookCreate, note_list)
+        assert known == (resolved_publisher,)
+        assert _link_access(res.BookCreate, user, None, known, rendering_view=None) == _LINK_ALLOWED
     assert states == [resolved_publisher] and states[0] is resolved_publisher
     assert captured.captured_queries == []
 
 
 @pytest.mark.django_db
 def test_rendering_outside_a_guarded_request_stays_bounded(res, world, monkeypatch):
-    """Without a resolved request chain the helper keeps its single immediate lookup (existing behavior)."""
+    """Ordinary links deny an unknown parent; only actual Cancel keeps its single immediate lookup."""
     states = []
 
     @classmethod
@@ -768,7 +771,17 @@ def test_rendering_outside_a_guarded_request_stays_bounded(res, world, monkeypat
     note_list = res.NoteList()
     note_list.setup(request, **_kw(res.pub, world.penguin), **_kw(res.book, world.book))
     with CaptureQueriesContext(connection) as captured:
-        assert res.BookCreate._cv_action_enabled_for_rendering(user, None, note_list) is True
+        known = _known_link_ancestors(res.BookCreate, note_list)
+        assert known == (None,)
+        assert _link_access(res.BookCreate, user, None, known, rendering_view=None) == _LINK_PERMISSION
+    assert states == []
+    assert captured.captured_queries == []
+
+    book_list = res.BookList()
+    book_list.setup(request, **_kw(res.pub, world.penguin))
+    book_list.cv_cancel_key = "create"
+    with CaptureQueriesContext(connection) as captured:
+        assert book_list.cv_get_cancel_url() == _url(res.book, "create", **_kw(res.pub, world.penguin))
     assert states == [world.penguin] and len(_publisher_reads(captured)) == 1
 
 

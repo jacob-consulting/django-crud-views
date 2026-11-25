@@ -320,14 +320,22 @@ which is not rendered when no cancel target is accessible.
 These three return surfaces — plain GET, warning POST and the Cancel button of the all-blocked page — use
 Cancel's updated destination eligibility. Their chosen `Location` or Cancel URL can change; origin, fallback,
 success URL order, query restoration, authorization responses and login redirects remain unchanged.
-Core Cancel checks known ancestors before own permission and state. For nested object and collection targets,
+Core and Guardian object/list/create Cancel check known ancestors before own permission and state.
+For nested object and collection targets,
 it obtains the URL parent through `cv_get_parent_object`: a guarded request reuses its resolved parent without
 a query; without guard state the existing lookup can fetch it once. A missing row in the built-in lookup means
 unavailable; exceptions from project overrides propagate. Own permission still receives the target's own
 object, or `None` for a collection; state receives that own object or the URL parent respectively.
-Higher ancestors come only from guard state. Cancel through `GuardianParentPermissionMixin` retains its
-immediate-parent-only path; queryset-only Guardian Cancel retains its immediate skip but checks known higher
-ancestors. See [Link consumer migration](../migrating-1.0.md#eight-consumer-changes-in-stage-3a) for these retained exceptions.
+Higher ancestors come only from guard state. Guardian Cancel keeps its actor rule and composition validation;
+queryset-only Guardian Cancel now checks the declared immediate-parent policy as well as known higher ancestors.
+Create targets run actor admission and declared parent gates before `cv_create_has_access`, so a true override
+cannot restore a denied return; a false override still denies. The default hook repeats its bounded immediate check.
+The parent-only non-create branch of `GuardianParentPermissionMixin` omits `cv_has_access`, including custom
+overrides, but checks actor, known higher ancestors, immediate parent and state. Ordinary links to that shape
+still ask the own hook: on a `PermissionRequired` base they can be hidden when the request allows, because the
+hook asks child model permission; a plain base follows its ordinary own hook. See
+[Link consumer migration](../migrating-1.0.md#link-access-hooks) and the
+[parent-only limitation](guardian.md#parent-only-non-create-limitation).
 
 The origin is carried only for an accepted source key. `cv_cancel_keys = "auto"` accepts the standard list
 and card origins; configure other source keys explicitly. `viewset.W275` warns when a source is not accepted,

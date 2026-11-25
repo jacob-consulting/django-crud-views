@@ -553,15 +553,6 @@ class CrudView(metaclass=CrudViewMetaClass):
         return cls.cv_has_access(user, obj)
 
     @classmethod
-    def _cv_page_link_ancestors(cls, rendering_view, page_obj):
-        """Private seam, not an extension point: None requests target-aligned known ancestors.
-
-        An explicit tuple, including an empty tuple, supplies the link check's ancestors instead.
-        The nested Guardian create override retains its immediate-parent-only handling until stage 3b.
-        """
-        return None
-
-    @classmethod
     def cv_action_enabled(cls, user: User, obj: Model | None = None) -> bool:
         """Whether the action is applicable to its current object, independently of permission.
 
@@ -577,23 +568,10 @@ class CrudView(metaclass=CrudViewMetaClass):
 
         Requests and migrated link consumers call this only after permission passes. This includes context,
         parent, sibling and child buttons, actions by view key in context and table rows, and card actions.
-        Retained Guardian paths may still use their state adapters. Direct calls to this public hook do
-        not check permission, so overrides must not assume that every caller has authorized the action.
+        Direct calls to this public hook do not check permission, so overrides must not assume that every
+        caller has authorized the action.
         """
         return True
-
-    @classmethod
-    def _cv_action_enabled_for_context(cls, user: User, obj: Model | None = None) -> bool:
-        """Internal adapter: the action state of this (target) view for a rendered control whose page
-        object is ``obj``. Default: cls.cv_action_enabled(user, obj) unchanged. A view whose state object
-        differs from the page object (Guardian nested create: the parent) overrides this, so custom
-        cv_action_enabled hooks keep receiving their real action object. Not a public extension point."""
-        return cls.cv_action_enabled(user, obj)
-
-    @classmethod
-    def _cv_action_enabled_for_rendering(cls, user, obj, rendering_view) -> bool:
-        """Supply rendering context without changing the target's existing state adapter contract."""
-        return cls._cv_action_enabled_for_context(user, obj)
 
     def cv_get_action_object(self) -> Model | None:
         """The object an action concerns: the instance for object-views, the
@@ -936,9 +914,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         # set up the view context
         context = self.cv_get_view_context(object=obj)
 
-        known = cls._cv_page_link_ancestors(self, obj)
-        if known is None:
-            known = _known_link_ancestors(cls, self)
+        known = _known_link_ancestors(cls, self)
         dict_kwargs.update(
             _link_ctx(
                 _link_access(

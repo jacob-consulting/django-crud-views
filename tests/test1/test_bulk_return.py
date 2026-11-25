@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.models import Permission, User
 from django.contrib.messages import get_messages
 from django.urls import reverse
+from guardian.shortcuts import remove_perm
 
 from crud_views.lib.bulk import BulkFormViewPermissionRequired
 from crud_views.lib.button_classes import get_button_class
@@ -17,6 +18,7 @@ from tests.test1.app.models import Publisher
 from tests.test1.app.views_bulk import BulkFilterListView, BulkFilterMarkView, BulkPublisherListView
 from tests.test1.test_ancestor_authorization import _client, isolated_routes
 from tests.test1.test_bulk_flow import soup
+from tests.test1.test_link_cancel import guardian_cancel_routes
 from tests.test1.test_link_consumer_costs import consumer_actor, consumer_routes, consumer_view, consumer_world
 
 pytestmark = pytest.mark.django_db
@@ -288,10 +290,11 @@ def test_forged_return_token_uses_local_cancel_fallback(
 
 
 @pytest.fixture
-def nested_bulk_return(monkeypatch, settings):
+def nested_bulk_return(monkeypatch, settings, request):
     """Capture a real origin before revocation; bulk uses a less strict far gate."""
     settings.CRUD_VIEWS_BUTTON_CLASSES = {"form:cancel-tag": "a"}
-    with isolated_routes(consumer_routes) as ns:
+    routes = guardian_cancel_routes if getattr(request, "param", "core") == "guardian" else consumer_routes
+    with isolated_routes(routes) as ns:
         world = consumer_world()
         actor = consumer_actor(ns, world)
         ns.note.vs.ancestor_policy = AncestorPolicy(
@@ -384,6 +387,96 @@ def test_nested_bulk_return_uses_cancel_ancestor_eligibility(nested_bulk_return,
     assert world.note.note == "Consumer row 0"
 
 
+@pytest.mark.parametrize("nested_bulk_return", ["guardian"], indirect=True)
+@pytest.mark.parametrize("surface", ["get", "warning", "all-blocked"])
+@pytest.mark.parametrize("choice", ["origin", "fallback", "success"])
+@pytest.mark.parametrize("gate", ["higher", "queryset-nearest", "create-hook"])
+def test_guardian_bulk_return_eligibility(nested_bulk_return, surface, choice, gate, monkeypatch):
+    ns, world, actor, page, action = nested_bulk_return
+    fallback_key = {"higher": "parentonly", "queryset-nearest": "queryset", "create-hook": "create"}[gate]
+    fallback = ns.note.vs.get_view_class(fallback_key)
+    monkeypatch.setattr(ns.note.Bulk, "cv_cancel_key", fallback_key)
+    actions = dict(ns.note.vs.ancestor_policy.actions)
+    actions[fallback_key] = AncestorPermissions(
+        nearest="view" if gate == "higher" or (gate == "queryset-nearest" and choice == "success") else "change",
+        higher="change" if gate == "higher" and choice == "success" else "view",
+    )
+    ns.note.vs.ancestor_policy = AncestorPolicy(cascade=True, actions=actions)
+    if gate == "higher":
+        # Parent-only returns need no inherited child-model view grant.
+        actor.user_permissions.remove(Permission.objects.get(codename="view_booknote"))
+    if choice != "origin":
+        family, obj = (ns.book, world.book) if gate == "queryset-nearest" else (ns.pub, world.pub)
+        permission = "view" if gate == "queryset-nearest" else "change"
+        remove_perm(family.vs.permissions[permission], actor, obj)
+    actor = User.objects.get(pk=actor.pk)
+    client = _client(actor)
+    assert actor.has_perm(ns.note.vs.permissions["change"])
+    if gate == "higher":
+        assert not actor.has_perm(ns.note.vs.permissions["view"])
+    assert client.get(page.cv_get_url("list")).status_code == (200 if choice == "origin" else 403)
+    # A custom create link denial does not alter its independent request gates.
+    assert client.get(page.cv_get_url(fallback_key)).status_code == (
+        403 if choice == "success" and gate != "create-hook" else 200
+    )
+    hook = Mock(return_value=choice != "success")
+    state = Mock(return_value=True)
+    if gate == "create-hook":
+        monkeypatch.setattr(ns.note.Create, "cv_create_has_access", hook)
+    monkeypatch.setattr(fallback, "cv_action_enabled", state)
+    writes = Mock(side_effect=AssertionError("Return navigation executed a bulk write"))
+    monkeypatch.setattr(ns.note.Bulk, "cv_form_valid", writes)
+    if surface == "get":
+        response = client.get(action)
+        assert response.status_code == 302
+        assert list(get_messages(response.wsgi_request)) == []
+        actual = response["Location"]
+    elif surface == "warning":
+        response = client.post(action, {"cv_bulk_stage": "review"})
+        assert_warning(response, "Select at least one record.")
+        actual = response["Location"]
+    else:
+        monkeypatch.setattr(ns.note.Bulk, "cv_bulk_check", lambda self, obj: ["Locked for this action."])
+        response = client.post(action, {"cv_bulk_stage": "review", "cv_bulk_ids": [world.note.pk]})
+        assert response.status_code == 200
+        controls = soup(response).xpath("//a[normalize-space(.)='Cancel']")
+        assert len(controls) == 1
+        assert "Locked for this action." in soup(response).text_content()
+        assert not soup(response).cssselect('button[type="submit"]')
+        assert list(get_messages(response.wsgi_request)) == []
+        actual = controls[0].get("href")
+    expected = page.cv_get_url({"origin": "list", "fallback": fallback_key, "success": "source"}[choice])
+    if choice == "origin":
+        expected += "?" + urlencode(
+            [("sort", "-note"), ("page", "1"), ("tag", "first"), ("tag", "second"), (navigation_params()[2], "1")]
+        )
+    assert actual == expected
+    assert not urlsplit(actual).netloc
+    assert navigation_params()[0] not in parse_qs(urlsplit(actual).query)
+    assert navigation_params()[1] not in parse_qs(urlsplit(actual).query)
+    if choice != "origin":
+        assert urlsplit(actual).query == ""
+    if choice == "fallback":
+        state.assert_called_once()
+        assert state.call_args.args[1].pk == world.book.pk
+    else:
+        state.assert_not_called()
+    if gate == "create-hook" and choice != "origin":
+        # With no eligible Cancel, _CancelOnlyForm asks _bulk_back_url for success fallback,
+        # which deliberately performs another Cancel check before choosing success.
+        assert hook.call_count == (2 if surface == "all-blocked" and choice == "success" else 1)
+        for call in hook.call_args_list:
+            assert call.args[0] is response.wsgi_request.user
+            assert call.args[1].request is response.wsgi_request
+            assert call.args[1].cv_viewset is ns.note.vs
+    else:
+        hook.assert_not_called()
+    writes.assert_not_called()
+    world.note.refresh_from_db()
+    assert world.note.note == "Consumer row 0"
+
+
+@pytest.mark.parametrize("nested_bulk_return", ["core", "guardian"], indirect=True)
 @pytest.mark.parametrize("surface", ["get", "warning", "all-blocked"])
 @pytest.mark.parametrize("anonymous", [False, True], ids=["denied", "anonymous"])
 def test_nested_bulk_returns_preserve_request_authorization(
@@ -391,6 +484,8 @@ def test_nested_bulk_returns_preserve_request_authorization(
 ):
     ns, world, actor, _page, action = nested_bulk_return
     actor.user_permissions.remove(Permission.objects.get(codename="change_book"))
+    if hasattr(ns.note, "QuerysetOnly"):
+        remove_perm(ns.book.vs.permissions["change"], actor, world.book)
     actor = User.objects.get(pk=actor.pk)
     client = _client(None if anonymous else actor)
     returns = Mock(side_effect=AssertionError("Denied request reached return navigation"))

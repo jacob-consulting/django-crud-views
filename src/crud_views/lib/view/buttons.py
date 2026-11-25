@@ -106,9 +106,7 @@ class ContextButton(BaseModel):
             "cv_oid": context.view.cv_get_oid(key=key_target, obj=context.object),
         }
 
-        known = cls._cv_page_link_ancestors(context.view, context.object)
-        if known is None:
-            known = _known_link_ancestors(cls, context.view)
+        known = _known_link_ancestors(cls, context.view)
         dict_kwargs.update(
             _link_ctx(
                 _link_access(
@@ -176,9 +174,7 @@ class ParentContextButton(ContextButton):
         dict_kwargs.update(cv_url=cv_url)
 
         parent_obj = _resolved_ancestor(context.view, parent.name)
-        known = cls._cv_page_link_ancestors(context.view, parent_obj)
-        if known is None:
-            known = _known_link_ancestors(cls, context.view)
+        known = _known_link_ancestors(cls, context.view)
         dict_kwargs.update(
             _link_ctx(
                 _link_access(
@@ -264,8 +260,7 @@ class SiblingContextButton(ContextButton):
 
     Collection-only: a sibling button has no specific sibling object in scope, so object-gated
     sibling views (detail/update/delete) are unsupported. Access is checked with no object;
-    state receives the shared parent already resolved by the request. A nested Guardian create
-    cannot be reached through this button.
+    state receives the shared parent already resolved by the request, including for nested Guardian create.
     """
 
     sibling_name: str
@@ -299,9 +294,7 @@ class SiblingContextButton(ContextButton):
             "cv_icon_action": sibling_vs.icon_header,
         }
 
-        known = cls._cv_page_link_ancestors(context.view, None)
-        if known is None:
-            known = _known_link_ancestors(cls, context.view)
+        known = _known_link_ancestors(cls, context.view)
         dict_kwargs.update(
             _link_ctx(
                 _link_access(

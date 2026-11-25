@@ -8,7 +8,7 @@ from django.db.models import Count
 from django.utils.translation import gettext as _
 
 from crud_views.lib.ancestor_db import _check_nested_auth
-from crud_views.lib.ancestors import _immediate_parent_access, _resolved_ancestor
+from crud_views.lib.ancestors import _immediate_parent_access
 from crud_views.lib.manage_report import SourceRecord, normalize_value
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views import (
@@ -279,20 +279,6 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
     """
 
     @classmethod
-    def _cv_page_link_ancestors(cls, rendering_view, page_obj):
-        """Supply only the URL parent of an own child in a single-FK nesting, without a lookup."""
-        parent = cls.cv_viewset.parent
-        if parent is None:
-            return super()._cv_page_link_ancestors(rendering_view, page_obj)
-        # Keep denied: the child-list permission filter and M2M child page (D-27), the create page
-        # itself and sibling button (D-33), and views without a resolved parent (D-16).
-        # GuardianQuerysetMixin.cv_get_context supplies the child list page's URL parent itself.
-        if not isinstance(page_obj, cls.cv_viewset.model) or parent.many_to_many_through_attribute:
-            return ()
-        resolved = _resolved_ancestor(rendering_view, parent.name)
-        return (resolved,) if resolved is not None else ()
-
-    @classmethod
     def _cv_guardian_create_parent(cls, obj):
         """The configured parent instance an access/state input stands for, or None.
 
@@ -317,44 +303,37 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         return candidate if isinstance(candidate, parent_model) else None
 
     @classmethod
-    def _cv_action_enabled_for_context(cls, user, obj=None) -> bool:
-        """Nested create: the action object is the parent. Resolve it from ``obj`` (parent or FK own child);
-        unresolved → False without calling a custom cv_action_enabled hook. Top-level: unchanged."""
-        if cls.cv_viewset.parent is None:
-            return super()._cv_action_enabled_for_context(user, obj)
-        parent_obj = cls._cv_guardian_create_parent(obj)
-        if parent_obj is None:
-            return False
-        return cls.cv_action_enabled(user, parent_obj)
-
-    @classmethod
     def cv_create_has_access(cls, user, rendering_view, parent_obj):
         """
         Permission-only hook for links to this create, using its immediate parent's rule.
 
-        This is the only own-permission step for every package control currently shown that links to a
-        nested Guardian create. A sibling button to it and its create-page create control stay hidden
-        without asking this hook. One existing list-page limit remains: when a nested Guardian list's own
-        ViewSet registers a Guardian create under the same key, GuardianQuerysetMixin.cv_get_context gives
-        a parent or sibling button to this create the page's own create result.
+        This is the only own-permission step for package controls linking to a nested Guardian create.
+        A known route parent makes sibling and create-page controls, child-list permission filters and
+        M2M page controls eligible after the declared higher/immediate gates and this hook pass. Normal
+        consumers use resolved route ancestry without guessing a relation. Each button follows its actual
+        target; custom get_context output is not repaired by a page-key rewrite.
 
-        The default applies the immediate parent's provider and fallback with this create's nearest Write
-        key; provider "none" skips only that permission. An inactive signed-in actor is denied; an anonymous
-        actor receives the parent provider's answer. The request-resolved parent identity is reused when
-        available. Action state is evaluated separately. Override in subclasses for custom parent rules.
+        Nested links require a signed-in, active actor and passing declared parent gates before this hook;
+        a denied gate skips even a custom override. An override may deny after the gates pass. The default
+        deliberately repeats the bounded immediate-parent check using this create's nearest Write key,
+        provider and fallback; provider "none" skips only that permission. Direct calls to this default
+        hook also enforce actor admission, but do not discover or check higher ancestors. The request-resolved
+        parent identity is reused when available. Action state is evaluated separately.
 
         Args:
             user: the requesting user
             rendering_view: the real rendering view when it belongs to this create's own ViewSet, including
                 list, object, row/card action, navbar and permission-filter consumers; otherwise None.
-                Retained Cancel supplies its existing request-bound view of the same ViewSet. A child link
-                from another ViewSet receives None. Overrides must not assume it is set or is a list view.
+                Cancel uses the shared known-ancestor check and supplies its existing request-bound view of
+                the same ViewSet. A child link from another ViewSet receives None. Overrides must not assume
+                it is set or is a list view.
             parent_obj: the resolved parent instance. An own child of a single-foreign-key nesting is also
-                accepted and resolved to its parent; None, missing relations and every other input deny.
+                accepted and resolved to its parent; M2M own children remain ambiguous and deny.
+                None, missing relations and every other input deny.
         """
         if cls.cv_viewset.parent is None:
             return cls.cv_has_access(user, None)
-        if _guardian_inactive_actor(user):
+        if not (user.is_authenticated and user.is_active):
             return False
         resolved = cls._cv_guardian_create_parent(parent_obj)
         return _immediate_parent_access(cls, user, resolved, rendering_view=rendering_view)
@@ -377,13 +356,17 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
 
     @classmethod
     def _cv_link_permission(cls, user, obj, parent_obj, *, rendering_view=None):
-        """A nested create's permission is solely its documented parent-based hook.
+        """Admit an active signed-in actor and the immediate parent before the create override.
 
-        Keep that hook's actor rule, including anonymous backend grants under a model-provider parent
-        (known limit L2, retained for stage 1).
+        The shared check gates known higher ancestors first. Denial here skips the hook; the default hook
+        deliberately performs its second bounded immediate check. Create has no own-access step.
         """
         if cls.cv_viewset.parent is None:
             return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
+        if not (user.is_authenticated and user.is_active):
+            return False
+        if not _immediate_parent_access(cls, user, parent_obj, rendering_view=rendering_view):
+            return False
         return cls.cv_create_has_access(user, rendering_view, parent_obj)
 
 

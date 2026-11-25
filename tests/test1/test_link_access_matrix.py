@@ -1,4 +1,4 @@
-"""Frozen link outcomes with individually ledgered stage-3a permission denials.
+"""Frozen link outcomes with individually ledgered stage-3a and stage-3b changes.
 
 The original snapshot is reconstructible from the current cells and explicit
 before values. Runtime checks require no historical Git checkout or planning files.
@@ -7,6 +7,7 @@ before values. Runtime checks require no historical Git checkout or planning fil
 import json
 import re
 from contextlib import contextmanager, nullcontext
+from copy import deepcopy
 from hashlib import sha256
 from itertools import product
 from pathlib import Path
@@ -266,8 +267,12 @@ def _parent_control(case, family, parent, actor, monkeypatch):
     else:
         raw = rendered_data(family, renderer, actor, parent, key=key)
     if control == "request":
-        assert _outcome(raw) == "enabled"
-        return f"page:{_get(actor, raw['cv_url']).status_code}"
+        # Request authorization is independent of whether its link is available.
+        kwargs = {family.child.parent.get_pk_name(): parent.pk}
+        if composition == "plain-3":
+            kwargs[family.parent.parent.get_pk_name()] = parent.publisher_id
+        destination = reverse(family.child.get_router_name(key), kwargs=kwargs)
+        return f"page:{_get(actor, destination).status_code}"
     return _outcome(raw)
 
 
@@ -464,8 +469,9 @@ def _page_cell(case, request, monkeypatch):
     [pytest.param(case, "guardian" if case[1] == "mixed" else "model", id=_case_id(*case)) for case in CASES],
     indirect=["core_links"],
 )
-def test_link_matrix_cell(case, core_links, request, monkeypatch):
+def test_link_matrix_cell(case, core_links, request, monkeypatch, record_property):
     actual = _live_cell(case, request, monkeypatch, core_links)
+    record_property("cell", json.dumps({"id": _case_id(*case), "actual": actual}))
     assert actual == BASELINE["cells"][_case_id(*case)]
 
 
@@ -482,26 +488,25 @@ def test_link_matrix_snapshot_is_complete():
     for composition, actor in (("plain-3", "near-only"), ("guardian-queryset-only", "no-parent-grant")):
         assert cells[_case_id("request", composition, "parent", "list", actor, "on", "disable")] == "page:403"
         for control in ("child-button", "card-child"):
-            assert cells[_case_id(control, composition, "parent", "list", actor, "on", "disable")] == "enabled"
+            expected = "disabled:permission" if composition == "guardian-queryset-only" else "enabled"
+            assert cells[_case_id(control, composition, "parent", "list", actor, "on", "disable")] == expected
     for control in ("child-button", "card-child"):
         assert cells[_case_id(control, "core-guardian", "parent", "create", "inactive", "on", "disable")] == (
             "disabled:permission"
         )
         assert cells[_case_id(control, "core-guardian", "parent", "create", "anonymous-backend", "on", "disable")] == (
-            "enabled"
+            "disabled:permission"
         )
     for composition, page in (("guardian", "list"), ("guardian-m2m", "detail")):
-        assert cells[_case_id("filter", composition, page, "create", "direct", "on", "disable")] == "False"
+        assert cells[_case_id("filter", composition, page, "create", "direct", "on", "disable")] == "True"
     for target in ("create-action", "create-alias"):
-        assert cells[_case_id("create-control", "guardian", "create", target, "direct", "on", "disable")] == (
-            "disabled:permission"
-        )
+        assert cells[_case_id("create-control", "guardian", "create", target, "direct", "on", "disable")] == ("enabled")
     for page in ("list", "detail"):
         assert cells[_case_id("sibling-button", "guardian", page, "sibling-create", "direct", "on", "disable")] == (
-            "disabled:permission"
+            "enabled"
         )
         for actor in ("near-change", "far-change"):
-            expected = "enabled" if (actor == "near-change") == (page == "list") else "disabled:permission"
+            expected = "enabled" if actor == "far-change" else "disabled:permission"
             assert (
                 cells[_case_id("parent-button", "guardian-3", page, "parent-create", actor, "on", "disable")]
                 == expected
@@ -531,11 +536,123 @@ def test_link_matrix_snapshot_is_complete():
     )
 
 
+def _stage3b_decisions(cell_id):
+    """Approved decisions for the observed changed families; no request migrations."""
+    control, composition, page, _target, actor, _state, _mode = cell_id.split("/")
+    if composition == "guardian-queryset-only" and control in {"child-button", "card-child"}:
+        return ["D-47"]
+    if composition == "core-guardian" and actor == "anonymous-backend":
+        return ["D-46"]
+    if control == "parent-button" and composition == "guardian-3" and page == "list":
+        return ["D-45", "D-50"]
+    if control == "sibling-button" and composition == "guardian":
+        return ["D-45", "D-50"] if page == "list" else ["D-45"]
+    if control in {"filter", "create-control"} and composition in {"guardian", "guardian-m2m"}:
+        return ["D-45"]
+    raise AssertionError(f"No approved matrix change for {cell_id}")
+
+
+def _recover_stage3a(baseline):
+    assert "stage3b" in baseline, "stage3b change ledger is required"
+    receipt = baseline["stage3b"]
+    assert set(receipt) == {"before_raw_sha256", "before_reconstruction_sha256", "changes"}
+    assert receipt["before_raw_sha256"] == "4c29f3f493c4b71ed0791a8e3d5c2898d31fb84ff493d8bee22d1d5ee5eb2b14"
+    assert receipt["before_reconstruction_sha256"] == "317e5e7cee728c67ad97a25bfd8c8d99270a1bd0bb541a8a9bd3dab36ec57d8e"
+    cells, changes = baseline["cells"], receipt["changes"]
+    assert changes and changes.keys() <= cells.keys()
+    for cell_id, change in changes.items():
+        assert set(change) == {"before", "after", "decisions", "reason"}
+        assert not cell_id.startswith("request/")
+        assert change["before"] != change["after"] == cells[cell_id]
+        assert change["before"] in OUTCOMES | {"True", "False"}
+        assert change["after"] in OUTCOMES | {"True", "False"}
+        assert change["decisions"] == _stage3b_decisions(cell_id)
+        assert isinstance(change["reason"], str) and change["reason"].strip()
+    recovered = {key: deepcopy(value) for key, value in baseline.items() if key != "stage3b"}
+    for cell_id, change in changes.items():
+        recovered["cells"][cell_id] = change["before"]
+    # This is deliberately the canonical serialization, NOT the original raw bytes.
+    assert (
+        sha256((json.dumps(recovered, indent=2) + "\n").encode()).hexdigest() == receipt["before_reconstruction_sha256"]
+    )
+    return recovered
+
+
+def test_stage3b_matrix_changes_reconstruct_stage3a():
+    recovered = _recover_stage3a(BASELINE)
+    assert list(recovered["cells"]) == list(BASELINE["cells"])
+    assert len(recovered["cells"]) == 1178
+    assert {key for key in recovered["cells"] if recovered["cells"][key] != BASELINE["cells"][key]} == set(
+        BASELINE["stage3b"]["changes"]
+    )
+
+
+@pytest.mark.parametrize(
+    "damage",
+    [
+        "missing-delta",
+        "extra-delta",
+        "wrong-before",
+        "wrong-after",
+        "invalid-decision",
+        "missing-decision",
+        "empty-reason",
+        "request",
+        "source",
+        "interpreter",
+        "stage3a",
+        "missing-cell",
+        "extra-cell",
+        "key-order",
+        "raw-pin",
+        "reconstruction-pin",
+    ],
+)
+def test_stage3b_matrix_rejects_damaged_evidence(damage):
+    data = deepcopy(BASELINE)
+    changes = data["stage3b"]["changes"]
+    key = next(iter(changes))
+    if damage == "missing-delta":
+        del changes[key]
+    elif damage == "extra-delta":
+        extra = next(cell for cell in data["cells"] if cell not in changes)
+        changes[extra] = {**changes[key], "before": data["cells"][extra], "after": data["cells"][extra]}
+    elif damage in {"wrong-before", "wrong-after"}:
+        changes[key][damage.removeprefix("wrong-")] = "hidden"
+    elif damage in {"invalid-decision", "missing-decision"}:
+        changes[key]["decisions"] = ["D-999"] if damage == "invalid-decision" else []
+    elif damage == "empty-reason":
+        changes[key]["reason"] = " "
+    elif damage == "request":
+        request_key = next(cell for cell in data["cells"] if cell.startswith("request/"))
+        changes[request_key] = {**changes[key], "before": "page:403", "after": "page:200"}
+        data["cells"][request_key] = "page:200"
+    elif damage == "source":
+        data["source_revision"] = "changed"
+    elif damage == "interpreter":
+        data["interpreter"]["python"] = "changed"
+    elif damage == "stage3a":
+        data["stage3a"]["changes"].clear()
+    elif damage == "missing-cell":
+        del data["cells"][next(cell for cell in data["cells"] if cell not in changes)]
+    elif damage == "extra-cell":
+        data["cells"]["unknown/coordinate"] = "enabled"
+    elif damage == "key-order":
+        first = next(iter(data["cells"]))
+        data["cells"][first] = data["cells"].pop(first)
+    else:
+        field = "before_raw_sha256" if damage == "raw-pin" else "before_reconstruction_sha256"
+        data["stage3b"][field] = "0" * 64
+    with pytest.raises(AssertionError):
+        _recover_stage3a(data)
+
+
 def test_stage3a_matrix_changes_are_permission_denials():
     """Verify the whole frozen before dataset, not only the listed changed cells."""
-    receipt = BASELINE["stage3a"]
+    stage3a = _recover_stage3a(BASELINE)
+    receipt = stage3a["stage3a"]
     changes = receipt["changes"]
-    cells = BASELINE["cells"]
+    cells = stage3a["cells"]
     assert changes
     assert changes.keys() <= cells.keys()
     for cell_id, change in changes.items():
@@ -549,7 +666,7 @@ def test_stage3a_matrix_changes_are_permission_denials():
         assert change["decisions"] and change["reason"]
         assert change["behavior_change"] in range(1, 9)
 
-    before = {key: value for key, value in BASELINE.items() if key != "stage3a"}
+    before = {key: value for key, value in stage3a.items() if key != "stage3a"}
     before["cells"] = {cell_id: changes.get(cell_id, {}).get("before", outcome) for cell_id, outcome in cells.items()}
     original_sha256 = "c72c34ac59cc48281d897d3ab81292dd2d262bca6e2be0722ab51b278dfea43c"
     assert receipt["before_sha256"] == original_sha256

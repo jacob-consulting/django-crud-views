@@ -17,14 +17,15 @@ The assertions are about attribution and prohibited work, never a query budget:
 * every response is the normal 200, cold and warm;
 * the guard resolves each ancestor exactly once, outermost first, and no ancestor queryset runs outside it (no
   repeated resolution, no legacy parent gate left in the local path);
-* full cascade evaluates one gate per ancestor, nearest-only exactly one — the nearest; higher ancestors are
-  never evaluated (an event list, not inferred from totals), and no gate repeats within a request;
+* the guard evaluates one gate per ancestor in full cascade, nearest-only exactly one — the nearest; higher
+  ancestors are never evaluated in nearest mode, and no complete guard tuple repeats;
 * plain views: the work outside the guard equals the pre-edit total, so the guard is the only added work;
 * warm requests still query permission rows inside the guard: no persistent access cache hides the cost;
 * top-level requests do no ancestor work at all.
 
-A supplementary set renders the leaf list with its create button: migrated core actions gate the known ancestors
-selected by the target's cascade mode, while retained Guardian create handling gates only the immediate parent.
+A supplementary set renders the leaf list with its create button: both providers gate the known ancestors
+selected by the target's cascade mode, outermost first. Guardian's default create hook repeats only the immediate
+gate after shared admission. Only that declared render sequence may duplicate a gate.
 Both reuse guard-resolved objects without a lookup, separate from the guard. Set ``CV_ANCESTOR_COSTS_DIR`` to write
 one JSON file per depth/provider (06.18-COSTS.md is generated from those files). Cold cells clear the ViewSet
 vocabulary, ContentType and ``_VOCAB_CACHE`` caches before one request; the warm cell repeats it immediately.
@@ -170,12 +171,23 @@ def _assert_nested_cell(chain, mode, measured, *, helper_gates=0):
     higher = set(ancestors_outer_first[:-1])
     if mode == "nearest":
         assert [gate for gate in measured["gates"] if gate[1] in higher] == []
-    assert len(set(measured["gates"])) == len(measured["gates"])  # no identical gate twice in one request
+    guard_tuples = [gate for gate in measured["gates"] if gate[0] == "guard"]
+    assert len(set(guard_tuples)) == len(guard_tuples)
     rest_gates = [gate for gate in measured["gates"] if gate[0] == "rest"]
-    assert len(rest_gates) == (len(helper_gates[mode]) if helper_gates else 0)
-    assert [gate[1] for gate in rest_gates] == (
-        [ancestors_outer_first[index] for index in helper_gates[mode]] if helper_gates else []
-    )
+    # Derive complete render tuples from the declared create target and fixture URL,
+    # never from measured gates. The fixture's Write pair is nearest=change, higher=view.
+    from django.urls import resolve
+
+    kwargs = resolve(chain.urls()["list"]).kwargs
+    expected_render = []
+    for index in helper_gates[mode] if helper_gates else ():
+        parent = chain.viewsets[:-1][index]
+        parent_pk = parent.model._meta.pk.to_python(kwargs[f"{parent.name}_pk"])
+        key = "change" if parent is chain.viewsets[-2] else "view"
+        expected_render.append(("rest", parent.name, parent.permissions[key], parent_pk))
+    assert rest_gates == expected_render
+    if len(set(expected_render)) == len(expected_render):
+        assert len(set(rest_gates)) == len(rest_gates)
     # ancestor rows are read only by the guard (no legacy parent gate or second resolution in the local path)
     ancestor_tables = {vs.model._meta.db_table for vs in chain.viewsets[:-1]}
     assert not ancestor_tables & set(measured["rest_by_table"])
@@ -258,13 +270,13 @@ def test_cost_matrix_against_the_pre_edit_baseline(depth, provider, probe):
 @pytest.mark.parametrize("provider", PROVIDERS)
 @pytest.mark.parametrize("depth", DEPTHS)
 def test_render_helper_work_is_separate_from_the_guard(depth, provider, probe):
-    """Core create gates the selected known levels; retained Guardian create gates only the nearest.
+    """Both providers gate selected known levels; Guardian's default hook repeats the immediate gate.
     Renderer gates reuse guard objects without lookup and remain distinct from request guard work."""
     with _chain_context(depth, provider) as chain:
         chain.leaf_vs.get_all_views()["list"].cv_context_actions = ["create"]
         helper_gates = {
-            "full": [-1] if provider == "guardian" else list(range(depth)),
-            "nearest": [-1],
+            "full": list(range(depth)) + ([-1] if provider == "guardian" else []),
+            "nearest": [-1, -1] if provider == "guardian" else [-1],
         }
         _run_matrix(
             chain, depth, provider, probe, label_suffix="-list-with-create-button", helper_gates=helper_gates,

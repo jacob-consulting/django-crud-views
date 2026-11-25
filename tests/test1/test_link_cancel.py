@@ -1,4 +1,4 @@
-"""Core Cancel uses its parent hook; retained Guardian Cancel paths remain distinct."""
+"""Cancel shares declared gates while preserving its parent hook and parent-only exception."""
 
 from copy import copy
 from unittest.mock import Mock
@@ -6,16 +6,17 @@ from unittest.mock import Mock
 import pytest
 from django.contrib.auth.models import Permission, User
 from django.db import DatabaseError, connection
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.test import Client, RequestFactory
 from django.test.utils import CaptureQueriesContext
 from guardian.shortcuts import remove_perm
 
 from crud_views.lib.view import ContextButton
 from crud_views.lib.views import ListViewPermissionRequired
+from crud_views.lib.views.form import CustomFormNoObjectView, CustomFormNoObjectViewPermissionRequired
 from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ViewSet
 from crud_views.templatetags.crud_views import cv_context_has_permission
-from crud_views_guardian.lib.mixins import GuardianQuerysetMixin
+from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin, GuardianQuerysetMixin
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1.test_ancestor_authorization import isolated_routes
 from tests.test1.test_link_consumer_costs import consumer_actor, consumer_routes, consumer_view, consumer_world
@@ -24,8 +25,9 @@ from tests.test1.test_link_consumer_costs import consumer_actor, consumer_routes
 @pytest.mark.django_db
 @pytest.mark.parametrize("key", ["detail", "list"])
 @pytest.mark.parametrize("guarded", [False, True])
-def test_core_cancel_parent_lookup_and_object_identity(key, guarded, monkeypatch):
-    with isolated_routes(consumer_routes) as ns:
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+def test_cancel_parent_lookup_and_object_identity(key, guarded, composition, monkeypatch):
+    with isolated_routes(lambda suffix: consumer_routes(suffix, composition)) as ns:
         world = consumer_world()
         actor = consumer_actor(ns, world)
         page = consumer_view(ns.note, "Update", actor, world, guarded=guarded)
@@ -35,13 +37,14 @@ def test_core_cancel_parent_lookup_and_object_identity(key, guarded, monkeypatch
         monkeypatch.setattr(target, "cv_has_access", own)
         monkeypatch.setattr(target, "cv_action_enabled", state)
         gates = []
-        original = ViewSet._ancestor_has_permission
+        provider = GuardianViewSet if composition == "guardian" else ViewSet
+        original = provider._ancestor_has_permission
 
         def gate(vs, user, permission, obj, *, view):
             gates.append((vs.name, obj))
             return original(vs, user, permission, obj, view=view)
 
-        monkeypatch.setattr(ViewSet, "_ancestor_has_permission", gate)
+        monkeypatch.setattr(provider, "_ancestor_has_permission", gate)
         with CaptureQueriesContext(connection) as queries:
             assert page.cv_get_cancel_url() == page.cv_get_url(key, obj=world.note)
         parent = gates[-1][1]
@@ -118,8 +121,9 @@ def test_core_cancel_custom_parent_and_request_bound_owner(key, monkeypatch):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("key", ["detail", "list"])
-def test_core_cancel_missing_builtin_parent_is_unavailable(key, monkeypatch):
-    with isolated_routes(consumer_routes) as ns:
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+def test_cancel_missing_builtin_parent_is_unavailable(key, composition, monkeypatch):
+    with isolated_routes(lambda suffix: consumer_routes(suffix, composition)) as ns:
         world = consumer_world()
         actor = consumer_actor(ns, world)
         page = consumer_view(ns.note, "Update", actor, world, guarded=False)
@@ -142,8 +146,9 @@ def test_core_cancel_missing_builtin_parent_is_unavailable(key, monkeypatch):
 @pytest.mark.django_db
 @pytest.mark.parametrize("key", ["detail", "list"])
 @pytest.mark.parametrize("error", [Http404, KeyError, DatabaseError])
-def test_core_cancel_custom_parent_errors_reach_both_target_shapes(key, error, monkeypatch):
-    with isolated_routes(consumer_routes) as ns:
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+def test_cancel_custom_parent_errors_reach_both_target_shapes(key, error, composition, monkeypatch):
+    with isolated_routes(lambda suffix: consumer_routes(suffix, composition)) as ns:
         world = consumer_world()
         actor = consumer_actor(ns, world)
         page = consumer_view(ns.note, "Update", actor, world)
@@ -217,17 +222,37 @@ def guardian_cancel_routes(suffix):
         (GuardianQuerysetMixin, ListViewPermissionRequired),
         {"cv_viewset": ns.note.vs, "cv_key": "queryset", "cv_path": "queryset", "cv_context_actions": []},
     )
+    for name, base in (
+        ("ParentOnly", CustomFormNoObjectViewPermissionRequired),
+        ("PlainParent", CustomFormNoObjectView),
+    ):
+        key = name.lower()
+        setattr(
+            ns.note,
+            name,
+            type(
+                name,
+                (GuardianParentPermissionMixin, base),
+                {
+                    "cv_viewset": ns.note.vs,
+                    "cv_key": key,
+                    "cv_path": key,
+                    "cv_context_actions": [],
+                    "get": lambda self, request, *args, **kwargs: HttpResponse("Parent-only destination"),
+                },
+            ),
+        )
     return ns, families
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("key", ["detail", "list", "queryset"])
 @pytest.mark.parametrize("far_allowed", [False, True])
-def test_guardian_cancel_parent_path_and_queryset_only_have_distinct_gates(key, far_allowed, monkeypatch):
+def test_guardian_cancel_targets_apply_declared_gates(key, far_allowed, monkeypatch):
     with isolated_routes(guardian_cancel_routes) as ns:
         world = consumer_world()
         actor = consumer_actor(ns, world)
-        # No Book change grant: queryset-only must retain its immediate-gate exception.
+        # D-47: without Book change, queryset-only denies after a successful far gate too.
         remove_perm(ns.book.vs.permissions["change"], actor, world.book)
         if not far_allowed:
             remove_perm(ns.pub.vs.permissions["change"], actor, world.pub)
@@ -249,16 +274,14 @@ def test_guardian_cancel_parent_path_and_queryset_only_have_distinct_gates(key, 
             return original(vs, user, permission, obj, view=view)
 
         monkeypatch.setattr(GuardianViewSet, "_ancestor_has_permission", gate)
-        allowed = key != "queryset" or far_allowed
+        allowed = far_allowed and key != "queryset"
         destination = page.cv_get_url(key, obj=world.note)
         assert page.cv_get_cancel_url() == (destination if allowed else None)
-        expected = (
-            (ns.pub.vs.name, page._cv_ancestor_state.objects[1])
-            if key == "queryset"
-            else (ns.book.vs.name, page._cv_ancestor_state.parent)
-        )
-        assert gates == [expected]
-        assert gates[0][1] is expected[1]
+        expected = [(ns.pub.vs.name, page._cv_ancestor_state.objects[1])]
+        if far_allowed:
+            expected.append((ns.book.vs.name, page._cv_ancestor_state.parent))
+        assert gates == expected
+        assert all(event[1] is wanted[1] for event, wanted in zip(gates, expected, strict=True))
         if allowed:
             state.assert_called_once_with(actor, world.note if target.cv_object else page._cv_ancestor_state.parent)
         else:
@@ -266,7 +289,157 @@ def test_guardian_cancel_parent_path_and_queryset_only_have_distinct_gates(key, 
         state.reset_mock()
         client = Client()
         client.force_login(actor)
-        # Requests always enforce the full policy, also for the retained Cancel exceptions.
+        # Requests keep their existing full-policy result.
         assert client.get(destination).status_code == (200 if far_allowed and key != "queryset" else 403)
         if not far_allowed or key == "queryset":
+            state.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("key", ["detail", "list", "create", "queryset"])
+@pytest.mark.parametrize("explicit_allowed", [False, True])
+def test_guardian_cancel_explicit_actor_and_request(key, explicit_allowed, monkeypatch):
+    with isolated_routes(guardian_cancel_routes) as ns:
+        world = consumer_world()
+        permitted = consumer_actor(ns, world)
+        denied = User.objects.create_user(username="cancel_denied")
+        actor, request_actor = (permitted, denied) if explicit_allowed else (denied, permitted)
+        page = consumer_view(ns.note, "Detail", permitted, world)
+        original_request = page.request
+        page.cv_cancel_key = key
+        page.cv_cancel_keys = None
+        request = RequestFactory().get("/")
+        request.user = request_actor
+        owners = []
+        parent = page._cv_ancestor_state.parent
+
+        def parent_hook(owner):
+            owners.append(owner)
+            assert owner.request is request
+            return parent
+
+        monkeypatch.setattr(ns.note.Detail, "cv_get_parent_object", parent_hook)
+        target = ns.note.vs.get_view_class(key)
+        create = Mock(wraps=ns.note.Create.cv_create_has_access)
+        state = Mock(return_value=True)
+        monkeypatch.setattr(ns.note.Create, "cv_create_has_access", create)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        destination = page.cv_get_url(key, obj=world.note)
+        assert page.cv_get_cancel_url(user=actor, request=request) == (destination if explicit_allowed else None)
+        assert len(owners) == 1
+        owner = owners[0]
+        assert owner is not page and type(owner) is type(page)
+        assert owner.object is world.note and owner._cv_ancestor_state is page._cv_ancestor_state
+        assert owner.request is request and page.request is original_request
+        assert page.request.user is permitted and request.user is request_actor
+        if explicit_allowed:
+            action_obj = world.note if target.cv_object else parent
+            state.assert_called_once_with(actor, action_obj)
+            assert state.call_args.args[1] is action_obj
+        else:
+            state.assert_not_called()
+        if key == "create" and explicit_allowed:
+            create.assert_called_once_with(actor, owner, parent)
+            assert create.call_args.args[1] is owner and create.call_args.args[2] is parent
+        else:
+            create.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("base", ["ParentOnly", "PlainParent"])
+@pytest.mark.parametrize("far_allowed", [False, True])
+def test_guardian_parent_only_cancel_higher_gates(base, far_allowed, monkeypatch):
+    with isolated_routes(guardian_cancel_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        actor.user_permissions.remove(Permission.objects.get(codename="view_booknote"))
+        if not far_allowed:
+            remove_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+        actor = User.objects.get(pk=actor.pk)
+        assert not actor.has_perm("app.view_booknote")
+        page = consumer_view(ns.note, "List", actor, world)
+        target = getattr(ns.note, base)
+        key = target.cv_key
+        page.cv_cancel_key = key
+        page.cv_cancel_keys = None
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={key: AncestorPermissions(nearest="view", higher="change")}
+        )
+        state = Mock(return_value=True)
+        own = Mock(wraps=target.cv_has_access)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        monkeypatch.setattr(target, "cv_has_access", own)
+        destination = page.cv_get_url(key)
+        assert cv_context_has_permission(page, key) is (far_allowed and base == "PlainParent")
+        state.assert_not_called()
+        own.reset_mock()
+        assert page.cv_get_cancel_url() == (destination if far_allowed else None)
+        own.assert_not_called()
+        if far_allowed:
+            state.assert_called_once_with(actor, page._cv_ancestor_state.parent)
+            assert state.call_args.args[1] is page._cv_ancestor_state.parent
+        else:
+            state.assert_not_called()
+        state.reset_mock()
+        # The parent-only omission is based on target shape, even for a custom own denial.
+        own.side_effect = AssertionError("Cancel must not ask parent-only own access")
+        assert page.cv_get_cancel_url() == (destination if far_allowed else None)
+        own.assert_not_called()
+        state.reset_mock()
+        client = Client()
+        client.force_login(actor)
+        assert client.get(destination).status_code == (200 if far_allowed else 403)
+        own.assert_not_called()
+        if not far_allowed:
+            state.assert_not_called()
+        state.reset_mock()
+        state.return_value = False
+        assert page.cv_get_cancel_url() is None
+        if far_allowed:
+            state.assert_called_once_with(actor, page._cv_ancestor_state.parent)
+        else:
+            state.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("denial", ["nearest", "higher", "hook", None])
+def test_guardian_cancel_create_override_boundaries(denial, monkeypatch):
+    with isolated_routes(guardian_cancel_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        if denial in {"nearest", "higher"}:
+            family, obj = (ns.book, world.book) if denial == "nearest" else (ns.pub, world.pub)
+            remove_perm(family.vs.permissions["change"], actor, obj)
+            actor = User.objects.get(pk=actor.pk)
+        page = consumer_view(ns.note, "Detail", actor, world)
+        page.cv_cancel_key = "create"
+        page.cv_cancel_keys = None
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={"create": AncestorPermissions(nearest="change", higher="change")}
+        )
+        hook = Mock(return_value=denial != "hook")
+        state = Mock(return_value=True)
+        monkeypatch.setattr(ns.note.Create, "cv_create_has_access", hook)
+        monkeypatch.setattr(ns.note.Create, "cv_action_enabled", state)
+        destination = page.cv_get_url("create")
+        assert page.cv_get_cancel_url() == (destination if denial is None else None)
+        if denial in {"nearest", "higher"}:
+            hook.assert_not_called()
+        else:
+            hook.assert_called_once()
+            assert hook.call_args.args[0] is actor
+            assert hook.call_args.args[1] is not page
+            assert hook.call_args.args[1].request is page.request
+            assert hook.call_args.args[2] is page._cv_ancestor_state.parent
+        if denial is None:
+            state.assert_called_once_with(actor, page._cv_ancestor_state.parent)
+        else:
+            state.assert_not_called()
+        state.reset_mock()
+        hook.reset_mock()
+        client = Client()
+        client.force_login(actor)
+        assert client.get(destination).status_code == (403 if denial in {"nearest", "higher"} else 200)
+        hook.assert_not_called()  # This link hook is not request authorization.
+        if denial in {"nearest", "higher"}:
             state.assert_not_called()

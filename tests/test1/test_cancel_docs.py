@@ -181,11 +181,15 @@ def test_core_cancel_parent_and_bulk_return_guidance():
         "Own permission still receives the target's own object, or `None` for a collection",
         "state receives that own object or the URL parent respectively",
         "Higher ancestors come only from guard state",
-        "GuardianParentPermissionMixin` retains its immediate-parent-only path",
-        "queryset-only Guardian Cancel retains its immediate skip but checks known higher ancestors",
+        "Guardian object/list/create Cancel check known ancestors",
+        "queryset-only Guardian Cancel now checks the declared immediate-parent policy "
+        "as well as known higher ancestors",
+        "parent-only non-create branch of `GuardianParentPermissionMixin` omits `cv_has_access`, "
+        "including custom overrides",
+        "but checks actor, known higher ancestors, immediate parent and state",
     ):
         assert phrase in bulk
-    assert "Core Cancel alone retains the `cv_get_parent_object` hook" in state
+    assert "Cancel (core and Guardian) alone retains the `cv_get_parent_object` hook" in state
     assert "custom-hook exceptions propagate" in state
 
 
@@ -199,9 +203,25 @@ def test_guardian_create_hook_documents_same_viewset_or_none():
         "own ViewSet",
         "list, object, row/card action, navbar and permission-filter consumers",
         "otherwise None",
-        "Retained Cancel",
+        "Cancel uses the shared known-ancestor check",
         "request-bound view of the same ViewSet",
         "another ViewSet receives None",
         "must not assume it is set or is a list view",
     ):
         assert phrase in argument
+    for phrase in (
+        "signed-in, active actor",
+        "passing declared parent gates before this hook",
+        "a denied gate skips even a custom override",
+        "deliberately repeats the bounded immediate-parent check",
+        "Direct calls to this default hook also enforce actor admission",
+        "do not discover or check higher ancestors",
+        "known route parent makes sibling and create-page controls",
+        "child-list permission filters and M2M page controls eligible",
+        "Each button follows its actual target",
+        "custom get_context output is not repaired by a page-key rewrite",
+        "own child of a single-foreign-key nesting",
+        "M2M own children remain ambiguous and deny",
+        "Action state is evaluated separately",
+    ):
+        assert phrase in doc

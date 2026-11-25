@@ -131,18 +131,20 @@ Denied or state-disabled items are
 hidden, even if ordinary action buttons would be disabled. Accessible empty collections remain visible: there
 are no row counts, badges, existence probes or row-count-based hiding.
 
-A navbar child item always uses the full known ancestor chain, even on the create target's own ViewSet page
-(D-55). It uses neither the Guardian create page seam nor the list-page rewrite. For example, on a BookNote
-list page with Book `change` but without Publisher `change`, a create destination requiring `change` at both
-levels has a hidden navbar item while the context create button remains allowed by its immediate-only rewrite.
-The create request returns 403; granting Publisher `change` enables the navbar item and the request.
+A navbar child item already used the full known ancestor chain on every page, even on the create target's own
+ViewSet page (D-55). Page create controls now apply the same known higher gates; stage 3b does not migrate the
+navbar again. For example, on a BookNote list page with Book `change` but without Publisher `change`, a create
+destination requiring `change` at both levels has both its navbar item and context create button hidden.
+The create request returns 403; granting Publisher `change` enables both controls and the request.
 This is pinned by `test_navbar_child_create_own_viewset_higher_denial` in `tests/test1/test_navbar_permissions.py`.
-The context button difference is retained until the Guardian exceptions are removed in later work.
+Nested Guardian actor admission and declared parent gates run before any create override; a true override
+cannot bypass them. The default hook deliberately repeats its bounded immediate-parent check. Parent sourcing
+and same-ViewSet rendering identity remain unchanged.
 
 !!! warning "Visibility is not destination authorization"
     Admission checks known ancestors; unknown levels stay `None` and are not fetched or filled with another
     level's object. Missing immediate-parent state denies a nested target. No ancestor/membership lookup is added.
-    A visible link can still return 403 for unknown levels or retained Guardian exceptions, or 404 under a project
+    A visible link can still return 403 for unknown levels, or 404 under a project
     queryset restriction. Requests remain authoritative for permissions, tenants and writes; their authorization
     responses and login redirects are unchanged. The live example enables ancestor cascading and uses strict
     Guardian Tenant object grants, plus model permissions below Tenant.
@@ -336,7 +338,8 @@ Remeasured for stage 3a on 2026-11-25 using Python 3.12.3 / Django 6.0.10 / djan
 in-memory databases. These are
 **navbar-only SQL counts after request/object/ancestor loading**, with two visible items (one owner and one child),
 at owner and grandchild depth, across five tag/include/component placements. They are fixture measurements, not a
-whole-page budget or a universal zero-query promise. The regression is `tests/test1/test_navbar_costs.py`.
+whole-page budget or a universal zero-query promise. These are historical stage-3a observations, not fresh
+stage-3b measurements. The regression is `tests/test1/test_navbar_costs.py`.
 
 Each cell below is **total SQL / permission SELECTs**; ContentType SELECTs are listed separately and are included
 in the total. Plain means core owner/child; guardian means Guardian owner/child; mixed means Guardian owner with
@@ -389,7 +392,7 @@ change, not a further stage-3a saving. Custom permission backends or state hooks
 
 The earlier Python 3.12.3 / Django 5.2.19 / django-guardian 3.5.2 receipt used the same two-item fixture and
 vocabulary/model-cache axes, with fresh Guardian checkers for item admission. Its owner and deep totals were
-identical. These historical figures are retained here; they are not the current costs above.
+identical. These historical figures are retained here, separately from the stage-3a costs above.
 
 | Composition | Vocabulary | Actor model cache | Total SQL | Permission SELECTs | ContentType SELECTs |
 |---|---|---|---:|---:|---:|
@@ -409,6 +412,6 @@ identical. These historical figures are retained here; they are not the current 
 The original 72-combination receipt covered tag, split and repeated placements. The component-tag follow-up
 separately exercised 48 additional combinations: component pairs and reversed,
 mixed/repeated component, wrapper and direct-include consumers across the same depth/cache/composition axes.
-Both historical groups retained one build and once-only per-item hooks. The current 120-case measurement covers
+Both historical groups retained one build and once-only per-item hooks. The stage-3a 120-case measurement covers
 both groups. These SQL observations establish no response-time improvement or customer-site savings; earlier
 customer estimates of 20 or 18 total queries were projections, not measurements of this change.

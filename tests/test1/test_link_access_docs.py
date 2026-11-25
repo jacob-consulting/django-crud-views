@@ -19,10 +19,16 @@ def test_link_access_breaking_entry_names_both_hooks_and_links_the_migration_anc
         "ParentContextButton",
         "cv_context_has_permission",
         "#412 stage 3a",
+        "#413 stage 3b",
         "Bulk toolbar eligibility",
         "Nested-object Cancel",
         "guard state",
         "Navbar child items",
+        "ContextButton.get_context",
+        'key_target="create"',
+        "signed-in and active",
+        "Parent-only non-create",
+        "repeats its bounded immediate-parent check",
     ):
         assert name in entry
     assert "docs/migrating-1.0.md#link-access-hooks" in entry
@@ -59,10 +65,13 @@ def test_link_access_migration_section_lists_the_create_hook_sites():
         "child list page",
         "SiblingContextButton",
         "create page itself",
-        "stay hidden",
+        "ManyToMany child page with a known route parent",
         "cv_has_access on a nested Guardian create no longer affects package links",
         "key_target",
-        "page's own create decides",
+        "actual target's result",
+        "ContextButton.get_context implementation",
+        "output is no longer corrected by key",
+        "Move custom create permission logic to cv_create_has_access",
     ):
         assert phrase in section
 
@@ -131,19 +140,75 @@ def test_link_access_direct_call_actor_guidance_does_not_imply_request_fallback(
         assert phrase in section
 
 
-def test_link_access_migration_bounds_each_retained_guardian_mechanism():
+def test_link_access_migration_bounds_create_overrides_and_parent_only_cancel():
     section = _flat(_section(MIGRATING_MD.read_text(), "## Link access hooks"))
     for phrase in (
-        "page seam",
-        "list-page rewrite",
-        "navbar child item uses neither seam nor rewrite",
-        "even on the create target's own ViewSet page (D-55)",
-        "queryset-only Guardian composition still skips its nearest gate",
-        "Cancel to its nested list check known higher ancestors",
-        "L2) survives only where no higher level is gated",
-        "GuardianParentPermissionMixin retains its separate immediate-only path",
+        "Every nested Guardian link requires a signed-in, active actor",
+        "Actor admission and declared parent gates run before cv_create_has_access",
+        "A denied gate skips the override",
+        "a false override still denies after the gates pass",
+        "default hook deliberately repeats its bounded immediate-parent check",
+        "It does not discover or check higher ancestors and never evaluates state",
+        "ambiguous M2M own child denies",
+        "explicit route-known M2M parent is accepted",
+        "now checks its declared immediate-parent policy as well as known higher ancestors",
+        "Navbar child items already used aligned ancestors on every page (D-55)",
+        "page create controls now apply those same known higher gates",
+        "Guardian object/list/create Cancel also checks known higher ancestors",
+        "link can be hidden when the request allows",
+        "A plain base follows its ordinary own hook",
+        "Cancel does not ask cv_has_access for this shape, whether inherited or overridden",
+        "No explicit-versus-inherited override distinction is supported",
     ):
         assert phrase in section
+
+
+def test_primary_guardian_guidance_removes_ended_denials_with_bounded_direct_hook_advice():
+    migration = MIGRATING_MD.read_text()
+    guardian = (DOCS / "reference/guardian.md").read_text()
+    passages = (
+        _section(migration, "## Link access hooks"),
+        _section(migration, "### Nested Guardian create access"),
+        _section(guardian, "### Create button visibility for child viewsets"),
+        _section(guardian, "### What the create access helpers accept"),
+        _section(guardian, "### Parent-to-child collection links"),
+        _section((DOCS / "faq.md").read_text(), "### Gate surrounding markup by permission"),
+    )
+    for passage in passages:
+        flat = _flat(passage)
+        for obsolete in (
+            "create page itself stay hidden",
+            "filter stays False",
+            "still skips the immediate-parent gate",
+            "retains its separate immediate-only path",
+            "retained-create-and-cancel-mechanisms",
+            "possible future enhancement",
+        ):
+            assert obsolete not in flat
+    create = _flat(_section(guardian, "### Create button visibility for child viewsets"))
+    for phrase in (
+        "signed-in, active actor",
+        "Actor admission and declared parent gates run before cv_create_has_access at every consumer",
+        "A denied gate skips even a true override without super()",
+        "false override still denies",
+        "default cv_create_has_access deliberately repeats the bounded immediate-parent check",
+        "do not discover or check higher ancestors and never evaluate state",
+        "ContextButton.get_context output",
+        "Move custom create permission logic to cv_create_has_access",
+        "rendering_view.cv_viewset is target.cv_viewset",
+    ):
+        assert phrase in create
+    limitation = _flat(_section(guardian, "### Parent-only non-create limitation"))
+    for phrase in (
+        "PermissionRequired base",
+        "child model permission that the request does not require",
+        "A plain base follows its ordinary own hook",
+        "Cancel omits cv_has_access entirely",
+        "including both inherited and custom overrides",
+        "known higher ancestors, the immediate parent and state",
+        "No explicit-versus-inherited override distinction is supported",
+    ):
+        assert phrase in limitation
 
 
 def test_link_access_owned_sections_do_not_retain_stage_one_consumer_limits():
@@ -173,19 +238,47 @@ def test_reference_pages_state_the_narrowed_meaning():
         (
             "reference/context_buttons.md",
             "### `cv_context_has_permission` — gate surrounding markup",
-            ("Two cases stay False on purpose",),
+            (
+                "Child-list and M2M filters can return True",
+                "they remain permission-only and never ask state",
+                "known higher gates precede this hook",
+                "ambiguous M2M own child denies",
+            ),
         ),
-        ("reference/action_enabled.md", "## The `obj` Parameter", ("nested list",)),
+        (
+            "reference/action_enabled.md",
+            "## The `obj` Parameter",
+            (
+                "nested list",
+                "Cancel (core and Guardian) alone retains",
+                "Higher ancestors still come only from guard state",
+            ),
+        ),
         (
             "reference/navbar.md",
             "## Labels, access and empty output",
             ("link check", "parent gate, own access, state hook"),
         ),
-        ("reference/card-list-view.md", "## Child ViewSet Actions", ("cv_create_has_access",)),
+        (
+            "reference/card-list-view.md",
+            "## Child ViewSet Actions",
+            (
+                "cv_create_has_access",
+                "Own card create actions use the resolved URL parent",
+                "child card actions use the row their URL is built from",
+                "Both check all known declared higher gates before the create hook",
+            ),
+        ),
         (
             "faq.md",
             "### Gate surrounding markup by permission",
-            ("cv_create_has_access", "parent the request resolved from the URL", "Two", "False", "kept on purpose"),
+            (
+                "cv_create_has_access",
+                "parent the request resolved from the URL",
+                "Child-list and M2M filters can now return True",
+                "independently of state",
+                "ambiguous M2M child still denies",
+            ),
         ),
     )
     for path, heading, statements in passages:

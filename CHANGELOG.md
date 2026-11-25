@@ -6,7 +6,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
-- **Link access hooks** (#407, #412 stage 3a): all package link consumers now use the shared private check.
+- **Link access hooks** (#407, #412 stage 3a, #413 stage 3b): package link consumers use the shared private check,
+  with the bounded parent-only Guardian Cancel exception described below.
   `cv_has_access(user, obj)` receives only the target's own object or `None`; `cv_action_enabled(user, obj)`
   receives the own object, immediate parent for a nested list/create, or `None` for a top-level collection.
   Permission denial now skips state for context/parent/sibling buttons, view-key actions and card own actions
@@ -20,19 +21,27 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   now asks `cv_get_parent_object()` too: no query with guard state, one existing lookup without it; built-in
   missing rows mean unavailable and custom-hook exceptions propagate. Core create state and
   `ParentContextButton` objects now use guard state; move parent annotations/scope to the parent ViewSet's
-  queryset. `cv_context_has_permission` checks ancestors and own permission only. Guardian's create page seam,
-  list-page rewrite and immediate-only Cancel path remain; queryset-only and anonymous-create exceptions
-  narrow where higher gates run. Navbar child items use the full known chain even on the create target's own
-  page, so they can differ from its context create button. A nested Guardian create's `cv_has_access` still
-  denies every argument; override `cv_create_has_access` instead. Review all eight changes, direct-call actors
-  and retained denials in the [migration note](docs/migrating-1.0.md#link-access-hooks).
+  queryset. `cv_context_has_permission` checks ancestors and own permission only. Known-parent Guardian create
+  controls now check known higher ancestors on every page, including sibling, create-page, child-list filter
+  and M2M controls. Navbar child items already used this aligned ancestry. Nested Guardian actor admission
+  (signed-in and active) and declared parent gates run before `cv_create_has_access` overrides; a true override
+  cannot bypass denial, and the default hook deliberately repeats its bounded immediate-parent check.
+  Queryset-only compositions now gate the immediate parent. Each button follows its actual target: the
+  key-based correction of parent/sibling buttons and custom `ContextButton.get_context` output, including
+  `key_target="create"`, is removed. Migrate custom create permission logic to `cv_create_has_access`; direct
+  default-hook calls check actor and immediate parent only, accept a single-FK own child, reject an ambiguous
+  M2M child and do not check state. Nested Guardian Cancel gains known higher gates. Parent-only non-create
+  `PermissionRequired` links can still hide when the request allows because they ask child model permission;
+  a plain base follows its own hook. Cancel omits that own hook, including overrides, while checking actor,
+  ancestors and state. A nested Guardian create's `cv_has_access` still denies every argument. Review the
+  override and custom-button changes in the [migration note](docs/migrating-1.0.md#link-access-hooks).
 
 - **Child-link parent permissions** (#380): plain nested destinations now check their immediate-parent policy
   when rendering `ChildContextButton` and child `CardAction` controls. Existing controls can hide or disable,
   and malformed parent policy can raise `ImproperlyConfigured` on the hosting page. Review intended grants and
   operation/provider declarations using the [migration recipe](docs/migrating-1.0.md#child-link-parent-permissions).
   Each eligible link adds one immediate-parent policy invocation with cache-dependent SQL; #412 also checks
-  known higher ancestors. Full destination requests remain authoritative for unknown levels and retained exceptions.
+  known higher ancestors. Full destination requests remain authoritative for unknown levels and membership.
 
 - **Resource manage registration** (#372): automatic registration now owns `cv_key="manage"` on Resource
   ViewSets. A later manual registration with that key raises the existing duplicate-key error. Select an
@@ -110,7 +119,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
     [executed router example](docs/reference/request_lifecycle.md#nested-viewsets-instance-hinted-write-routing).
   - Unchanged boundaries: ancestors load through their ViewSet `get_queryset()` and the default database only. A
     Resource leaf's loaders still scope their rows. URL-path authorization does not cover shared rows, parent
-    moves or other mutated objects. Links check at most the immediate parent.
+    moves or other mutated objects. Links check the immediate parent and known higher ancestors; unknown levels
+    remain unchecked while rendering.
   Follow the executable [migration](docs/migrating-1.0.md#ancestor-authorization-for-nested-viewsets) and the
   [published contract](docs/reference/nested.md#ancestor-authorization).
 

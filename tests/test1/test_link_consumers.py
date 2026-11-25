@@ -6,6 +6,7 @@ import pytest
 from django.contrib.auth.models import Permission, User
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connection
+from django.template import Context, Template
 from django.test import Client
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
@@ -16,8 +17,12 @@ from crud_views.lib.view import ChildContextButton, ContextButton, ParentContext
 from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ViewSet
 from crud_views.templatetags.crud_views import cv_context_has_permission
 from crud_views_guardian.lib.viewset import GuardianViewSet
+from tests.test1 import test_ancestor_helpers as ancestor_helpers
 from tests.test1.test_ancestor_authorization import isolated_routes
 from tests.test1.test_link_consumer_costs import consumer_actor, consumer_routes, consumer_view, consumer_world
+
+helpers = ancestor_helpers.helpers
+data = ancestor_helpers.data
 
 # Collection-only destinations are explicit: sibling/child URLs cannot supply an
 # own object, navbar owner items require one, and bulk targets are form views.
@@ -43,6 +48,99 @@ CONSUMER_SHAPES = [
     ("cancel", "list"),
     ("bulk", "mark"),
 ]
+
+
+@pytest.mark.django_db
+def test_guardian_actor_tracer(monkeypatch):
+    """The real parent page cannot expose create through an override after parent denial."""
+    from guardian.shortcuts import assign_perm
+
+    with isolated_routes(lambda suffix: consumer_routes(suffix, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world, allowed=False)
+        button = ChildContextButton(key="new", child_name=ns.book.vs.name, child_key="create", label_mode="both")
+        monkeypatch.setattr(ns.pub.Detail, "cv_context_buttons", [button])
+        monkeypatch.setattr(ns.pub.Detail, "cv_context_actions", ["new"])
+        create, state = Mock(return_value=True), Mock(return_value=True)
+        monkeypatch.setattr(ns.book.Create, "cv_create_has_access", create)
+        monkeypatch.setattr(ns.book.Create, "cv_action_enabled", state)
+        destination = reverse(
+            ns.book.vs.get_router_name("create"), kwargs={ns.book.vs.parent.get_pk_name(): world.pub.pk}
+        )
+        host = reverse(ns.pub.vs.get_router_name("detail"), kwargs={"pk": world.pub.pk})
+        client = Client()
+        client.force_login(actor)
+        response = client.get(host)
+        assert response.status_code == 200
+        assert not html.fromstring(response.content).xpath("//*[@href=$url]", url=destination)
+        create.assert_not_called()
+        state.assert_not_called()
+        assert client.get(destination).status_code == 403
+        state.assert_not_called()
+
+        assign_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+        fresh = User.objects.get(pk=actor.pk)
+        client.force_login(fresh)
+        response = client.get(host)
+        assert response.status_code == 200
+        assert html.fromstring(response.content).xpath("//*[@href=$url]", url=destination)
+        create.assert_called_once()
+        assert create.call_args.args[0].pk == fresh.pk
+        assert create.call_args.args[1] is None  # A child control crosses ViewSets.
+        assert create.call_args.args[2] is response.context["view"].object
+        assert client.get(destination).status_code == 200
+
+        create.reset_mock()
+        create.return_value = False
+        state.reset_mock()
+        response = client.get(host)
+        assert response.status_code == 200
+        assert not html.fromstring(response.content).xpath("//*[@href=$url]", url=destination)
+        create.assert_called_once()
+        state.assert_not_called()
+        assert client.get(destination).status_code == 200
+
+
+@pytest.mark.django_db
+def test_guardian_anonymous_object_link_on_plain_host(monkeypatch):
+    from django.contrib.auth.models import AnonymousUser
+    from guardian.conf import settings as guardian_settings
+    from guardian.shortcuts import assign_perm
+
+    from crud_views.lib.views import DetailView
+
+    def routes(suffix):
+        ns, families = consumer_routes(suffix, "guardian")
+        ns.pub.vs.ancestor_policy = AncestorPolicy(provider="none")
+        ns.Host = type(
+            "PlainHost",
+            (DetailView,),
+            {
+                "cv_viewset": ns.book.vs,
+                "cv_key": "host",
+                "cv_path": "host",
+                "cv_context_actions": ["target"],
+                "cv_context_buttons": [ContextButton(key="target", key_target="detail", label_mode="both")],
+            },
+        )
+        return ns, families
+
+    with isolated_routes(routes) as ns:
+        world = consumer_world()
+        backing = User.objects.create_user(username="guardian_anonymous")
+        monkeypatch.setattr(guardian_settings, "ANONYMOUS_USER_NAME", backing.username)
+        actor = AnonymousUser()
+        assign_perm(ns.book.vs.permissions["view"], actor, world.book)
+        assert ns.book.Detail.cv_has_access(actor, world.book) is True
+        kwargs = {ns.book.vs.parent.get_pk_name(): world.pub.pk, "pk": world.book.pk}
+        destination = reverse(ns.book.vs.get_router_name("detail"), kwargs=kwargs)
+        client = Client()
+        response = client.get(reverse(ns.book.vs.get_router_name("host"), kwargs=kwargs))
+        assert response.status_code == 200
+        assert not html.fromstring(response.content).xpath("//*[@href=$url]", url=destination)
+        response = client.get(destination)
+        assert response.status_code == 302
+        assert response.url.startswith("/accounts/login/?next=")
 
 
 def grid_routes(suffix, composition):
@@ -165,18 +263,13 @@ def test_consumer_grid_real_far_denial_and_fresh_grant(composition, surface, key
         state = Mock(return_value=True)
         monkeypatch.setattr(target, "cv_has_access", own)
         monkeypatch.setattr(target, "cv_action_enabled", state)
-        retained_cancel = composition == "guardian" and surface == "cancel"
-        assert render() is retained_cancel
+        assert render() is False
         expected_far = (ns.pub.vs.name, far, ns.pub.vs.permissions["change"])
         expected_near = (ns.book.vs.name, nearest, ns.book.vs.permissions["view"])
-        assert events == ([expected_near] if retained_cancel else [expected_far])
-        assert events[0][1] is (nearest if retained_cancel else far)
-        if not retained_cancel:
-            own.assert_not_called()
-            state.assert_not_called()
-        else:
-            own.assert_called_once_with(actor, own_obj)
-            state.assert_called_once_with(actor, own_obj if target.cv_object else nearest)
+        assert events == [expected_far]
+        assert events[0][1] is far
+        own.assert_not_called()
+        state.assert_not_called()
         destination = reverse(
             target.cv_viewset.get_router_name(key),
             kwargs={
@@ -200,13 +293,8 @@ def test_consumer_grid_real_far_denial_and_fresh_grant(composition, surface, key
         events.clear()
         own.reset_mock()
         assert render() is True
-        assert events == ([expected_near] if retained_cancel else [expected_far, expected_near])
-        assert all(
-            event[1] is wanted[1]
-            for event, wanted in zip(
-                events, [expected_near] if retained_cancel else [expected_far, expected_near], strict=True
-            )
-        )
+        assert events == [expected_far, expected_near]
+        assert all(event[1] is wanted[1] for event, wanted in zip(events, [expected_far, expected_near], strict=True))
         own.assert_called_once_with(fresh, own_obj)
         assert own.call_args.args[1] is own_obj
         if surface == "filter":
@@ -304,7 +392,7 @@ def test_guardian_cross_viewset_buttons_keep_unknown_level_positions(surface, ke
 @pytest.mark.parametrize("page_kind", ["List", "GuardianCard"])
 @pytest.mark.parametrize("button_kind", ["parent", "sibling"])
 @pytest.mark.parametrize("page_create_allowed", [False, True])
-def test_guardian_list_and_card_rewrite_parent_and_sibling_keys(
+def test_guardian_list_and_card_use_actual_parent_and_sibling_targets(
     page_kind, button_kind, page_create_allowed, monkeypatch
 ):
     from crud_views_guardian.lib.views import GuardianCardListViewPermissionRequired
@@ -336,10 +424,13 @@ def test_guardian_list_and_card_rewrite_parent_and_sibling_keys(
         page.cv_context_buttons = [button]
         actual = Mock(return_value=not page_create_allowed)
         rewritten = Mock(return_value=page_create_allowed)
+        state, page_state = Mock(return_value=True), Mock(return_value=True)
         monkeypatch.setattr(target, "cv_create_has_access" if button_kind == "parent" else "cv_has_access", actual)
         monkeypatch.setattr(ns.note.Create, "cv_create_has_access", rewritten)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        monkeypatch.setattr(ns.note.Create, "cv_action_enabled", page_state)
         result = page.cv_get_context("create", user=actor)
-        assert result["cv_access"] is page_create_allowed
+        assert result["cv_access"] is not page_create_allowed
         assert result["cv_action_enabled"] is True
         assert result["cv_url"] == reverse(
             target.cv_viewset.get_router_name(target.cv_key),
@@ -352,15 +443,279 @@ def test_guardian_list_and_card_rewrite_parent_and_sibling_keys(
             actual.assert_called_once_with(actor, None, page._cv_ancestor_state.objects[1])
         else:
             actual.assert_called_once_with(actor, None)
-        rewritten.assert_called_once_with(actor, page, page._cv_ancestor_state.parent)
-        assert rewritten.call_args.args[1] is page
-        assert rewritten.call_args.args[2] is page._cv_ancestor_state.parent
+        if page_create_allowed:
+            state.assert_not_called()
+        else:
+            parent = ancestors._resolved_ancestor(page, target.cv_viewset.parent.name)
+            state.assert_called_once_with(actor, parent)
+        rewritten.assert_not_called()
+        page_state.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_guardian_list_create_keeps_real_rendering_view(monkeypatch):
+    with isolated_routes(lambda suffix: consumer_routes(suffix, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        monkeypatch.setattr(ns.book.List, "cv_context_actions", ["create"])
+        create = Mock(wraps=ns.book.Create.cv_create_has_access)
+        monkeypatch.setattr(ns.book.Create, "cv_create_has_access", create)
+        client = Client()
+        client.force_login(actor)
+        kwargs = {ns.book.vs.parent.get_pk_name(): world.pub.pk}
+        response = client.get(reverse(ns.book.vs.get_router_name("list"), kwargs=kwargs))
+        assert response.status_code == 200
+        destination = reverse(ns.book.vs.get_router_name("create"), kwargs=kwargs)
+        assert html.fromstring(response.content).xpath("//*[starts-with(@href, $url)]", url=destination)
+        page = response.context["view"]
+        create.assert_called_once_with(page.request.user, page, page._cv_ancestor_state.parent)
+        assert create.call_args.args[1] is page
+        assert client.get(destination).status_code == 200
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("key", ["create", "custom_create"])
+def test_guardian_custom_button_result_is_not_rewritten(key, monkeypatch):
+    class DeniedButton(ContextButton):
+        def get_context(self, context):
+            return {"cv_access": False, "cv_action_enabled": False, "cv_url": "/custom-result/"}
+
+    with isolated_routes(lambda suffix: consumer_routes(suffix, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.book, "List", actor, world)
+        page.cv_context_buttons = [DeniedButton(key=key, key_target="create")]
+        create, state = Mock(return_value=True), Mock(return_value=True)
+        monkeypatch.setattr(ns.book.Create, "cv_create_has_access", create)
+        monkeypatch.setattr(ns.book.Create, "cv_action_enabled", state)
+        result = page.cv_get_context(key, user=actor)
+        assert result["cv_access"] is False
+        assert result["cv_action_enabled"] is False
+        assert result["cv_url"] == "/custom-result/"
+        create.assert_not_called()
+        state.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("shape", ["sibling", "create-page", "list-filter", "m2m-page"])
+def test_guardian_known_parent_create_pages(helpers, data, shape, monkeypatch):
+    from tests.test1.test_ancestor_authorization import _user
+    from tests.test1.test_ancestor_helpers import _grant
+
+    actor = _user("known_route_create")
+    for action in ("view", "change"):
+        _grant(actor, helpers.pub, action, data.penguin)
+    _grant(actor, helpers.genre, "view", data.genre)
+    page_cls = {
+        "sibling": helpers.genre.Detail,
+        "create-page": helpers.book.Create,
+        "list-filter": helpers.book.List,
+        "m2m-page": helpers.genre.Detail,
+    }[shape]
+    target = helpers.genre.Create if shape == "m2m-page" else helpers.book.Create
+    button = (
+        SiblingContextButton(key="new", sibling_name=target.cv_viewset.name, sibling_key="create", label_mode="both")
+        if shape == "sibling"
+        else ContextButton(key="new", key_target="create")
+    )
+    monkeypatch.setattr(page_cls, "cv_context_buttons", [button])
+    monkeypatch.setattr(page_cls, "cv_context_actions", [] if shape == "list-filter" else ["new"])
+    create = Mock(wraps=target.cv_create_has_access)
+    monkeypatch.setattr(target, "cv_create_has_access", create)
+    kwargs = {page_cls.cv_viewset.parent.get_pk_name(): data.penguin.pk}
+    host_kwargs = {**kwargs, **({"pk": data.genre.pk} if page_cls.cv_object else {})}
+    client = Client()
+    client.force_login(actor)
+    response = client.get(reverse(page_cls.cv_viewset.get_router_name(page_cls.cv_key), kwargs=host_kwargs))
+    assert response.status_code == 200
+    page = response.context["view"]
+    destination = reverse(target.cv_viewset.get_router_name("create"), kwargs=kwargs)
+    if shape == "list-filter":
+        rendered = Template('{% load crud_views %}{{ view|cv_context_has_permission:"create" }}').render(
+            Context({"view": page, "request": page.request})
+        )
+        assert rendered == "True"
+    else:
+        assert html.fromstring(response.content).xpath("//*[starts-with(@href, $url)]", url=destination)
+    parent = page._cv_ancestor_state.parent
+    create.assert_called_once_with(page.request.user, None if shape == "sibling" else page, parent)
+    assert create.call_args.args[2] is parent
+    assert client.get(destination).status_code == 200
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("page_kind", ["List", "Detail", "Card"])
+def test_guardian_create_own_pages_strict_higher_gate(page_kind, monkeypatch):
+    from guardian.shortcuts import assign_perm
+
+    with isolated_routes(lambda suffix: consumer_routes(suffix, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world, allowed=False)
+        assign_perm(ns.book.vs.permissions["change"], actor, world.book)
+        ns.note.vs.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={"create": AncestorPermissions(nearest="change", higher="change")}
+        )
+        page_cls = getattr(ns.note, page_kind)
+        monkeypatch.setattr(page_cls, "cv_context_actions", ["create"])
+        create, state = Mock(wraps=ns.note.Create.cv_create_has_access), Mock(return_value=True)
+        monkeypatch.setattr(ns.note.Create, "cv_create_has_access", create)
+        monkeypatch.setattr(ns.note.Create, "cv_action_enabled", state)
+        kwargs = {ns.book.vs.parent.get_pk_name(): world.pub.pk, ns.note.vs.parent.get_pk_name(): world.book.pk}
+        host_kwargs = {**kwargs, **({"pk": world.note.pk} if page_cls.cv_object else {})}
+        host = reverse(ns.note.vs.get_router_name(page_cls.cv_key), kwargs=host_kwargs)
+        destination = reverse(ns.note.vs.get_router_name("create"), kwargs=kwargs)
+        client = Client()
+        for permitted in (False, True):
+            if permitted:
+                assign_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+            fresh = User.objects.get(pk=actor.pk)
+            client.force_login(fresh)
+            create.reset_mock()
+            state.reset_mock()
+            response = client.get(host)
+            assert response.status_code == 200
+            assert (
+                bool(html.fromstring(response.content).xpath("//*[starts-with(@href, $url)]", url=destination))
+                is permitted
+            )
+            if permitted:
+                page = response.context["view"]
+                parent = page._cv_ancestor_state.parent
+                create.assert_called_once_with(page.request.user, page, parent)
+                assert create.call_args.args[1] is page
+                state.assert_called_once_with(page.request.user, parent)
+                assert state.call_args.args[1] is parent
+            else:
+                create.assert_not_called()
+                state.assert_not_called()
+            assert client.get(destination).status_code == (200 if permitted else 403)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("missing", [None, "nearest", "higher", "far-denied"])
+def test_guardian_parent_create_button_aligns_four_level_page(missing, monkeypatch):
+    from guardian.shortcuts import remove_perm
+
+    with isolated_routes(lambda suffix: grid_routes(suffix, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page, target, _, nearest, far, render = grid_consumer(ns, world, actor, "parent", "create")
+        target.cv_viewset.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={"create": AncestorPermissions(nearest="change", higher="change")}
+        )
+        objects = list(page._cv_ancestor_state.objects)
+        if missing in {"nearest", "higher"}:
+            objects[1 if missing == "nearest" else 2] = None
+            page._cv_ancestor_state = ancestors._AncestorState(tuple(objects))
+        elif missing == "far-denied":
+            remove_perm(ns.pub.vs.permissions["change"], actor, world.pub)
+            actor = User.objects.get(pk=actor.pk)
+            page.request.user = actor
+        create, state = Mock(wraps=target.cv_create_has_access), Mock(return_value=True)
+        monkeypatch.setattr(target, "cv_create_has_access", create)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        monkeypatch.setattr(page, "cv_get_parent_object", Mock(side_effect=AssertionError("button parent lookup")))
+        events = []
+        original = GuardianViewSet._ancestor_has_permission
+
+        def gate(vs, user, permission, obj, *, view):
+            events.append((vs.name, permission, obj))
+            return original(vs, user, permission, obj, view=view)
+
+        monkeypatch.setattr(GuardianViewSet, "_ancestor_has_permission", gate)
+        with CaptureQueriesContext(connection) as queries:
+            assert render() is (missing not in {"nearest", "far-denied"})
+        if missing in {"nearest", "far-denied"}:
+            assert events == ([] if missing == "nearest" else [(ns.pub.vs.name, ns.pub.vs.permissions["change"], far)])
+            create.assert_not_called()
+            state.assert_not_called()
+        else:
+            expected = [] if missing == "higher" else [(ns.pub.vs.name, ns.pub.vs.permissions["change"], far)]
+            expected += [(ns.book.vs.name, ns.book.vs.permissions["change"], nearest)] * 2
+            assert events == expected
+            assert all(event[2] is wanted[2] for event, wanted in zip(events, expected, strict=True))
+            create.assert_called_once_with(actor, None, nearest)
+            state.assert_called_once_with(actor, nearest)
+        assert not any(
+            f'from "app_{model}"' in query["sql"].lower()
+            for query in queries
+            for model in ("publisher", "book", "booknote")
+        )
+        destination = reverse(
+            target.cv_viewset.get_router_name("create"),
+            kwargs={ns.book.vs.parent.get_pk_name(): world.pub.pk, ns.note.vs.parent.get_pk_name(): world.book.pk},
+        )
+        client = Client()
+        client.force_login(actor)
+        assert client.get(destination).status_code == (403 if missing == "far-denied" else 200)
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("missing", ["nearest", "middle"])
+def test_guardian_create_preserves_unknown_level_with_known_far(missing, monkeypatch):
+    from tests.test1.app.models import Book, BookNote, Publisher
+    from tests.test1.test_ancestor_authorization import _deep_leaf_model, _observation_chain
+
+    with _deep_leaf_model() as Leaf:
+
+        def routes(suffix):
+            chain = _observation_chain(suffix, [Publisher, Book, BookNote, Leaf], ["publisher", "book", "note"], True)
+            chain.leaf_vs.ancestor_policy = AncestorPolicy(
+                cascade=True, actions={"create": AncestorPermissions(nearest="change", higher="change")}
+            )
+            return chain, [chain.leaf_vs]
+
+        with isolated_routes(routes) as chain:
+            response = chain.client.get(chain.urls()["list"])
+            assert response.status_code == 200
+            page = response.context["view"]
+            target = chain.leaf_vs.get_view_class("create")
+            parent, middle, far = page._cv_ancestor_state.objects
+            known = (None, middle, far) if missing == "nearest" else (parent, None, far)
+            page._cv_ancestor_state = ancestors._AncestorState(known)
+            assert link_access._known_link_ancestors(target, page) == known
+            events = []
+            original = GuardianViewSet._ancestor_has_permission
+
+            def gate(vs, user, permission, obj, *, view):
+                events.append((vs.name, permission, obj))
+                return original(vs, user, permission, obj, view=view)
+
+            with monkeypatch.context() as patch:
+                patch.setattr(GuardianViewSet, "_ancestor_has_permission", gate)
+                patch.setattr(GuardianViewSet, "get_queryset", Mock(side_effect=AssertionError("link queryset lookup")))
+                patch.setattr(page, "cv_get_parent_object", Mock(side_effect=AssertionError("link parent lookup")))
+                create, state = Mock(wraps=target.cv_create_has_access), Mock(return_value=True)
+                patch.setattr(target, "cv_create_has_access", create)
+                patch.setattr(target, "cv_action_enabled", state)
+                with CaptureQueriesContext(connection) as queries:
+                    result = ContextButton(key="create", key_target="create").get_context(page.cv_get_view_context())
+                assert result["cv_access"] is (missing == "middle")
+                if missing == "nearest":
+                    assert events == []
+                    create.assert_not_called()
+                    state.assert_not_called()
+                else:
+                    root, _, nearest, _ = chain.viewsets
+                    expected = [(root.name, root.permissions["change"], far)]
+                    expected += [(nearest.name, nearest.permissions["change"], parent)] * 2
+                    assert events == expected
+                    assert all(event[2] is wanted[2] for event, wanted in zip(events, expected, strict=True))
+                    create.assert_called_once_with(page.request.user, page, parent)
+                    state.assert_called_once_with(page.request.user, parent)
+                assert not any(
+                    f'from "{model._meta.db_table}"' in query["sql"].lower()
+                    for query in queries
+                    for model in (Publisher, Book, BookNote, Leaf)
+                )
+            # Request guards still resolve and gate the full route, independently of missing link context.
+            assert chain.client.get(chain.urls()["create"]).status_code == 200
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("surface", ["button", "filter", "card"])
 @pytest.mark.parametrize("far_allowed", [False, True])
-def test_queryset_only_links_keep_nearest_skip_but_gate_higher(surface, far_allowed, monkeypatch):
+def test_queryset_only_links_gate_nearest_after_higher(surface, far_allowed, monkeypatch):
     from guardian.shortcuts import remove_perm
 
     from crud_views.lib.view import CardAction
@@ -399,17 +754,16 @@ def test_queryset_only_links_keep_nearest_skip_but_gate_higher(surface, far_allo
             result = ContextButton(key="only", key_target="queryset").get_context(page.cv_get_view_context())[
                 "cv_access"
             ]
-        assert result is far_allowed
-        assert gates == [(ns.pub.vs.name, page._cv_ancestor_state.objects[1])]
+        assert result is False
+        expected = [(ns.pub.vs.name, page._cv_ancestor_state.objects[1])]
+        if far_allowed:
+            expected.append((ns.book.vs.name, page._cv_ancestor_state.parent))
+        assert gates == expected
         assert gates[0][1] is page._cv_ancestor_state.objects[1]
         if far_allowed:
-            own.assert_called_once_with(actor, None)
-        else:
-            own.assert_not_called()
-        if far_allowed and surface != "filter":
-            state.assert_called_once_with(actor, page._cv_ancestor_state.parent)
-        else:
-            state.assert_not_called()
+            assert gates[1][1] is page._cv_ancestor_state.parent
+        own.assert_not_called()
+        state.assert_not_called()
         client = Client()
         client.force_login(actor)
         assert client.get(page.cv_get_url("queryset")).status_code == 403
@@ -419,7 +773,7 @@ def test_queryset_only_links_keep_nearest_skip_but_gate_higher(surface, far_allo
 @pytest.mark.parametrize("surface", ["button", "card", "navbar"])
 @pytest.mark.parametrize("kind", ["anonymous", "inactive"])
 @pytest.mark.parametrize("higher_protected", [False, True])
-def test_guardian_child_create_actor_exception_is_bounded(surface, kind, higher_protected, monkeypatch):
+def test_guardian_child_create_actor_rule_precedes_hook(surface, kind, higher_protected, monkeypatch):
     from django.contrib.auth.models import AnonymousUser
 
     from crud_views.lib.navbar import NavBar, NavItem, _build
@@ -448,16 +802,9 @@ def test_guardian_child_create_actor_exception_is_bounded(surface, kind, higher_
         else:
             page.cv_navbar = NavBar(viewset=ns.book.vs.name, items=[NavItem(child=ns.note.vs.name, key="create")])
             result = bool(_build(page))
-        allowed = kind == "anonymous" and not higher_protected
-        assert result is allowed
-        if higher_protected:
-            create.assert_not_called()
-        else:
-            create.assert_called_once_with(page.request.user, None, world.book)
-        if allowed:
-            state.assert_called_once_with(page.request.user, world.book)
-        else:
-            state.assert_not_called()
+        assert result is False
+        create.assert_not_called()
+        state.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -540,7 +887,7 @@ def test_permission_filter_keeps_lookup_and_configuration_error_boundaries(probl
 
 
 @pytest.mark.django_db
-def test_permission_filter_guardian_create_retains_immediate_only_seam(monkeypatch):
+def test_permission_filter_guardian_create_gates_known_higher_ancestors(monkeypatch):
     from guardian.shortcuts import remove_perm
 
     with isolated_routes(lambda s: consumer_routes(s, "guardian")) as ns:
@@ -557,9 +904,8 @@ def test_permission_filter_guardian_create_retains_immediate_only_seam(monkeypat
         state = Mock(side_effect=AssertionError("filter state"))
         monkeypatch.setattr(ns.note.Create, "cv_create_has_access", create)
         monkeypatch.setattr(ns.note.Create, "cv_action_enabled", state)
-        assert cv_context_has_permission(page, "create") is True
-        create.assert_called_once_with(actor, page, page._cv_ancestor_state.parent)
-        assert create.call_args.args[1] is page
+        assert cv_context_has_permission(page, "create") is False
+        create.assert_not_called()
         state.assert_not_called()
 
 
@@ -843,7 +1189,7 @@ def test_default_parent_view_without_change_hides_write_button_and_request(key, 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("consumer", ["context", "parent", "sibling", "child"])
-def test_guardian_create_buttons_keep_seam_and_rendering_view_identity(consumer, monkeypatch):
+def test_guardian_create_buttons_keep_aligned_parent_and_rendering_view_identity(consumer, monkeypatch):
     with isolated_routes(lambda s: consumer_routes(s, "guardian")) as ns:
         world = consumer_world()
         actor = consumer_actor(ns, world)
@@ -867,18 +1213,13 @@ def test_guardian_create_buttons_keep_seam_and_rendering_view_identity(consumer,
         monkeypatch.setattr(target, "cv_create_has_access", create)
         monkeypatch.setattr(target, "cv_action_enabled", state)
         result = button.get_context(page.cv_get_view_context(object=page.object))
-        if consumer == "sibling":
-            assert result["cv_access"] is False  # The retained seam's () stays authoritative.
-            create.assert_not_called()
-            state.assert_not_called()
-        else:
-            parent = (
-                world.book if consumer == "child" else ancestors._resolved_ancestor(page, target.cv_viewset.parent.name)
-            )
-            assert result["cv_access"] is True
-            create.assert_called_once_with(actor, page if consumer == "context" else None, parent)
-            assert create.call_args.args[2] is parent
-            state.assert_called_once_with(actor, parent)
+        parent = (
+            world.book if consumer == "child" else ancestors._resolved_ancestor(page, target.cv_viewset.parent.name)
+        )
+        assert result["cv_access"] is True
+        create.assert_called_once_with(actor, page if consumer == "context" else None, parent)
+        assert create.call_args.args[2] is parent
+        state.assert_called_once_with(actor, parent)
 
 
 @pytest.mark.django_db
@@ -981,7 +1322,7 @@ def test_context_without_guard_on_reachable_shapes_denies(shape, monkeypatch):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("protected_higher", [False, True])
-def test_guardian_child_create_anonymous_exception_only_without_higher_gate(protected_higher, monkeypatch):
+def test_guardian_child_create_anonymous_denied_with_or_without_higher_gate(protected_higher, monkeypatch):
     from django.contrib.auth.models import AnonymousUser
 
     with isolated_routes(lambda s: consumer_routes(s, "guardian")) as ns:
@@ -998,13 +1339,9 @@ def test_guardian_child_create_anonymous_exception_only_without_higher_gate(prot
         result = ChildContextButton(key="new", child_name=ns.note.vs.name, child_key="create").get_context(
             page.cv_get_view_context(object=world.book)
         )
-        assert result["cv_access"] is (not protected_higher)
-        if protected_higher:
-            create.assert_not_called()
-            state.assert_not_called()
-        else:
-            create.assert_called_once_with(page.request.user, None, world.book)
-            state.assert_called_once_with(page.request.user, world.book)
+        assert result["cv_access"] is False
+        create.assert_not_called()
+        state.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -1283,7 +1620,7 @@ def test_card_actions_order_and_row_identity(composition, consumer, key, outcome
 @pytest.mark.parametrize("composition", ["core", "guardian"])
 @pytest.mark.parametrize("consumer", ["own", "child"])
 @pytest.mark.parametrize("far_allowed", [True, False])
-def test_card_create_seam_and_rendering_view(composition, consumer, far_allowed, monkeypatch):
+def test_card_create_aligned_ancestors_and_rendering_view(composition, consumer, far_allowed, monkeypatch):
     from guardian.shortcuts import remove_perm
 
     from crud_views.lib.view import CardAction
@@ -1315,7 +1652,7 @@ def test_card_create_seam_and_rendering_view(composition, consumer, far_allowed,
         if create is not None:
             monkeypatch.setattr(target, "cv_create_has_access", create)
         result = page.cv_get_card_action_data(action, row, actor)
-        permitted = far_allowed or (composition == "guardian" and consumer == "own")
+        permitted = far_allowed
         assert result["cv_access"] is permitted
         if permitted:
             parent = page._cv_ancestor_state.parent if consumer == "own" else row

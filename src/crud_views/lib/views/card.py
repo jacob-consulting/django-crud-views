@@ -86,9 +86,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
         view_context = self.cv_get_view_context(object=obj)
         label = action.label or cls.cv_get_action_short_label(context=view_context)
 
-        known = cls._cv_page_link_ancestors(self, obj)
-        if known is None:
-            known = _known_link_ancestors(cls, self)
+        known = _known_link_ancestors(cls, self)
         access = _link_ctx(
             _link_access(
                 cls,

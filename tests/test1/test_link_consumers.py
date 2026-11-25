@@ -96,6 +96,48 @@ def test_guardian_actor_tracer(monkeypatch):
         assert client.get(destination).status_code == 200
 
 
+@pytest.mark.django_db
+def test_guardian_anonymous_object_link_on_plain_host(monkeypatch):
+    from django.contrib.auth.models import AnonymousUser
+    from guardian.conf import settings as guardian_settings
+    from guardian.shortcuts import assign_perm
+
+    from crud_views.lib.views import DetailView
+
+    def routes(suffix):
+        ns, families = consumer_routes(suffix, "guardian")
+        ns.pub.vs.ancestor_policy = AncestorPolicy(provider="none")
+        ns.Host = type(
+            "PlainHost",
+            (DetailView,),
+            {
+                "cv_viewset": ns.book.vs,
+                "cv_key": "host",
+                "cv_path": "host",
+                "cv_context_actions": ["target"],
+                "cv_context_buttons": [ContextButton(key="target", key_target="detail", label_mode="both")],
+            },
+        )
+        return ns, families
+
+    with isolated_routes(routes) as ns:
+        world = consumer_world()
+        backing = User.objects.create_user(username="guardian_anonymous")
+        monkeypatch.setattr(guardian_settings, "ANONYMOUS_USER_NAME", backing.username)
+        actor = AnonymousUser()
+        assign_perm(ns.book.vs.permissions["view"], actor, world.book)
+        assert ns.book.Detail.cv_has_access(actor, world.book) is True
+        kwargs = {ns.book.vs.parent.get_pk_name(): world.pub.pk, "pk": world.book.pk}
+        destination = reverse(ns.book.vs.get_router_name("detail"), kwargs=kwargs)
+        client = Client()
+        response = client.get(reverse(ns.book.vs.get_router_name("host"), kwargs=kwargs))
+        assert response.status_code == 200
+        assert not html.fromstring(response.content).xpath("//*[@href=$url]", url=destination)
+        response = client.get(destination)
+        assert response.status_code == 302
+        assert response.url.startswith("/accounts/login/?next=")
+
+
 def grid_routes(suffix, composition):
     """Use a Resource leaf to render a parent link to the existing three-level target."""
     from crud_views.lib.resource import ResourceViewMixin
@@ -470,7 +512,7 @@ def test_queryset_only_links_keep_nearest_skip_but_gate_higher(surface, far_allo
 @pytest.mark.parametrize("surface", ["button", "card", "navbar"])
 @pytest.mark.parametrize("kind", ["anonymous", "inactive"])
 @pytest.mark.parametrize("higher_protected", [False, True])
-def test_guardian_child_create_actor_exception_is_bounded(surface, kind, higher_protected, monkeypatch):
+def test_guardian_child_create_actor_rule_precedes_hook(surface, kind, higher_protected, monkeypatch):
     from django.contrib.auth.models import AnonymousUser
 
     from crud_views.lib.navbar import NavBar, NavItem, _build
@@ -499,16 +541,9 @@ def test_guardian_child_create_actor_exception_is_bounded(surface, kind, higher_
         else:
             page.cv_navbar = NavBar(viewset=ns.book.vs.name, items=[NavItem(child=ns.note.vs.name, key="create")])
             result = bool(_build(page))
-        allowed = kind == "anonymous" and not higher_protected
-        assert result is allowed
-        if higher_protected:
-            create.assert_not_called()
-        else:
-            create.assert_called_once_with(page.request.user, None, world.book)
-        if allowed:
-            state.assert_called_once_with(page.request.user, world.book)
-        else:
-            state.assert_not_called()
+        assert result is False
+        create.assert_not_called()
+        state.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -1032,7 +1067,7 @@ def test_context_without_guard_on_reachable_shapes_denies(shape, monkeypatch):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("protected_higher", [False, True])
-def test_guardian_child_create_anonymous_exception_only_without_higher_gate(protected_higher, monkeypatch):
+def test_guardian_child_create_anonymous_denied_with_or_without_higher_gate(protected_higher, monkeypatch):
     from django.contrib.auth.models import AnonymousUser
 
     with isolated_routes(lambda s: consumer_routes(s, "guardian")) as ns:
@@ -1049,13 +1084,9 @@ def test_guardian_child_create_anonymous_exception_only_without_higher_gate(prot
         result = ChildContextButton(key="new", child_name=ns.note.vs.name, child_key="create").get_context(
             page.cv_get_view_context(object=world.book)
         )
-        assert result["cv_access"] is (not protected_higher)
-        if protected_higher:
-            create.assert_not_called()
-            state.assert_not_called()
-        else:
-            create.assert_called_once_with(page.request.user, None, world.book)
-            state.assert_called_once_with(page.request.user, world.book)
+        assert result["cv_access"] is False
+        create.assert_not_called()
+        state.assert_not_called()
 
 
 @pytest.mark.django_db

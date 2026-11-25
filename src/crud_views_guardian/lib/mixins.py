@@ -101,6 +101,13 @@ class GuardianObjectPermissionMixin:
     cv_guardian_anonymous_behavior: str = "redirect"
 
     @classmethod
+    def _cv_link_permission(cls, user, obj, parent_obj, *, rendering_view=None):
+        """Nested links require an active signed-in actor before parent and own permission."""
+        if cls.cv_viewset.has_parent and not (user.is_authenticated and user.is_active):
+            return False
+        return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
+
+    @classmethod
     def cv_get_requirement(cls) -> dict:
         """Describe the object's permission gate, without evaluating access."""
         custom = cls._cv_requirement_is_custom()
@@ -390,6 +397,13 @@ class GuardianParentPermissionMixin:
     # the annotation still makes the names known to the W280 unknown-attribute check.
     cv_guardian_accept_global_perms: bool
     cv_guardian_anonymous_behavior: str
+
+    @classmethod
+    def _cv_link_permission(cls, user, obj, parent_obj, *, rendering_view=None):
+        """Keep nested actor admission across parent-only and cooperating object/list shapes."""
+        if cls.cv_viewset.has_parent and not (user.is_authenticated and user.is_active):
+            return False
+        return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
 
     @classmethod
     def cv_get_requirement(cls) -> dict:

@@ -846,7 +846,7 @@ def test_preservation_top_level_delegates_without_actor_or_parent_gate(links, mo
 @pytest.mark.parametrize("renderer", ["context", "card"])
 @pytest.mark.parametrize("policy", ["explicit", "fallback", "none", "global"])
 @pytest.mark.parametrize("enabled", [False, True])
-def test_preservation_create_policy_once(links, world, monkeypatch, renderer, policy, enabled):
+def test_preservation_create_policy_gates_before_hook(links, world, monkeypatch, renderer, policy, enabled):
     from django.contrib.auth.models import Permission
 
     actors, parents = world
@@ -869,18 +869,28 @@ def test_preservation_create_policy_once(links, world, monkeypatch, renderer, po
     assert data["cv_access"] is True
     assert data["cv_action_enabled"] is enabled
     assert data["cv_disabled"] is not enabled
-    spy.assert_called_once_with(actor, parent)
+    assert [call.args for call in spy.call_args_list] == [(actor, parent), (actor, parent)]
+    assert all(call.args[1] is parent for call in spy.call_args_list)
     state.assert_called_once_with(actor, parent)
     if not enabled:
         assert data["cv_disabled_reason"] == "state"
         assert data["cv_url"] is None
-    access = Mock(return_value=False)
+
+    def deny_after_parent(user, rendering_view, parent_obj):
+        spy.assert_called_once_with(actor, parent)
+        assert user is actor and parent_obj is parent
+        state.assert_not_called()
+        return False
+
+    access = Mock(side_effect=deny_after_parent)
     monkeypatch.setattr(links.create, "cv_create_has_access", access)
     spy.reset_mock()
+    state.reset_mock()
     data = rendered_data(links, renderer, actor, parent, key="create")
     assert data["cv_disabled_reason"] == "permission"
     access.assert_called_once_with(actor, None, parent)
-    spy.assert_not_called()
+    spy.assert_called_once_with(actor, parent)
+    state.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -1326,7 +1336,7 @@ def test_query_denied_actors_and_custom_do_no_permission_work(links, world, monk
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("renderer", ["context", "card"])
-def test_query_create_uses_only_its_existing_parent_check(links, world, monkeypatch, record_property, renderer):
+def test_query_create_gates_before_default_hook_and_reuses_grants(links, world, monkeypatch, record_property, renderer):
     from django.db import connection
     from django.test.utils import CaptureQueriesContext
 
@@ -1336,10 +1346,12 @@ def test_query_create_uses_only_its_existing_parent_check(links, world, monkeypa
     spy = parent_spy(monkeypatch, links.create)
     with CaptureQueriesContext(connection) as baseline:
         assert links.create.cv_create_has_access(actor, None, parent) is True
+    spy.assert_called_once_with(actor, parent)
     spy.reset_mock()
     with CaptureQueriesContext(connection) as rendered:
         assert rendered_data(links, renderer, actor, parent, key="create")["cv_access"] is True
-    spy.assert_called_once_with(actor, parent)
+    assert [call.args for call in spy.call_args_list] == [(actor, parent), (actor, parent)]
+    assert all(call.args[0] is actor and call.args[1] is parent for call in spy.call_args_list)
     report_measurement(
         record_property,
         layer="create_baseline",

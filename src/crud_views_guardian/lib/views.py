@@ -338,10 +338,12 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         ViewSet registers a Guardian create under the same key, GuardianQuerysetMixin.cv_get_context gives
         a parent or sibling button to this create the page's own create result.
 
-        The default applies the immediate parent's provider and fallback with this create's nearest Write
-        key; provider "none" skips only that permission. An inactive signed-in actor is denied; an anonymous
-        actor receives the parent provider's answer. The request-resolved parent identity is reused when
-        available. Action state is evaluated separately. Override in subclasses for custom parent rules.
+        Nested links require a signed-in, active actor and passing declared parent gates before this hook;
+        a denied gate skips even a custom override. An override may deny after the gates pass. The default
+        deliberately repeats the bounded immediate-parent check using this create's nearest Write key,
+        provider and fallback; provider "none" skips only that permission. Direct calls to this default
+        hook also enforce actor admission, but do not discover or check higher ancestors. The request-resolved
+        parent identity is reused when available. Action state is evaluated separately.
 
         Args:
             user: the requesting user
@@ -354,7 +356,7 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         """
         if cls.cv_viewset.parent is None:
             return cls.cv_has_access(user, None)
-        if _guardian_inactive_actor(user):
+        if not (user.is_authenticated and user.is_active):
             return False
         resolved = cls._cv_guardian_create_parent(parent_obj)
         return _immediate_parent_access(cls, user, resolved, rendering_view=rendering_view)
@@ -377,13 +379,17 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
 
     @classmethod
     def _cv_link_permission(cls, user, obj, parent_obj, *, rendering_view=None):
-        """A nested create's permission is solely its documented parent-based hook.
+        """Admit an active signed-in actor and the immediate parent before the create override.
 
-        Keep that hook's actor rule, including anonymous backend grants under a model-provider parent
-        (known limit L2, retained for stage 1).
+        The shared check gates known higher ancestors first. Denial here skips the hook; the default hook
+        deliberately performs its second bounded immediate check. Create has no own-access step.
         """
         if cls.cv_viewset.parent is None:
             return super()._cv_link_permission(user, obj, parent_obj, rendering_view=rendering_view)
+        if not (user.is_authenticated and user.is_active):
+            return False
+        if not _immediate_parent_access(cls, user, parent_obj, rendering_view=rendering_view):
+            return False
         return cls.cv_create_has_access(user, rendering_view, parent_obj)
 
 

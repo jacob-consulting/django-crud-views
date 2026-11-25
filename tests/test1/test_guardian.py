@@ -511,25 +511,33 @@ def test_cv_get_context_non_create_key_not_affected(user_guardian, cv_guardian_p
 
 
 @pytest.mark.django_db
-def test_cv_get_context_respects_cv_create_has_access_override(user_guardian, cv_guardian_publisher, publisher_a):
-    """An override of cv_create_has_access on the create view class is called by cv_get_context."""
+def test_cv_get_context_respects_cv_create_has_access_override(
+    user_guardian, cv_guardian_publisher, publisher_a, monkeypatch
+):
+    """An override can deny after the parent gate, but cannot replace that gate."""
+    from unittest.mock import Mock
+
+    from django.contrib.auth.models import User
+
     from tests.test1.app.views import GuardianBookCreateView
 
-    original = GuardianBookCreateView.cv_create_has_access
+    access = Mock(return_value=True)
+    monkeypatch.setattr(GuardianBookCreateView, "cv_create_has_access", access)
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
+    assert view.cv_get_context(key="create", obj=None, user=user_guardian)["cv_access"] is False
+    access.assert_not_called()
 
-    @classmethod
-    def always_true(cls, user, rendering_view, parent_obj):
-        return True
-
-    GuardianBookCreateView.cv_create_has_access = always_true
-    try:
-        user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
-        view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
-        # user has no change permission on publisher_a, but override returns True
-        ctx = view.cv_get_context(key="create", obj=None, user=user_guardian)
-        assert ctx["cv_access"] is True
-    finally:
-        GuardianBookCreateView.cv_create_has_access = original
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
+    fresh = User.objects.get(pk=user_guardian.pk)
+    view = _make_book_list_view(fresh, publisher_a, guarded=True)
+    parent = view.cv_get_parent_object()
+    for allowed in (True, False):
+        access.reset_mock()
+        access.return_value = allowed
+        assert view.cv_get_context(key="create", obj=None, user=fresh)["cv_access"] is allowed
+        access.assert_called_once_with(fresh, view, parent)
+        assert access.call_args.args[1] is view and access.call_args.args[2] is parent
 
 
 # ── ParentContextButton targeting an object-gated parent view ─────────────────

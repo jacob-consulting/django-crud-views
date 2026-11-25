@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.50"
 current_phase_name: "Move remaining link consumers to the shared link check - stage 3a (#412)"
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 06.50-01-PLAN.md; remaining plans pending
-last_updated: "2026-11-25T05:48:23.077Z"
+stopped_at: Completed 06.50-02-PLAN.md; remaining plans pending
+last_updated: "2026-11-25T06:05:16.083Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.50 plan 01 complete; plan 02 next
-state_head: 35970b576b1f17468832302f15dad61c9056d9eb
+last_activity_desc: Phase 06.50 plan 02 complete; plan 03 next
+state_head: f0cb55ae066f6bdec0c9a8b7065d50a695658e6b
 progress:
   total_phases: 57
   completed_phases: 55
   total_plans: 308
-  completed_plans: 300
+  completed_plans: 301
 milestone_name: milestone
 ---
 
@@ -33,12 +33,19 @@ See: .planning/PROJECT.md (updated 2026-11-24)
 ## Current Position
 
 Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — EXECUTING
-Current Plan: 2
+Current Plan: 3
 Total Plans in Phase: 9
-Status: Executing Phase 06.50 — 1/9 plans complete
-Last activity: 2026-11-25 — Phase 06.50 plan 01 complete; plan 02 next
+Status: Executing Phase 06.50 — 2/9 plans complete
+Last activity: 2026-11-25 — Phase 06.50 plan 02 complete; plan 03 next
 
 Next: $gsd-execute-phase 06.50
+
+### Phase 06.50 plan 02 — 2026-11-25
+
+- View-key context/table actions and own/child card actions now use the shared check with target-aligned guard objects, permission before state, and same-ViewSet rendering-view identity. Child cards use their URL row. Removed only `_page_action_object`; Guardian seams/rewrite/Cancel and core create adapters remain.
+- Both TDD tasks have machine-validated RED evidence and GREEN commits. Final five-module run: 325 passed; all task gates plus Ruff/format/diff checks pass. Direct None actors retain delegated protected-gate failure; default/far denial, real request 403, rendering, metadata and object identities are covered.
+- Core create renderer observations: depth 1 has 1 gate; depth 3 has 3 full/1 nearest. Guardian retains 1 immediate gate at both depths/modes. Only approved renderer prose/expectations changed; request/guard assertions remain verbatim. All before artifacts and 90 protected source hashes remain identical; the authorized ancestor-cost renderer file is the sole changed protected hash.
+- Task commits 29a014d9, bdc420cc, dc2383df and 3380c059; immediate SUMMARY commit f0cb55ae precedes tracking. ROADMAP accepted 2/9 and its stale dotted table row was reconciled. STATE advanced to plan 3; unscoped progress-refresh decline left global percentage unset. Original state.json bytes restored and verified; configuration dirt and unrelated user files preserved. No phase-completion action ran.
 
 ### Phase 06.50 plan 01 — 2026-11-25
 
@@ -2017,6 +2024,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.49 P04 | 9 min | 2 tasks | 4 files |
 | Phase 06.49 P05 | 20 min | 3 tasks | 9 files |
 | Phase 06.50 P01 | 12min | 2 tasks | 8 files |
+| Phase 06.50 P02 | 10min | 2 tasks | 7 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2388,6 +2396,8 @@ Recent decisions affecting current work:
 - [Phase 06.49]: Certify only executed checkout gates; recorder-enabled CI, installed-distribution and full-version matrix certification remain excluded.
 - [Phase 06.50]: Apply D-40/D-41 to all four buttons using target-aligned guard state; explicit Guardian seam tuples stay authoritative.
 - [Phase 06.50]: Retain top-level object target None-object hook semantics; nested targets without the nearest known parent deny before own/state.
+- [Phase 06.50]: View-key and card consumers use D-40/D-41 target-aligned gates; retain explicit Guardian create seam tuples and list rewrite.
+- [Phase 06.50]: Direct None-actor failures remain delegated to protected gates; do not substitute request.user.
 
 ### Pending Todos
 
@@ -2492,6 +2502,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T05:48:16.864Z
-Stopped at: Completed 06.50-01-PLAN.md; remaining plans pending
-Resume file: .planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-02-PLAN.md
+Last session: 2026-11-25T06:05:09.629Z
+Stopped at: Completed 06.50-02-PLAN.md; remaining plans pending
+Resume file: .planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-03-PLAN.md

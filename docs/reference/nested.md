@@ -563,15 +563,18 @@ this URL path, not every parent an object belongs to.
 ### Visible links and buttons
 
 Context/parent/sibling buttons, view-key actions and table rows, card own/child actions, navbar items,
-the permission filter, core Cancel and bulk toolbar use the shared private link check. Nested targets check
+the permission filter, core/Guardian Cancel and bulk toolbar use the shared private link check, with the bounded
+parent-only Guardian Cancel own-hook omission below. Nested targets check
 the immediate parent and known higher ancestors under the destination's policy, then own permission, then state.
 Permission denial skips state; the permission-only filter never calls it. Object targets pass their own object
 to `cv_has_access`; list/create targets pass `None`. State receives the own object, immediate parent for a nested
 list/create, or `None` for a top-level collection. The parent owns the provider and `accept_global_perms` policy: core
 parents use model permissions; Guardian parents use object/group grants with model fallback only when that
 parent's `AncestorPolicy(accept_global_perms=True)` allows it. `provider="none"` bypasses only this parent gate.
-Shipped Guardian collection/create paths retain one parent check and their existing actor/create policy;
-standalone queryset-only compositions skip the immediate parent but now check known higher ancestors. See
+Guardian collections, including standalone queryset-only compositions, check their declared immediate-parent
+policy and known higher ancestors. Guardian create runs these gates before `cv_create_has_access`; the default
+hook deliberately repeats its bounded immediate-parent check. All nested Guardian links require a signed-in,
+active actor even under unprotected ancestry, before any create override. See
 [Guardian collection links](guardian.md#parent-to-child-collection-links).
 
 A user with Book `view` and Publisher `change`, but without Publisher `view`, can open Publisher update while
@@ -592,7 +595,7 @@ Core create state and parent-button objects now use guard state; put shared anno
 ViewSet's `get_queryset()`, not a view's `cv_get_parent_object()` override.
 
 Each eligible plain child link invokes its immediate-parent policy plus reached higher gates, not necessarily
-one SQL query per gate. The retained stage-2 child cases, remeasured for stage 3a on Python 3.12.3 / Django 6.0.10 /
+one SQL query per gate. Historical stage-2 child cases, remeasured for stage 3a on Python 3.12.3 / Django 6.0.10 /
 django-guardian 3.5.2, give 6/4/2/0 SQL queries with a plain parent and 8/6/4/2 with a strict Guardian parent, for both
 renderers in fresh-cold/warm-cold/fresh-warm/warm-warm Django model-cache/vocabulary states. These first-load
 figures match the earlier historical Django 5.2/Guardian 3.5 totals. Each measured layer fetches a fresh user;
@@ -608,14 +611,18 @@ records routed away from `default`. The parent gate runs before own access, so m
 for an actor whose own access is denied; `provider="none"` retains its early
 helper bypass before these validations. These failures are not ordinary hidden/disabled denials.
 
-These retained two-level costs do not describe all newly gated consumers; the linked stage-3a record separates
-gate calls, permission SQL and Cancel's parent lookup. Normal requests still receive fresh Python users/checkers.
+These historical two-level costs do not measure stage 3b; the linked stage-3a record separates gate calls,
+permission SQL and Cancel's parent lookup. Normal requests still receive fresh Python users/checkers.
 
-Request enforcement remains authoritative for unknown levels and retained Guardian exceptions. The create page
-seam/list rewrite and `GuardianParentPermissionMixin` Cancel remain immediate-only; queryset-only links and
-Cancel now gate known higher levels, and the anonymous-create exception survives only with no higher gate.
-Navbar child items use the full known chain even on the create target's own page, so a navbar create item can
-deny while the context create button allows. See [exact Guardian mechanisms](guardian.md#retained-create-and-cancel-mechanisms).
+Request enforcement remains authoritative for unknown levels and membership. Guardian object/list/create
+Cancel now checks known higher ancestors with its actor rule and composition validation intact. Parent-only
+non-create Cancel omits `cv_has_access`, including custom overrides, but checks actor, higher/immediate gates
+and state. Ordinary links still ask that own hook: a `PermissionRequired` base can hide a link whose request
+allows because it asks child model permission; a plain base follows its ordinary own hook. See the
+[bounded parent-only limitation](guardian.md#parent-only-non-create-limitation).
+Navbar child items already used aligned ancestors on every page; page create controls now apply the same
+known higher gates. Each button follows its actual target without a key rewrite. See
+[known ancestry and Cancel](guardian.md#known-ancestry-and-cancel).
 A visible link can still lead to 403 or a queryset-based 404; URL construction proves no authorization. No
 request response or login redirect changes, public checker, or public ancestor accessor are introduced.
 The manage page shows declared policy, not whether a user can pass it.

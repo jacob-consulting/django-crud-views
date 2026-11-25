@@ -284,7 +284,7 @@ def test_component_recipes_preserve_empty_and_modal_contracts(mode, empty, monke
         assert output.strip() == ("<main></main>" if mode in {"split", "split-includes"} else "")
 
 
-def test_navbar_docs_explain_same_page_guardian_create_difference():
+def test_navbar_docs_explain_same_page_guardian_create_alignment():
     from tests.test1.test_label_mode_docs import _flat, _section
     from tests.test1.test_navbar_permissions import test_navbar_child_create_own_viewset_higher_denial as regression
 
@@ -292,8 +292,10 @@ def test_navbar_docs_explain_same_page_guardian_create_difference():
     assert regression.__name__ in section
     for phrase in (
         "even on the create target's own ViewSet page (D-55)",
-        "neither the Guardian create page seam nor the list-page rewrite",
-        "context create button remains allowed",
+        "Page create controls now apply the same known higher gates",
+        "stage 3b does not migrate the navbar again",
+        "both its navbar item and context create button hidden",
+        "actor admission and declared parent gates run before any create override",
         "create request returns 403",
         "rendering_view.cv_viewset is target.cv_viewset",
         "unknown levels stay None",
@@ -315,6 +317,7 @@ def test_navbar_cost_docs_separate_stage_three_receipts_from_historical_savings(
         "historical stage-2 Django 6 before/after receipts",
         "06.50-COST-BASELINE.md#after-measurements",
         "normal next request gets a distinct user/checker",
+        "historical stage-3a observations, not fresh stage-3b measurements",
     ):
         assert phrase in section
     assert "| guardian | warm | warm | 2 / 2 | 0 / 0 | 0 |" in section
@@ -325,14 +328,13 @@ def test_navbar_cost_docs_separate_stage_three_receipts_from_historical_savings(
     (
         (
             "reference/guardian.md",
-            "### Retained create and Cancel mechanisms",
+            "### Known ancestry and Cancel",
             (
-                "page seam",
-                "list-page rewrite",
-                "known higher ancestors are gated",
-                "L2) remains only where no higher level is gated",
-                "GuardianParentPermissionMixin retains its separate immediate-only path",
-                "even on the create target's own ViewSet page (D-55)",
+                "Every known-parent create consumer now checks the aligned known higher ancestors",
+                "Navbar child items already used that ancestry on every page (D-55)",
+                "Guardian object/list/create Cancel uses the shared check",
+                "queryset-only list also checks the declared immediate-parent policy",
+                "Higher ancestors come only from guard state",
             ),
         ),
         (
@@ -344,6 +346,10 @@ def test_navbar_cost_docs_separate_stage_three_receipts_from_historical_savings(
                 "parent ViewSet's get_queryset()",
                 "custom-hook exceptions propagate",
                 "No request response or login redirect changes",
+                "standalone queryset-only compositions",
+                "Parent-only non-create Cancel omits cv_has_access",
+                "Historical stage-2 child cases",
+                "historical two-level costs do not measure stage 3b",
             ),
         ),
         (
@@ -352,8 +358,9 @@ def test_navbar_cost_docs_separate_stage_three_receipts_from_historical_savings(
             (
                 "never calls the state hook",
                 "cv_create_has_access(user, view, parent)",
-                "navbar child-create item checks the full known chain even on the same page",
-                "Two False answers are kept on purpose",
+                "immediate and known higher parent gates before the create hook",
+                "Child-list and M2M filters can now return True",
+                "ambiguous M2M child still denies",
             ),
         ),
     ),

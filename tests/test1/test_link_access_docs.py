@@ -238,7 +238,12 @@ def test_reference_pages_state_the_narrowed_meaning():
         (
             "reference/context_buttons.md",
             "### `cv_context_has_permission` — gate surrounding markup",
-            ("Two cases stay False on purpose",),
+            (
+                "Child-list and M2M filters can return True",
+                "they remain permission-only and never ask state",
+                "known higher gates precede this hook",
+                "ambiguous M2M own child denies",
+            ),
         ),
         ("reference/action_enabled.md", "## The `obj` Parameter", ("nested list",)),
         (

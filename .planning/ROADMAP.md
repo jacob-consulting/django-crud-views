@@ -2460,7 +2460,7 @@ Plans:
 **Scope:** Context, parent, sibling and child buttons; actions by view key; card own/child actions; navbar owner/child items; the permission-only `cv_context_has_permission` filter; core Cancel; and the bulk toolbar. Add one private ancestor-alignment helper, remove `_page_action_object` and the migrated second branches, and retain the ancestor seam and state adapters needed by stage 3b. Pass a rendering view only when it belongs to the target's own ViewSet. Cancel alone resolves its immediate parent through the existing hook; other consumers use known guard state and the child link's own row/object without fetching ancestors.
 **Acceptance:** Carry all nine issue criteria into planning: permission-before-state at each migrated site, permission-only filter behavior, two- and three-level parent gates, correctly aligned cross-ViewSet ancestors, missing-guard-state and Cancel-hook behavior, same-ViewSet rendering arguments, the enumerated eight behavior changes and retained Guardian exceptions, and unchanged request-gate/ancestor/access-trace expectations. Pin before/after gate calls and permission queries separately, explain every changed stage-1 matrix/golden cell, and list remaining production `cv_has_access`/`cv_action_enabled` calls with reasons. Publish one `### Breaking` entry, matching `docs/migrating-1.0.md` guidance and affected reference updates.
 **Out of scope:** Stage-3b Guardian exception removal, stage-3c public API/documentation, request-gate responses/trace, breadcrumb/site menu, prefetch or cache changes, table link columns, DataPanel/DataView and other off-page components. New exceptions, skipped gates, ancestor fetches or request-response changes require a maintainer decision.
-**Plans:** 6/9 plans executed
+**Plans:** 7/9 plans executed
 
 Plans:
 **Wave 1**
@@ -2480,7 +2480,7 @@ Plans:
 - [x] 06.50-06-PLAN.md
 
 **Wave 6** *(blocked on Wave 5 completion)*
-- [ ] 06.50-09-PLAN.md
+- [x] 06.50-09-PLAN.md
 
 **Wave 7** *(blocked on Wave 6 completion)*
 - [ ] 06.50-07-PLAN.md
@@ -2631,5 +2631,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.47. Semantic variants for bulk toolbar buttons (#400) | 3/3 | Complete | 2026-11-21 |
 | 06.48. Private link access and narrowed hook objects (#407) | 9/9 | Complete | 2026-11-23 |
 | 06.49. Reuse Guardian object grants across navigation checks (#385) | 5/5 | Complete | 2026-11-24 |
-| 06.50. Move remaining link consumers to the shared link check - stage 3a (#412) | 6/9 | In Progress | - |
+| 06.50. Move remaining link consumers to the shared link check - stage 3a (#412) | 7/9 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

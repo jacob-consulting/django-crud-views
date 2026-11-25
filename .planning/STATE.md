@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.50"
 current_phase_name: "Move remaining link consumers to the shared link check - stage 3a (#412)"
-current_plan: 9
+current_plan: 7
 status: executing
-stopped_at: Completed 06.50-06-PLAN.md; next 06.50-09 then 07 then 08
-last_updated: "2026-11-25T06:59:27.956Z"
+stopped_at: Completed 06.50-09-PLAN.md; next 06.50-07 then 08
+last_updated: "2026-11-25T07:20:22.267Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.50 plan 06 complete; dependency order continues with 09 then 07 then 08
-state_head: a7c5c331e9ebb7c545d1d580681c9844abf4627d
+last_activity_desc: Phase 06.50 plan 09 complete; dependency order continues with 07 then 08
+state_head: 729626d56e2a46ff6b48c7a232036991e20f86ce
 progress:
   total_phases: 57
   completed_phases: 55
   total_plans: 308
-  completed_plans: 305
+  completed_plans: 306
 milestone_name: milestone
 ---
 
@@ -33,12 +33,18 @@ See: .planning/PROJECT.md (updated 2026-11-24)
 ## Current Position
 
 Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — EXECUTING
-Current Plan: 9
+Current Plan: 7
 Total Plans in Phase: 9
-Status: Executing Phase 06.50 — 6/9 plans complete
-Last activity: 2026-11-25 — Phase 06.50 plan 06 complete; plan 09 next, then 07 and 08
+Status: Executing Phase 06.50 — 7/9 plans complete
+Last activity: 2026-11-25 — Phase 06.50 plan 09 complete; plan 07 next, then 08
 
 Next: $gsd-execute-phase 06.50
+
+### Phase 06.50 plan 09 — 2026-11-25
+
+- All 276 before consumer cells have exact measured after SQL/category/ancestor/own/state pins and explicit deltas. Total SQL: 58 up, 10 down, 208 unchanged; permission SQL: 46 up, 10 down, 220 unchanged; 75 cells retain all counts/categories. Warm grants remove permission SQL while gates remain; only unguarded/missing-parent Cancel performs its authorized one-row lookup. All 120 isolated navbar cells and 21 retained Guardian scenarios remain numerically unchanged.
+- Required task-01 586 and task-02 839 pass; standalone consumer 276, navbar 120, five fresh-process Guardian cases, preservation controls 12 and final receipt-only 6 pass. Ruff/format/diff checks pass. All 32,282 before bytes, five original artifacts, 34 goldens and protected source hashes remain intact apart from prior approved matrix/H1 differences. One stale unguarded sibling allowance is explicitly migrated under D-41 with a guarded identity positive; no production source changed.
+- Task commits a73f9c9e and 37c21bea; immediate SUMMARY 729626d5 precedes tracking. Five deliverables classify as automated coverage. ROADMAP accepted 7/9; stale dotted table row corrected. Numeric plan advance declined because 07/08 remain outstanding; STATE is reconciled to dependency-next 07 then 08, with unscoped global percentage left unset. Original state.json/configuration hashes preserved. Optional WINDOWS append declined on its existing header/JSON mismatch. Requirements remain intentionally empty; no phase-completion action ran.
 
 ### Phase 06.50 plan 06 — 2026-11-25
 
@@ -2053,6 +2059,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.50 P04 | 9 min | 2 tasks | 7 files |
 | Phase 06.50 P05 | 8 min | 2 tasks | 4 files |
 | Phase 06.50 P06 | 14 min | 2 tasks | 4 files |
+| Phase 06.50 P09 | 14min | 2 tasks | 5 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2433,6 +2440,9 @@ Recent decisions affecting current work:
 - [Phase 06.50]: Bulk toolbar uses aligned guard state directly; existing Cancel-derived bulk return wiring preserves origin/fallback/success priority.
 - [Phase 06.50]: One Guardian M2M update filter cell changes True to False under D-41/D-44; all other 1177 frozen cells and all 34 original goldens remain unchanged.
 - [Phase 06.50]: Reconstruct the complete original matrix from explicit before values and a fixed digest without historical Git or planning-file dependencies; final source comparison remains owned by plan 08.
+- [Phase 06.50]: Preserve all 32282 original receipt bytes; append measured after records and all 276 explicit deltas.
+- [Phase 06.50]: Treat 24 bulk full-response cells as supplemental same-production controls, not a fabricated pre-migration baseline.
+- [Phase 06.50]: Retain historical Guardian cost attribution and disclose the approved D-41 sibling-test migration separately.
 
 ### Pending Todos
 
@@ -2537,6 +2547,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T06:59:21.253Z
-Stopped at: Completed 06.50-06-PLAN.md; next 06.50-09 then 07 then 08
+Last session: 2026-11-25T07:20:01.481Z
+Stopped at: Completed 06.50-09-PLAN.md; next 06.50-07 then 08
 Resume file: None

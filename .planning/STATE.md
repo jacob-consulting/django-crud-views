@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.51"
 current_phase_name: Remove retained Guardian link exceptions - stage 3b
 current_plan: 7
-status: executing
-stopped_at: Completed 06.51-06-PLAN.md
-last_updated: "2026-11-25T19:41:00.092Z"
+status: verifying
+stopped_at: Completed 06.51-07-PLAN.md; all plans executed, independent phase verification pending
+last_updated: "2026-11-25T20:07:43.340Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.51 plan 06 complete; coordinated Guardian migration across 14 docs/test files; 157 documentation checks pass with historical costs preserved
-state_head: a285200fc48a2d0578c516c93ab99f8f1a2058a8
+last_activity_desc: Phase 06.51 plan 07 complete; 20119 core tests and 637 examples plus 300 subtests pass; all plans executed with independent verification pending
+state_head: cf7e53a8459c76b34f1258d35e6093bd67ef4cd0
 progress:
   total_phases: 58
   completed_phases: 56
   total_plans: 315
-  completed_plans: 314
+  completed_plans: 315
 milestone_name: milestone
 ---
 
@@ -32,13 +32,20 @@ See: .planning/PROJECT.md (updated 2026-11-25)
 
 ## Current Position
 
-Phase: 06.51 (Remove retained Guardian link exceptions - stage 3b) — EXECUTING
+Phase: 06.51 (Remove retained Guardian link exceptions - stage 3b) — EXECUTED; VERIFICATION PENDING
 Current Plan: 7
 Total Plans in Phase: 7
-Status: executing
-Last activity: 2026-11-25 — Phase 06.51 plan 06 complete; coordinated Guardian migration across 14 docs/test files; 157 documentation checks pass with historical costs preserved
+Status: Ready for verification
+Last activity: 2026-11-25 — Phase 06.51 plan 07 complete; 20,119 core tests and 637 examples plus 300 subtests pass; all plans executed with independent verification pending
 
-Next: Continue plan 06.51-07 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+Next: Run independent review, validation and security gates for phase 06.51 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`. The orchestrator owns phase completion; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+
+### Phase 06.51 plan 07 — 2026-11-25
+
+- Completed the named migration/helper inventory and AC-1–AC-8/15-decision acceptance evidence. Baseline `350adaae` and phase-start `6a875dad` have identical product trees; their planning histories remain distinct. All 39 protected modules retain request contracts, with only six approved link-observation functions changed in three files. Historical matrix/cost identities and 143 current cost-source hashes remain intact.
+- Required gates pass **2,088** protected tests in **86.45s**, **88** collision-module tests in **5.08s**, and the complete **20,119** core tests in **431.15s**. Examples pass **637 plus 300 subtests in 59.14s**, with six existing unordered Campaign pagination warnings. Strict MkDocs passes in **1.44s** and exact 31-file Ruff passes. Full core ran once at `a47a0f2a`; later changes are planning prose only.
+- Task commits `94966020`, `a47a0f2a`, `fb643ec2`; immediate SUMMARY `cf7e53a8` precedes tracking. The authorized seven-line test deviation adds independent destination GETs to two D-50 collision tests without removing assertions or changing production behavior. Four deliverables classify as automated. Optional WINDOWS append was rejected by its pre-existing header/separator mismatch; the unchanged ledger and separate deferred-tooling note do not hide any product failure.
+- ROADMAP accepted 7/7 and its stale dotted row was reconciled. STATE's single last-plan call set ready-for-verification without advancing to stage 3c; one metric and three decisions were recorded. Global unscoped percentage remains unset, completed phase count remains 56/58, and the phase checkbox remains open. SDK-only state.json changes are restored after snapshot/hash checks; original config/state dirt and unrelated files remain preserved. Independent phase gates remain with the orchestrator. No recorder/version matrix, installed-package/browser certification, install, phase.complete, push, PR, merge or issue closure ran.
 
 ### Phase 06.51 plan 06 — 2026-11-25
 
@@ -2132,6 +2139,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.51 P04 | 6min | 2 tasks | 8 files |
 | Phase 06.51 P05 | 15min | 2 tasks | 6 files |
 | Phase 06.51 P06 | 9min | 3 tasks | 14 files |
+| Phase 06.51 P07 | 21min | 2 tasks | 4 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2539,6 +2547,9 @@ Recent decisions affecting current work:
 - [Phase 06.51]: D-46/D-49/D-50: document actor and declared parent gates before create overrides and migrate custom get_context correction dependencies to cv_create_has_access with explicit direct-call bounds.
 - [Phase 06.51]: D-51: ordinary parent-only PermissionRequired links retain child model permission; plain bases keep their own hook; Cancel omits every own-hook override while checking actor, ancestors and state.
 - [Phase 06.51]: D-55/AC-8: navbar already used aligned ancestry; page create controls now agree, and all retained numeric cost tables remain historical evidence.
+- [Phase 06.51]: AC-1/D-50: close both real-page collision tests with seven additive destination GET lines; every original assertion and all production code remain unchanged.
+- [Phase 06.51]: AC-7: audit historical product baseline 350adaae separately from phase-start 6a875dad; immutable histories and 143 current cost-source hashes match the final tested source.
+- [Phase 06.51]: D-39/T-18: final source acceptance is 20119 core plus 637 examples and 300 subtests; independent phase gates, delivery and unexecuted certification lanes remain explicit.
 
 ### Pending Todos
 
@@ -2644,6 +2655,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T19:40:51.274Z
-Stopped at: Completed 06.51-06-PLAN.md
+Last session: 2026-11-25T20:07:34.344Z
+Stopped at: Completed 06.51-07-PLAN.md; all plans executed, independent phase verification pending
 Resume file: None

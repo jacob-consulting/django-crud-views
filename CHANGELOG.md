@@ -6,28 +6,33 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
-- **Link access hooks** (#407): `cv_has_access(user, obj)` now receives only the target's own object, or `None`
-  for list and create targets. `cv_action_enabled(user, obj)` receives the object the request uses: the own
-  object, the immediate parent for a nested list/create, or `None` otherwise; an unguarded page's nested list
-  also receives `None`. Child context buttons, card child actions, object navbar child items and links to a
-  nested Guardian create run parent gate, own access, then state. Permission denial skips state and leaves the
-  context flag `cv_action_enabled=True` meaning not evaluated; rendered outcomes stay the same. Other context
-  buttons, row actions, parent/sibling buttons and non-child card actions still evaluate state independently.
-  A nested Guardian create's `cv_has_access` denies every argument; use `cv_create_has_access` for its parent rule.
-  That hook now decides `ChildContextButton`, child `CardAction`, object navbar child items, create context
-  actions/buttons on child object pages, create card actions on child rows, `ParentContextButton` (subject to
-  the unchanged list-page exception in the migration note), and `cv_context_has_permission` on a child object
-  page. `rendering_view` is `None` at these sites; it remains the list view for the child list page's create
-  control and the rendering view at the cancel target. An override of `cv_has_access` on a nested Guardian
-  create no longer affects package links: their own-permission step asks `cv_create_has_access` only. Review
-  overrides, kept denials and the list-page exception in the [migration note](docs/migrating-1.0.md#link-access-hooks).
+- **Link access hooks** (#407, #412 stage 3a): all package link consumers now use the shared private check.
+  `cv_has_access(user, obj)` receives only the target's own object or `None`; `cv_action_enabled(user, obj)`
+  receives the own object, immediate parent for a nested list/create, or `None` for a top-level collection.
+  Permission denial now skips state for context/parent/sibling buttons, view-key actions and card own actions
+  too; `cv_action_enabled=True` in a denied context means not evaluated. Core and Guardian targets check their
+  immediate parent and known higher ancestors: default parent `view` without `change` removes child write
+  links and bulk actions whose requests already return 403. Missing guard state denies nested links, except
+  Cancel's existing parent-hook path. Bulk toolbar eligibility now uses the check directly; Cancel-derived
+  bulk GET, warning-POST and all-blocked returns may choose another URL, with origin/fallback/success priority
+  and authorization responses unchanged. `cv_create_has_access` receives the real rendering view at every
+  consumer on its own ViewSet, including object/row/card pages, and `None` across ViewSets. Nested-object Cancel
+  now asks `cv_get_parent_object()` too: no query with guard state, one existing lookup without it; built-in
+  missing rows mean unavailable and custom-hook exceptions propagate. Core create state and
+  `ParentContextButton` objects now use guard state; move parent annotations/scope to the parent ViewSet's
+  queryset. `cv_context_has_permission` checks ancestors and own permission only. Guardian's create page seam,
+  list-page rewrite and immediate-only Cancel path remain; queryset-only and anonymous-create exceptions
+  narrow where higher gates run. Navbar child items use the full known chain even on the create target's own
+  page, so they can differ from its context create button. A nested Guardian create's `cv_has_access` still
+  denies every argument; override `cv_create_has_access` instead. Review all eight changes, direct-call actors
+  and retained denials in the [migration note](docs/migrating-1.0.md#link-access-hooks).
 
 - **Child-link parent permissions** (#380): plain nested destinations now check their immediate-parent policy
   when rendering `ChildContextButton` and child `CardAction` controls. Existing controls can hide or disable,
   and malformed parent policy can raise `ImproperlyConfigured` on the hosting page. Review intended grants and
   operation/provider declarations using the [migration recipe](docs/migrating-1.0.md#child-link-parent-permissions).
-  Each eligible link adds one parent-policy invocation with cache-dependent SQL; full destination requests
-  remain authoritative for farther ancestors. Shipped Guardian collection/create paths keep one parent check.
+  Each eligible link adds one immediate-parent policy invocation with cache-dependent SQL; #412 also checks
+  known higher ancestors. Full destination requests remain authoritative for unknown levels and retained exceptions.
 
 - **Resource manage registration** (#372): automatic registration now owns `cv_key="manage"` on Resource
   ViewSets. A later manual registration with that key raises the existing duplicate-key error. Select an

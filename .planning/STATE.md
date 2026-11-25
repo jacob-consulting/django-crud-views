@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.51"
 current_phase_name: Remove retained Guardian link exceptions - stage 3b
-current_plan: 4
+current_plan: 5
 status: executing
-stopped_at: Completed 06.51-03-PLAN.md
-last_updated: "2026-11-25T18:56:25.748Z"
+stopped_at: Completed 06.51-04-PLAN.md
+last_updated: "2026-11-25T19:07:24.505Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.51 plan 03 complete; shared Guardian Cancel and preserved bulk return priority; required selections pass 193/567/16/1/85
-state_head: dd570bded6050422db4a07f861cd8960686c1dd7
+last_activity_desc: Phase 06.51 plan 04 complete; five retired state adapters removed with twelve-entry replacement inventory; required selections pass 128/111/193/128
+state_head: 8c1aab05ea5146958e29513c165139c456bddfc8
 progress:
   total_phases: 58
   completed_phases: 56
   total_plans: 315
-  completed_plans: 311
+  completed_plans: 312
 milestone_name: milestone
 ---
 
@@ -33,12 +33,19 @@ See: .planning/PROJECT.md (updated 2026-11-25)
 ## Current Position
 
 Phase: 06.51 (Remove retained Guardian link exceptions - stage 3b) — EXECUTING
-Current Plan: 4
+Current Plan: 5
 Total Plans in Phase: 7
 Status: executing
-Last activity: 2026-11-25 — Phase 06.51 plan 03 complete; shared Guardian Cancel and preserved bulk return priority; required selections pass 193/567/16/1/85
+Last activity: 2026-11-25 — Phase 06.51 plan 04 complete; five retired state adapters removed with twelve-entry replacement inventory; required selections pass 128/111/193/128
 
-Next: Continue plan 06.51-04 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+Next: Continue plan 06.51-05 on `gsd/phase-06.51-remove-retained-guardian-link-exceptions-stage-3b-413`; stage 3c (#414) follows before the 1.0 freeze. Auto-advance is disabled.
+
+### Phase 06.51 plan 04 — 2026-11-25
+
+- Completed D-40/D-41/D-42/D-45/D-48 in `193487c1`: five obsolete state-adapter definitions removed after Cancel's caller migration. Shared inputs use explicit parents, ordinary unknown-parent links deny without lookup/state, and actual Cancel alone retains its bounded immediate-parent lookup. Public create-hook FK normalization, nested own-access denial and request-side action objects remain unchanged.
+- Required selections pass **128** migrated observations before deletion, **111** link/create, **193** Cancel and **128** migrated observations after deletion. Scoped Ruff/format/diff, production preservation and byte-identical request/mutation assertions pass. Historical matrix/cost bytes and original user-file hashes remain intact. No full suite, recorder/version matrix or install ran.
+- Task commits `af78abeb`, `ebef3808`, `193487c1`; immediate SUMMARY `8c1aab05` precedes tracking. Structural RED failed on exactly five definitions and four internal accesses; fresh JUnit evidence passed machine and semantic validation before GREEN. SUMMARY reconciles all twelve original direct-helper tests and lists removed/retained helper reasons; no additional caller module or deviation was found.
+- ROADMAP accepted 4/7 and its stale dotted progress row was reconciled. STATE advanced once from plan 4 to 5, with one metric and three decisions recorded; global unscoped percentage stays unset. Only SDK state.json next.reason/updated_at changes are restored after snapshot comparison. Four coverage deliverables classify as automated. No phase.complete, PR, push, merge or issue closure ran.
 
 ### Phase 06.51 plan 03 — 2026-11-25
 
@@ -2108,6 +2115,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.51 P01 | 11min | 2 tasks | 9 files |
 | Phase 06.51 P02 | 11min | 2 tasks | 14 files |
 | Phase 06.51 P03 | 7min | 2 tasks | 9 files |
+| Phase 06.51 P04 | 6min | 2 tasks | 8 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2506,6 +2514,9 @@ Recent decisions affecting current work:
 - [Phase 06.51]: D-48 follows D-49: Guardian object/list/create Cancel delegates through the cooperative chain with known higher gates, actor admission and composition validation intact.
 - [Phase 06.51]: D-51 retains _cv_cancel_parent_target_access solely for the immediate parent-only gate; Cancel omits inherited and custom own hooks while ordinary links keep them.
 - [Phase 06.51]: D-52 preserves origin/fallback/success priority; existing all-blocked success fallback may evaluate Cancel twice and adds no decision cache.
+- [Phase 06.51]: D-40/D-41: replace state normalization observations with explicit aligned parents and unknown-parent denial; ordinary links perform no parent lookup.
+- [Phase 06.51]: D-42: preserve the unguarded single-parent lookup through actual Cancel, with request-resolved object identity retained for guarded links.
+- [Phase 06.51]: D-45/D-48: remove five state adapters only after Cancel migration; retain public create-hook FK normalization and all request-side action-object handling.
 
 ### Pending Todos
 
@@ -2611,6 +2622,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T18:56:17.051Z
-Stopped at: Completed 06.51-03-PLAN.md
+Last session: 2026-11-25T19:07:16.022Z
+Stopped at: Completed 06.51-04-PLAN.md
 Resume file: None

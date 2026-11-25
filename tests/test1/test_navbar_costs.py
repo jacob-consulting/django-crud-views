@@ -24,7 +24,7 @@ from crud_views.lib.viewset import ParentViewSet, ViewSet
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.lib.helper.guardian import user_guardian_object_perm
 from tests.test1.app.models import Book, BookNote, Publisher
-from tests.test1.test_guardian_child_link_visibility import sql_categories
+from tests.test1.test_guardian_child_link_visibility import parent_spy, sql_categories
 from tests.test1.test_navbar import get_owner, navbar_routes, navbar_templates, owner_routes
 from tests.test1.test_navbar_permissions import TAG, grant, permission_routes
 from tests.test1.test_navbar_templates import COMPONENTS, IDENTITY, ITEMS, SPLIT
@@ -122,6 +122,7 @@ def test_navbar_isolated_costs(
         view = response.context["view"]
         resolved_owner = view.object if page == "owner" else _resolved_ancestor(view, ns.owner.name)
         current_actor = view.request.user
+        parent_gate = parent_spy(monkeypatch, ns.target)
         spies = []
         for target, hook in [
             (ns.detail, "cv_has_access"),
@@ -156,6 +157,8 @@ def test_navbar_isolated_costs(
             assert spies[2].call_args.args[1] is resolved_owner
             spies[3].assert_called_once_with(current_actor, resolved_owner)
             assert spies[3].call_args.args[1] is resolved_owner
+            parent_gate.assert_called_once_with(current_actor, resolved_owner)
+            assert parent_gate.call_args.args[1] is resolved_owner
             categories = sql_categories(capture.captured_queries)
             assert categories.get("parent_rows", 0) == categories.get("child_or_relation_rows", 0) == 0
             assert not any('from "app_booknote"' in q["sql"].lower() for q in capture.captured_queries)
@@ -170,7 +173,9 @@ def test_navbar_isolated_costs(
                         "vocabulary": vocabulary,
                         "actor_cache": actor_cache,
                         "queries": len(capture),
+                        "permission_queries": categories.get("permissions", 0),
                         "categories": categories,
+                        "ancestor_calls": parent_gate.call_count,
                         "builds": build.call_count,
                         "hooks": [spy.call_count for spy in spies],
                         "sql": [query["sql"] for query in capture.captured_queries],

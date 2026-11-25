@@ -1,5 +1,6 @@
 """Rendered table and card selection through destination entry gates."""
 
+import json
 from urllib.parse import parse_qs, urlsplit
 
 import pytest
@@ -24,6 +25,7 @@ from tests.test1.app.views_bulk import (
 )
 from tests.test1.test_ancestor_authorization import _client, _user
 from tests.test1.test_bulk_flow import max_form_depth, soup
+from tests.test1.test_guardian_child_link_visibility import parent_spy, sql_categories
 
 pytestmark = pytest.mark.django_db
 
@@ -532,8 +534,11 @@ def test_bulk_source_query_cost(nested, card, rows, actions, monkeypatch, record
         if m.id in {"viewset.E271", "viewset.E272", "viewset.E273", "viewset.W274", "viewset.W275"}
     ]
     events = spy_bulk_gates(monkeypatch, keys, viewset)
+    parent_gates = [parent_spy(monkeypatch, viewset.get_view_class(key)) for key in keys]
     client.get(path)  # Only URL/template caches survive; the next GET loads a fresh request actor.
     events.clear()
+    for gate in parent_gates:
+        gate.reset_mock()
     with CaptureQueriesContext(connection) as offered_queries:
         response = client.get(path)
     view = response.context_data["view"]
@@ -547,6 +552,13 @@ def test_bulk_source_query_cost(nested, card, rows, actions, monkeypatch, record
     assert all(user is response.wsgi_request.user for _, _, user, _ in events)
     parent = view._cv_ancestor_state.parent if nested else None
     assert all(obj is parent for _, stage, _, obj in events if stage == "state")
+    for gate in parent_gates:
+        if nested:
+            gate.assert_called_once_with(response.wsgi_request.user, parent)
+            assert gate.call_args.args[1] is parent
+        else:
+            gate.assert_not_called()
+    ancestor_calls = sum(gate.call_count for gate in parent_gates)
     before = list(events)
     buttons = view.cv_bulk_buttons
     for _ in range(2):
@@ -563,6 +575,35 @@ def test_bulk_source_query_cost(nested, card, rows, actions, monkeypatch, record
     # Offering actions costs no query beyond the same page without bulk actions, for every row and action count.
     assert len(offered_queries) == len(baseline_queries)
     record_property("query_cost", f"{nested=},{card=},{rows=},{actions=}:{len(offered_queries)}")
+    offered_categories = sql_categories(offered_queries.captured_queries)
+    baseline_categories = sql_categories(baseline_queries.captured_queries)
+    assert offered_categories == baseline_categories
+    expected_categories = {"actor": 1, "session": 1, "permissions": 2, "other": 1}
+    expected_categories["child_or_relation_rows" if nested else "parent_rows"] = 2 if card else 3
+    if nested:
+        expected_categories["parent_rows"] = 1
+    assert offered_categories == expected_categories
+    assert len(offered_queries) == 8 + int(nested) - int(card)
+    record_property(
+        "measurement",
+        json.dumps(
+            {
+                "nested": nested,
+                "card": card,
+                "rows": rows,
+                "actions": actions,
+                "queries": len(offered_queries),
+                "baseline_queries": len(baseline_queries),
+                "permission_queries": offered_categories.get("permissions", 0),
+                "categories": offered_categories,
+                "own_calls": sum(stage == "access" for _, stage, *_ in before),
+                "state_calls": sum(stage == "state" for _, stage, *_ in before),
+                "ancestor_calls": ancestor_calls,
+                "sql": [query["sql"] for query in offered_queries],
+            },
+            sort_keys=True,
+        ),
+    )
 
 
 @pytest.mark.parametrize("source", [BulkBookListView, BulkBookCardView])

@@ -1,7 +1,7 @@
 """Stage 3a observations: real permissions, known objects, and separate gate/SQL costs.
 
-The before receipt is immutable phase evidence. Plan 09 adds measured after pins;
-these scenarios deliberately do not assert historical before counts after migration.
+The before receipt is immutable phase evidence. After pins describe the same
+fixtures and cache preparation; gate calls remain separate from permission SQL.
 """
 
 import json
@@ -164,6 +164,62 @@ SCENARIOS = [
 ]
 
 
+def consumer_cost_pin(surface, rows, composition, allowed, actor_cache):
+    """Measured stage-3a cells, factored only by identical observed conditions."""
+    repeated = surface in {"row", "card-own", "card-child"}
+    occurrences = rows if repeated else 1
+    cancel = surface.startswith("cancel-")
+    missing = cancel and surface.endswith("-missing")
+    lookup = int(cancel and not surface.endswith("-guarded"))
+    if not occurrences or missing:
+        return {
+            "queries": lookup,
+            "permission_queries": 0,
+            "categories": {"other": 1} if lookup else {},
+            "hooks": {"ancestor": 0, "own": 0, "state": 0},
+        }
+
+    object_action = surface in {"context", "row", "card-own", "bulk", "cancel-object-guarded"}
+    if (cancel and (composition == "guardian" or surface.endswith("-unguarded"))) or surface == "parent":
+        gates = 1
+    elif surface == "navbar":
+        gates = 3 if allowed else 2
+    else:
+        gates = 2 if allowed or object_action else 1
+    own = (2 if surface == "navbar" else 1) if allowed else 0
+    hooks = {"ancestor": gates * occurrences, "own": own * occurrences, "state": own * occurrences}
+
+    categories = {}
+    if actor_cache == "cold":
+        if composition == "core" or (composition == "mixed" and cancel and lookup):
+            categories["model_or_vocabulary_permissions"] = 2
+        elif composition == "mixed":
+            categories.update(checker_user_grants=1, checker_group_grants=1)
+            if allowed or object_action:
+                categories["model_or_vocabulary_permissions"] = 2
+        else:
+            if cancel:
+                objects = 2 if allowed and "object" in surface else 1
+            elif surface == "bulk":
+                objects = 2
+                if allowed:
+                    categories["model_or_vocabulary_permissions"] = 2
+            elif surface in {"context", "row", "card-own"}:
+                objects = 2 + (occurrences if allowed else 0)
+            else:
+                objects = 2 if allowed else 1
+            categories.update(checker_user_grants=objects, checker_group_grants=objects)
+    permission_queries = sum(categories.values())
+    if lookup:
+        categories["other"] = 1
+    return {
+        "queries": permission_queries + lookup,
+        "permission_queries": permission_queries,
+        "categories": categories,
+        "hooks": hooks,
+    }
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize("surface,row_count", SCENARIOS)
 @pytest.mark.parametrize("composition", ["core", "guardian", "mixed"])
@@ -199,6 +255,23 @@ def test_consumer_costs(surface, row_count, composition, allowed, actor_cache, m
         parent_page.cv_navbar = NavBar(
             viewset=ns.book.vs.name, items=[NavItem(key="update"), NavItem(child=ns.note.vs.name)]
         )
+        rendering = {
+            "card-own": card,
+            "card-child": parent_card,
+            "child": parent_page,
+            "navbar": parent_page,
+            "bulk": source,
+        }.get(surface, page)
+        known = {
+            ancestor.name: obj
+            for (_, ancestor), obj in zip(
+                ancestors._walk_ancestors(rendering.cv_viewset),
+                getattr(rendering, "_cv_ancestor_state", SimpleNamespace(objects=())).objects,
+                strict=False,
+            )
+        }
+        if surface in {"child", "card-child", "navbar"}:
+            known[ns.book.vs.name] = world.book
 
         def observe():
             context = page.cv_get_view_context(object=world.note)
@@ -285,14 +358,50 @@ def test_consumer_costs(surface, row_count, composition, allowed, actor_cache, m
                 "actor": identity(actor),
                 "page_object": identity(world.note),
                 "guard_objects": [identity(obj) for obj in card._cv_ancestor_state.objects],
+                "rendering_objects": {name: identity(obj) for name, obj in known.items()},
                 "row_objects": [identity(row) for row in world.rows],
                 "result": result if isinstance(result, (str, type(None))) else str(result),
                 "sql": [q["sql"] for q in capture],
             }
             record_property("measurement", json.dumps(measurement, sort_keys=True))
+            pin = consumer_cost_pin(surface, row_count, composition, allowed, actor_cache)
+            assert {key: measurement[key] for key in pin if key != "hooks"} == {
+                key: value for key, value in pin.items() if key != "hooks"
+            }
+            assert {kind: measurement["hooks"].get(kind, 0) for kind in pin["hooks"]} == pin["hooks"]
+            if surface.startswith("cancel-"):
+                lookups = [query["sql"] for query in capture if list_sql_category(query["sql"]) == "other"]
+                assert all('from "app_book"' in sql.lower() for sql in lookups)
+                assert bool(result) is (allowed and not surface.endswith("-missing"))
+            elif surface in {"navbar", "bulk"}:
+                assert bool(result) is allowed
+                if surface == "navbar" and allowed:
+                    assert len(result["items"]) == 2
+            else:
+                items = result if isinstance(result, list) else [result]
+                assert all(item["cv_access"] is allowed and item["cv_action_enabled"] is True for item in items)
             if not surface.startswith("cancel-"):
                 assert categories.get("list_filter", 0) == categories.get("other", 0) == 0
             assert all(event["actor"]["python_id"] == id(actor) for event in events)
+            for event in events:
+                if event["kind"] == "ancestor":
+                    if event["viewset"] in known:
+                        assert event["object"] == identity(known[event["viewset"]])
+                    else:
+                        # Only unguarded Cancel can obtain a fresh object during capture.
+                        assert surface.endswith("-unguarded") and event["viewset"] == ns.book.vs.name
+                        assert event["object"]["model"] == "app.book"
+                        assert event["object"]["pk"] == str(world.book.pk)
+                elif event["target"] in {ns.note.Update.__name__}:
+                    assert event["object"] in [identity(row) for row in world.rows] or event["object"] == identity(
+                        world.note
+                    )
+                elif event["kind"] == "own" and event["target"] in {
+                    ns.note.List.__name__,
+                    ns.sibling.List.__name__,
+                    ns.note.Bulk.__name__,
+                }:
+                    assert event["object"] is None
             if row_count == 0 and surface in {"row", "card-own", "card-child"}:
                 assert result == [] and not events and len(capture) == 0
 

@@ -702,14 +702,16 @@ Consequences the plans must carry. They follow from the decisions and from readi
   lines of `test_link_access.py` that name `_page_action_object`.
 - **D-40, where a Guardian target does not yet gain a gate:** a nested Guardian create is handed the immediate
   parent only, and gets no higher-ancestor gate until 3b, where a site consults the seam (context buttons, actions
-  by view key, card own actions and the permission filter, on the pages of the create's own ViewSet) or where the
-  rewrite applies. A child button, a card child action and a navbar child item hand over the aligned list, so there
-  it gains the higher-ancestor gates in 3a. A navbar child item does so on every page that renders the navbar, the
-  pages of the create's own ViewSet included (D-55); on such a page the navbar item and the context create button
-  can differ until 3b. A queryset-only composition keeps skipping the immediate parent (D-30), but the
-  higher-ancestor gates run before that class step (`crud_views/lib/link_access.py:74`), so on three or more levels
-  D-30 is partly ended in 3a. Cancel to a queryset-only nested list defers to the core check (`mixins.py:252-256`)
-  and gains the higher-ancestor gates in 3a as well.
+  by view key, card own actions and the permission filter, on the pages of the create's own ViewSet, and a parent
+  button on a page one level below, `crud_views/lib/view/buttons.py:183`) or where the rewrite applies. With the
+  parent button a higher ancestor exists only from four levels on. A child button, a card child action and a navbar
+  child item hand over the aligned list, so there it gains the higher-ancestor gates in 3a. A navbar child item
+  does so on every page that renders the navbar, the pages of the create's own ViewSet included (D-55); on such a
+  page the navbar item and the context create button can differ until 3b. A queryset-only composition keeps
+  skipping the immediate parent (D-30), but the higher-ancestor gates run before that class step
+  (`crud_views/lib/link_access.py:74`), so on three or more levels D-30 is partly ended in 3a. Cancel to a
+  queryset-only nested list defers to the core check (`mixins.py:252-256`) and gains the higher-ancestor gates in
+  3a as well.
 - **D-40, the rendering view:** today the hook receives a view from the create button of the nested list or card
   page, through the rewrite (`mixins.py:330`), and from Cancel (`mixins.py:442`), both of its own ViewSet. It
   receives `None` everywhere else, the own ViewSet's object pages and its row and card actions included. Under D-40

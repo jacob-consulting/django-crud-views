@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.50"
 current_phase_name: "Move remaining link consumers to the shared link check - stage 3a (#412)"
-current_plan: 5
+current_plan: 6
 status: executing
-stopped_at: Completed 06.50-04-PLAN.md; remaining plans pending
-last_updated: "2026-11-25T06:28:42.281Z"
+stopped_at: Completed 06.50-05-PLAN.md; remaining plans pending
+last_updated: "2026-11-25T06:42:02.605Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.50 plan 04 complete; plan 05 next
-state_head: a8bedba2675978b5eb802ce72f005dfc895d520b
+last_activity_desc: Phase 06.50 plan 05 complete; plan 06 next
+state_head: f0dec08df26d9ba0dacea199acd29ff52a8045a3
 progress:
   total_phases: 57
   completed_phases: 55
   total_plans: 308
-  completed_plans: 303
+  completed_plans: 304
 milestone_name: milestone
 ---
 
@@ -33,12 +33,18 @@ See: .planning/PROJECT.md (updated 2026-11-24)
 ## Current Position
 
 Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — EXECUTING
-Current Plan: 5
+Current Plan: 6
 Total Plans in Phase: 9
-Status: Executing Phase 06.50 — 4/9 plans complete
-Last activity: 2026-11-25 — Phase 06.50 plan 04 complete; plan 05 next
+Status: Executing Phase 06.50 — 5/9 plans complete
+Last activity: 2026-11-25 — Phase 06.50 plan 05 complete; plan 06 next
 
 Next: $gsd-execute-phase 06.50
+
+### Phase 06.50 plan 05 — 2026-11-25
+
+- Bulk toolbar admission now checks aligned guard state directly, with None own object and its real same-ViewSet rendering view. Missing guard state denies without the Cancel resolver; native metadata, request-local effective actions and selection/execution behavior remain. D-52 has exact GET/warning/all-blocked return URLs, origin/fallback/success priority, query handling and independent request authorization. No return-order, Guardian or request implementation changed.
+- Task 1 RED received RED_EVIDENCE_OK before GREEN; task 2 is test-only coverage of plan 04's existing Cancel behavior. Required selections passed 17 link-bulk, 158 source and 52 return/link tests. Combined verification caught and fixed a task-owned settings/temporary-URLConf teardown leak; the final same selection passes 210. Ruff/format/diff checks pass; immutable before receipts and protected source hashes match apart from plan 02's approved renderer change. Final costs/matrix remain later-plan work.
+- Task commits 2197c730, c8f025d3, 0883ecd6 and c71fe9cc; immediate SUMMARY f0dec08d precedes tracking. ROADMAP accepted 5/9 and its stale dotted table row was reconciled. STATE advanced to plan 6; unscoped progress refresh left global percentage unset. Original state.json bytes and configuration hashes match. Optional WINDOWS append declined on its pre-existing header/JSON mismatch; the ledger remains untouched. No phase-completion action ran.
 
 ### Phase 06.50 plan 04 — 2026-11-25
 
@@ -2039,6 +2045,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.50 P02 | 10min | 2 tasks | 7 files |
 | Phase 06.50 P03 | 9min | 2 tasks | 5 files |
 | Phase 06.50 P04 | 9 min | 2 tasks | 7 files |
+| Phase 06.50 P05 | 8 min | 2 tasks | 4 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2416,6 +2423,7 @@ Recent decisions affecting current work:
 - [Phase 06.50]: All 120 isolated navbar numeric pins remain unchanged; plan 09 retains final cross-consumer after-cost reconciliation.
 - [Phase 06.50]: Follow D-44 with _link_permission only; preserve the target-lookup exception boundary and retained Guardian create seam.
 - [Phase 06.50]: Follow D-42 for both Cancel target shapes; keep hook parent distinct from target-own object and preserve Guardian-owned overrides.
+- [Phase 06.50]: Bulk toolbar uses aligned guard state directly; existing Cancel-derived bulk return wiring preserves origin/fallback/success priority.
 
 ### Pending Todos
 
@@ -2520,6 +2528,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T06:28:35.835Z
-Stopped at: Completed 06.50-04-PLAN.md; remaining plans pending
+Last session: 2026-11-25T06:41:55.711Z
+Stopped at: Completed 06.50-05-PLAN.md; remaining plans pending
 Resume file: None

@@ -397,7 +397,7 @@ def test_guardian_cross_viewset_buttons_keep_unknown_level_positions(surface, ke
 @pytest.mark.parametrize("page_kind", ["List", "GuardianCard"])
 @pytest.mark.parametrize("button_kind", ["parent", "sibling"])
 @pytest.mark.parametrize("page_create_allowed", [False, True])
-def test_guardian_list_and_card_rewrite_parent_and_sibling_keys(
+def test_guardian_list_and_card_use_actual_parent_and_sibling_targets(
     page_kind, button_kind, page_create_allowed, monkeypatch
 ):
     from crud_views_guardian.lib.views import GuardianCardListViewPermissionRequired
@@ -432,7 +432,7 @@ def test_guardian_list_and_card_rewrite_parent_and_sibling_keys(
         monkeypatch.setattr(target, "cv_create_has_access" if button_kind == "parent" else "cv_has_access", actual)
         monkeypatch.setattr(ns.note.Create, "cv_create_has_access", rewritten)
         result = page.cv_get_context("create", user=actor)
-        assert result["cv_access"] is page_create_allowed
+        assert result["cv_access"] is not page_create_allowed
         assert result["cv_action_enabled"] is True
         assert result["cv_url"] == reverse(
             target.cv_viewset.get_router_name(target.cv_key),
@@ -445,9 +445,51 @@ def test_guardian_list_and_card_rewrite_parent_and_sibling_keys(
             actual.assert_called_once_with(actor, None, page._cv_ancestor_state.objects[1])
         else:
             actual.assert_called_once_with(actor, None)
-        rewritten.assert_called_once_with(actor, page, page._cv_ancestor_state.parent)
-        assert rewritten.call_args.args[1] is page
-        assert rewritten.call_args.args[2] is page._cv_ancestor_state.parent
+        rewritten.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_guardian_list_create_keeps_real_rendering_view(monkeypatch):
+    with isolated_routes(lambda suffix: consumer_routes(suffix, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        monkeypatch.setattr(ns.book.List, "cv_context_actions", ["create"])
+        create = Mock(wraps=ns.book.Create.cv_create_has_access)
+        monkeypatch.setattr(ns.book.Create, "cv_create_has_access", create)
+        client = Client()
+        client.force_login(actor)
+        kwargs = {ns.book.vs.parent.get_pk_name(): world.pub.pk}
+        response = client.get(reverse(ns.book.vs.get_router_name("list"), kwargs=kwargs))
+        assert response.status_code == 200
+        destination = reverse(ns.book.vs.get_router_name("create"), kwargs=kwargs)
+        assert html.fromstring(response.content).xpath("//*[starts-with(@href, $url)]", url=destination)
+        page = response.context["view"]
+        create.assert_called_once_with(page.request.user, page, page._cv_ancestor_state.parent)
+        assert create.call_args.args[1] is page
+        assert client.get(destination).status_code == 200
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("key", ["create", "custom_create"])
+def test_guardian_custom_button_result_is_not_rewritten(key, monkeypatch):
+    class DeniedButton(ContextButton):
+        def get_context(self, context):
+            return {"cv_access": False, "cv_action_enabled": False, "cv_url": "/custom-result/"}
+
+    with isolated_routes(lambda suffix: consumer_routes(suffix, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.book, "List", actor, world)
+        page.cv_context_buttons = [DeniedButton(key=key, key_target="create")]
+        create, state = Mock(return_value=True), Mock(return_value=True)
+        monkeypatch.setattr(ns.book.Create, "cv_create_has_access", create)
+        monkeypatch.setattr(ns.book.Create, "cv_action_enabled", state)
+        result = page.cv_get_context(key, user=actor)
+        assert result["cv_access"] is False
+        assert result["cv_action_enabled"] is False
+        assert result["cv_url"] == "/custom-result/"
+        create.assert_not_called()
+        state.assert_not_called()
 
 
 @pytest.mark.django_db

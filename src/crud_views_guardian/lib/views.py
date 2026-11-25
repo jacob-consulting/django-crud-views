@@ -335,10 +335,12 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
             user: the requesting user
             rendering_view: the real rendering view when it belongs to this create's own ViewSet, including
                 list, object, row/card action, navbar and permission-filter consumers; otherwise None.
-                Retained Cancel supplies its existing request-bound view of the same ViewSet. A child link
-                from another ViewSet receives None. Overrides must not assume it is set or is a list view.
+                Cancel uses the shared known-ancestor check and supplies its existing request-bound view of
+                the same ViewSet. A child link from another ViewSet receives None. Overrides must not assume
+                it is set or is a list view.
             parent_obj: the resolved parent instance. An own child of a single-foreign-key nesting is also
-                accepted and resolved to its parent; None, missing relations and every other input deny.
+                accepted and resolved to its parent; M2M own children remain ambiguous and deny.
+                None, missing relations and every other input deny.
         """
         if cls.cv_viewset.parent is None:
             return cls.cv_has_access(user, None)

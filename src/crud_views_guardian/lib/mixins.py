@@ -7,6 +7,7 @@ from django.views.generic.list import MultipleObjectMixin
 from crud_views.lib.access_trace import _object_identity, get_recorder
 from crud_views.lib.ancestor_db import _check_nested_auth
 from crud_views.lib.ancestors import _immediate_parent_access, _resolved_parent
+from crud_views.lib.link_access import _higher_ancestor_gates, _known_link_ancestors
 from crud_views.lib.view import CrudView
 from crud_views_guardian.lib.permissions import _get_guardian_checker
 
@@ -395,30 +396,28 @@ class GuardianParentPermissionMixin:
             raise ImproperlyConfigured(error)
         if not user.is_authenticated or _guardian_inactive_actor(user):
             return False
-        if cls.cv_viewset.parent is None:
+        if (
+            cls.cv_viewset.parent is None
+            or cls.cv_object
+            or issubclass(cls, GuardianQuerysetMixin)
+            or hasattr(cls, "cv_create_has_access")
+        ):
             return super()._cv_cancel_target_available(user, obj, rendering_view)
 
+        # Parent-only non-create Cancel deliberately omits cv_has_access (D-51).
+        # Its remaining gates and state object match the shared full link check.
         parent_obj = rendering_view._cv_cancel_parent_object()
-        if not _immediate_parent_access(cls, user, parent_obj, rendering_view=rendering_view):
+        known = _known_link_ancestors(cls, rendering_view, immediate_parent=parent_obj)
+        if parent_obj is None or not _higher_ancestor_gates(cls, user, known):
             return False
-        if cls.cv_object:
-            if not cls.cv_has_access(user, obj):
-                return False
-            action_obj = obj
-        else:
-            if not cls._cv_cancel_parent_target_access(user, rendering_view, parent_obj):
-                return False
-            # Parent-only views bypass child/model permission exactly as dispatch does.
-            action_obj = parent_obj
-        return cls._cv_action_enabled_for_rendering(user, action_obj, rendering_view)
+        if not cls._cv_cancel_parent_target_access(user, rendering_view, parent_obj):
+            return False
+        return cls.cv_action_enabled(user, parent_obj)
 
     @classmethod
     def _cv_cancel_parent_target_access(cls, user, rendering_view, parent_obj):
-        if issubclass(cls, GuardianQuerysetMixin):
-            return cls.cv_has_access(user, None)
-        if hasattr(cls, "cv_create_has_access"):
-            return cls.cv_create_has_access(user, rendering_view, parent_obj)
-        return True
+        """The immediate gate for parent-only Cancel, without its ordinary link's own-access hook."""
+        return _immediate_parent_access(cls, user, parent_obj, rendering_view=rendering_view)
 
     @classmethod
     def _guardian_child_composition_error(cls):

@@ -95,21 +95,31 @@ needs the `change` permission and deleting needs `delete`. A user who may change
 sees the archive button and no delete button. A user who may only view documents sees no toolbar, no selection column
 and no card checkboxes: the page looks like a list without bulk actions.
 
-For each key in `cv_bulk_actions`, in the configured order, the source asks the destination two questions:
+For each key in `cv_bulk_actions`, in the configured order, the source calls the shared link check directly:
 
-1. `cv_has_access(user, None)`: does the user hold the destination's permission?
-2. `cv_action_enabled(user, obj)`: is the action available right now? This is asked only when the first answer
-   is yes. `obj` is `None`, or the parent object in a nested ViewSet.
+1. Check the known immediate and higher ancestors, aligned with the destination's declared ancestry.
+2. Ask `cv_has_access(user, None)` for the destination's own permission.
+3. Ask `cv_action_enabled(user, obj)` only after permission passes. `obj` is `None` for a top-level
+   destination, or its URL parent for a nested destination.
 
-An action that fails either question leaves no markup, not a disabled button. This decides what is displayed;
+An earlier denial skips later hooks. The toolbar uses the source's guard state; it does not call
+`cv_get_parent_object` or the Cancel helper. A missing immediate parent makes a nested destination unavailable,
+including on a source without guard state. Known higher ancestors keep their declared levels; an unknown level
+is not fetched or replaced with a farther object. The real source view is supplied to a create hook only when
+it belongs to the target's own ViewSet; otherwise the hook receives `None`.
+
+An action that fails admission leaves no markup, not a disabled button. This decides what is displayed;
 it does not authorize anything. The destination checks the user again on every submission, see
 [Scope and permissions](#scope-and-permissions).
 
-Both questions are asked once per action and request, never once per record. Rendering the list does not look
-at the records on the page, so `cv_bulk_has_permission` and `cv_bulk_check` are not called. When the source is a
-permission-required view, this adds no database query, because Django has already loaded the user's
-permissions to admit the list request. A source without a permission check, or a hook of your own that queries
-the database, pays that cost on each list request.
+Admission is evaluated once per configured action and request, never once per record; a denied ancestor can
+prevent both own permission and state from running. Rendering the list does not look at the records on the
+page, so `cv_bulk_has_permission` and `cv_bulk_check` are not called. Admission is evaluated in Python before
+template rendering: configuration errors and custom-hook exceptions propagate instead of becoming hidden controls.
+Top-level model-permission destinations add no permission SQL when the source request has warmed Django's
+permission cache. Nested destinations still perform their ancestor gates; SQL depends on the provider and
+loaded grants, and custom hooks may query. See the measured scope in
+[Permission cost and configuration failures](context_buttons.md#permission-cost-and-configuration-failures).
 
 ### Template integration
 
@@ -246,11 +256,13 @@ The toolbar decides what to show from `cv_has_access`, not from `has_permission`
 otherwise those users can submit the action but never see its button. Context and list buttons follow the same
 rule. There is no setting that turns the toolbar check off.
 
-A visible button does not promise that the submission succeeds. Two checks run only on submission:
+A visible button does not promise that the submission succeeds. The destination independently enforces:
 
 - **Ancestor write rules** in a nested ViewSet. By default the immediate parent needs `change` and farther
-  ancestors need `view`. A stricter rule configured for an ancestor answers 403, although the list was readable.
-- **Per-record permission** through `cv_bulk_has_permission`. A user who holds the model permission but no
+  ancestors need `view`. The toolbar now checks the known ancestors against these destination requirements too:
+  parent `view` without `change` hides a write action even when the source list is readable. The request still
+  checks the full chain and can answer 403 independently.
+- **Per-record permission**, checked only on submission through `cv_bulk_has_permission`. A user who holds the model permission but no
   grant on any selected record gets the review page with every record blocked and only Cancel.
 
 The default `cv_bulk_has_permission` returns `True`, so it adds no per-object policy. With Guardian, implement
@@ -304,6 +316,18 @@ else the success URL when no cancel target is accessible to the user. The succes
 The Cancel button of the all-blocked page uses the same three steps, including the success URL fallback,
 so that page always has a way back. A review page which still offers the action keeps the stock Cancel button,
 which is not rendered when no cancel target is accessible.
+
+These three return surfaces — plain GET, warning POST and the Cancel button of the all-blocked page — use
+Cancel's updated destination eligibility. Their chosen `Location` or Cancel URL can change; origin, fallback,
+success URL order, query restoration, authorization responses and login redirects remain unchanged.
+Core Cancel checks known ancestors before own permission and state. For nested object and collection targets,
+it obtains the URL parent through `cv_get_parent_object`: a guarded request reuses its resolved parent without
+a query; without guard state the existing lookup can fetch it once. A missing row in the built-in lookup means
+unavailable; exceptions from project overrides propagate. Own permission still receives the target's own
+object, or `None` for a collection; state receives that own object or the URL parent respectively.
+Higher ancestors come only from guard state. Cancel through `GuardianParentPermissionMixin` retains its
+immediate-parent-only path; queryset-only Guardian Cancel retains its immediate skip but checks known higher
+ancestors. See [Link consumer migration](../migrating-1.0.md#eight-consumer-changes-in-stage-3a) for these retained exceptions.
 
 The origin is carried only for an accepted source key. `cv_cancel_keys = "auto"` accepts the standard list
 and card origins; configure other source keys explicitly. `viewset.W275` warns when a source is not accepted,

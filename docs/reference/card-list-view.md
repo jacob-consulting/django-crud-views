@@ -294,7 +294,8 @@ class PublisherCardListView(CardListViewPermissionRequired):
 ```
 
 Child actions and `ChildContextButton` use the package's link check once, passing the card's object as the URL
-parent. Plain nested targets check that immediate parent using the destination operation's nearest key, then
+parent, followed by known higher ancestors aligned to the target's declared ancestry. Nested targets check
+the applicable ancestor gates using the destination operation's requirements, then
 call `cv_has_access(user, None)`. Only after permission passes does `cv_action_enabled` receive the card object,
 which is the destination's parent.
 For example, a user may see Publisher A's card through `view` permission, but its Books action requires `change`
@@ -304,13 +305,16 @@ it restores a usable action and a 200 response, even for an empty authorized Boo
 
 The parent's provider and `AncestorPolicy(accept_global_perms=True)` own parent fallback; the target's
 `cv_guardian_accept_global_perms` does not. Core parents use model permission, Guardian parents object/group
-grants with model fallback only when the parent allows it. `provider="none"` skips only the parent gate.
+grants with model fallback only when the parent allows it. `provider="none"` skips only that level's gate.
 Nested Guardian collection links deny anonymous/inactive actors; this adds no actor rule to plain custom views.
 The parent gate runs even for an actor whose own access is denied; state runs only after permission passes.
-A child create action to a nested Guardian create is decided by `cv_create_has_access`, with `rendering_view`
-`None`. Shipped Guardian collection and create paths perform the parent check once.
+A child create action to a nested Guardian create is decided by `cv_create_has_access`. The real rendering
+view is supplied only when it belongs to the target's own ViewSet; otherwise `rendering_view` is `None`.
+This same rule covers own card actions, object pages, row actions and navbar items.
+Shipped Guardian collection and create paths perform the immediate-parent check once.
 Custom `cv_has_access` overrides receive `None`. Queryset-only Guardian compositions without the parent helper
-retain delegated `cv_has_access(user, None)` after the actor check and gain no parent authorization.
+retain delegated `cv_has_access(user, None)` after the actor check and skip the immediate parent, but check
+known higher ancestors.
 `LinkChildColumn` in tables still renders without this permission check.
 
 Ordinary denial follows [Hide or disable inaccessible actions](inaccessible_actions.md): disabled actions have
@@ -318,8 +322,8 @@ no usable URL. Read the [Guardian collection-link limits and configuration failu
 for the remaining direct/sibling/object/filter/navigation/M2M boundaries and missing parent declarations that
 can fail the host page during rendering.
 
-Eligible plain child links add one parent-policy invocation before own access, with cache-dependent SQL; an
-actor whose own access is denied now pays for it as well. The current Python 3.12.3 / Django 6.0.10 /
+Eligible child links invoke the selected known ancestor gates before own access, with cache-dependent SQL;
+an actor whose own access is denied may pay for those gates as well. The historical stage-2 Python 3.12.3 / Django 6.0.10 /
 django-guardian 3.5.2 measurement gives 6/4/2/0 total queries with a plain parent and 8/6/4/2 with a strict
 Guardian parent for fresh-cold/warm-cold/fresh-warm/warm-warm Django model-cache/vocabulary states, for both
 renderers. These first-load figures match the earlier historical Django 5.2/Guardian 3.5 totals: each measured
@@ -333,10 +337,15 @@ A missing required parent permission key, a nested operation without requirement
 records routed away from `default` raises `ImproperlyConfigured` while rendering, rather than producing a
 hidden/disabled action. Malformed parent policy raises also for an actor whose own access is denied;
 `provider="none"` preserves the helper's early bypass.
-Only the supplied immediate parent is checked: a farther ancestor can still deny GET, even with an immediate
-`provider="none"`. Sibling links and ordinary row actions still carry no parent gate and keep their evaluation
-order, while their hook arguments follow [the narrowed meaning](../migrating-1.0.md#link-access-hooks). URL
-construction is not an access proof;
+Own card actions, sibling links and ordinary row actions also check target-aligned known ancestors before
+own permission and state. An earlier denial skips later hooks. Object targets receive their own object for
+permission and state; non-object targets receive `None` for own permission and the URL parent for state.
+Unknown higher levels stay unknown without shifting objects or fetching rows. A missing immediate parent
+denies a nested link, including on a view without guard state. The retained Guardian create seam on own
+ViewSet pages and the list-page rewrite remain immediate-only; card child actions and navbar child items
+do not use that exception. Cancel through `GuardianParentPermissionMixin` also remains immediate-only.
+See [Link consumer migration](../migrating-1.0.md#eight-consumer-changes-in-stage-3a) and
+[the narrowed hook meaning](../migrating-1.0.md#link-access-hooks). URL construction is not an access proof;
 [full request authorization](nested.md#visible-links-and-buttons) remains authoritative.
 
 | Field | Required | Description |

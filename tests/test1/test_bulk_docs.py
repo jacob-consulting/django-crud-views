@@ -573,7 +573,8 @@ def test_bulk_theme_authorization_boundary():
     authorized = normalized(section(text, "Authorized data in overridden templates"))
     for phrase in (
         "permission-filtered action/menu leaves",
-        "configured bulk destinations only to a viewer who passes their `cv_has_access` and `cv_action_enabled`",
+        "known immediate and higher ancestor gates before own permission (`cv_has_access`) and state",
+        "(`cv_action_enabled`); an earlier denial skips later hooks",
         "with no record checks during source rendering",
         "bulk_actions.md#which-actions-a-user-sees",
         "view.cv_bulk_buttons",
@@ -581,6 +582,9 @@ def test_bulk_theme_authorization_boundary():
         "Styling or hiding a bulk button grants no authority",
     ):
         assert phrase in authorized
+    leaf = next(line for line in authorized.split("| Bulk leaf") if "tags/button/bulk.html" in line)
+    assert "known immediate and higher ancestor gates precede own permission and state" in leaf
+    assert "an earlier denial skips later hooks" in leaf
     buttons = section(text, "Buttons")
     assert "buttons.md#bulk-button-leaf" in buttons
     for name in ("form:hidden-label", "form:icon-host", 'data-cv-tooltip="form"'):
@@ -742,3 +746,43 @@ def test_bulk_guide_documents_native_cancel_opt_in():
     assert "buttons.md#cancel-links" in result
     assert "Bootstrap example enables this setting" in result
     assert 'tag="a"' in result
+
+
+def test_bulk_shared_link_admission_and_return_contract():
+    selection = normalized(section(guide(), "Selection on tables and cards"))
+    steps = ["known immediate and higher ancestors", "cv_has_access(user, None)", "cv_action_enabled(user, obj)"]
+    assert [selection.index(step) for step in steps] == sorted(selection.index(step) for step in steps)
+    for phrase in (
+        "shared link check directly",
+        "An earlier denial skips later hooks",
+        "does not call `cv_get_parent_object` or the Cancel helper",
+        "missing immediate parent",
+        "configuration errors and custom-hook exceptions propagate",
+        "cv_bulk_has_permission` and `cv_bulk_check` are not called",
+    ):
+        assert phrase in selection
+    returns = normalized(section(guide(), "Result message and return"))
+    for phrase in (
+        "plain GET, warning POST and the Cancel button of the all-blocked page",
+        "origin, fallback, success URL order",
+        "authorization responses and login redirects remain unchanged",
+        "GuardianParentPermissionMixin",
+        "eight-consumer-changes-in-stage-3a",
+    ):
+        assert phrase in returns
+
+
+def test_card_and_state_references_follow_target_ancestry():
+    card = normalized(section((ROOT / "docs/reference/card-list-view.md").read_text(), "Child ViewSet Actions"))
+    state = normalized((ROOT / "docs/reference/action_enabled.md").read_text())
+    for text in (card, state):
+        for phrase in (
+            "target's declared ancestry",
+            "own ViewSet",
+            "missing immediate parent",
+            "GuardianParentPermissionMixin",
+        ):
+            assert phrase in text
+        assert "eight-consumer-changes-in-stage-3a" in text
+    assert "non-object targets receive `None` for own permission and the URL parent for state" in card
+    assert "never evaluates state; it can return true for an action that state would disable" in state

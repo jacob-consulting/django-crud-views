@@ -1,8 +1,8 @@
 # Conditionally Disabling an Action
 
-`cv_action_enabled` is a state gate beside permission: requests, child context buttons, card child actions,
-object navbar child items and links to a nested Guardian create ask it only after permission passes.
-Other buttons evaluate it independently of permission, as listed under [Enforcement Points](#enforcement-points).
+`cv_action_enabled` is a state gate beside permission. Package link consumers check permission first and skip
+state after denial, as listed under [Enforcement Points](#enforcement-points). Calling this hook directly does
+not grant permission.
 The two hooks answer different questions:
 
 | Hook | Question |
@@ -58,9 +58,20 @@ When `cv_action_enabled` returns `False`:
 | Top-level view without an own object (list or create) | `None` |
 
 The request's `cv_get_action_object()` returns `self.get_object()` for object views and the immediate parent
-for nested views without an own object; otherwise it returns `None`. A link passes the same action object,
-with one exception: on a hosting view that did not run the ancestor guard (a custom or non-CRUD view), a
-nested list's state hook receives `None`. Core controls do not disappear on such a view.
+for nested views without an own object; otherwise it returns `None`. A permitted link passes the same action
+object, separately from the own object supplied to `cv_has_access`. For non-object targets own permission
+receives `None`, while state receives the URL parent (for example, the Book of a nested list of notes).
+Child links use the row their URL is built from;
+own-ViewSet links use the resolved guard state. The immediate and known higher ancestors are aligned to the
+target's declared ancestry; unknown levels stay unknown and are not fetched. A missing immediate parent denies
+a nested link without calling state, even on a custom or non-CRUD view without guard state.
+
+Core Cancel alone retains the `cv_get_parent_object` hook for its immediate parent, including nested object
+targets. Guarded requests reuse the resolved parent without a query; unguarded views retain the existing
+lookup. A missing built-in parent row means unavailable; custom-hook exceptions propagate. Higher ancestors
+still come only from guard state. Move parent annotations needed by ordinary create controls to the parent
+ViewSet's queryset. The create permission hook receives the real rendering view only on its own ViewSet,
+including row, card, object and navbar consumers; otherwise it receives `None`.
 
 ## Example: Locked Group Disables Member Add/Remove
 
@@ -93,11 +104,16 @@ class PersonCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, Cre
 `card_action.html`) guard their output with `{% if cv_action_enabled is not False %}`.
 The `cv_action_enabled` flag is injected into the template context by the rendering
 infrastructure.
-Child context buttons, card child actions, object navbar child items and links to a nested Guardian create
-run parent gate, own access, then state. A permission denial skips the state hook and leaves the context flag
+Context, parent, sibling and child buttons, view-key context/table actions, own/child card actions, navbar
+items, core Cancel and the bulk toolbar use the shared permission-first check. Known ancestor gates precede
+own access and state. A permission denial skips the state hook and leaves the context flag
 `cv_action_enabled=True`, meaning not evaluated; the permission result still hides or disables the control.
-Context buttons, row actions, parent buttons, sibling buttons and non-child card actions to other targets
-keep evaluating state independently of permission. The `cv_context_has_permission` filter never evaluates state.
+The `cv_context_has_permission` filter checks ancestors and own permission but never evaluates state; it can
+return true for an action that state would disable. The retained Guardian create seam and list rewrite use
+only the immediate parent, while child buttons, card child actions and navbar child items use known higher
+ancestors too, even on the create target's own ViewSet page. Cancel through `GuardianParentPermissionMixin`
+retains its immediate-parent-only path. Queryset-only Guardian links and Cancel retain their immediate skip
+but gain known higher gates. See [Link consumer migration](../migrating-1.0.md#eight-consumer-changes-in-stage-3a).
 
 **Request enforcement (plain views)** — `CrudViewPermissionRequiredMixin.has_permission()`
 calls `cv_get_action_object()` then `cv_action_enabled()`. Returning `False` causes

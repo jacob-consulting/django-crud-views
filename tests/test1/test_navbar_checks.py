@@ -138,7 +138,10 @@ def test_invalid_configurations(case, django_assert_num_queries, monkeypatch):
             monkeypatch.setattr(cls, "cv_has_access", classmethod(lambda *args: pytest.fail("startup access hook")))
             monkeypatch.setattr(cls, "cv_action_enabled", classmethod(lambda *args: pytest.fail("startup state hook")))
             monkeypatch.setattr(
-                cls, "_cv_action_enabled_for_rendering", classmethod(lambda *args: pytest.fail("startup state hook"))
+                cls,
+                "cv_create_has_access",
+                classmethod(lambda *args: pytest.fail("startup create hook")),
+                raising=False,
             )
         with django_assert_num_queries(0):
             messages = navbar_messages(system_checks.check_viewsets())

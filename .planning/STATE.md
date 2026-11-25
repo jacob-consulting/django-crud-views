@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.50"
 current_phase_name: "Move remaining link consumers to the shared link check - stage 3a (#412)"
-current_plan: 4
+current_plan: 5
 status: executing
-stopped_at: Completed 06.50-03-PLAN.md; remaining plans pending
-last_updated: "2026-11-25T06:16:27.571Z"
+stopped_at: Completed 06.50-04-PLAN.md; remaining plans pending
+last_updated: "2026-11-25T06:28:42.281Z"
 last_activity: 2026-11-25
-last_activity_desc: Phase 06.50 plan 03 complete; plan 04 next
-state_head: 9dbffb8313be7f38ce7fd3db86c517f9b910bbf2
+last_activity_desc: Phase 06.50 plan 04 complete; plan 05 next
+state_head: a8bedba2675978b5eb802ce72f005dfc895d520b
 progress:
   total_phases: 57
   completed_phases: 55
   total_plans: 308
-  completed_plans: 302
+  completed_plans: 303
 milestone_name: milestone
 ---
 
@@ -33,12 +33,18 @@ See: .planning/PROJECT.md (updated 2026-11-24)
 ## Current Position
 
 Phase: 06.50 (Move remaining link consumers to the shared link check - stage 3a (#412)) — EXECUTING
-Current Plan: 4
+Current Plan: 5
 Total Plans in Phase: 9
-Status: Executing Phase 06.50 — 3/9 plans complete
-Last activity: 2026-11-25 — Phase 06.50 plan 03 complete; plan 04 next
+Status: Executing Phase 06.50 — 4/9 plans complete
+Last activity: 2026-11-25 — Phase 06.50 plan 04 complete; plan 05 next
 
 Next: $gsd-execute-phase 06.50
+
+### Phase 06.50 plan 04 — 2026-11-25
+
+- The permission filter uses the shared permission-only path and same-ViewSet rendering view. Core Cancel uses its existing parent hook for object and collection targets, known higher guard objects, and the existing request-bound owner copy. Guardian ParentPermission Cancel remains immediate-only; queryset-only Cancel retains its immediate skip and gains higher gates. Guardian/request source is unchanged.
+- Both TDD tasks have machine-validated RED evidence and GREEN commits. Required selections passed 229 filter and 162 Cancel tests; the final combined run passed 391. Exact parent/own-object identities, no-state filter, missing-parent/errors, guarded zero/unguarded one parent fetch and real request denial are covered. Ruff/format/diff checks pass; before artifacts and protected source hashes match apart from plan 02's approved renderer-cost change.
+- Task commits 427188f8, 2939c77a, 1e88e287 and f742ef33; immediate SUMMARY a8bedba2 precedes tracking. ROADMAP accepted 4/9 and its stale dotted table row was reconciled. STATE advanced to plan 5; unscoped progress refresh left global percentage unset. Original state.json bytes and configuration hashes match; unrelated files remain untouched. No phase-completion action ran.
 
 ### Phase 06.50 plan 03 — 2026-11-25
 
@@ -2032,6 +2038,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.50 P01 | 12min | 2 tasks | 8 files |
 | Phase 06.50 P02 | 10min | 2 tasks | 7 files |
 | Phase 06.50 P03 | 9min | 2 tasks | 5 files |
+| Phase 06.50 P04 | 9 min | 2 tasks | 7 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2407,6 +2414,8 @@ Recent decisions affecting current work:
 - [Phase 06.50]: Direct None-actor failures remain delegated to protected gates; do not substitute request.user.
 - [Phase 06.50]: Navbar child items use the full known chain on every page under D-55; Guardian context-create seam and rewrite remain unchanged.
 - [Phase 06.50]: All 120 isolated navbar numeric pins remain unchanged; plan 09 retains final cross-consumer after-cost reconciliation.
+- [Phase 06.50]: Follow D-44 with _link_permission only; preserve the target-lookup exception boundary and retained Guardian create seam.
+- [Phase 06.50]: Follow D-42 for both Cancel target shapes; keep hook parent distinct from target-own object and preserve Guardian-owned overrides.
 
 ### Pending Todos
 
@@ -2511,6 +2520,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T06:16:20.999Z
-Stopped at: Completed 06.50-03-PLAN.md; remaining plans pending
-Resume file: .planning/phases/06.50-move-remaining-link-consumers-to-the-shared-link-check-stage/06.50-04-PLAN.md
+Last session: 2026-11-25T06:28:35.835Z
+Stopped at: Completed 06.50-04-PLAN.md; remaining plans pending
+Resume file: None

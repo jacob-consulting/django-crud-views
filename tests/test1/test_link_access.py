@@ -1,6 +1,8 @@
 """Direct contract of the private link check, independent of page rendering."""
 
+import ast
 from inspect import Parameter, signature
+from pathlib import Path
 from types import ModuleType, SimpleNamespace
 from unittest.mock import Mock
 
@@ -195,6 +197,21 @@ def test_child_link_adapter_is_gone():
     for target in (CrudView, GuardianQuerysetMixin, GuardianCreateViewPermissionRequired):
         assert not hasattr(target, "_cv_child_link_has_access"), target
         assert hasattr(target, "_cv_link_permission"), target
+
+
+def test_removed_link_helpers_have_no_production_references():
+    retired = {"_cv_page_link_ancestors", "_cv_action_enabled_for_context", "_cv_action_enabled_for_rendering"}
+    source_root = Path(__file__).resolve().parents[2] / "src"
+    source_files = sorted(source_root.rglob("*.py"))
+    assert source_files, "Production sources are required for the retired-helper audit"
+    references = []
+    for path in source_files:
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"), filename=str(path))):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in retired:
+                references.append(f"{path.relative_to(source_root)}:{node.lineno}: definition {node.name}")
+            elif isinstance(node, ast.Attribute) and node.attr in retired:
+                references.append(f"{path.relative_to(source_root)}:{node.lineno}: access {node.attr}")
+    assert references == [], "\n".join(references)
 
 
 class InactiveAncestorBackend(BaseBackend):

@@ -972,6 +972,8 @@ def test_parent_button_reaches_nested_guardian_create_through_the_check(helpers,
                 assert ctx["cv_url"] == _url(
                     helpers.book.vs, "create", **{helpers.book.vs.parent.get_pk_name(): data.penguin.pk}
                 )
+                # Request authorization remains independent of the page's colliding create key.
+                assert _client(actor).get(ctx["cv_url"]).status_code == (200 if book_create_allowed else 403)
 
 
 @pytest.mark.django_db
@@ -1006,6 +1008,11 @@ def test_sibling_button_under_create_key_uses_actual_target(pn, data, monkeypatc
             sibling_create.assert_called_once_with(actor, None, parent)
         else:
             sibling_create.assert_not_called()
+
+    # The actual sibling destination keeps its request rule, independent of the page create control.
+    assert _client(actor).get(contexts[0]["cv_url"]).status_code == (
+        200 if sibling_key == "list" or create_grant else 403
+    )
 
 
 @pytest.mark.django_db

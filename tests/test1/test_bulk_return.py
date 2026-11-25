@@ -290,6 +290,7 @@ def test_forged_return_token_uses_local_cancel_fallback(
 @pytest.fixture
 def nested_bulk_return(monkeypatch, settings):
     """Capture a real origin before revocation; bulk uses a less strict far gate."""
+    settings.CRUD_VIEWS_BUTTON_CLASSES = {"form:cancel-tag": "a"}
     with isolated_routes(consumer_routes) as ns:
         world = consumer_world()
         actor = consumer_actor(ns, world)
@@ -304,7 +305,6 @@ def nested_bulk_return(monkeypatch, settings):
         monkeypatch.setattr(ns.note.Bulk, "cv_cancel_keys", ["list"])
         monkeypatch.setattr(ns.note.Bulk, "cv_cancel_key", "card")
         monkeypatch.setattr(ns.note.Bulk, "cv_success_key", "source")
-        settings.CRUD_VIEWS_BUTTON_CLASSES = {"form:cancel-tag": "a"}
         page = consumer_view(ns.note, "List", actor, world)
         query = [
             ("sort", "-note"),

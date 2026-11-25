@@ -603,11 +603,15 @@ def test_context_controls_keep_core_targets_on_their_code_path(core_targets, dat
             ctx = view.cv_get_context(key, obj=data.book, user=actor, location="list" if key == "detail" else "context")
             assert ctx["cv_access"] is False
             assert ctx["cv_action_enabled"] is True
-            assert calls == ["state", "own"]
+            assert calls == (["own"] if key == "home" else ["state", "own"])
             own.assert_called_once_with(actor, own_obj)
-            state.assert_called_once_with(actor, state_obj)
-            assert state.call_args.args[1] is state_obj
-            gate.assert_not_called()
+            if key == "home":
+                state.assert_not_called()
+                gate.assert_called_once_with(actor, parent)
+            else:  # View-key/row consumers migrate in plan 02.
+                state.assert_called_once_with(actor, state_obj)
+                assert state.call_args.args[1] is state_obj
+                gate.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -640,7 +644,7 @@ def test_context_controls_send_nested_guardian_create_through_the_check(helpers,
                     ctx = view.cv_get_context(key, obj=mismatched, user=actor)
                 assert ctx["cv_access"] is permitted
                 assert ctx["cv_action_enabled"] is True
-                create_access.assert_called_once_with(actor, None, parent)
+                create_access.assert_called_once_with(actor, view if key == "new_book" else None, parent)
                 assert create_access.call_args.args[2] is parent
                 gate.assert_called_once_with(actor, parent)
                 assert gate.call_args.args[1] is parent
@@ -688,10 +692,14 @@ def test_unguarded_view_keeps_core_controls(helpers, core_targets, data, monkeyp
             patch.setattr(target, "cv_has_access", own)
             patch.setattr(target, "cv_action_enabled", state)
             ctx = view.cv_get_context(key, obj=data.book, user=actor)
-            assert ctx["cv_access"] is True
+            assert ctx["cv_access"] is (key != "home")
             assert ctx["cv_action_enabled"] is True
-            own.assert_called_once_with(actor, None)
-            state.assert_called_once_with(actor, None if key == "home" else data.penguin)
+            if key == "home":
+                own.assert_not_called()
+                state.assert_not_called()
+            else:  # View-key create retains its adapter until plan 02.
+                own.assert_called_once_with(actor, None)
+                state.assert_called_once_with(actor, data.penguin)
             gate.assert_not_called()
 
     _grant(actor, helpers.pub, "change", data.penguin)
@@ -765,7 +773,10 @@ def test_parent_and_sibling_button_state_object(helpers, data, monkeypatch):
             state.assert_called_once_with(actor, state_obj)
             if state_obj is not None and not target.cv_object:
                 assert state.call_args.args[1] is ancestors._resolved_ancestor(view, target.cv_viewset.parent.name)
-            gate.assert_not_called()
+            if target.cv_viewset.has_parent:
+                gate.assert_called_once_with(actor, ancestors._resolved_ancestor(view, target.cv_viewset.parent.name))
+            else:
+                gate.assert_not_called()
 
 
 @pytest.mark.django_db

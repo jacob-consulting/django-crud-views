@@ -492,15 +492,22 @@ def test_cv_get_context_create_without_parent_perm_hides_button(user_guardian, c
 
 
 @pytest.mark.django_db
-def test_cv_get_context_non_create_key_not_affected(user_guardian, cv_guardian_publisher, publisher_a):
+def test_cv_get_context_non_create_key_not_affected(user_guardian, cv_guardian_publisher, publisher_a, monkeypatch):
     """cv_get_context override does not interfere with non-create keys (obj=None case)."""
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
-    view = _make_book_list_view(user_guardian, publisher_a)
+    from unittest.mock import Mock
+
+    from tests.test1.app.views import GuardianBookListView
+
+    view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
+    own = Mock(wraps=GuardianBookListView.cv_has_access)
+    monkeypatch.setattr(GuardianBookListView, "cv_has_access", own)
     # "list" is a context action with obj=None — override must not fire for non-create keys
     ctx = view.cv_get_context(key="list", obj=None, user=user_guardian)
-    # cv_access is determined by normal cv_has_access, not our override
-    # GuardianListView has list access for this user so result should be True
+    # Guard state supplies the authorized parent for the shared-check migration;
+    # this non-create key must never use the create rewrite.
     assert ctx["cv_access"] is True
+    own.assert_called_once_with(user_guardian, None)
 
 
 @pytest.mark.django_db
@@ -529,12 +536,22 @@ def test_cv_get_context_respects_cv_create_has_access_override(user_guardian, cv
 
 
 @pytest.mark.django_db
-def test_parent_detail_button_visible_with_parent_view_perm(user_guardian, cv_guardian_publisher, publisher_a):
+def test_parent_detail_button_visible_with_parent_view_perm(
+    user_guardian, cv_guardian_publisher, publisher_a, monkeypatch
+):
     """A ParentContextButton → parent detail is visible when the user can view the parent object."""
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
-    view = _make_book_list_view(user_guardian, publisher_a)
+    from unittest.mock import Mock
+
+    from tests.test1.app.views import GuardianPublisherDetailView
+
+    view = _make_book_list_view(user_guardian, publisher_a, guarded=True)
+    own = Mock(wraps=GuardianPublisherDetailView.cv_has_access)
+    monkeypatch.setattr(GuardianPublisherDetailView, "cv_has_access", own)
     ctx = view.cv_get_context(key="publisher_detail", obj=None, user=user_guardian)
     assert ctx["cv_access"] is True
+    own.assert_called_once_with(user_guardian, view._cv_ancestor_state.parent)
+    assert own.call_args.args[1] is view._cv_ancestor_state.parent
 
 
 @pytest.mark.django_db

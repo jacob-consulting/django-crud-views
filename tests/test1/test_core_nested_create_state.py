@@ -84,14 +84,31 @@ def test_renamed_create_button_uses_url_parent(client, monkeypatch, book_hitchhi
     )
     page_class = BookListView if page == "list" else BookDetailView
     monkeypatch.setattr(page_class, "cv_context_buttons", [ContextButton(key="new_book", key_target="create")])
-    view = _view(page_class, {cv_book.parent.get_pk_name(): parent.pk})
+    view = _guarded_button_view(page_class, parent, book_hitchhiker if page == "detail" else None)
     obj = None if page == "list" else book_hitchhiker
     data = view.cv_get_context("new_book", obj=obj, user=view.request.user)
+    assert data["cv_access"] is True
     assert data["cv_action_enabled"] is enabled
     assert data["cv_url"].split("?", 1)[0] == reverse(
         cv_book.get_router_name("create"), kwargs={cv_book.parent.get_pk_name(): parent.pk}
     )
     assert calls == [parent]
+    assert calls[0] is view._cv_ancestor_state.parent
+
+
+def _guarded_button_view(cls, parent, obj=None):
+    """Real authorized guard state for button positives; direct adapter fixtures stay independent."""
+    from tests.test1.app.models import Book, Publisher
+    from tests.test1.test_ancestor_authorization import _user
+    from tests.test1.test_ancestor_helpers import _bound
+
+    actor = _user("core_button_state", (Publisher, "view"), (Publisher, "change"), (Publisher, "add"), (Book, "add"))
+    kwargs = {cls.cv_viewset.parent.get_pk_name(): parent.pk}
+    if obj is not None:
+        kwargs["pk"] = obj.pk
+    view = _bound(cls, actor, **kwargs)
+    assert view._cv_ancestor_guard() is None
+    return view
 
 
 def _view(cls, kwargs=None):
@@ -122,10 +139,12 @@ def test_create_rendering_entry_points_keep_parent_and_adapter(
 
     parent = book_hitchhiker.publisher
     calls = []
-    # Child links call state directly; the other entries retain the existing subclass adapter.
+    # Buttons observe the public hook; own-card retains the adapter until plan 02.
     monkeypatch.setattr(
         BookCreateView,
-        "cv_action_enabled" if entry in {"child-card", "child-button"} else "_cv_action_enabled_for_context",
+        "cv_action_enabled"
+        if entry in {"child-card", "child-button", "sibling-button"}
+        else "_cv_action_enabled_for_context",
         classmethod(lambda cls, user, obj=None: calls.append(obj) or enabled),
     )
     if entry in {"child-card", "child-button"}:
@@ -148,11 +167,16 @@ def test_create_rendering_entry_points_keep_parent_and_adapter(
                 view, CardAction(key="create", label_mode="both"), book_hitchhiker, view.request.user
             )
         else:
+            view = _guarded_button_view(BookListView, parent)
             data = SiblingContextButton(key="new_book", sibling_name="book", sibling_key="create").get_context(
                 view.cv_get_view_context(object=book_hitchhiker)
             )
     assert data["cv_action_enabled"] is enabled
     assert calls == [parent]
+    if entry in {"child-button", "sibling-button"}:
+        assert data["cv_access"] is True
+    if entry == "sibling-button":
+        assert calls[0] is view._cv_ancestor_state.parent
 
 
 @pytest.mark.django_db
@@ -201,18 +225,19 @@ def test_url_parent_wins_over_page_child_and_missing_parent_fails_closed(monkeyp
 @pytest.mark.django_db
 def test_parent_button_top_level_create_receives_no_state_object(monkeypatch, book_hitchhiker):
     from crud_views.lib.view import ParentContextButton
-    from tests.test1.app.views import BookListView, PublisherCreateView, cv_book, cv_publisher
+    from tests.test1.app.views import BookListView, PublisherCreateView, cv_publisher
 
     parent = book_hitchhiker.publisher
     calls = []
     monkeypatch.setattr(
         PublisherCreateView, "cv_action_enabled", classmethod(lambda cls, user, obj=None: calls.append(obj) or True)
     )
-    view = _view(BookListView, {cv_book.parent.get_pk_name(): parent.pk})
+    view = _guarded_button_view(BookListView, parent)
     data = ParentContextButton(key="new_publisher", key_target="create").get_context(
         view.cv_get_view_context(object=book_hitchhiker)
     )
     assert data["cv_url"] == reverse(cv_publisher.get_router_name("create"))
+    assert data["cv_access"] is True
     assert data["cv_action_enabled"] is True
     assert calls == [None]
 

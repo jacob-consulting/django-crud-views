@@ -12,7 +12,9 @@ from django.urls import reverse
 from lxml import html
 
 from crud_views.lib import ancestors, link_access
-from crud_views.lib.view import ContextButton
+from crud_views.lib.view import ChildContextButton, ContextButton, ParentContextButton, SiblingContextButton
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ViewSet
+from crud_views_guardian.lib.viewset import GuardianViewSet
 from tests.test1.test_ancestor_authorization import isolated_routes
 from tests.test1.test_link_consumer_costs import consumer_actor, consumer_routes, consumer_view, consumer_world
 
@@ -112,3 +114,235 @@ def test_alignment_missing_parent_denies_and_configuration_errors_propagate(monk
         monkeypatch.setattr(ns.note.vs.parent, "name", "unregistered_ancestor")
         with pytest.raises(ImproperlyConfigured, match="not registered"):
             helper(ns.note.Update, view)
+
+
+def button_case(ns, world, actor, consumer, *, guarded=True):
+    page = consumer_view(ns.book if consumer == "child" else ns.note, "Detail", actor, world, guarded=guarded)
+    if consumer == "context":
+        target, button = ns.note.Update, ContextButton(key="edit", key_target="update")
+    elif consumer == "parent":
+        target, button = ns.book.Update, ParentContextButton(key="up", key_target="update")
+    elif consumer == "sibling":
+        target, button = ns.sibling.List, SiblingContextButton(key="across", sibling_name=ns.sibling.vs.name)
+    else:
+        target, button = ns.note.List, ChildContextButton(key="down", child_name=ns.note.vs.name)
+    return page, target, button
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+@pytest.mark.parametrize("consumer", ["context", "parent", "sibling", "child"])
+@pytest.mark.parametrize("outcome", ["allowed", "ancestor", "own", "state"])
+def test_button_order_and_target_identities(composition, consumer, outcome, monkeypatch):
+    with isolated_routes(lambda s: consumer_routes(s, composition)) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page, target, button = button_case(ns, world, actor, consumer)
+        target.cv_viewset.ancestor_policy = AncestorPolicy(
+            cascade=True, actions={target.cv_key: AncestorPermissions(nearest="change", higher="change")}
+        )
+        known = link_access._known_link_ancestors(target, page)
+        if consumer == "child":
+            known = (world.book, *known[1:])
+        expected_own = ancestors._resolved_ancestor(page, ns.book.vs.name) if consumer == "parent" else world.note
+        expected_own = expected_own if target.cv_object else None
+        events = []
+        originals = {cls: cls._ancestor_has_permission for cls in (ViewSet, GuardianViewSet)}
+        for cls, original in originals.items():
+
+            def provider(vs, user, permission, obj, *, view, _original=original):
+                events.append(("ancestor", vs.name, obj, user))
+                return outcome != "ancestor" and _original(vs, user, permission, obj, view=view)
+
+            monkeypatch.setattr(cls, "_ancestor_has_permission", provider)
+        own = Mock(side_effect=lambda user, obj: events.append(("own", obj, user)) or outcome != "own")
+        state = Mock(side_effect=lambda user, obj: events.append(("state", obj, user)) or outcome != "state")
+        monkeypatch.setattr(target, "cv_has_access", own)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        monkeypatch.setattr(page, "cv_get_parent_object", Mock(side_effect=AssertionError("parent lookup")))
+        with CaptureQueriesContext(connection) as queries:
+            result = button.get_context(page.cv_get_view_context(object=page.object))
+        assert result["cv_access"] is (outcome not in {"ancestor", "own"})
+        assert result["cv_action_enabled"] is (outcome != "state")
+        chain = ancestors._walk_ancestors(target.cv_viewset)
+        gates = [
+            ("ancestor", ancestor.name, obj, actor)
+            for (_, ancestor), obj in reversed(list(zip(chain, known, strict=True)))
+        ]
+        if outcome == "ancestor":
+            assert events == gates[:1]
+            own.assert_not_called()
+            state.assert_not_called()
+        else:
+            assert events[: len(gates)] == gates
+            own.assert_called_once_with(actor, expected_own)
+            assert own.call_args.args[1] is expected_own
+            if outcome == "own":
+                assert [event[0] for event in events] == ["ancestor"] * len(gates) + ["own"]
+                state.assert_not_called()
+            else:
+                state_obj = expected_own if target.cv_object else known[0]
+                state.assert_called_once_with(actor, state_obj)
+                assert state.call_args.args[1] is state_obj
+                assert [event[0] for event in events] == ["ancestor"] * len(gates) + ["own", "state"]
+        for query in queries:
+            assert not any(f'from "app_{model}"' in query["sql"].lower() for model in ("publisher", "book", "booknote"))
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("consumer", ["context", "parent", "sibling"])
+@pytest.mark.parametrize("composition", ["core", "guardian"])
+def test_button_unguarded_nested_target_skips_own_and_state(consumer, composition, monkeypatch):
+    with isolated_routes(lambda s: consumer_routes(s, composition)) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page, target, button = button_case(ns, world, actor, consumer, guarded=False)
+        own, state = Mock(return_value=True), Mock(return_value=True)
+        monkeypatch.setattr(target, "cv_has_access", own)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        monkeypatch.setattr(page, "cv_get_parent_object", Mock(side_effect=AssertionError("parent lookup")))
+        result = button.get_context(page.cv_get_view_context(object=page.object))
+        assert result["cv_access"] is False
+        assert result["cv_action_enabled"] is True
+        own.assert_not_called()
+        state.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("outcome", ["allowed", "own", "state"])
+def test_parent_top_level_object_without_guard_preserves_none_contract(outcome, monkeypatch):
+    with isolated_routes(consumer_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.book, "Create", actor, world, guarded=False)
+        target = ns.pub.Detail
+        own, state = Mock(return_value=outcome != "own"), Mock(return_value=outcome != "state")
+        monkeypatch.setattr(target, "cv_has_access", own)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        resolver = Mock(side_effect=AssertionError("no parent lookup for a button"))
+        monkeypatch.setattr(page, "cv_get_parent_object", resolver)
+        result = ParentContextButton(key="parent_detail", key_target="detail").get_context(page.cv_get_view_context())
+        assert result["cv_url"] == reverse(ns.pub.vs.get_router_name("detail"), kwargs={"pk": world.pub.pk})
+        assert result["cv_access"] is (outcome != "own")
+        assert result["cv_action_enabled"] is (outcome != "state")
+        own.assert_called_once_with(actor, None)
+        if outcome == "own":
+            state.assert_not_called()
+        else:
+            state.assert_called_once_with(actor, None)
+        resolver.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_guardian_parent_detail_granted_but_unguarded_denies(
+    user_guardian, cv_guardian_publisher, publisher_a, monkeypatch
+):
+    from tests.lib.helper.guardian import user_guardian_object_perm
+    from tests.test1.app.views import GuardianPublisherDetailView
+    from tests.test1.test_guardian import _make_book_list_view
+
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    page = _make_book_list_view(user_guardian, publisher_a)
+    state = Mock(return_value=True)
+    monkeypatch.setattr(GuardianPublisherDetailView, "cv_action_enabled", state)
+    result = page.cv_get_context("publisher_detail", obj=None, user=user_guardian)
+    assert result["cv_access"] is False
+    state.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("key", ["update", "delete", "create"])
+def test_default_parent_view_without_change_hides_write_button_and_request(key, monkeypatch):
+    with isolated_routes(consumer_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        actor.user_permissions.remove(Permission.objects.get(codename="change_publisher"))
+        actor = User.objects.get(pk=actor.pk)
+        page = consumer_view(ns.book, "Detail", actor, world)
+        target = ns.book.vs.get_view_class(key)
+        state = Mock(return_value=True)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        result = ContextButton(key="write", key_target=key).get_context(page.cv_get_view_context(object=world.book))
+        assert result["cv_access"] is False
+        state.assert_not_called()
+        client = Client()
+        client.force_login(actor)
+        assert client.get(result["cv_url"]).status_code == 403
+        state.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("consumer", ["context", "parent", "sibling", "child"])
+def test_guardian_create_buttons_keep_seam_and_rendering_view_identity(consumer, monkeypatch):
+    with isolated_routes(lambda s: consumer_routes(s, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.book if consumer == "child" else ns.note, "Detail", actor, world)
+        if consumer == "context":
+            target, button = ns.note.Create, ContextButton(key="new", key_target="create")
+        elif consumer == "parent":
+            target, button = ns.book.Create, ParentContextButton(key="up", key_target="create")
+        elif consumer == "sibling":
+            target, button = (
+                ns.sibling.Create,
+                SiblingContextButton(key="across", sibling_name=ns.sibling.vs.name, sibling_key="create"),
+            )
+        else:
+            target, button = (
+                ns.note.Create,
+                ChildContextButton(key="down", child_name=ns.note.vs.name, child_key="create"),
+            )
+        create = Mock(wraps=target.cv_create_has_access)
+        state = Mock(return_value=True)
+        monkeypatch.setattr(target, "cv_create_has_access", create)
+        monkeypatch.setattr(target, "cv_action_enabled", state)
+        result = button.get_context(page.cv_get_view_context(object=page.object))
+        if consumer == "sibling":
+            assert result["cv_access"] is False  # The retained seam's () stays authoritative.
+            create.assert_not_called()
+            state.assert_not_called()
+        else:
+            parent = (
+                world.book if consumer == "child" else ancestors._resolved_ancestor(page, target.cv_viewset.parent.name)
+            )
+            assert result["cv_access"] is True
+            create.assert_called_once_with(actor, page if consumer == "context" else None, parent)
+            assert create.call_args.args[2] is parent
+            state.assert_called_once_with(actor, parent)
+
+
+@pytest.mark.django_db
+def test_core_create_button_uses_guard_parent_instead_of_hook_or_child_fk(monkeypatch):
+    from tests.test1.app.models import Book, Publisher
+
+    with isolated_routes(consumer_routes) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.book, "Detail", actor, world)
+        different = Publisher.objects.create(name="Wrong FK")
+        mismatched = Book(pk=world.book.pk, title="Own child", publisher=different)
+        monkeypatch.setattr(page, "cv_get_parent_object", Mock(side_effect=AssertionError("overridden parent hook")))
+        state = Mock(return_value=True)
+        monkeypatch.setattr(ns.book.Create, "cv_action_enabled", state)
+        result = ContextButton(key="new", key_target="create").get_context(page.cv_get_view_context(object=mismatched))
+        assert result["cv_access"] is True
+        state.assert_called_once_with(actor, page._cv_ancestor_state.parent)
+        assert state.call_args.args[1] is page._cv_ancestor_state.parent
+        assert state.call_args.args[1] is not different
+
+
+@pytest.mark.django_db
+def test_child_button_keeps_unknown_higher_level_and_url_parent(monkeypatch):
+    with isolated_routes(lambda s: consumer_routes(s, "guardian")) as ns:
+        world = consumer_world()
+        actor = consumer_actor(ns, world)
+        page = consumer_view(ns.book, "Detail", actor, world)
+        page._cv_ancestor_state = ancestors._AncestorState((None,))
+        state = Mock(return_value=True)
+        monkeypatch.setattr(ns.note.List, "cv_action_enabled", state)
+        result = ChildContextButton(key="notes", child_name=ns.note.vs.name).get_context(
+            page.cv_get_view_context(object=world.book)
+        )
+        assert result["cv_access"] is True
+        state.assert_called_once_with(actor, world.book)
+        assert state.call_args.args[1] is world.book

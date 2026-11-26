@@ -2542,7 +2542,9 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.52-02-PLAN.md — Direct core/Guardian outcomes, aligned ancestry and no-domain-loading guarantees (wave 2)
-- [ ] 06.52-03-PLAN.md — Stable reference, three executable examples, migration pointers and additive release note (wave 2)
+
+**Wave 3** *(blocked on Waves 1 and 2; serializes documentation writes with public-test reads)*
+- [ ] 06.52-03-PLAN.md — Stable reference, executable examples, migration pointers, additive release note and final combined gates (wave 3)
 
 ### Phase 7: Theme-surface stability policy
 

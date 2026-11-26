@@ -78,6 +78,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 06.49: Reuse Guardian object grants across navigation checks (#385) (INSERTED)** (completed 2026-11-24)
 - [x] **Phase 06.50: Move remaining link consumers to the shared link check - stage 3a (#412) (INSERTED)** (completed 2026-11-25)
 - [x] **Phase 06.51: Remove retained Guardian link exceptions - stage 3b (#413) (INSERTED)** (completed 2026-11-25)
+- [ ] **Phase 06.52: Publish check_link_access as the documented way to decide a link - stage 3c (#414) (INSERTED)**
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Backlog decisions
@@ -2522,6 +2523,22 @@ Plans:
 **Wave 6** *(blocked on Wave 5 completion)*
 - [x] 06.51-07-PLAN.md
 
+### Phase 06.52: Publish check_link_access as the documented way to decide a link - stage 3c (#414) (INSERTED)
+
+**Goal:** Publish a stable, documented `check_link_access` function that validates direct caller inputs and delegates to the existing private link check, without changing package rendering or request behavior.
+**Source:** [Issue #414](https://github.com/jacob-consulting/django-crud-views/issues/414), stage 3c of `superpowers/specs/2026-11-23-link-access-check-design.md`: section 12.8 at commit `55dce6f6`, settled decisions D-53 and D-54, with D-01–D-52 and D-55 carried forward subject to the concept's amendments. Full issue snapshot: `06.52-ISSUE-414.md`. The concept applies where it differs from the issue; settled decisions are not reopened.
+**Requirements**: None assigned; use the approved issue acceptance criteria and concept constraints.
+**Depends on:** Phase 06.51
+**Ordering:** Assigned 06.52 after completed stage 3b (#413), before Phase 7 and the 1.0.0 freeze. Code baseline: `feature/link-access-check-design` at `1d538046`, including stage 3a's direct commits and merged stage 3b PR #415. The implementation PR targets that branch. Stages 3a, 3b and 3c together supersede #411; D-39 closes the stage issues when the feature branch merges to `main`.
+**Scope:** Expose a standalone function taking the target view class, user, own object and known ancestors, nearest first and aligned with the target's declared ancestry. Return allowed, denied by permission or denied by state. Pass no rendering view (`None` to `cv_create_has_access`); retain the private permission-only function and existing package consumers. Validate all inputs before any decision and raise `ImproperlyConfigured` with a function-name prefix for all six D-54 mismatch cases. Count every ancestor slot, including `None`; allow short lists and unknown higher levels without shifting them. Accept concrete-model-compatible proxy, multi-table and polymorphic instances, and Resource instances for Resource targets.
+**Documentation:** Document the import path, three results, gate order, state-hook inputs, exceptions and three executable examples. Explain missing-immediate-parent denial, unchecked unknown higher ancestors, no object loading or membership/request authorization, the absence of a public ancestor accessor, Guardian actor rules, rendering-view differences and the D-51 parent-only limitation. Add the stable API inventory entry, update stage 3b migration pointers and their tests, and remove stale claims that no public checker exists. Record the change under `### Added` in the changelog.
+**Acceptance:** Carry all nine issue criteria into planning: direct-input results for core and Guardian targets; all six validation failures including holes and trailing `None`; accepted proxy/multi-table/polymorphic/Resource instances; no target or ancestor model-table queries for the specified cases; nested Guardian create actor/parent admission before the hook, with `None` rendering view; corrected documentation and stability inventory; three runnable examples; strict MkDocs; and unchanged golden files, matrix cells and pinned query counts from stage 3b.
+**Out of scope:** Changes to rendered links, request authorization or the private function; a rendering-view argument, resolved-ancestor accessor, full-hierarchy flag, permission-only public function or new exception class; automatic adoption by table columns, DataPanel/DataView or other off-page components; breadcrumbs and site menus. Planner discretion is limited to the import path/module, result representation and names, argument names, handling classes without a ViewSet and whether unsaved own instances are accepted.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run $gsd-plan-phase 06.52 to break down)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
@@ -2532,7 +2549,7 @@ Phase 06.42 must also settle before this freeze; include the theme data-prefix r
 Phase 06.44 must also settle before this freeze; include the six CSS tokens with Bootstrap fallback behavior from #394.
 Phase 06.45 must also settle before this freeze; include the namespace and tooltip-placement registrations and browser configuration contract from #398.
 Phase 06.47 must also settle before this freeze; inventory the four bulk variant keys, bulk mode-key support and dedicated bulk button leaf from #400.
-Stage 3b (Phase 06.51, #413) and stage 3c (#414) must settle in that order before this freeze; carry their final Guardian link, Cancel and public link-check contracts into the stability review.
+Stage 3b (Phase 06.51, #413) and stage 3c (Phase 06.52, #414) must settle in that order before this freeze; carry their final Guardian link, Cancel and public link-check contracts into the stability review.
 **Depends on**: Phase 6.10, Phase 4 and Phase 5 (and so, transitively, Phases 6.9, 6.8, 6.7, 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
 bump. If Phases 4/5 are dropped, it depends on Phase 6.10 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
@@ -2668,4 +2685,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.49. Reuse Guardian object grants across navigation checks (#385) | 5/5 | Complete | 2026-11-24 |
 | 06.50. Move remaining link consumers to the shared link check - stage 3a (#412) | 9/9 | Complete | 2026-11-25 |
 | 06.51. Remove retained Guardian link exceptions - stage 3b (#413) | 7/7 | Complete | 2026-11-25 |
+| 06.52. Publish check_link_access as the documented way to decide a link - stage 3c (#414) | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

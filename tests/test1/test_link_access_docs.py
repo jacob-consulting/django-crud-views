@@ -69,7 +69,7 @@ def test_public_reference_contract():
         "unknown higher slots",
         "cv_action_enabled(user, obj)",
         "immediate parent",
-        "top-level collection",
+        "Top-level collection",
         "None",
         "no object or ancestor loading",
         "authorization queries and project hook work",
@@ -113,7 +113,8 @@ def test_public_reference_contract():
         assert phrase in database, phrase
     assert "guardian.md#parent-only-non-create-limitation" in page
     assert "parent-only-non-create-limitation" in _anchors(DOCS / "reference/guardian.md")
-    assert "context_buttons.md#cv_context_has_permission--gate-surrounding-markup" in page
+    assert "context_buttons.md#cv_context_has_permission-gate-surrounding-markup" in page
+    assert "cv_context_has_permission-gate-surrounding-markup" in _anchors(DOCS / "reference/context_buttons.md")
     index = _section((DOCS / "reference/index.md").read_text(), "## Actions & navigation")
     assert "[Link access](link_access.md)" in index
     nav = (DOCS / "reference/.pages").read_text().split("- Actions & navigation:", 1)[1].split("- Extensions:", 1)[0]
@@ -244,8 +245,8 @@ def test_link_check_is_in_the_stability_inventory():
     ):
         assert phrase in inventory, phrase
     assert "all names prefixed with an underscore" in text
-    assert "_link_access" not in text
-    assert "_link_permission" not in text
+    assert "`_link_access`" not in text
+    assert "`_link_permission`" not in text
 
 
 @pytest.mark.parametrize(

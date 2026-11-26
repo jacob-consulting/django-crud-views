@@ -95,6 +95,14 @@ These names and the behavior in the
 There is no bulk-specific provisional exception: public breaking changes follow the major-release,
 deprecation and migration policy below.
 
+**Link access** — `crud_views.lib.link_access`:
+`check_link_access`, `LinkAccess`, `LinkAccess.ALLOWED`, `LinkAccess.DENIED_PERMISSION` and
+`LinkAccess.DENIED_STATE`. The function takes positional-or-keyword `target` and `user`, with keyword-only
+`obj` and `known_ancestors`. `LinkAccess` is a regular enum: only `ALLOWED` is truthy.
+Both denial members are false, and members are not interchangeable with raw strings.
+These names, calling convention and the behavior in the [link access reference](../reference/link_access.md)
+are stable at 1.0.
+
 **Settings**: all `CRUD_VIEWS_*` settings documented in the
 [settings reference](../reference/settings.md).
 

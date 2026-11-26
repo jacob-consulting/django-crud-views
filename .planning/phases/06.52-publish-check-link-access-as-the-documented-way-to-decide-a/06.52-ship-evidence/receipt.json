@@ -1,0 +1,62 @@
+{
+  "head": "9ec58fa48bbe3a656349c499313d179f817827ef",
+  "at": "2026-11-26T15:24:54.930158+00:00",
+  "checks": [
+    {
+      "name": "docs-tests",
+      "command": [
+        "env",
+        "PYTHONPATH=src:.",
+        "CV_ACCESS_RECORD_REQUESTS=0",
+        "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python",
+        "-m",
+        "pytest",
+        "tests/test1/test_link_access_docs.py",
+        "tests/test1/test_navbar_docs.py",
+        "-n",
+        "4",
+        "-q"
+      ],
+      "exit_code": 0,
+      "log_sha256": "4b563400635ed0ebdc07c32b4b939d8f0ed7cabefdba8527da1ccaf06ecb7286"
+    },
+    {
+      "name": "strict-docs",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.venv/bin/mkdocs",
+        "build",
+        "--strict",
+        "--site-dir",
+        "/tmp/cv-0652-ship-site"
+      ],
+      "exit_code": 0,
+      "log_sha256": "fbf4af6a55f3f50def8b4f39213d779ba56b4c605040dae273b7879bb471e8d9"
+    },
+    {
+      "name": "ruff-check",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.venv/bin/ruff",
+        "check",
+        "tests/test1/test_link_access_docs.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "name": "ruff-format",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.venv/bin/ruff",
+        "format",
+        "--check",
+        "tests/test1/test_link_access_docs.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+    }
+  ],
+  "inputs": {
+    "docs/development/stability.md": "849fcb1183ac3fd17ffc039744a1f2426ac296b516944e0c07f126c4d7b1ab1d",
+    "docs/reference/link_access.md": "136058115a413f192c2d4ad1a6105ee822bb94fc52a4b6879cd8558c209f9eb3",
+    "tests/test1/test_link_access_docs.py": "7e87ba803703b8699b96f0a400478c23646ae966674fc5f5d38160d1a8abc124"
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "phase": "06.52",
+  "verified": "2026-11-26T15:30:00Z",
+  "head": "9ec58fa48bbe3a656349c499313d179f817827ef",
+  "cwd": "/home/alex/.codex/worktrees/e3b5/django-crud-views",
+  "previous_verification": {
+    "verified": "2026-11-26T14:41:14Z",
+    "status": "passed",
+    "score": "17/17",
+    "covered_digest": "v4:sha256:f04f62d85186e928e974443dbe39b8284d560bc1f42f471edb3e15e2afd7cf43"
+  },
+  "review_range": "ef5f625f..9ec58fa48bbe3a656349c499313d179f817827ef",
+  "changed_product_files": [
+    "docs/development/stability.md",
+    "docs/reference/link_access.md",
+    "tests/test1/test_link_access_docs.py"
+  ],
+  "current_trees": {
+    "src": "e12328771238492a7829f70a4c13c510296aae31",
+    "tests": "3980b3e6fd68005e00882fc4c21f797ce597474a",
+    "examples": "584251cde83b4326350bb46748d9258e71fa86ee"
+  },
+  "current_ship_receipt": {
+    "path": "06.52-ship-evidence/receipt.json",
+    "input_hashes_matched": 3,
+    "successful_log_hashes_matched": 4,
+    "docs_tests_passed": 77,
+    "docs_tests_seconds": 3.8,
+    "workers": 4,
+    "strict_docs_seconds": 1.36,
+    "ruff_check": "passed",
+    "ruff_format": "passed"
+  },
+  "historical_evidence_reuse": [
+    {
+      "path": "06.52-03-evidence/full-source-fixed.json",
+      "unchanged_input_hashes": 881,
+      "total_inputs": 884,
+      "changed_inputs": "exactly changed_product_files",
+      "log_hash_matches": true,
+      "result": "20397 passed in 410.53s",
+      "scope": "Historical result retained only for unchanged inputs; changed docs/test assertions superseded by current focused run."
+    },
+    {
+      "path": "06.52-regression-evidence/receipt.json",
+      "unchanged_input_hashes": 1153,
+      "total_inputs": 1156,
+      "changed_inputs": "exactly changed_product_files",
+      "log_hash_matches": true,
+      "junit_hash_matches": true,
+      "result": "637 passed, 300 subtests passed in 60.83s; six pre-existing warnings",
+      "scope": "All runtime/example/test infrastructure inputs unchanged; no current full-suite rerun claimed."
+    }
+  ],
+  "fresh_spot_checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. CV_ACCESS_RECORD_REQUESTS=0 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python -m pytest -p no:cacheprovider tests/test1/test_link_access_docs.py::test_link_check_is_in_the_stability_inventory -q",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 0.18s\n",
+      "wall_time_seconds": 0.738267099
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. CV_ACCESS_RECORD_REQUESTS=0 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python -m pytest -p no:cacheprovider tests/test1/test_public_link_access.py::test_public_object_tracer -q",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 0.94s\n",
+      "wall_time_seconds": 1.498424865
+    }
+  ],
+  "serial_rationale": "One named test per command; worker startup would dominate. Two independent commands ran concurrently, both under ten seconds.",
+  "preservation": {
+    "private_functions_identical": 5,
+    "private_constants_identical": 4,
+    "baseline": "1d538046",
+    "protected_source_tests_goldens_matrix_pins": "byte-identical",
+    "runtime_examples_public_behavior_tests": "byte-identical to ef5f625f",
+    "all_published_python_fences": "byte-identical to ef5f625f",
+    "all_three_plans_and_summaries": "loaded; byte-identical to ef5f625f",
+    "requirements": "loaded; byte-identical; no 06.52 global IDs"
+  },
+  "decision_coverage": {
+    "honored": 4,
+    "total": 4,
+    "not_honored": []
+  },
+  "result": {
+    "status": "passed",
+    "score": "17/17",
+    "blockers": 0,
+    "unresolved_warnings": 0,
+    "behavior_unverified": 0,
+    "human_verification": []
+  },
+  "limits": [
+    "Source Python3.12.3/Django6.0.10 runtime only; no installed wheel or other runtime matrix.",
+    "No full-suite rerun at this commit; changed documentation has current focused checks.",
+    "No browser, recorder-enabled, downstream application or performance certification.",
+    "Existing UI report is prior scoped evidence; ship UI hook skipped without consumed UI-SPEC."
+  ],
+  "ownership": "Only VERIFICATION and this addendum; no product edits, commit or phase.complete."
+}

@@ -1,0 +1,17 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______________________ test_public_checker_added_entry ________________________
+
+    def test_public_checker_added_entry():
+        unreleased = _section(CHANGELOG_MD.read_text(), "## Unreleased")
+        added = _section(unreleased, "### Added")
+        heading = "- **Public link access**"
+>       assert added.count(heading) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = <built-in method count of str object at 0x91260f0>('- **Public link access**')
+E        +    where <built-in method count of str object at 0x91260f0> = '\n\n- **Theme JavaScript namespace and tooltip placements** (#398): startup calls to `register_js_namespace()` and\n ...ontent\n  is still attached: the teardown counterpart of `cv:modal:loaded`; see `docs/reference/modals.md` (#203).\n\n'.count
+
+tests/test1/test_link_access_docs.py:183: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_link_access_docs.py::test_public_checker_added_entry
+1 failed in 0.23s

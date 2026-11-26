@@ -176,6 +176,23 @@ def test_link_access_breaking_entry_names_both_hooks_and_links_the_migration_anc
     assert "link-access-hooks" in _anchors(MIGRATING_MD)
 
 
+def test_public_checker_added_entry():
+    unreleased = _section(CHANGELOG_MD.read_text(), "## Unreleased")
+    added = _section(unreleased, "### Added")
+    heading = "- **Public link access**"
+    assert added.count(heading) == 1
+    entry = added[added.index(heading) :].split("\n\n", 1)[0]
+    for phrase in ("check_link_access", "LinkAccess", "stable", "supplied", "permission", "state"):
+        assert phrase in entry, phrase
+    assert "docs/reference/link_access.md" in entry
+    assert "[#414](https://github.com/jacob-consulting/django-crud-views/issues/414)" in entry
+    assert unreleased.count("#414") == 1
+    breaking = _section(unreleased, "### Breaking")
+    assert heading not in breaking
+    assert "check_link_access" not in breaking
+    assert breaking.count("- **Link access hooks**") == 1
+
+
 def test_link_access_migration_section_names_the_override_cases():
     section = _flat(_section(MIGRATING_MD.read_text(), "## Link access hooks"))
     for phrase in (

@@ -6,10 +6,10 @@ current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
 stopped_at: Phase 06.52 complete, ready to plan Phase 7
-last_updated: "2026-11-26T14:45:35.820Z"
+last_updated: "2026-11-26T15:34:14.038Z"
 last_activity: 2026-11-26
-last_activity_desc: Phase 06.52 complete, transitioned to Phase 7
-state_head: 452bdbfbf90c2fd93227a905d6a2c38c2d06db3a
+last_activity_desc: "Phase 06.52 shipped as PR #416"
+state_head: 8cacc8ac66ce7631c5da24812fe305eb2a65b166
 progress:
   total_phases: 59
   completed_phases: 58
@@ -36,7 +36,7 @@ Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: TBD
 Status: Ready to plan
-Last activity: 2026-11-26 — Phase 06.52 complete, transitioned to Phase 7
+Last activity: 2026-11-26 -- Phase 06.52 shipped as PR #416
 
 Next: $gsd-discuss-phase 7 — review the settled public/theme contracts before the 1.0 freeze. Phase 06.52 is complete; its implementation branch targets feature/link-access-check-design. Issues close only when that feature branch merges to main.
 

@@ -2533,11 +2533,16 @@ Plans:
 **Scope:** Expose a standalone function taking the target view class, user, own object and known ancestors, nearest first and aligned with the target's declared ancestry. Return allowed, denied by permission or denied by state. Pass no rendering view (`None` to `cv_create_has_access`); retain the private permission-only function and existing package consumers. Validate all inputs before any decision and raise `ImproperlyConfigured` with a function-name prefix for all six D-54 mismatch cases. Count every ancestor slot, including `None`; allow short lists and unknown higher levels without shifting them. Accept concrete-model-compatible proxy, multi-table and polymorphic instances, and Resource instances for Resource targets.
 **Documentation:** Document the import path, three results, gate order, state-hook inputs, exceptions and three executable examples. Explain missing-immediate-parent denial, unchecked unknown higher ancestors, no object loading or membership/request authorization, the absence of a public ancestor accessor, Guardian actor rules, rendering-view differences and the D-51 parent-only limitation. Add the stable API inventory entry, update stage 3b migration pointers and their tests, and remove stale claims that no public checker exists. Record the change under `### Added` in the changelog.
 **Acceptance:** Carry all nine issue criteria into planning: direct-input results for core and Guardian targets; all six validation failures including holes and trailing `None`; accepted proxy/multi-table/polymorphic/Resource instances; no target or ancestor model-table queries for the specified cases; nested Guardian create actor/parent admission before the hook, with `None` rendering view; corrected documentation and stability inventory; three runnable examples; strict MkDocs; and unchanged golden files, matrix cells and pinned query counts from stage 3b.
-**Out of scope:** Changes to rendered links, request authorization or the private function; a rendering-view argument, resolved-ancestor accessor, full-hierarchy flag, permission-only public function or new exception class; automatic adoption by table columns, DataPanel/DataView or other off-page components; breadcrumbs and site menus. Planner discretion is limited to the import path/module, result representation and names, argument names, handling classes without a ViewSet and whether unsaved own instances are accepted.
-**Plans:** 0 plans
+**Out of scope:** Changes to rendered links, request authorization or the private function; a rendering-view argument, resolved-ancestor accessor, full-hierarchy flag, permission-only public function or new exception class; automatic adoption by table columns, DataPanel/DataView or other off-page components; breadcrumbs and site menus. CONTEXT.md P52-01–P52-08 settle the selected module, argument convention, regular enum and false-denial boolean behavior, missing-ViewSet error and unsaved-own-object acceptance. Remaining discretion is bounded to enum values, annotations, validation organization, precise prefixed wording, tests and reference placement.
+**Plans:** 3 plans
 
 Plans:
-- [ ] TBD (run $gsd-plan-phase 06.52 to break down)
+**Wave 1**
+- [ ] 06.52-01-PLAN.md — Public enum/wrapper tracer and complete caller validation (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.52-02-PLAN.md — Direct core/Guardian outcomes, aligned ancestry and no-domain-loading guarantees (wave 2)
+- [ ] 06.52-03-PLAN.md — Stable reference, three executable examples, migration pointers and additive release note (wave 2)
 
 ### Phase 7: Theme-surface stability policy
 

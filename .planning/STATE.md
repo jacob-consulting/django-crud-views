@@ -1,44 +1,51 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.52"
-current_phase_name: Publish check_link_access as the documented way to decide a link - stage 3c
-current_plan: 3
-status: verifying
-stopped_at: Completed 06.52-03-PLAN.md
-last_updated: "2026-11-26T14:20:51.075Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+current_plan: Not started
+status: planning
+stopped_at: Phase 06.52 complete, ready to plan Phase 7
+last_updated: "2026-11-26T14:45:35.820Z"
 last_activity: 2026-11-26
-last_activity_desc: Phase 06.52 plan 03 completed; independent phase verification pending
-state_head: 35fe1edd6f579883899d197328ff54cda5167abf
+last_activity_desc: Phase 06.52 complete, transitioned to Phase 7
+state_head: 452bdbfbf90c2fd93227a905d6a2c38c2d06db3a
 progress:
   total_phases: 59
-  completed_phases: 57
+  completed_phases: 58
   total_plans: 318
   completed_plans: 318
 milestone_name: milestone
 ---
 
 Total Phases: 59
-Completed Phases: 57
+Completed Phases: 58
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-25)
+See: .planning/PROJECT.md (updated 2026-11-26)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.52 — Publish check_link_access as the documented way to decide a link - stage 3c
+**Current focus:** Phase 7 — Theme-surface stability policy; stage 3c verified complete
 
 ## Current Position
 
-Phase: 06.52 (Publish check_link_access as the documented way to decide a link - stage 3c) — READY FOR VERIFICATION
-Current Plan: 3
-Total Plans in Phase: 3
-Status: Plans complete — independent phase verification pending
-Last activity: 2026-11-26 — Phase 06.52 plan 03 completed; independent phase verification pending
+Phase: 7 — Theme-surface stability policy
+Current Plan: Not started
+Total Plans in Phase: TBD
+Status: Ready to plan
+Last activity: 2026-11-26 — Phase 06.52 complete, transitioned to Phase 7
 
-Next: $gsd-execute-phase 06.52 — continue independent phase gates using the source-bound final receipts. All three plans are complete; phase completion is pending verification/review. Preserve D-53/D-54 and P52-01–P52-08; implementation PR targets feature/link-access-check-design. Phase 7 follows stage 3c; issues close when the feature branch merges to main.
+Next: $gsd-discuss-phase 7 — review the settled public/theme contracts before the 1.0 freeze. Phase 06.52 is complete; its implementation branch targets feature/link-access-check-design. Issues close only when that feature branch merges to main.
+
+### Phase 06.52 completion — 2026-11-26
+
+- All three plans/seven tasks are complete. Independent verification passes 17/17 must-haves and all nine local acceptance criteria; the CLI fingerprint covers 1,199 files. Deep review is clean across 12 product files, validation covers all seven tasks, and all nine authored security threats are closed. Scoped documentation/UI review passes; visual dimensions remain unassessed.
+- Final source evidence: 20,397 core tests, 637 examples plus 300 subtests, strict MkDocs and scoped Ruff pass. Regression coverage includes all 321 existing prior-phase modules. The verifier adds 77 passing focused checks. Six existing Campaign pagination warnings remain in examples. The first full run's one documentation wording failure was fixed in the owned documentation file and the full rerun passes; protected tests remain unchanged.
+- Public check_link_access/LinkAccess and the three executed examples are stable, opt-in additions. Private function bodies, consumers, request behavior, protected tests, golden data and query expectations are preserved. Evidence covers the recorded source runtime; installed distribution, other runtime versions, recorder-enabled, browser and downstream lanes remain unclaimed.
+- phase.complete ran once and returned no verification warnings. Its preserved phase count and stale dotted progress row were reconciled to 58/59 phases and 318/318 authored plans, without a misleading unscoped percentage. Phase 7 is ready for discussion/planning. No matching pending todos or phase handoffs; no global learnings extraction (disabled) or graduation candidates. Existing config/state.json dirt is preserved. No install, push, PR, merge or issue closure occurred.
 
 ### Phase 06.52 plan 03 — 2026-11-26
 
@@ -1876,7 +1883,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 315
+- Total plans completed: 307
 
 - Total plans completed: 186
 - Average duration: -
@@ -1939,6 +1946,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.49 | 5 | - | - |
 | 06.50 | 9 | - | - |
 | 06.51 | 7 | - | - |
+| 06.52 | 3 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2596,7 +2604,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 7 prerequisite: stage 3c (#414) remains outstanding after verified stage 3b (06.51). Stage 3b targets `feature/link-access-check-design`; #412/#413 close only on the later feature-branch merge to `main`. Do not freeze the public link-check contract before stage 3c settles.
+- Phase 7 prerequisite satisfied: stage 3c (#414, Phase 06.52) is verified complete after stage 3b. Carry the final public checker/enum and retained Guardian/Cancel limits into stability review. Phase 06.52 targets `feature/link-access-check-design`; stage issues close only when that branch merges to `main`.
 
 - Phase 06.37 review (open, maintainer triage): WR-01 text output for `user == {}` prints `None (pk None, inactive)` (fix changes text bytes); WR-02 `TraceUser` accepts partial/null actors, looser than manage.md:478; WR-03 `isolated_routes` (tests/test1/test_ancestor_authorization.py) restores an emptied ViewSet registry — root cause of the xdist flake `test_published_command_examples` (pre-existing at 7daae93f; one-import fix proposed). `manage_report_floor` is not run in CI (IN-05).
 
@@ -2697,6 +2705,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-26T14:20:42.337Z
-Stopped at: Completed 06.52-03-PLAN.md
+Last session: 2026-11-26T14:46:28.058269+00:00
+Stopped at: Phase 06.52 complete, ready to plan Phase 7
 Resume file: None

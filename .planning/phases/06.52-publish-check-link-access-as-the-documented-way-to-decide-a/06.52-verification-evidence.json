@@ -1,0 +1,92 @@
+{
+  "phase": "06.52",
+  "verified": "2026-11-26T14:41:14Z",
+  "verifier": "gsd-verifier",
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "source_tree": "e12328771238492a7829f70a4c13c510296aae31",
+  "test_tree": "9071d3bf443c5ff44b6bb2af215f309d3bf3d2b4",
+  "fresh_spot_checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. CV_ACCESS_RECORD_REQUESTS=0 .nox/tests-3-12-django-6-0/bin/python -m pytest -p no:cacheprovider tests/test1/test_public_link_access.py::test_public_validation_before_authorization -q",
+      "exit_code": 0,
+      "output": "................................................                         [100%]\n48 passed in 0.34s\n",
+      "wall_time_seconds": 0.984583125
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. CV_ACCESS_RECORD_REQUESTS=0 .nox/tests-3-12-django-6-0/bin/python -m pytest -p no:cacheprovider tests/test1/test_public_link_access.py::test_public_state_object_and_order -q",
+      "exit_code": 0,
+      "output": "........................                                                 [100%]\n24 passed in 6.75s\n",
+      "wall_time_seconds": 7.3832560990000005
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. CV_ACCESS_RECORD_REQUESTS=0 .nox/tests-3-12-django-6-0/bin/python -m pytest -p no:cacheprovider tests/test1/test_public_link_access.py::test_public_repeated_decisions -q",
+      "exit_code": 0,
+      "output": "..                                                                       [100%]\n2 passed in 0.97s\n",
+      "wall_time_seconds": 1.5914733509999999
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. CV_ACCESS_RECORD_REQUESTS=0 .nox/tests-3-12-django-6-0/bin/python -m pytest -p no:cacheprovider tests/test1/test_link_access_docs.py::test_public_documented_examples -q",
+      "exit_code": 0,
+      "output": "...                                                                      [100%]\n3 passed in 1.27s\n",
+      "wall_time_seconds": 1.900708611
+    }
+  ],
+  "serial_rationale": "Each command selects one named test; per-command worker startup would dominate. Four independent commands ran concurrently. Every command completed in under 10 seconds; cacheprovider and request recording disabled.",
+  "accepted_evidence": [
+    {
+      "receipt": "06.52-03-evidence/full-source-fixed.json",
+      "input_hashes_matched": 884,
+      "log_hash_matched": true,
+      "exit_code": 0,
+      "passed": 20397,
+      "pytest_seconds": 410.53
+    },
+    {
+      "receipt": "06.52-regression-evidence/receipt.json",
+      "input_hashes_matched": 1156,
+      "log_hash_matched": true,
+      "junit_hash_matched": true,
+      "exit_code": 0,
+      "passed": 637,
+      "subtests_passed": 300,
+      "pytest_seconds": 60.83,
+      "warnings": 6
+    },
+    {
+      "receipt": "06.52-03-evidence/strict-docs-fixed.json",
+      "log_hash_matched": true,
+      "exit_code": 0
+    },
+    {
+      "receipt": "06.52-03-evidence/ruff-check.json",
+      "log_hash_matched": true,
+      "exit_code": 0
+    },
+    {
+      "receipt": "06.52-03-evidence/ruff-format.json",
+      "log_hash_matched": true,
+      "exit_code": 0
+    }
+  ],
+  "preservation": {
+    "command": ".venv/bin/python .planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-03-evidence/preservation.py",
+    "exit_code": 0,
+    "baseline": "1d538046",
+    "private_functions_unchanged": 5,
+    "private_constants_unchanged": 4,
+    "protected_source_tests_goldens_matrix_pins": "byte-identical",
+    "original_object_fence": "byte-identical",
+    "original_breaking_section": "byte-identical",
+    "retained_docs_test_functions": 11
+  },
+  "decision_coverage": {
+    "honored": 4,
+    "total": 4,
+    "not_honored": []
+  },
+  "limits": [
+    "Source Python 3.12.3 / Django 6.0.10; no installed-wheel or other-runtime certification.",
+    "No request recording, browser, downstream application or performance certification.",
+    "Reused unchanged broad evidence after fresh hash validation; did not rerun broad suites."
+  ]
+}

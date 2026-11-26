@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.550" timestamp="2026-11-26T13:32:24.065359+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_public_link_access" name="test_public_object_tracer" time="0.330"><failure message="AssertionError: the documented public callable must exist&#10;assert False&#10; +  where False = hasattr(link_access, 'check_link_access')">core_targets = namespace(parent=ViewSet(linkcorepub4ba8c8a7), vs=ViewSet(linkcorebook4ba8c8a7), List=&lt;class 'crud_views.lib.view.meta..., Detail=&lt;class 'crud_views.lib.view.meta.LinkCoreDetail'&gt;, TopList=&lt;class 'crud_views.lib.view.meta.LinkCoreTopList'&gt;)
+data = namespace(penguin=&lt;Publisher: Penguin&gt;, other=&lt;Publisher: Other&gt;, book=&lt;Book: Hitchhiker&gt;, genre=&lt;Genre: Fiction&gt;, author=&lt;Author: Douglas Adams&gt;)
+
+    @pytest.mark.django_db
+    def test_public_object_tracer(core_targets, data):
+&gt;       assert hasattr(link_access, "check_link_access"), "the documented public callable must exist"
+E       AssertionError: the documented public callable must exist
+E       assert False
+E        +  where False = hasattr(link_access, 'check_link_access')
+
+tests/test1/test_public_link_access.py:42: AssertionError</failure></testcase><testcase classname="tests.test1.test_public_link_access" name="test_public_signature_and_enum" time="0.001"><failure message="AssertionError: check_link_access must be importable from crud_views.lib.link_access&#10;assert False&#10; +  where False = callable(None)">def test_public_signature_and_enum():
+        check = getattr(link_access, "check_link_access", None)
+&gt;       assert callable(check), "check_link_access must be importable from crud_views.lib.link_access"
+E       AssertionError: check_link_access must be importable from crud_views.lib.link_access
+E       assert False
+E        +  where False = callable(None)
+
+tests/test1/test_public_link_access.py:23: AssertionError</failure></testcase></testsuite></testsuites>

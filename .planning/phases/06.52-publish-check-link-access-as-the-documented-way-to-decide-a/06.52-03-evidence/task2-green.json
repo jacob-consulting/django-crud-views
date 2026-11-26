@@ -1,0 +1,27 @@
+{
+  "command": [
+    ".nox/tests-3-12-django-6-0/bin/python",
+    "-m",
+    "pytest",
+    "tests/test1/test_link_access_docs.py",
+    "-k",
+    "not public_checker_added_entry",
+    "-n",
+    "6",
+    "-q"
+  ],
+  "environment": {
+    "PYTHONPATH": "src:.",
+    "CV_ACCESS_RECORD_REQUESTS": "0"
+  },
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "head": "7625a252ce39726a703d27da3ca642dd77f16e46",
+  "source_tree": "e12328771238492a7829f70a4c13c510296aae31",
+  "test_tree": "0e4834c25e45707ad899f6f9311d4b2eebbd3e9d",
+  "working_source_sha256": "f67995adc4063ad2498924be2c9fed728f86013361a82618c3302ad5a9632b95",
+  "started_at": "2026-11-26T14:00:49.628930+00:00",
+  "duration_seconds": 3.074,
+  "exit_code": 0,
+  "log": ".planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-03-evidence/task2-green.log",
+  "log_sha256": "d1e7aa186b7c9261a4da6429d9fb461d896171064d513ce1888201a1d25d4050"
+}

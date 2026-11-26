@@ -8,6 +8,7 @@ from unittest.mock import Mock
 import pytest
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured
+from django.test import override_settings
 from django.test.utils import isolate_apps
 
 from crud_views.lib import link_access
@@ -19,6 +20,7 @@ from tests.test1 import test_link_access as private_link_tests
 from tests.test1.app.models import Author, Book, BookNote, Car, Publisher, PublisherProxy, Truck, Vehicle
 from tests.test1.test_ancestor_authorization import _user, isolated_routes
 from tests.test1.test_ancestor_docs import _fence
+from tests.test1.test_ancestor_helpers import _grant
 from tests.test1.test_ancestor_resources import NoteChainFile, PublisherChainFile, TopFile, _ChainFile
 
 core_targets = private_link_tests.core_targets
@@ -349,3 +351,185 @@ def test_public_delegation_and_error_propagation(core_targets, monkeypatch, cont
     with pytest.raises(RuntimeError) as error:
         link_access.check_link_access(core_targets.Detail, actor, obj=obj, known_ancestors=known)
     assert error.value is failure
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("family", ["core", "guardian"])
+@pytest.mark.parametrize("outcome", list(link_access.LinkAccess))
+def test_public_direct_outcomes(core_targets, helpers, data, monkeypatch, family, outcome):
+    target = core_targets.Detail if family == "core" else helpers.book.Detail
+    actor = _user("public_outcome", *((Publisher, "view"),) if family == "core" else ())
+    if family == "guardian":
+        _grant(actor, helpers.pub, "view", data.penguin)
+        if outcome is not link_access.LinkAccess.DENIED_PERMISSION:
+            _grant(actor, helpers.book, "view", data.book)
+    elif outcome is link_access.LinkAccess.DENIED_PERMISSION:
+        monkeypatch.setattr(target, "cv_has_access", Mock(return_value=False))
+    state = Mock(return_value=outcome is not link_access.LinkAccess.DENIED_STATE)
+    monkeypatch.setattr(target, "cv_action_enabled", state)
+    assert link_access.check_link_access(target, actor, obj=data.book, known_ancestors=[data.penguin]) is outcome
+    if outcome is link_access.LinkAccess.DENIED_PERMISSION:
+        state.assert_not_called()
+    else:
+        state.assert_called_once_with(actor, data.book)
+        assert state.call_args.args[1] is data.book
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("family", ["core", "guardian"])
+@pytest.mark.parametrize("shape", ["detail", "list", "create", "top-list"])
+@pytest.mark.parametrize("denial", [None, "parent", "own"])
+def test_public_state_object_and_order(core_targets, helpers, data, monkeypatch, family, shape, denial):
+    actor = _user("public_order", (Publisher, "view"), (Publisher, "change"))
+    for action in ("view", "change"):
+        _grant(actor, helpers.pub, action, data.penguin)
+    _grant(actor, helpers.book, "view", data.book)
+    nested = shape != "top-list"
+    targets = core_targets if family == "core" else helpers.book
+    target = (
+        getattr(targets, shape.title()) if nested else core_targets.TopList if family == "core" else helpers.pub.List
+    )
+    parent = core_targets.parent if family == "core" else helpers.pub.vs
+    obj = data.book if shape == "detail" else None
+    known = [data.penguin] if nested else []
+    action_obj = obj if obj is not None else data.penguin if nested else None
+    events = []
+    parent_hook = parent._ancestor_has_permission
+
+    def check_parent(*args, **kwargs):
+        events.append("parent")
+        return False if denial == "parent" else parent_hook(*args, **kwargs)
+
+    monkeypatch.setattr(parent, "_ancestor_has_permission", check_parent)
+    own_name = "cv_create_has_access" if family == "guardian" and shape == "create" else "cv_has_access"
+    own_hook = getattr(target, own_name)
+
+    def check_own(*args):
+        events.append("own")
+        return False if denial == "own" else own_hook(*args)
+
+    own = Mock(side_effect=check_own)
+    state = Mock(side_effect=lambda *args: events.append("state") or True)
+    monkeypatch.setattr(target, own_name, own)
+    monkeypatch.setattr(target, "cv_action_enabled", state)
+    denied = denial == "own" or (denial == "parent" and nested)
+    expected = link_access.LinkAccess.DENIED_PERMISSION if denied else link_access.LinkAccess.ALLOWED
+    assert link_access.check_link_access(target, actor, obj=obj, known_ancestors=known) is expected
+    if nested and denial == "parent":
+        assert events == ["parent"]
+        own.assert_not_called()
+    else:
+        assert events[0] == ("parent" if nested else "own")
+        assert events.count("own") == 1
+        if own_name == "cv_create_has_access":
+            own.assert_called_once_with(actor, None, data.penguin)
+            assert own.call_args.args[2] is data.penguin
+        else:
+            own.assert_called_once_with(actor, obj)
+    if denied:
+        state.assert_not_called()
+    else:
+        assert events[-1] == "state"
+        state.assert_called_once_with(actor, action_obj)
+        assert state.call_args.args[1] is action_obj
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("case", ["higher-denied", "immediate-denied", "override-false", "allowed"])
+def test_public_guardian_create_admission(helpers, data, monkeypatch, case):
+    actor = _user("public_create_admission")
+    target = helpers.note.Create
+    monkeypatch.setattr(helpers.note.vs, "ancestor_policy", AncestorPolicy(cascade=True))
+    if case != "higher-denied":
+        _grant(actor, helpers.pub, "view", data.penguin)
+    if case != "immediate-denied":
+        _grant(actor, helpers.book, "change", data.book)
+    create = Mock(return_value=case != "override-false")
+    state = Mock(return_value=True)
+    monkeypatch.setattr(target, "cv_create_has_access", create)
+    monkeypatch.setattr(target, "cv_action_enabled", state)
+    expected = link_access.LinkAccess.ALLOWED if case == "allowed" else link_access.LinkAccess.DENIED_PERMISSION
+    assert link_access.check_link_access(target, actor, known_ancestors=[data.book, data.penguin]) is expected
+    if case.endswith("denied"):
+        create.assert_not_called()
+    else:
+        create.assert_called_once_with(actor, None, data.book)
+        assert create.call_args.args[2] is data.book
+    if case == "allowed":
+        state.assert_called_once_with(actor, data.book)
+    else:
+        state.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("provider", ["model", "none"])
+@pytest.mark.parametrize("kind", ["anonymous", "inactive", "inactive-superuser", "active"])
+@pytest.mark.parametrize("shape", ["create", "list", "detail"])
+def test_public_guardian_nested_actor_rule(helpers, data, monkeypatch, provider, kind, shape):
+    actor = (
+        AnonymousUser()
+        if kind == "anonymous"
+        else _user(
+            "public_actor_rule", (Publisher, "view"), (Publisher, "change"), superuser=kind == "inactive-superuser"
+        )
+    )
+    if kind not in ("anonymous", "active"):
+        actor.is_active = False
+    monkeypatch.setattr(helpers.cpub, "ancestor_policy", AncestorPolicy(provider=provider))
+    target = getattr(helpers.core_book, shape.title())
+    hook_name = "cv_create_has_access" if shape == "create" else "cv_has_access"
+    hook, state = Mock(return_value=True), Mock(return_value=True)
+    monkeypatch.setattr(target, hook_name, hook)
+    monkeypatch.setattr(target, "cv_action_enabled", state)
+    obj = data.book if shape == "detail" else None
+    with override_settings(AUTHENTICATION_BACKENDS=[*private_link_tests.BACKENDS, private_link_tests.ANONYMOUS_EDITOR]):
+        if kind == "anonymous":
+            assert actor.has_perm("app.change_publisher") is True
+        expected = link_access.LinkAccess.ALLOWED if kind == "active" else link_access.LinkAccess.DENIED_PERMISSION
+        assert link_access.check_link_access(target, actor, obj=obj, known_ancestors=[data.penguin]) is expected
+    if kind == "active":
+        hook.assert_called_once_with(*(actor, None, data.penguin) if shape == "create" else (actor, obj))
+        state.assert_called_once_with(actor, obj if shape == "detail" else data.penguin)
+    else:
+        hook.assert_not_called()
+        state.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_public_top_level_guardian_anonymous_list(helpers, monkeypatch):
+    actor = AnonymousUser()
+    state = Mock(return_value=True)
+    monkeypatch.setattr(helpers.pub.List, "cv_action_enabled", state)
+    assert link_access.check_link_access(helpers.pub.List, actor) is link_access.LinkAccess.ALLOWED
+    state.assert_called_once_with(actor, None)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("family", ["core", "guardian"])
+def test_public_repeated_decisions(core_targets, helpers, data, monkeypatch, family):
+    actor = _user("public_repeat", (Publisher, "view"))
+    _grant(actor, helpers.pub, "view", data.penguin)
+    _grant(actor, helpers.book, "view", data.book)
+    target = core_targets.Detail if family == "core" else helpers.book.Detail
+    own = Mock(wraps=target.cv_has_access)
+    state = Mock(return_value=True)
+    monkeypatch.setattr(target, "cv_has_access", own)
+    monkeypatch.setattr(target, "cv_action_enabled", state)
+
+    def decide():
+        return link_access.check_link_access(target, actor, obj=data.book, known_ancestors=[data.penguin])
+
+    assert decide() is link_access.LinkAccess.ALLOWED
+    checker = getattr(actor, "_cv_guardian_checker", None)
+    state.return_value = False
+    assert decide() is link_access.LinkAccess.DENIED_STATE
+    own.return_value = False
+    assert decide() is link_access.LinkAccess.DENIED_PERMISSION
+    own.return_value = True
+    state.return_value = True
+    assert decide() is link_access.LinkAccess.ALLOWED
+    assert own.call_count == 4
+    assert state.call_count == 3
+    if family == "guardian":
+        assert checker is not None
+        assert actor._cv_guardian_checker is checker

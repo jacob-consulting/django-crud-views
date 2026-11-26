@@ -1,11 +1,11 @@
 ---
-last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
-last_mapped_at: 2026-11-25
+last_mapped_commit: 7d9b74dc51306d98ce007cd001f416463982c456
+last_mapped_at: 2026-11-26
 ---
-<!-- refreshed: 2026-11-25 -->
+<!-- refreshed: 2026-11-26 -->
 # Architecture
 
-**Analysis Date:** 2026-11-25
+**Analysis Date:** 2026-11-26
 
 Scope: reusable apps under `src/`, consumer examples under `examples/bootstrap5/`, diagnostic contracts, theme registration and bulk rendering. Follow the developer-maintainability constraint in `AGENTS.md`: prefer bounded opt-in additions, keep behavior traceable, and avoid hidden state or added queries on existing request paths.
 
@@ -54,7 +54,7 @@ Scope: reusable apps under `src/`, consumer examples under `examples/bootstrap5/
 | `CrudViewMetaClass` | On class creation with `cv_viewset` in attrs: requires `cv_key`, calls `register_view_class`, copies `model` | `src/crud_views/lib/view/meta.py` |
 | `CrudView` | `cv_*` contract: `dispatch` (ancestor guard), URL/context/action helpers, cancel/origin handling, `cv_get_requirement`, `checks()` | `src/crud_views/lib/view/base.py` |
 | `CrudViewPermissionRequiredMixin` | Local permission gate (`has_permission`), recorder hooks, `cv_has_access` | `src/crud_views/lib/view/base.py` |
-| Private link-access evaluator | Link-only parent/own permission then action-state evaluation; consumes caller-supplied objects and does not authorize requests or resolve/store decisions | `src/crud_views/lib/link_access.py` |
+| Public link-access wrapper and private evaluator | `check_link_access()` validates caller inputs and delegates to `_link_access()`; `LinkAccess` represents permission/state outcomes. Neither loads objects nor authorizes requests | `src/crud_views/lib/link_access.py` |
 | Concrete views | `ListView`, `DetailView`, `CreateView`, `UpdateView`, `DeleteView`, `ActionView`, `OrderedUp/DownView`, `CardListView`, `CustomFormView`, `CustomFormNoObjectView`, `RedirectChildView`, each with `*PermissionRequired` | `src/crud_views/lib/views/` |
 | View mixins | `CrudViewProcessFormMixin`, `MessageMixin`, `CardOrderMixin`, `ListViewTableMixin`, `ListViewTableFilterMixin` | `src/crud_views/lib/views/mixins.py` |
 | Action/button projection | Buttons, button data, action menus, label modes, visibility, cancel target | `src/crud_views/lib/view/buttons.py`, `button_data.py`, `action_menu.py`, `label_mode.py`, `visibility.py`, `cancel.py` |
@@ -120,6 +120,9 @@ Scope: reusable apps under `src/`, consumer examples under `examples/bootstrap5/
 **Link access and action projection:**
 - Purpose: decide destination visibility and state using caller-supplied own objects and known ancestry.
 - Location: `src/crud_views/lib/link_access.py`; consumers are `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/navbar.py`, `src/crud_views/lib/bulk/__init__.py`, and `src/crud_views/templatetags/crud_views.py`.
+- Custom Python callers import `LinkAccess` and `check_link_access` from `crud_views.lib.link_access`; `src/crud_views/lib/__init__.py` does not re-export either name. The public signature is `check_link_access(target, user, *, obj=None, known_ancestors=()) -> LinkAccess`, with no request or rendering-view argument.
+- Validate the class/ViewSet, list-or-tuple ancestry container, own-object presence/type, and ancestor slot count/types before any authorization. Model compatibility uses the declared concrete model; Resource compatibility uses the declared Resource class. Compatible unsaved objects, proxies and subclasses are accepted. Validation uses `_validate_ancestor_structure(..., relations=False)` and does not load objects or validate child membership (`src/crud_views/lib/link_access.py`).
+- The wrapper delegates to `_link_access(..., rendering_view=None)` and converts its result to `LinkAccess.ALLOWED`, `DENIED_PERMISSION`, or `DENIED_STATE`; only `ALLOWED` is truthy. Existing package rendering consumers retain their private entry points and rendering-view context. No decision cache or automatic migration of independent table columns, breadcrumbs, DataPanel/DataView or site menus is introduced (`src/crud_views/lib/link_access.py`, `docs/reference/link_access.md`).
 - `_known_link_ancestors()` aligns objects to the target's declared chain using request-resolved state. Child links explicitly supply their URL parent. Explicit `None` remains unknown; no relation access or query fills an unknown level. Missing immediate parents deny every nested target; unknown higher ancestors are skipped (`src/crud_views/lib/link_access.py`).
 - `_link_permission()` checks supplied higher ancestors outermost first, then the target's private `_cv_link_permission()` seam checks the immediate parent and own permission. `_link_access()` runs state only after permission passes. State receives own object for object views, immediate parent for nested non-object views, otherwise `None`. `_link_ctx()` preserves the existing permission/state visibility fields.
 - Guardian nested-create links require an active authenticated actor and passing declared higher/immediate gates before `cv_create_has_access(user, rendering_view, parent_obj)`. A custom override cannot bypass those gates. The default hook repeats its bounded immediate-parent check. Nested-create `cv_has_access()` returns false and is not called by that link path (`src/crud_views_guardian/lib/views.py`).
@@ -137,7 +140,7 @@ Scope: reusable apps under `src/`, consumer examples under `examples/bootstrap5/
 - Presentation: `src/crud_views/templates/crud_views/snippets/bulk_toolbar.html`, `columns/bulk_select.html`, `view_bulk_form.content.html`, and `snippets/bulk/`; progressive enhancement is in `src/crud_views/static/crud_views/js/bulk.js`.
 - Consumer example: `examples/bootstrap5/bulk_selection/views.py` shows table and card selection plus bulk delete/archive/owner assignment actions.
 - Toolbar styling: `BulkSelectionMixin.cv_bulk_buttons` normalizes with `cv_button_data(raw, "form")`, applies `destination.cv_action_variant` (an unset `None`/`""` value renders as `bulk:secondary`), and renders `src/crud_views/templates/crud_views/tags/button/bulk.html`. `bulk` is a class-registry and label-mode location, not a generic action-normalization location. Both `cv_button_data(..., "bulk")` and `{% cv_button location="bulk" %}` raise `ValueError` (`src/crud_views/lib/view/button_data.py`, `src/crud_views/templatetags/crud_views.py`).
-- Offering: `BulkSelectionMixin` offers an action only when its destination view passes `cv_has_access` and `cv_action_enabled` for the viewer (request-local cached `_cv_effective_bulk_actions`/`cv_bulk_buttons`). With nothing offered, no toolbar and no selection checkboxes render; `snippets/bulk_toolbar.html` guards itself. `cv_bulk_buttons` is evaluated in `get_context_data` so presentation errors surface instead of being swallowed by templates. Submission enforcement at the destination is unchanged.
+- Offering: `BulkSelectionMixin` offers an action only when the shared private `_link_access()` evaluator allows the destination with aligned known ancestry (request-local cached `_cv_effective_bulk_actions`/`cv_bulk_buttons`). With nothing offered, no toolbar and no selection checkboxes render; `snippets/bulk_toolbar.html` guards itself. `cv_bulk_buttons` is evaluated in `get_context_data` so presentation errors surface instead of being swallowed by templates. Submission enforcement lives at the destination (`src/crud_views/lib/bulk/__init__.py`).
 - Theme classes: `bulk:primary`, `bulk:secondary`, `bulk:tertiary`, and `bulk:danger` all default to `btn btn-primary`; mode-specific keys take precedence, including empty/None overrides. The leaf retains form tooltip, hidden-label and host-icon semantics; review Confirm still uses `form:submit` (`src/crud_views/lib/button_classes.py`, `src/crud_views/templates/crud_views/tags/button/bulk.html`).
 
 **Diagnostics (manage + trace + CLI contracts):**
@@ -204,6 +207,13 @@ Scope: reusable apps under `src/`, consumer examples under `examples/bootstrap5/
 2. Build the known chain with `_known_link_ancestors()`. Child controls supply their actual parent; sibling controls reuse resolved route ancestry. Same-ViewSet consumers supply the real rendering view to the permission hook; cross-ViewSet consumers supply `None` (`src/crud_views/lib/link_access.py`).
 3. `_link_access()` performs known higher gates, immediate gate, own permission, then state. Permission filters call `_link_permission()` and deliberately omit state. Bulk source actions and navbar items require the full allowed result (`src/crud_views/templatetags/crud_views.py`, `src/crud_views/lib/bulk/__init__.py`, `src/crud_views/lib/navbar.py`).
 4. Producers retain their own visibility, URL and template handling. Clicking enters the target's independent request guard, own permission and state path (`src/crud_views/lib/view/base.py`).
+
+### Public Link Access Path
+
+1. Custom code supplies a registered target class, user, optional own object and nearest-first list/tuple of known ancestors to `check_link_access()` (`src/crud_views/lib/link_access.py`).
+2. Complete caller-input validation runs before gates, including all supplied slots behind `None`. Invalid caller inputs raise `ImproperlyConfigured` with a `check_link_access` prefix; ancestry-structure failures and reached-hook exceptions retain their own errors (`src/crud_views/lib/link_access.py`, `docs/reference/link_access.md`).
+3. `_link_access(..., rendering_view=None)` checks selected known higher ancestors outermost first, immediate parent, own permission and state. Missing immediate parents deny; unknown higher slots remain unchecked. Guardian nested-create overrides receive `None` for the rendering view after actor and parent gates pass (`src/crud_views/lib/link_access.py`, `src/crud_views_guardian/lib/views.py`).
+4. Return the corresponding `LinkAccess` enum. Supply real loaded route objects when membership matters: the wrapper never checks ViewSet querysets, child-parent membership, project dispatch, middleware or request authorization. Authorization providers and hooks may still query or raise (`docs/reference/link_access.md`, `tests/test1/test_public_link_access.py`).
 
 ### Cancel Navigation Path
 
@@ -322,6 +332,7 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 
 ## Architectural Constraints
 
+- **Public link boundary:** `check_link_access()` has no request, rendering-view context, loader, final-decision cache, membership validation or persistence requirement. Own and ancestor objects remain distinct inputs; an allowed result only admits presentation. Use enum members or truthiness rather than private raw strings (`src/crud_views/lib/link_access.py`, `docs/reference/link_access.md`).
 - **Theme class state:** `register_button_classes()` merges into process-wide `_THEME_BUTTON_CLASSES` and resets resolved-class caches; project setting changes invalidate the cache too (`src/crud_views/lib/button_classes.py`). Use this registry for breadcrumb styling.
 - **Header attribute ownership:** the stock header owns `aria-sort`. Caller-supplied same-name attrs are unsupported: remove them or override `table.thead`; no collision deduplication is promised (`src/crud_views/templates/crud_views/table/bootstrap5.html`, `docs/reference/list_view.md`).
 
@@ -338,6 +349,11 @@ The prefix affects framework-owned data attributes and the owned-tabs selector o
 - **Package layout:** distribution ships five apps from `src/`; optional apps must not be imported by core modules.
 
 ## Anti-Patterns
+
+### Treating a link result as request or membership authorization
+**What happens:** custom code trusts an allowed `check_link_access()` result to establish a child's parent or bypass a destination request gate.
+**Why it's wrong:** input checks accept type-compatible objects without querying membership; selected unknown higher levels stay unchecked. Project request behavior may differ from the presentation result.
+**Do this instead:** supply already-known objects to the public helper for presentation, and retain normal request guards and queryset scoping in `src/crud_views/lib/view/base.py` and `src/crud_views/lib/ancestors.py`. Follow the bounded contract in `docs/reference/link_access.md`.
 
 ### Sending bulk toolbar payloads through the action normalizer
 **What happens:** a consumer passes `location="bulk"` to `cv_button_data()` or `cv_button`, or changes global `form:submit` classes to style toolbar destinations.
@@ -408,4 +424,4 @@ This is a bounded change to existing Guardian acquisition sites. It adds no glob
 
 ---
 
-*Architecture analysis: 2026-11-25*
+*Architecture analysis: 2026-11-26*

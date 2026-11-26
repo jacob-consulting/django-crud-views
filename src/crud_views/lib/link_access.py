@@ -1,10 +1,14 @@
-"""Private link checks: parent gates, then own permission, then state.
+"""Public link decisions and private checks: parent gates, then own permission, then state.
 
 Built from the request gate's pieces, these functions decide links only. They never authorize a request,
 load an ancestor, or store a decision. Callers supply the target's own object and known ancestors separately.
 """
 
 from __future__ import annotations
+
+from enum import Enum
+
+from django.core.exceptions import ImproperlyConfigured
 
 from crud_views.lib import ancestors
 from crud_views.lib.ancestor_db import _check_nested_auth
@@ -13,6 +17,57 @@ _LINK_ALLOWED = "allowed"
 _LINK_PERMISSION = "permission"
 _LINK_STATE = "state"
 _PARENT_UNSET = object()
+
+
+class LinkAccess(Enum):
+    """A link's permission/state outcome; only ALLOWED is true in a boolean check."""
+
+    ALLOWED = _LINK_ALLOWED
+    DENIED_PERMISSION = _LINK_PERMISSION
+    DENIED_STATE = _LINK_STATE
+
+    def __bool__(self) -> bool:
+        return self is LinkAccess.ALLOWED
+
+
+def check_link_access(target, user, *, obj=None, known_ancestors=()) -> LinkAccess:
+    """Validate direct caller inputs, then decide a link without a request or rendering view.
+
+    Supply a view class, its own object (only for an object target), and a list or tuple of known
+    ancestors nearest first. Unknown slots stay None; missing immediate parents deny access.
+    Type/presence validation neither loads objects nor establishes membership or request authorization.
+    Compatible unsaved objects are accepted; reached permission/state hooks retain their authority.
+    """
+    if not isinstance(target, type):
+        raise ImproperlyConfigured("check_link_access requires a target view class.")
+    viewset = getattr(target, "cv_viewset", None)
+    if viewset is None:
+        raise ImproperlyConfigured("check_link_access requires a target with a ViewSet.")
+    if not isinstance(known_ancestors, (list, tuple)):
+        raise ImproperlyConfigured("check_link_access requires known_ancestors to be a list or tuple.")
+
+    chain = ancestors._validate_ancestor_structure(viewset, relations=False)
+    if target.cv_object:
+        if obj is None:
+            raise ImproperlyConfigured("check_link_access requires an own object for an object target.")
+        expected = viewset.model if viewset.is_resource else viewset.model._meta.concrete_model
+        if not isinstance(obj, expected):
+            raise ImproperlyConfigured(f"check_link_access requires an own object compatible with {expected.__name__}.")
+    elif obj is not None:
+        raise ImproperlyConfigured("check_link_access does not accept an own object for this target.")
+
+    if not chain and known_ancestors:
+        raise ImproperlyConfigured("check_link_access does not accept ancestors for a top-level target.")
+    if len(known_ancestors) > len(chain):
+        raise ImproperlyConfigured("check_link_access received more ancestor slots than the declared ancestry.")
+    for index, ancestor_obj in enumerate(known_ancestors):
+        expected = chain[index][1].model._meta.concrete_model
+        if ancestor_obj is not None and not isinstance(ancestor_obj, expected):
+            raise ImproperlyConfigured(
+                f"check_link_access requires ancestor slot {index} to be compatible with {expected.__name__}."
+            )
+
+    return LinkAccess(_link_access(target, user, obj, known_ancestors, rendering_view=None))
 
 
 def _known_link_ancestors(target, rendering_view, *, immediate_parent=_PARENT_UNSET):

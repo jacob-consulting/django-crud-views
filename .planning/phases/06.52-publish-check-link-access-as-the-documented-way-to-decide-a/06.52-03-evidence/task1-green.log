@@ -1,0 +1,125 @@
+bringing up nodes...
+bringing up nodes...
+
+FF...                                                                    [100%]
+=================================== FAILURES ===================================
+________________ test_link_check_is_in_the_stability_inventory _________________
+[gw4] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+    def test_link_check_is_in_the_stability_inventory():
+        text = (DOCS / "development/stability.md").read_text()
+        assert "**Link access**" in text
+        inventory = _flat(text.split("**Link access**", 1)[1].split("\n\n**", 1)[0])
+        for phrase in (
+            "crud_views.lib.link_access",
+            "check_link_access",
+            "LinkAccess",
+            "LinkAccess.ALLOWED",
+            "LinkAccess.DENIED_PERMISSION",
+            "LinkAccess.DENIED_STATE",
+            "stable at 1.0",
+            "regular enum",
+            "Both denial members are false",
+            "../reference/link_access.md",
+            "keyword-only",
+        ):
+            assert phrase in inventory, phrase
+        assert "all names prefixed with an underscore" in text
+>       assert "_link_access" not in text
+E       AssertionError: assert '_link_access' not in '# API stabi...tion hint.\n'
+E         
+E         '_link_access' is contained here:
+E           s`:
+E           `check_link_access`, `LinkAccess`, `LinkAccess.ALLOWED`, `LinkAccess.DENIED_PERMISSION` and
+E         ?       ++++++++++++
+E           `LinkAccess.DENIED_STATE`. The function takes positional-or-keyword `target` and `user`, with keyword-only
+E           `obj` and `known_ancestors`. `LinkAccess` is a regular enum: only `ALLOWED` is truthy....
+E         
+E         ...Full output truncated, use '-vv' to show
+
+tests/test1/test_link_access_docs.py:247: AssertionError
+________________________ test_public_reference_contract ________________________
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+    def test_public_reference_contract():
+        page = LINK_ACCESS_MD.read_text()
+        flat = _flat(page)
+        for phrase in (
+            "check_link_access(target, user, *, obj=None, known_ancestors=()) -> LinkAccess",
+            "target and user can be positional or keyword arguments",
+            "obj and known_ancestors are keyword-only",
+            "regular enum",
+            "LinkAccess.ALLOWED",
+            "LinkAccess.DENIED_PERMISSION",
+            "LinkAccess.DENIED_STATE",
+            "Both denial members are false",
+            "not interchangeable with raw strings",
+            "not a supported serialization contract",
+            "stable at 1.0",
+            "target must be a view class",
+            "view instances and other non-class inputs",
+            "finite ordered list or tuple",
+            "None, iterators and QuerySets",
+            "before inspection or evaluation",
+            "complete validation before authorization",
+            "messages start with check_link_access",
+            "target without a ViewSet",
+            "ancestor does not fit its declared level",
+            "own object does not fit",
+            "no own object for an object target",
+            "own object for a collection target",
+            "more ancestor slots than declared levels",
+            "any ancestor slot for a top-level target",
+            "trailing None",
+            "nearest first",
+            "isinstance",
+            "concrete model",
+            "proxy",
+            "multi-table",
+            "polymorphic",
+            "Resource class",
+            "unsaved",
+            "does not guarantee permission or request success",
+            "parent gates → own permission → state",
+            "missing immediate parent",
+            "unknown higher slots",
+            "cv_action_enabled(user, obj)",
+            "immediate parent",
+            "top-level collection",
+            "None",
+            "no object or ancestor loading",
+            "authorization queries and project hook work",
+            "broken declared ancestry",
+            "its own message",
+            "missing ancestor permission key",
+            "operation requirements",
+            "project hook exceptions propagate",
+            "missing own permission key denies",
+            "signed-in, active user",
+            "provider none",
+            "anonymous top-level Guardian list",
+            "does not authorize a request",
+            "ViewSet querysets",
+            "dispatch",
+            "has_permission",
+            "middleware",
+            "membership",
+            "another parent",
+            "404",
+            "cv_get_parent_object",
+            "no public accessor for resolved higher ancestors",
+            "stricter higher-level permission",
+            "cv_create_has_access",
+            "rendering-view-dependent override",
+            "permission-only function stays private",
+            "cv_context_has_permission",
+        ):
+>           assert phrase in flat, phrase
+E           AssertionError: top-level collection
+E           assert 'top-level collection' in '# Link access Use check_link_access to decide a link from a target view class, a user and objects you already have. I...eck_link_access(NoteList, user, known_ancestors=[book, publisher]) if result: show_link = True else: show_link = False'
+
+tests/test1/test_link_access_docs.py:101: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_link_access_docs.py::test_link_check_is_in_the_stability_inventory
+FAILED tests/test1/test_link_access_docs.py::test_public_reference_contract
+2 failed, 3 passed in 1.98s

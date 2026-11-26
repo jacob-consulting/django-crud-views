@@ -1,0 +1,214 @@
+bringing up nodes...
+bringing up nodes...
+
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_ test_public_checker_migration_pointers[reference/guardian.md-### Create button visibility for child viewsets-Each button follows its actual target.-link_access.md] _
+[gw1] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+path = 'reference/guardian.md'
+heading = '### Create button visibility for child viewsets'
+marker = 'Each button follows its actual target.', link = 'link_access.md'
+
+    @pytest.mark.parametrize(
+        "path, heading, marker, link",
+        [
+            (
+                "migrating-1.0.md",
+                "## Link access hooks",
+                "6. Review a custom",
+                "reference/link_access.md",
+            ),
+            (
+                "reference/guardian.md",
+                "### Create button visibility for child viewsets",
+                "Each button follows its actual target.",
+                "link_access.md",
+            ),
+            (
+                "reference/context_buttons.md",
+                "## ContextButton",
+                "Custom `ContextButton.get_context` output",
+                "link_access.md",
+            ),
+            (
+                "migrating-1.0.md",
+                "### Nested Guardian create access",
+                "Custom `ContextButton.get_context` output",
+                "reference/link_access.md",
+            ),
+        ],
+    )
+    def test_public_checker_migration_pointers(path, heading, marker, link):
+        section = _section((DOCS / path).read_text(), heading)
+        paragraph = section[section.index(marker) :].split("\n\n", 1)[0]
+        flat = _flat(paragraph)
+        for phrase in ("check_link_access", "complete", "cv_create_has_access", "custom create permission"):
+>           assert phrase in flat, (path, heading, phrase)
+E           AssertionError: ('reference/guardian.md', '### Create button visibility for child viewsets', 'check_link_access')
+E           assert 'check_link_access' in 'Each button follows its actual target. The former list-page key rewrite no longer corrects parent/sibling buttons or ...sted list create button keeps its real list view. See the [migration guidance](../migrating-1.0.md#link-access-hooks).'
+
+tests/test1/test_link_access_docs.py:288: AssertionError
+_ test_public_checker_migration_pointers[reference/context_buttons.md-## ContextButton-Custom `ContextButton.get_context` output-link_access.md] _
+[gw2] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+path = 'reference/context_buttons.md', heading = '## ContextButton'
+marker = 'Custom `ContextButton.get_context` output', link = 'link_access.md'
+
+    @pytest.mark.parametrize(
+        "path, heading, marker, link",
+        [
+            (
+                "migrating-1.0.md",
+                "## Link access hooks",
+                "6. Review a custom",
+                "reference/link_access.md",
+            ),
+            (
+                "reference/guardian.md",
+                "### Create button visibility for child viewsets",
+                "Each button follows its actual target.",
+                "link_access.md",
+            ),
+            (
+                "reference/context_buttons.md",
+                "## ContextButton",
+                "Custom `ContextButton.get_context` output",
+                "link_access.md",
+            ),
+            (
+                "migrating-1.0.md",
+                "### Nested Guardian create access",
+                "Custom `ContextButton.get_context` output",
+                "reference/link_access.md",
+            ),
+        ],
+    )
+    def test_public_checker_migration_pointers(path, heading, marker, link):
+        section = _section((DOCS / path).read_text(), heading)
+        paragraph = section[section.index(marker) :].split("\n\n", 1)[0]
+        flat = _flat(paragraph)
+        for phrase in ("check_link_access", "complete", "cv_create_has_access", "custom create permission"):
+>           assert phrase in flat, (path, heading, phrase)
+E           AssertionError: ('reference/context_buttons.md', '## ContextButton', 'check_link_access')
+E           assert 'check_link_access' in 'Custom ContextButton.get_context output is no longer corrected by key, including key_target="create"; move custom cre...ons for full ancestor/state checks. See the [hook and custom-button migration](../migrating-1.0.md#link-access-hooks).'
+
+tests/test1/test_link_access_docs.py:288: AssertionError
+_ test_public_checker_migration_pointers[migrating-1.0.md-## Link access hooks-6. Review a custom-reference/link_access.md] _
+[gw0] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+path = 'migrating-1.0.md', heading = '## Link access hooks'
+marker = '6. Review a custom', link = 'reference/link_access.md'
+
+    @pytest.mark.parametrize(
+        "path, heading, marker, link",
+        [
+            (
+                "migrating-1.0.md",
+                "## Link access hooks",
+                "6. Review a custom",
+                "reference/link_access.md",
+            ),
+            (
+                "reference/guardian.md",
+                "### Create button visibility for child viewsets",
+                "Each button follows its actual target.",
+                "link_access.md",
+            ),
+            (
+                "reference/context_buttons.md",
+                "## ContextButton",
+                "Custom `ContextButton.get_context` output",
+                "link_access.md",
+            ),
+            (
+                "migrating-1.0.md",
+                "### Nested Guardian create access",
+                "Custom `ContextButton.get_context` output",
+                "reference/link_access.md",
+            ),
+        ],
+    )
+    def test_public_checker_migration_pointers(path, heading, marker, link):
+        section = _section((DOCS / path).read_text(), heading)
+        paragraph = section[section.index(marker) :].split("\n\n", 1)[0]
+        flat = _flat(paragraph)
+        for phrase in ("check_link_access", "complete", "cv_create_has_access", "custom create permission"):
+>           assert phrase in flat, (path, heading, phrase)
+E           AssertionError: ('migrating-1.0.md', '## Link access hooks', 'check_link_access')
+E           assert 'check_link_access' in '6. Review a custom ContextButton.get_context implementation whose result was corrected by the old list-page rewrite, ... the hook directly supplies only the bounded permission check described above, not the complete package link decision.'
+
+tests/test1/test_link_access_docs.py:288: AssertionError
+_ test_public_checker_migration_pointers[migrating-1.0.md-### Nested Guardian create access-Custom `ContextButton.get_context` output-reference/link_access.md] _
+[gw3] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+path = 'migrating-1.0.md', heading = '### Nested Guardian create access'
+marker = 'Custom `ContextButton.get_context` output'
+link = 'reference/link_access.md'
+
+    @pytest.mark.parametrize(
+        "path, heading, marker, link",
+        [
+            (
+                "migrating-1.0.md",
+                "## Link access hooks",
+                "6. Review a custom",
+                "reference/link_access.md",
+            ),
+            (
+                "reference/guardian.md",
+                "### Create button visibility for child viewsets",
+                "Each button follows its actual target.",
+                "link_access.md",
+            ),
+            (
+                "reference/context_buttons.md",
+                "## ContextButton",
+                "Custom `ContextButton.get_context` output",
+                "link_access.md",
+            ),
+            (
+                "migrating-1.0.md",
+                "### Nested Guardian create access",
+                "Custom `ContextButton.get_context` output",
+                "reference/link_access.md",
+            ),
+        ],
+    )
+    def test_public_checker_migration_pointers(path, heading, marker, link):
+        section = _section((DOCS / path).read_text(), heading)
+        paragraph = section[section.index(marker) :].split("\n\n", 1)[0]
+        flat = _flat(paragraph)
+        for phrase in ("check_link_access", "complete", "cv_create_has_access", "custom create permission"):
+>           assert phrase in flat, (path, heading, phrase)
+E           AssertionError: ('migrating-1.0.md', '### Nested Guardian create access', 'check_link_access')
+E           assert 'check_link_access' in 'Custom ContextButton.get_context output is no longer corrected by key, including key_target="create"; use the actual ...or custom create permission logic, with the [direct-hook bounds and parent-only limitation](#link-access-hooks) above.'
+
+tests/test1/test_link_access_docs.py:288: AssertionError
+___________________ test_documentation_public_checker_claims ___________________
+[gw4] linux -- Python 3.12.3 /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python
+
+    def test_documentation_public_checker_claims():
+        obsolete = re.compile(
+            r"\bno public (?:link )?checker\b"
+            r"|\bpublic (?:link )?checker\b[^.]*\b(?:not available|not published|later work|future work|pending)\b"
+            r"|\bno\b[^.]*\bpublic checker\b[^.]*\bintroduced\b"
+            r"|\bpublication(?: and validation)? of a standalone function remains? later work\b",
+            re.IGNORECASE,
+        )
+        offending = []
+        for path in sorted(DOCS.rglob("*.md")):
+            prose = _flat(re.sub(r"```.*?```", "", path.read_text(), flags=re.DOTALL))
+            offending.extend((str(path.relative_to(DOCS)), match.group()) for match in obsolete.finditer(prose))
+>       assert not offending, offending
+E       AssertionError: [('migrating-1.0.md', 'no public checker'), ('migrating-1.0.md', 'publication and validation of a standalone function ...sted.md', 'No request response or login redirect changes, public checker, or public ancestor accessor are introduced')]
+E       assert not [('migrating-1.0.md', 'no public checker'), ('migrating-1.0.md', 'publication and validation of a standalone function ...sted.md', 'No request response or login redirect changes, public checker, or public ancestor accessor are introduced')]
+
+tests/test1/test_link_access_docs.py:306: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_link_access_docs.py::test_public_checker_migration_pointers[reference/guardian.md-### Create button visibility for child viewsets-Each button follows its actual target.-link_access.md]
+FAILED tests/test1/test_link_access_docs.py::test_public_checker_migration_pointers[reference/context_buttons.md-## ContextButton-Custom `ContextButton.get_context` output-link_access.md]
+FAILED tests/test1/test_link_access_docs.py::test_public_checker_migration_pointers[migrating-1.0.md-## Link access hooks-6. Review a custom-reference/link_access.md]
+FAILED tests/test1/test_link_access_docs.py::test_public_checker_migration_pointers[migrating-1.0.md-### Nested Guardian create access-Custom `ContextButton.get_context` output-reference/link_access.md]
+FAILED tests/test1/test_link_access_docs.py::test_documentation_public_checker_claims
+5 failed in 1.50s

@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
-last_mapped_at: 2026-11-25
+last_mapped_commit: 7d9b74dc51306d98ce007cd001f416463982c456
+last_mapped_at: 2026-11-26
 ---
 # Testing Patterns
 
-**Analysis Date:** 2026-11-25
+**Analysis Date:** 2026-11-26
 
 ## Test Framework
 
@@ -20,7 +20,7 @@ last_mapped_at: 2026-11-25
 PYTHONPATH=src:. pytest tests -n auto      # full checkout suite, multicore (preferred)
 pytest tests -n 4                          # broad local run on a shared/resource-bounded machine
 pytest tests/test1/test_crud.py -v         # representative single file
-pytest tests/test1/test_crud.py::test_name # single test
+pytest tests/test1/test_crud.py::test_create_author # single test
 task test                                  # nox matrix: py3.12-3.15 x Django 4.2/5.2/6.0
 pytest tests -n auto --cov                 # coverage (fail_under = 88)
 CV_UPDATE_GOLDEN=1 pytest tests/test1/test_action_menus_golden.py   # regenerate goldens
@@ -28,7 +28,7 @@ npm test                                   # Node/jsdom unit + runtime-boundary 
 npm run test:integration                   # requires CV_FRAGMENT_PYTHON + PYTHONPATH (see below)
 task test-js                              # task wrapper; runs npm test
 ```
-Use four pytest-xdist workers for broad local runs when resources are shared; use `-n auto` on a dedicated machine. CI/Nox uses `-n auto`. Run serially only for a concrete isolation/order/debugging constraint or when worker startup costs more than a tiny selection.
+Use four pytest-xdist workers for broad local runs when resources are shared; use `-n auto` on a dedicated machine (`CLAUDE.md`). Core CI/Nox tests use `-n auto`; `noxfile.py::examples` forwards positional arguments and does not select workers itself. Add `-- -n auto` or a bounded worker count when invoking that broad examples session. Run serially only for a concrete isolation/order/debugging constraint or when worker startup costs more than a tiny selection.
 
 ## Test File Organization
 
@@ -42,15 +42,16 @@ Use four pytest-xdist workers for broad local runs when resources are shared; us
 
 ## Test Structure
 
-**Suite Organization:** Module-level functions are common; topic-based test classes also group related contracts (for example `TestBreadcrumbItem` and `TestBreadcrumbTopLevel` in `tests/test1/test_breadcrumb.py`). Typical view test:
+**Suite Organization:** Module-level functions are common; topic-based test classes also group related contracts (for example `TestBreadcrumbItem` and `TestBreadcrumbTopLevel` in `tests/test1/test_breadcrumb.py`). A complete public-boundary test from `tests/test1/test_crud.py`:
 ```python
 @pytest.mark.django_db
-def test_debug_view(user_author_view: User, cv_author, author_douglas_adams, author_terry_pratchett):
-    client = Client()
-    client.force_login(user_author_view)
-    response = client.get("/author/")
+def test_detail_author(client_user_author_view: Client, cv_author, author_douglas_adams):
+    pk = author_douglas_adams.pk
+    response = client_user_author_view.get(f"/author/{pk}/detail/")
     assert response.status_code == 200
-    lst = Table(response)
+    content = response.content.decode("utf-8")
+    assert "Douglas" in content
+    assert "Adams" in content
 ```
 
 **Patterns:**
@@ -61,7 +62,7 @@ def test_debug_view(user_author_view: User, cv_author, author_douglas_adams, aut
 - Check contracts at the layer where they are promised: exact response bytes for compatibility, parsed DOM for structure/accessibility, and `django_assert_num_queries` or `CaptureQueriesContext` for SQL counts/categories. Examples: `tests/test1/test_navbar_costs.py::test_nonparticipant_complete_response_bytes_and_queries` and `::test_navbar_isolated_costs`.
 - Use lazy-object assertions when evaluation timing matters. `tests/test1/test_navbar_templates.py::test_context_copies_and_repeated_calls_reuse_one_lazy_build` covers copied Django contexts, includes, and repeated renders; `::test_omitted_consumers_and_modal_direct_includes_do_no_work` guards zero-work paths; `tests/test1/test_lazy_labels.py` checks lazy translations resolve in the active language.
 - Escaping tests should parse output and assert hostile inputs do not create markup or active attributes. `tests/test1/test_navbar_templates.py::test_plain_labels_and_accessible_names_are_escaped_once` covers raw/safe labels, entity-looking text, and localized accessible names.
-- Bulk action tests separate rendered selection, request validation, lifecycle, and return-navigation contracts. Use `tests/test1/test_bulk_source.py` for table/card selection markup and proof that source rendering does not invoke destination permission/item hooks; use `tests/test1/test_bulk_scope.py` for UUID/integer/string key canonicalization, deduplication, malformed and NUL key rejection, write-database routing, and authorization boundaries; use `tests/test1/test_bulk_flow.py` for review/execute ordering and atomic rollback; use `tests/test1/test_bulk_return.py` for origin preservation. Build requests with the real Django `Client` and assert state, response, or query behavior at the boundary under test.
+- Bulk action tests separate rendered selection, request validation, lifecycle, and return-navigation contracts. Use `tests/test1/test_bulk_source.py` for table/card selection markup, destination admission/state checks, and proof that source rendering does not invoke per-record permission/check hooks; use `tests/test1/test_bulk_scope.py` for UUID/integer/string key canonicalization, deduplication, malformed and NUL key rejection, write-database routing, and authorization boundaries; use `tests/test1/test_bulk_flow.py` for review/execute ordering and atomic rollback; use `tests/test1/test_bulk_return.py` for origin preservation. Build requests with the real Django `Client` and assert state, response, or query behavior at the boundary under test.
 - Destination-gated toolbar (Phase 06.46): `tests/test1/test_bulk_source.py::test_bulk_toolbar_snippet_guards_itself` renders an override that includes `crud_views/snippets/bulk_toolbar.html` without the offered-action condition and asserts no empty toolbar (form, select-all) for a viewer admitted to no action; `::test_bulk_button_presentation_errors_are_not_swallowed` makes the `cv_get_action_short_label` hook raise `ObjectDoesNotExist` or a silent-gate error and asserts the same exception object propagates (Django templates would otherwise silence it and drop the toolbar).
 - Query-cost tests compare relative cost, not absolute counts. `tests/test1/test_bulk_source.py::test_bulk_source_query_cost` captures queries for the page with offered actions and for the same page with `cv_bulk_actions = ()`, and asserts `len(offered_queries) == len(baseline_queries)` across nested/top, table/card, row and action counts; the measured count is recorded via `record_property`. Do not pin absolute query numbers.
 
@@ -199,20 +200,30 @@ Both integration suites import `selectedPython()` from `tests/js-integration/pyt
 
 ## Source-Bound Verification Evidence
 
-The current recorded acceptance is `.planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-ACCEPTANCE.md`; detailed inspection and scope limits are in `06.51-VERIFICATION.md`. This mapping does not rerun tests.
+The current recorded verification is `.planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-VERIFICATION.md`. Its ship addendum binds the documentation clarification at `9ec58fa48bbe3a656349c499313d179f817827ef`; the full source and examples receipts are explicitly historical. This mapping runs no tests.
 
 | Evidence scope | Recorded result | Limits |
 | --- | --- | --- |
-| Full core suite | 20,119 passed, six workers | Python 3.12 / Django 6.0, recorder off, checkout imports |
-| Example project suite | 637 passed plus 300 subtests, six workers | Same runtime; six known Campaign pagination warnings |
-| Protected selection | 2,088 passed across 39 modules | Explicit protected-module audit, not a matrix run |
-| Current measured costs | 444 passed with checked-in raw XML | Exact scenario/cache protocol and source hashes |
-| Documentation and scoped lint | Strict MkDocs build and 31-file Ruff check passed | Scope is recorded in ACCEPTANCE |
+| Current link/navbar documentation | 77 passed, four workers | Ship receipt covers changed docs and tests; strict MkDocs and scoped Ruff check/format also pass |
+| Current verifier named checks | 2 passed across separate tiny invocations | Stability inventory and original public object-target tracer only |
+| Historical full core suite | 20,397 passed, six workers | Python 3.12.3 / Django 6.0.10, recorder off, checkout imports; precedes the three-file ship clarification |
+| Historical example project suite | 637 passed plus 300 subtests, six workers | Same runtime; six known pagination warnings; precedes that clarification |
+| Protected matrix/cost gate | 1,665 passed recorded by plan 02 | Reused for unchanged protected inputs; no new full matrix claim |
 
-- The receipt uses explicit checkout `PYTHONPATH=src:.` and `CV_ACCESS_RECORD_REQUESTS=0`. It does not certify recorder-on, other Python/Django rows, browser scenarios or rebuilt installed-distribution behavior.
+- See `06.52-ship-evidence/receipt.json` and `06.52-verification-ship-evidence.json` under the phase directory for current checks. The historical full result is `06.52-03-evidence/full-source-fixed.json`; examples are recorded in `06.52-regression-evidence/receipt.json`. The verifier reports exactly three changed inputs (two Markdown files and their docs test), with production source, executable Python fences and public behavior tests unchanged. Reuse historical evidence only within those recorded preservation limits.
+- The receipts use explicit checkout `PYTHONPATH=src:.` and `CV_ACCESS_RECORD_REQUESTS=0`. They do not certify recorder-on, other Python/Django rows, browser scenarios or rebuilt installed-distribution behavior.
 - Nox's installed-origin assertion and recorder-on/off matrix in `noxfile.py` describe configured coverage; only completed named rows establish evidence. Cached XML or a prior phase count is insufficient proof.
 - `.github/workflows/tests.yml` triggers on main pushes and PRs targeting main; `.github/workflows/js.yml` runs the separate JavaScript unit lane. Browser and Django/JS integration commands require their own explicit evidence.
 
+## Public Link Checker Tests and Executable Examples
+
+- `tests/test1/test_public_link_access.py::test_public_signature_and_enum` pins the exact positional/keyword signature, regular enum members, identity and false-denial behavior. `::test_public_validation_before_authorization` and malformed target/container tests use spies to establish that invalid input reaches neither delegation nor permission/state hooks. Generator and queryset inputs remain unconsumed (`::test_public_invalid_ancestor_container`).
+- Keep compatibility and failure cases explicit: proxy/subclass/polymorphic/Resource inputs, unsaved objects, missing parents, ancestor holes, excess slots and declaration errors are covered in `tests/test1/test_public_link_access.py`. Match prefixed public validation messages separately from reached existing ancestry/authentication errors; preserve exception identity when delegation fails.
+- `::test_public_direct_outcomes`, `::test_public_state_object_and_order`, and `::test_public_ancestor_alignment` use real registered core/Guardian/Resource views with controlled hooks. Assert exact actor/object identities, nearest-first supplied slots, outermost-first reached gates, denial short-circuiting and correct state object. `::test_public_repeated_decisions` changes permission/state results between calls to prove decisions are not cached.
+- `::test_public_no_domain_queries` reloads rows outside measurement to clear FK caches, instruments lookup/save/refresh, captures SQL and rejects domain-table FROM/JOIN access. This proves no domain loading or mutation; it permits authorization queries and does not promise zero SQL. `::test_public_membership_is_not_validated` preserves caller responsibility for ancestry membership.
+- `tests/test1/test_link_access_docs.py::test_public_documented_examples` parametrizes the three actual fences in `docs/reference/link_access.md`: Object target, Nested collection and Off-page caller. Its `_run_public_example` uses the shared `_fence` extractor with `exec(compile(...), namespace)` and only documented inputs, then checks `result is LinkAccess.ALLOWED` and `show_link is True`. The off-page example exercises a registered Guardian target and two supplied ancestor levels without a request or view instance.
+- Preserve the independent original `tests/test1/test_public_link_access.py::test_public_object_tracer`. Keep stable inventory, migration links and bounded authorization/database prose under `tests/test1/test_link_access_docs.py`; update those assertions when an intentional public contract changes. Tests execute published examples directly, so changing headings or fences requires maintaining extraction rather than retyping recipes.
+
 ---
 
-*Testing analysis: 2026-11-25*
+*Testing analysis: 2026-11-26*

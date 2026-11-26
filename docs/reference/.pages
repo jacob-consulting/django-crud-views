@@ -27,6 +27,7 @@ nav:
         - action_enabled.md
         - inaccessible_actions.md
         - action_view.md
+        - link_access.md
         - context_buttons.md
         - breadcrumb.md
         - modals.md

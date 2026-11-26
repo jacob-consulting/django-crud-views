@@ -1,8 +1,149 @@
 """Migration guidance for narrowed hooks and shared consumers before the 1.0 freeze."""
 
+import re
+
 import pytest
 
+from crud_views.lib.link_access import LinkAccess
+from crud_views.lib.viewset import AncestorPolicy
+from tests.test1 import test_link_access as private_link_tests
+from tests.test1.app.models import Publisher
+from tests.test1.test_ancestor_authorization import _user
+from tests.test1.test_ancestor_docs import _fence
+from tests.test1.test_ancestor_helpers import _grant
 from tests.test1.test_label_mode_docs import CHANGELOG_MD, DOCS, MIGRATING_MD, _anchors, _flat, _section
+
+core_targets = private_link_tests.core_targets
+data = private_link_tests.data
+helpers = private_link_tests.helpers
+LINK_ACCESS_MD = DOCS / "reference/link_access.md"
+
+
+def _run_public_example(heading, namespace):
+    """Execute the complete published fence with only its documented caller inputs."""
+    source = _fence(LINK_ACCESS_MD, heading)
+    assert "from crud_views.lib.link_access import LinkAccess, check_link_access" in source
+    exec(compile(source, f"{LINK_ACCESS_MD}:{heading}", "exec"), namespace)
+    return namespace
+
+
+def test_public_reference_contract():
+    page = LINK_ACCESS_MD.read_text()
+    flat = _flat(page)
+    for phrase in (
+        "check_link_access(target, user, *, obj=None, known_ancestors=()) -> LinkAccess",
+        "target and user can be positional or keyword arguments",
+        "obj and known_ancestors are keyword-only",
+        "regular enum",
+        "LinkAccess.ALLOWED",
+        "LinkAccess.DENIED_PERMISSION",
+        "LinkAccess.DENIED_STATE",
+        "Both denial members are false",
+        "not interchangeable with raw strings",
+        "not a supported serialization contract",
+        "stable at 1.0",
+        "target must be a view class",
+        "view instances and other non-class inputs",
+        "finite ordered list or tuple",
+        "None, iterators and QuerySets",
+        "before inspection or evaluation",
+        "complete validation before authorization",
+        "messages start with check_link_access",
+        "target without a ViewSet",
+        "ancestor does not fit its declared level",
+        "own object does not fit",
+        "no own object for an object target",
+        "own object for a collection target",
+        "more ancestor slots than declared levels",
+        "any ancestor slot for a top-level target",
+        "trailing None",
+        "nearest first",
+        "isinstance",
+        "concrete model",
+        "proxy",
+        "multi-table",
+        "polymorphic",
+        "Resource class",
+        "unsaved",
+        "does not guarantee permission or request success",
+        "parent gates → own permission → state",
+        "missing immediate parent",
+        "unknown higher slots",
+        "cv_action_enabled(user, obj)",
+        "immediate parent",
+        "Top-level collection",
+        "None",
+        "no object or ancestor loading",
+        "authorization queries and project hook work",
+        "broken declared ancestry",
+        "its own message",
+        "missing ancestor permission key",
+        "operation requirements",
+        "project hook exceptions propagate",
+        "missing own permission key denies",
+        "signed-in, active user",
+        "provider none",
+        "anonymous top-level Guardian list",
+        "does not authorize a request",
+        "ViewSet querysets",
+        "dispatch",
+        "has_permission",
+        "middleware",
+        "membership",
+        "another parent",
+        "404",
+        "cv_get_parent_object",
+        "no public accessor for resolved higher ancestors",
+        "stricter higher-level permission",
+        "cv_create_has_access",
+        "rendering-view-dependent override",
+        "permission-only function stays private",
+        "cv_context_has_permission",
+    ):
+        assert phrase in flat, phrase
+    database = _flat(_section(page, "### Database checks at reached gates"))
+    for phrase in (
+        "nested ViewSets support only the 'default' database",
+        "Nested ancestor gate with a non-none provider | Actor and authorization tables | Supplied ancestor object",
+        "Nested permission-enforcing core own gate | Actor and authorization tables | No own-object database check",
+        "Nested permission-enforcing Guardian own gate | Actor and authorization tables | Supplied own object",
+        "Core own permission does not inspect its own object's database",
+        "Top-level targets do not run these nested database checks",
+        "a denied actor or earlier gate can stop evaluation before a later check",
+        "Unknown or unselected ancestor gates do not perform these checks",
+    ):
+        assert phrase in database, phrase
+    assert "guardian.md#parent-only-non-create-limitation" in page
+    assert "parent-only-non-create-limitation" in _anchors(DOCS / "reference/guardian.md")
+    assert "context_buttons.md#cv_context_has_permission-gate-surrounding-markup" in page
+    assert "cv_context_has_permission-gate-surrounding-markup" in _anchors(DOCS / "reference/context_buttons.md")
+    index = _section((DOCS / "reference/index.md").read_text(), "## Actions & navigation")
+    assert "[Link access](link_access.md)" in index
+    nav = (DOCS / "reference/.pages").read_text().split("- Actions & navigation:", 1)[1].split("- Extensions:", 1)[0]
+    assert "- link_access.md" in nav
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("example", ["object", "nested", "off-page"])
+def test_public_documented_examples(core_targets, helpers, data, monkeypatch, example):
+    if example == "object":
+        actor = _user("docs_object", (Publisher, "view"))
+        namespace = {"TargetView": core_targets.Detail, "user": actor, "book": data.book, "publisher": data.penguin}
+        heading = "## Object target"
+    elif example == "nested":
+        actor = _user("docs_nested", (Publisher, "view"))
+        namespace = {"BookList": core_targets.List, "user": actor, "publisher": data.penguin}
+        heading = "## Nested collection"
+    else:
+        actor = _user("docs_off_page")
+        _grant(actor, helpers.pub, "view", data.penguin)
+        _grant(actor, helpers.book, "view", data.book)
+        monkeypatch.setattr(helpers.note.vs, "ancestor_policy", AncestorPolicy(cascade=True))
+        namespace = {"NoteList": helpers.note.List, "user": actor, "book": data.book, "publisher": data.penguin}
+        heading = "## Off-page caller"
+    result = _run_public_example(heading, namespace)
+    assert result["result"] is LinkAccess.ALLOWED
+    assert result["show_link"] is True
 
 
 def test_link_access_breaking_entry_names_both_hooks_and_links_the_migration_anchor():
@@ -33,6 +174,23 @@ def test_link_access_breaking_entry_names_both_hooks_and_links_the_migration_anc
         assert name in entry
     assert "docs/migrating-1.0.md#link-access-hooks" in entry
     assert "link-access-hooks" in _anchors(MIGRATING_MD)
+
+
+def test_public_checker_added_entry():
+    unreleased = _section(CHANGELOG_MD.read_text(), "## Unreleased")
+    added = _section(unreleased, "### Added")
+    heading = "- **Public link access**"
+    assert added.count(heading) == 1
+    entry = added[added.index(heading) :].split("\n\n", 1)[0]
+    for phrase in ("check_link_access", "LinkAccess", "stable", "supplied", "permission", "state"):
+        assert phrase in entry, phrase
+    assert "docs/reference/link_access.md" in entry
+    assert "[#414](https://github.com/jacob-consulting/django-crud-views/issues/414)" in entry
+    assert unreleased.count("#414") == 1
+    breaking = _section(unreleased, "### Breaking")
+    assert heading not in breaking
+    assert "check_link_access" not in breaking
+    assert breaking.count("- **Link access hooks**") == 1
 
 
 def test_link_access_migration_section_names_the_override_cases():
@@ -87,11 +245,100 @@ def test_nested_guardian_create_migration_section_is_rewritten():
     assert {"child-link-parent-permissions", "nested-guardian-create-access"} <= _anchors(MIGRATING_MD)
 
 
-def test_link_check_is_not_in_the_stability_inventory():
-    assert "link_access" not in (DOCS / "development" / "stability.md").read_text()
-    section = _flat(_section(MIGRATING_MD.read_text(), "## Link access hooks"))
-    assert "no public checker API" in section
-    assert "remain later work" in section
+def test_link_check_is_in_the_stability_inventory():
+    text = (DOCS / "development/stability.md").read_text()
+    assert "**Link access**" in text
+    inventory = _flat(text.split("**Link access**", 1)[1].split("\n\n**", 1)[0])
+    for phrase in (
+        "crud_views.lib.link_access",
+        "check_link_access",
+        "LinkAccess",
+        "LinkAccess.ALLOWED",
+        "LinkAccess.DENIED_PERMISSION",
+        "LinkAccess.DENIED_STATE",
+        "stable at 1.0",
+        "regular enum",
+        "Both denial members are false",
+        "../reference/link_access.md",
+        "keyword-only",
+        "input validation cases",
+        "current behavior that is not part of this promise",
+        "which reached gate checks which database",
+    ):
+        assert phrase in inventory, phrase
+    assert "the behavior in the" not in inventory
+    reference = _flat(LINK_ACCESS_MD.read_text())
+    assert "describe current behavior and can change in a minor release" in reference
+    assert "all names prefixed with an underscore" in text
+    assert "`_link_access`" not in text
+    assert "`_link_permission`" not in text
+
+
+@pytest.mark.parametrize(
+    "path, heading, marker, link",
+    [
+        (
+            "migrating-1.0.md",
+            "## Link access hooks",
+            "6. Review a custom",
+            "reference/link_access.md",
+        ),
+        (
+            "reference/guardian.md",
+            "### Create button visibility for child viewsets",
+            "Each button follows its actual target.",
+            "link_access.md",
+        ),
+        (
+            "reference/context_buttons.md",
+            "## ContextButton",
+            "Custom `ContextButton.get_context` output",
+            "link_access.md",
+        ),
+        (
+            "migrating-1.0.md",
+            "### Nested Guardian create access",
+            "Custom `ContextButton.get_context` output",
+            "reference/link_access.md",
+        ),
+    ],
+)
+def test_public_checker_migration_pointers(path, heading, marker, link):
+    section = _section((DOCS / path).read_text(), heading)
+    paragraph = section[section.index(marker) :].split("\n\n", 1)[0]
+    flat = _flat(paragraph)
+    for phrase in ("check_link_access", "complete", "cv_create_has_access", "custom create permission"):
+        assert phrase in flat, (path, heading, phrase)
+    assert f"]({link})" in paragraph, (path, heading, link)
+    assert ((DOCS / path).parent / link).resolve() == LINK_ACCESS_MD.resolve()
+    assert "bounded" in flat or "direct-hook bounds" in flat, (path, heading, flat)
+
+
+def test_documentation_public_checker_claims():
+    obsolete = re.compile(
+        r"\bno public (?:link )?checker\b"
+        r"|\bpublic (?:link )?checker\b[^.]*\b(?:not available|not published|later work|future work|pending)\b"
+        r"|\bno\b[^.]*\bpublic checker\b[^.]*\bintroduced\b"
+        r"|\bpublication(?: and validation)? of a standalone function remains? later work\b",
+        re.IGNORECASE,
+    )
+    offending = []
+    for path in sorted(DOCS.rglob("*.md")):
+        prose = _flat(re.sub(r"```.*?```", "", path.read_text(), flags=re.DOTALL))
+        offending.extend((str(path.relative_to(DOCS)), match.group()) for match in obsolete.finditer(prose))
+    assert not offending, offending
+    for path in (MIGRATING_MD, DOCS / "reference/guardian.md", DOCS / "reference/nested.md"):
+        assert "no public accessor for resolved ancestors" in _flat(path.read_text()), path
+    guardian = _flat(_section((DOCS / "reference/guardian.md").read_text(), "#### Limits and configuration failures"))
+    for phrase in ("independent table columns", "LinkChildColumn", "DataPanel/DataView", "breadcrumbs", "site menus"):
+        assert phrase in guardian, phrase
+    assert "opt-in" in guardian
+    filter_section = _section(
+        (DOCS / "reference/context_buttons.md").read_text(),
+        "### `cv_context_has_permission` — gate surrounding markup",
+    )
+    assert "[check_link_access](link_access.md)" in filter_section
+    assert "they remain permission-only and never ask state" in _flat(filter_section)
 
 
 @pytest.mark.parametrize(

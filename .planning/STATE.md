@@ -5,40 +5,65 @@ current_phase: 7
 current_phase_name: Theme-surface stability policy
 current_plan: Not started
 status: planning
-stopped_at: "Phase 06.51 complete; stage 3c (#414) must settle before Phase 7"
-last_updated: "2026-11-25T20:47:17.297Z"
-last_activity: 2026-11-25
-last_activity_desc: "Phase 06.51 shipped as PR #415 to feature/link-access-check-design"
-state_head: 8576aa5f16fbe1afd5978f55704bd42155e32a1a
+stopped_at: Phase 06.52 complete, ready to plan Phase 7
+last_updated: "2026-11-26T15:34:14.038Z"
+last_activity: 2026-11-26
+last_activity_desc: "Phase 06.52 shipped as PR #416"
+state_head: 8cacc8ac66ce7631c5da24812fe305eb2a65b166
 progress:
-  total_phases: 58
-  completed_phases: 57
-  total_plans: 315
-  completed_plans: 315
+  total_phases: 59
+  completed_phases: 58
+  total_plans: 318
+  completed_plans: 318
 milestone_name: milestone
 ---
 
-Total Phases: 58
-Completed Phases: 57
+Total Phases: 59
+Completed Phases: 58
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-11-25)
+See: .planning/PROJECT.md (updated 2026-11-26)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Stage 3c (#414) before Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 7 — Theme-surface stability policy; stage 3c verified complete
 
 ## Current Position
 
 Phase: 7 — Theme-surface stability policy
 Current Plan: Not started
 Total Plans in Phase: TBD
-Status: Awaiting stage 3c (#414) before planning Phase 7
-Last activity: 2026-11-25 -- Phase 06.51 shipped as PR #415 to feature/link-access-check-design
+Status: Ready to plan
+Last activity: 2026-11-26 -- Phase 06.52 shipped as PR #416
 
-Next: After PR #415 (`https://github.com/jacob-consulting/django-crud-views/pull/415`) merges to `feature/link-access-check-design`, add/plan stage 3c (#414) before Phase 7 and the 1.0 freeze. All seven codebase maps were refreshed after shipping. Phase 7 is the next numbered roadmap phase, but its stage-3c prerequisite is not complete. Auto-advance is disabled. Issues #412/#413 close only when the feature branch merges to `main`.
+Next: $gsd-discuss-phase 7 — review the settled public/theme contracts before the 1.0 freeze. Phase 06.52 is complete; its implementation branch targets feature/link-access-check-design. Issues close only when that feature branch merges to main.
+
+### Phase 06.52 completion — 2026-11-26
+
+- All three plans/seven tasks are complete. Independent verification passes 17/17 must-haves and all nine local acceptance criteria; the CLI fingerprint covers 1,199 files. Deep review is clean across 12 product files, validation covers all seven tasks, and all nine authored security threats are closed. Scoped documentation/UI review passes; visual dimensions remain unassessed.
+- Final source evidence: 20,397 core tests, 637 examples plus 300 subtests, strict MkDocs and scoped Ruff pass. Regression coverage includes all 321 existing prior-phase modules. The verifier adds 77 passing focused checks. Six existing Campaign pagination warnings remain in examples. The first full run's one documentation wording failure was fixed in the owned documentation file and the full rerun passes; protected tests remain unchanged.
+- Public check_link_access/LinkAccess and the three executed examples are stable, opt-in additions. Private function bodies, consumers, request behavior, protected tests, golden data and query expectations are preserved. Evidence covers the recorded source runtime; installed distribution, other runtime versions, recorder-enabled, browser and downstream lanes remain unclaimed.
+- phase.complete ran once and returned no verification warnings. Its preserved phase count and stale dotted progress row were reconciled to 58/59 phases and 318/318 authored plans, without a misleading unscoped percentage. Phase 7 is ready for discussion/planning. No matching pending todos or phase handoffs; no global learnings extraction (disabled) or graduation candidates. Existing config/state.json dirt is preserved. No install, push, PR, merge or issue closure occurred.
+
+### Phase 06.52 plan 03 — 2026-11-26
+
+- Published the complete stable checker/enum reference, real navigation links and inventory, three executable Markdown examples, four custom-button migration pointers and the Added release note. Original object fence, eleven retained prose-test functions, historical Breaking section, private functions/constants, consumers and protected tests/goldens/matrix/query pins remain byte-identical. No production edit.
+- Final source suite passes **20,397 in 410.53s** with six workers; 29 publication tests, 77 combined link/navbar docs, strict MkDocs (1.42s) and scoped Ruff pass. The 1,665-case matrix/cost result is reused from plan 02 on unchanged relevant source. A first full run caught one rephrased protected sentence; restoring its exact request/redirect wording fixed it without editing the test, and the final full rerun passes. Durable receipts retain both runs and SHA256 for all 884 final source inputs.
+- Task commits fe255a4a, f26c5454, 7625a252, accc4c1f, 6ab892ae and 814c2790; immediate SUMMARY 35fe1edd precedes tracking. Five deliverables classify as automated. ROADMAP accepted 3/3; the dotted progress row and wave prose are reconciled. STATE advance ran exactly once and retained plan 3 ready for verification; one metric and two decisions recorded. Totals remain **57/59 phases**, now **318/318 plans**, without an unscoped global percentage. AC labels remain local. Only helper-owned state.json timestamp/next-label/next-reason deltas are restored to the pretracking snapshot; original dirt remains intact. No phase.complete, install, push, PR, merge or issue closure ran.
+
+### Phase 06.52 plan 02 — 2026-11-26
+
+- Added 130 public-call cases: all core/Guardian outcomes, parent/own/state order, absent create rendering view, actor/parent admission, repeated decisions, aligned three-level partial ancestry, cold ORM SQL/loader checks, no membership proof and reached error/database boundaries. Existing fixtures supply model/generic/direct Guardian gates and nested core/Guardian own gates; only database cases use transaction/default+shard marks. No production change was necessary.
+- Complete public module passes 267 in 12.28s; unchanged matrix/cost gate passes 1,665 in 14.37s, both with four workers. Scoped Ruff/format/diff and preservation checks pass. All 13 pre-existing public test/helper functions and all five original private functions remain byte-identical; all production, documentation, matrix/golden/pin/receipt inputs are preserved. Two setup mistakes were corrected in one pass; no behavioral RED or source edit was fabricated.
+- Task commits e28436c5 and d2249304; immediate SUMMARY b8591c34 precedes tracking. Five deliverables classify as automated. ROADMAP accepted 2/3 and its stale dotted row was reconciled. STATE advanced exactly once to plan 3, with one metric and three decisions. Totals remain 57/59 phases and now 317/318 plans, without an unscoped global percentage. AC labels remain local. Only the helper-owned state.json timestamp delta was restored; original dirt and unrelated files remain intact. Full-source/strict-doc/final publication gates remain with plan 03. No phase completion, install, push, PR, merge or issue closure ran.
+
+### Phase 06.52 plan 01 — 2026-11-26
+
+- Published the regular LinkAccess enum and bounded check_link_access wrapper with complete validation before authorization. Exact object-target documentation fence runs against real core gates. Proxy/concrete, ordinary MTI, polymorphic, Resource and unsaved integer/UUID cases preserve identity and hook exceptions. Private functions/constants and all consumers remain unchanged.
+- Public tests pass 137; unchanged private/consumer selection passes 568; final combined run passes 705 in 11.68s with four workers. Scoped Ruff/format/diff and private-source preservation pass. RED evidence is machine/semantically validated. Task 2 is passing coverage of the complete wrapper already required by task 1; its fixture-method typo was corrected without a source change, and no RED was fabricated.
+- Task commits 89b5917b, f2a7fd6c and c6bf555a; immediate SUMMARY 969074df precedes tracking. Four deliverables classify as automated. ROADMAP accepted 1/3 and its stale dotted progress row was reconciled. STATE advanced once to plan 2, with one metric and three decisions; totals remain 316/318 plans and 57/59 phases, without an unscoped global percentage. AC labels remain local, not global requirements. Only this executor's state.json timestamp delta was restored; dispatch-time configuration/state dirt and unrelated files remain preserved. No phase completion, install, push, PR, merge or issue closure ran.
 
 ### Phase 06.51 completion — 2026-11-25
 
@@ -1858,7 +1883,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 315
+- Total plans completed: 307
 
 - Total plans completed: 186
 - Average duration: -
@@ -1921,6 +1946,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.49 | 5 | - | - |
 | 06.50 | 9 | - | - |
 | 06.51 | 7 | - | - |
+| 06.52 | 3 | - | - |
 
 | 06.31 | 6 | - | - |
 | 06.32 | 1 | - | - |
@@ -2148,6 +2174,9 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.51 P05 | 15min | 2 tasks | 6 files |
 | Phase 06.51 P06 | 9min | 3 tasks | 14 files |
 | Phase 06.51 P07 | 21min | 2 tasks | 4 files |
+| Phase 06.52 P01 | 7 min | 2 tasks | 3 files |
+| Phase 06.52 P02 | 6 min | 2 tasks | 1 files |
+| Phase 06.52 P03 | 23 min | 3 tasks | 10 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2560,6 +2589,14 @@ Recent decisions affecting current work:
 - [Phase 06.51]: AC-1/D-50: close both real-page collision tests with seven additive destination GET lines; every original assertion and all production code remain unchanged.
 - [Phase 06.51]: AC-7: audit historical product baseline 350adaae separately from phase-start 6a875dad; immutable histories and 143 current cost-source hashes match the final tested source.
 - [Phase 06.51]: D-39/T-18: final source acceptance is 20119 core plus 637 examples and 300 subtests; independent phase gates, delivery and unexecuted certification lanes remain explicit.
+- [Phase 06.52]: Preserve private functions/constants; validate inline in the public wrapper and delegate once with rendering_view=None.
+- [Phase 06.52]: Use declared concrete-model/Resource isinstance checks and inspect every supplied list/tuple slot without loads, coercion or persistence checks.
+- [Phase 06.52]: Plan 01 task 2 is passing coverage of the complete wrapper required by task 1; no fabricated RED or redundant source change.
+- [Phase 06.52]: Plan 02 extends passing coverage of existing private behavior through the complete plan-01 wrapper; no production correction or artificial RED is warranted.
+- [Phase 06.52]: Reload supplied ORM rows before SQL capture and assert empty relation caches; permit existing authorization-table queries.
+- [Phase 06.52]: Keep database refusal assertions at reached nested gates and preserve core own-object, top-level and skipped-gate exceptions.
+- [Phase 06.52]: Preserve the original object fence and prior behavioral prose tests while publishing the exact full checker and gate-specific database limits.
+- [Phase 06.52]: Use the 20397-case final source receipt and its 884 input hashes for subsequent phase gates; keep failed-run and correction evidence separate.
 
 ### Pending Todos
 
@@ -2567,7 +2604,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 7 prerequisite: stage 3c (#414) remains outstanding after verified stage 3b (06.51). Stage 3b targets `feature/link-access-check-design`; #412/#413 close only on the later feature-branch merge to `main`. Do not freeze the public link-check contract before stage 3c settles.
+- Phase 7 prerequisite satisfied: stage 3c (#414, Phase 06.52) is verified complete after stage 3b. Carry the final public checker/enum and retained Guardian/Cancel limits into stability review. Phase 06.52 targets `feature/link-access-check-design`; stage issues close only when that branch merges to `main`.
 
 - Phase 06.37 review (open, maintainer triage): WR-01 text output for `user == {}` prints `None (pk None, inactive)` (fix changes text bytes); WR-02 `TraceUser` accepts partial/null actors, looser than manage.md:478; WR-03 `isolated_routes` (tests/test1/test_ancestor_authorization.py) restores an emptied ViewSet registry — root cause of the xdist flake `test_published_command_examples` (pre-existing at 7daae93f; one-import fix proposed). `manage_report_floor` is not run in CI (IN-05).
 
@@ -2658,6 +2695,7 @@ None yet.
 - Phase 06.49 inserted after Phase 06.48: Reuse Guardian object grants across navigation checks (#385); approved stage 2, concept sections 12.1, 12.3 and 12.7 at 4b65990f, including D-37 and D-38 (URGENT)
 - Phase 06.50 inserted after Phase 06.49: Move remaining link consumers to the shared link check - stage 3a (#412); approved D-39–D-44 and D-52, baseline e444bbfc and PR target feature/link-access-check-design. Before stage 3b (#413), stage 3c (#414) and the 1.0.0 freeze. (URGENT)
 - Phase 06.51 inserted after Phase 06.50: Remove retained Guardian link exceptions - stage 3b (#413); approved D-45–D-52 with D-40–D-42 and D-55 preserved, concept at 55dce6f6. Before stage 3c (#414) and the 1.0 freeze; PR target feature/link-access-check-design. (URGENT)
+- Phase 06.52 inserted after Phase 06.51: Publish check_link_access as the documented way to decide a link - stage 3c (#414); approved D-53/D-54, baseline 1d538046 after merged PR #415. Before Phase 7 and the 1.0 freeze; PR target feature/link-access-check-design. (URGENT)
 
 ## Deferred Items
 
@@ -2667,6 +2705,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T20:42:03Z
-Stopped at: Phase 06.51 complete; stage 3c (#414) must settle before Phase 7
+Last session: 2026-11-26T14:46:28.058269+00:00
+Stopped at: Phase 06.52 complete, ready to plan Phase 7
 Resume file: None

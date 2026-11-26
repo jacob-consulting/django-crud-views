@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
-last_mapped_at: 2026-11-25
+last_mapped_commit: 7d9b74dc51306d98ce007cd001f416463982c456
+last_mapped_at: 2026-11-26
 ---
 # External Integrations
 
-**Analysis Date:** 2026-11-25
+**Analysis Date:** 2026-11-26
 
 ## APIs & External Services
 
@@ -55,6 +55,9 @@ last_mapped_at: 2026-11-25
 - Example host enables ModelBackend and Guardian ObjectPermissionBackend, with `ANONYMOUS_USER_NAME=None` (`examples/bootstrap5/project/settings.py`).
 - Guardian endpoint views use strict object checks by default; accepting global model permissions is an explicit view-class option, `cv_guardian_accept_global_perms` (`src/crud_views_guardian/lib/mixins.py`). GuardianViewSet rejects that removed constructor/class setting (`src/crud_views_guardian/lib/viewset.py`).
 - Shared nested authorization composes explicit ancestor policies with core/Guardian providers (`src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_policy.py`, `src/crud_views_guardian/lib/ancestors.py`).
+- For custom Python link presentation, import `check_link_access` and `LinkAccess` from `src/crud_views/lib/link_access.py`. The checker validates caller inputs, then evaluates selected parent gates, own permission, and state; only `LinkAccess.ALLOWED` is truthy. It adds no identity provider, middleware, request, or rendering-view dependency (`docs/reference/link_access.md`).
+- Supply already-known objects; the public checker does not load objects/ancestors, prove child membership, or authorize requests. Missing immediate parents deny nested links; unknown higher levels remain unchecked. Reached backend/hooks can still query or raise, so callers must preserve ordinary request authorization (`src/crud_views/lib/link_access.py`, `docs/reference/link_access.md`).
+- Reached nested authorization gates support the `default` database only, with provider-specific actor/auth-table/object checks. This is not a blanket validation of all supplied objects; top-level checks and unreached gates retain their existing behavior (`src/crud_views/lib/ancestor_db.py`, `docs/reference/link_access.md`).
 - Public demo enables secure cookies/proxy configuration, disables manage access-trace forms, and uses a restricted URLconf (`examples/bootstrap5/project/settings_demo.py`, `examples/bootstrap5/project/urls_demo.py`).
 
 ## Monitoring & Observability
@@ -111,4 +114,4 @@ last_mapped_at: 2026-11-25
 
 ---
 
-*Integration audit: 2026-11-25*
+*Integration audit: 2026-11-26*

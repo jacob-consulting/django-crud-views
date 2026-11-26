@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.223" timestamp="2026-11-26T14:01:20.426426+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_link_access_docs" name="test_public_checker_added_entry" time="0.004"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = &lt;built-in method count of str object at 0x91260f0&gt;('- **Public link access**')&#10; +    where &lt;built-in method count of str object at 0x91260f0&gt; = '\n\n- **Theme JavaScript namespace and tooltip placements** (#398): startup calls to `register_js_namespace()` and\n ...ontent\n  is still attached: the teardown counterpart of `cv:modal:loaded`; see `docs/reference/modals.md` (#203).\n\n'.count">def test_public_checker_added_entry():
+        unreleased = _section(CHANGELOG_MD.read_text(), "## Unreleased")
+        added = _section(unreleased, "### Added")
+        heading = "- **Public link access**"
+&gt;       assert added.count(heading) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = &lt;built-in method count of str object at 0x91260f0&gt;('- **Public link access**')
+E        +    where &lt;built-in method count of str object at 0x91260f0&gt; = '\n\n- **Theme JavaScript namespace and tooltip placements** (#398): startup calls to `register_js_namespace()` and\n ...ontent\n  is still attached: the teardown counterpart of `cv:modal:loaded`; see `docs/reference/modals.md` (#203).\n\n'.count
+
+tests/test1/test_link_access_docs.py:183: AssertionError</failure></testcase></testsuite></testsuites>

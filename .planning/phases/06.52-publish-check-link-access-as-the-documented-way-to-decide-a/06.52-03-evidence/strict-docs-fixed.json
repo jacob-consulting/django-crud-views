@@ -1,0 +1,24 @@
+{
+  "command": [
+    ".venv/bin/mkdocs",
+    "build",
+    "--strict"
+  ],
+  "environment": {
+    "PYTHONPATH": "src:.",
+    "CV_ACCESS_RECORD_REQUESTS": "0"
+  },
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "head": "6ab892ae688d4f7ffd5c374907515c35fe04c6c2",
+  "source_tree": "e12328771238492a7829f70a4c13c510296aae31",
+  "test_tree": "9071d3bf443c5ff44b6bb2af215f309d3bf3d2b4",
+  "working_source_sha256": "dee4511ae2f8fd13d9e05d05739032d4bea509773f7d09db5a6a677a00051c8a",
+  "started_at": "2026-11-26T14:09:53.280194+00:00",
+  "duration_seconds": 1.7,
+  "exit_code": 0,
+  "log": ".planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-03-evidence/strict-docs-fixed.log",
+  "log_sha256": "4cb5a3646152107ef080e7671016a3e129926aa4076bbb05c448142b9653aacc",
+  "tool_versions": {
+    "mkdocs": "1.6.1"
+  }
+}

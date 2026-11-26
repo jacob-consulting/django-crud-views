@@ -1,0 +1,27 @@
+{
+  "command": [
+    ".venv/bin/ruff",
+    "check",
+    "src/crud_views/lib/link_access.py",
+    "tests/test1/test_public_link_access.py",
+    "tests/test1/test_link_access_docs.py"
+  ],
+  "environment": {
+    "PYTHONPATH": "src:.",
+    "CV_ACCESS_RECORD_REQUESTS": "0"
+  },
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "head": "6ab892ae688d4f7ffd5c374907515c35fe04c6c2",
+  "source_tree": "e12328771238492a7829f70a4c13c510296aae31",
+  "test_tree": "9071d3bf443c5ff44b6bb2af215f309d3bf3d2b4",
+  "working_source_sha256": "b24a009d0d3e43f8d90009119e5db88828a6dc2413b1b1f6636f2c60b73e2494",
+  "started_at": "2026-11-26T14:02:04.106847+00:00",
+  "duration_seconds": 0.023,
+  "exit_code": 0,
+  "log": ".planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-03-evidence/ruff-check.log",
+  "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+  "tool_versions": {
+    "mkdocs": "1.6.1",
+    "ruff": "0.17.3"
+  }
+}

@@ -322,8 +322,9 @@ route parent is known and their gates pass. The filter stays permission-only; se
 Each button follows its actual target. The former list-page key rewrite no longer corrects parent/sibling
 buttons or custom `ContextButton.get_context` output, including `key_target="create"` and action key `create`.
 A custom implementation that depended on that correction can now stay hidden. Move custom create permission
-logic to `cv_create_has_access` on the target, and use the standard button path for full ancestor and state
-checks. A direct hook call provides only the bounded permission check above. The ordinary nested list create
+logic to `cv_create_has_access` on the target. Use [check_link_access](link_access.md) for a complete direct
+link decision with caller-supplied ancestors, or the standard button path for the page's full known gates
+and state. A direct hook call provides only the bounded permission check above. The ordinary nested list create
 button keeps its real list view. See the [migration guidance](../migrating-1.0.md#link-access-hooks).
 
 ### Known ancestry and Cancel
@@ -571,7 +572,8 @@ state; the filter never evaluates state. General direct `cv_has_access(user, chi
 columns, breadcrumbs, site menus, DataPanel/DataView and other off-page callers do not gain this check.
 In particular, `LinkChildColumn` remains outside it. Supplying an explicit parent works for M2M rendering
 without inferring ancestry or proving child membership; matching model types likewise does not establish a
-parent relationship. No public checker or ancestor accessor is introduced.
+parent relationship. Projects can opt-in to [check_link_access](link_access.md) for complete direct link
+decisions; these independent consumers do not adopt it automatically. There is no public accessor for resolved ancestors.
 
 Missing guard state denies nested targets, except Cancel's retained hook-based parent path. With default
 policies, parent `view` without `change` now hides child write links whose requests already deny. Unknown

@@ -29,6 +29,7 @@
 
 - [ActionView](action_view.md) — run a side-effecting action on an object with success/error messages
 - [Bulk actions](bulk_actions.md) — current-page selection on table and card views, submitted to registered action form views
+- [Link access](link_access.md) — decide permission and state for a link from caller-supplied objects
 - [Context Buttons](context_buttons.md) — context action buttons for navigation within and across viewsets
 - [Breadcrumb](breadcrumb.md) — a Bootstrap breadcrumb following the ViewSet hierarchy
 - [ViewSet Navigation](navbar.md) — opt-in owner identity and section links across descendant pages

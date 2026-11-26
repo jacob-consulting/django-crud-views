@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
-last_mapped_at: 2026-11-25
+last_mapped_commit: 7d9b74dc51306d98ce007cd001f416463982c456
+last_mapped_at: 2026-11-26
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-11-25
+**Analysis Date:** 2026-11-26
 
 ## Naming Patterns
 
@@ -104,6 +104,7 @@ last_mapped_at: 2026-11-25
 - When docs publish copyable recipes, extract the exact fenced block and execute it against project objects/views. Follow `tests/test1/test_navbar_docs.py`, `test_object_detail_value_docs.py`, `test_cancel_docs.py`, and `test_theme_adoption_docs.py`; avoid maintaining a retyped example that can drift.
 - For rendering recipes, use Django `Template`, real request/context/response fixtures, and parsed DOM assertions. Verify public semantics and documented inventories/cross-links alongside recipe behavior.
 - For published registration examples, extract and execute the exact fenced recipe in `tests/test1/test_data_prefix_docs.py::test_data_prefix_documented_registration`; verify default, repeat-ready, and last-registration behavior through the real `{% cv_data_prefix %}` tag. Keep all calls scoped to startup registration.
+- For public link decisions, execute the complete Python fence with only the caller inputs documented beside it. `tests/test1/test_link_access_docs.py::_run_public_example` uses the shared `_fence` extractor, `compile`, and `exec`; `::test_public_documented_examples` supplies real registered core/Guardian targets for Object target, Nested collection, and Off-page caller in `docs/reference/link_access.md`. Assert enum identity and the documented boolean output; do not replace the recipe with a copied call or construct an artificial rendering view.
 
 ## Global Scalar Isolation
 
@@ -114,7 +115,7 @@ last_mapped_at: 2026-11-25
 ## Project Rules
 
 - Decision rule (`CLAUDE.md`): prefer the simplest bounded solution the maintainer can explain; keep new features opt-in and self-contained; avoid hidden state and extra queries on existing paths.
-- Preserve contracts with focused tests at the public seam. For bulk selection, keep source-page rendering free of destination permission work (`tests/test1/test_bulk_source.py`), validate and canonicalize submitted keys before hooks (`tests/test1/test_bulk_scope.py`), and exercise transaction rollback for multi-record failures (`tests/test1/test_bulk_flow.py`). Avoid duplicating implementation complexity in tests when a small observable contract assertion suffices.
+- Preserve contracts with focused tests at the public seam. For bulk selection, source-page rendering checks destination admission/state while remaining free of per-record permission/check hooks (`tests/test1/test_bulk_source.py`); validate and canonicalize submitted keys before hooks (`tests/test1/test_bulk_scope.py`), and exercise transaction rollback for multi-record failures (`tests/test1/test_bulk_flow.py`). Avoid duplicating implementation complexity in tests when a small observable contract assertion suffices.
 - Until 1.0.0, a `### Breaking` entry in `CHANGELOG.md` also requires an update to `docs/migrating-1.0.md`.
 - Version bumps go through bump-my-version (`task bump-patch`); never edit version strings by hand.
 
@@ -175,7 +176,10 @@ last_mapped_at: 2026-11-25
 
 ## Link Access and Guardian Consumer Contracts
 
-- Keep shared link decisions private in `src/crud_views/lib/link_access.py`. These helpers neither authorize requests, load ancestors nor store decisions. Pass the actual destination, own object and aligned known ancestors explicitly.
+- Use the stable direct-call API `from crud_views.lib.link_access import LinkAccess, check_link_access` for downstream custom link decisions (`docs/reference/link_access.md`, `docs/development/stability.md`). Keep the existing internal helper functions private; built-in consumer plumbing remains in its existing callers (`src/crud_views/lib/link_access.py`).
+- Call `check_link_access(target, user, *, obj=None, known_ancestors=())` with a view class and explicit actor. Supply an own object only for object targets and a list/tuple of known ancestors nearest first; retain `None` slots for unknown levels. It returns the regular `LinkAccess` enum: only `ALLOWED` is truthy; `DENIED_PERMISSION` and `DENIED_STATE` are false and are not raw strings (`src/crud_views/lib/link_access.py`, `tests/test1/test_public_link_access.py::test_public_signature_and_enum`).
+- Preserve validation before authorization: reject malformed targets, containers, own objects and ancestor slots before delegation or hooks. Validate declared ancestry using metadata (`relations=False`); compatible unsaved objects are accepted. Reached configuration, permission and state exceptions propagate. Follow `tests/test1/test_public_link_access.py` for explicit failure and identity contracts.
+- Neither the public function nor its private decision helpers authorize requests, load ancestors or cache decisions. Type validation does not establish parent membership, queryset admission or saved-object identity. Callers own those responsibilities; permission hooks may still query authorization tables (`src/crud_views/lib/link_access.py`, `docs/reference/link_access.md`).
 - Permission precedes state: known higher levels are checked outermost first; nearest-parent/own permission then uses the target's cooperative `_cv_link_permission`; denial skips `cv_action_enabled`. For state, object views receive their own object, nested collection/create views receive the immediate parent, and top-level collection/create views receive None (`src/crud_views/lib/link_access.py`).
 - Preserve omitted-versus-None parent semantics: explicit None is an unknown parent, not permission to load a relation or reuse an unrelated resolved object (`_known_link_ancestors` in `src/crud_views/lib/link_access.py`).
 - Guardian create consumers apply parent admission before `cv_create_has_access`; true overrides cannot reopen an earlier denied parent gate. Direct nested Guardian create `cv_has_access` stays false for every actor (`src/crud_views_guardian/lib/views.py`, `src/crud_views_guardian/lib/mixins.py`, `tests/test1/test_link_access.py`).
@@ -196,4 +200,4 @@ last_mapped_at: 2026-11-25
 
 ---
 
-*Convention analysis: 2026-11-25*
+*Convention analysis: 2026-11-26*

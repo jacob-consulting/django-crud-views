@@ -69,8 +69,11 @@ nested Guardian actor admission and declared immediate and known higher parent g
 hook; a true override cannot bypass denial. The default hook deliberately repeats its bounded immediate-parent
 check. Every button follows its actual target, including parent/sibling buttons with a colliding `create` key.
 Custom `ContextButton.get_context` output is no longer corrected by key, including `key_target="create"`;
-move custom create permission logic to the target's `cv_create_has_access` and use standard buttons for full
-ancestor/state checks. See the [hook and custom-button migration](../migrating-1.0.md#link-access-hooks).
+move custom create permission logic to the target's `cv_create_has_access`. Use
+[check_link_access](link_access.md) for a complete direct link decision with supplied ancestors, or standard
+buttons for the page's known ancestor/state checks. A direct create-hook call remains a bounded permission
+check of the actor and immediate parent; it does not discover higher ancestors or evaluate state.
+See the [hook and custom-button migration](../migrating-1.0.md#link-access-hooks).
 
 `label_mode` is the button's mode in the context toolbar of every view of the ViewSet, so a text-only button type
 does not need its key in a map on every ViewSet. A view's own `cv_context_actions_label_mode` (the plural per-key dict
@@ -688,6 +691,10 @@ be `True` while
 `cv_action_enabled` is `False` and `cv_context_button` renders nothing for the same key (or a disabled button under
 [disable mode](inaccessible_actions.md)). Gate the wrapper on the filter only when an empty wrapper is acceptable, or
 use the [resolved button loop](../faq.md#render-a-custom-loop-of-buttons), which yields only buttons that render.
+
+For a complete direct permission-and-state decision in custom Python code, use
+[check_link_access](link_access.md) with the target and objects you already have. Its input and ancestry limits
+apply; the template filter remains permission-only.
 
 For the `create` key of a nested Guardian ViewSet, the filter on a child object, list or create page
 asks `cv_create_has_access(user, view, parent_obj)` with the real same-ViewSet rendering view and the URL parent

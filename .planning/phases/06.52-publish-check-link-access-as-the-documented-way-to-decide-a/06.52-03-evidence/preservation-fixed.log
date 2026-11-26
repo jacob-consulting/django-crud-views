@@ -1,0 +1,40 @@
+{
+  "baseline": "1d538046",
+  "plan_entry": "eaacb2e937ef14b977da5ee5b34b66204a5fde2d",
+  "private_definitions_preserved": [
+    "_LINK_ALLOWED",
+    "_LINK_PERMISSION",
+    "_LINK_STATE",
+    "_PARENT_UNSET",
+    "_known_link_ancestors",
+    "_higher_ancestor_gates",
+    "_link_permission",
+    "_link_access",
+    "_link_ctx"
+  ],
+  "original_docs_tests_preserved": [
+    "test_link_access_breaking_entry_names_both_hooks_and_links_the_migration_anchor",
+    "test_link_access_migration_section_names_the_override_cases",
+    "test_link_access_migration_section_lists_the_create_hook_sites",
+    "test_nested_guardian_create_migration_section_is_rewritten",
+    "test_link_access_migration_names_each_approved_consumer_change",
+    "test_link_access_migration_has_exact_view_identity_parent_hook_and_return_guidance",
+    "test_link_access_direct_call_actor_guidance_does_not_imply_request_fallback",
+    "test_link_access_migration_bounds_create_overrides_and_parent_only_cancel",
+    "test_primary_guardian_guidance_removes_ended_denials_with_bounded_direct_hook_advice",
+    "test_link_access_owned_sections_do_not_retain_stage_one_consumer_limits",
+    "test_reference_pages_state_the_narrowed_meaning"
+  ],
+  "protected_tests_goldens_matrix_cost_pins": "byte-identical",
+  "other_production": "byte-identical",
+  "object_fence": "byte-identical",
+  "original_breaking_section": "byte-identical",
+  "user_configuration": "byte-identical",
+  "matrix_cost_reuse": {
+    "summary": "06.52-02-SUMMARY.md",
+    "passed": 1665,
+    "seconds": 14.37,
+    "source_tree": "e12328771238492a7829f70a4c13c510296aae31",
+    "relevant_source_unchanged": true
+  }
+}

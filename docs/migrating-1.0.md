@@ -9,8 +9,9 @@ touch.
 
 Issue #407 narrows the object passed to the two public hooks before 1.0 freezes their contracts. Issue #412
 (stage 3a) moves the remaining package consumers to the same private check; #413 (stage 3b) removes the
-Guardian create, queryset-only and higher-ancestor Cancel exceptions described below. There is no public checker API
-or public accessor for resolved ancestors; publication and validation of a standalone function remain later work.
+Guardian create, queryset-only and higher-ancestor Cancel exceptions described below. Issue #414 (stage 3c)
+publishes [check_link_access](reference/link_access.md) for a complete direct link decision with validated
+caller inputs. There is no public accessor for resolved ancestors; callers supply the objects they have.
 `cv_has_access(user, obj)` receives only the target view's own object, or `None` for a list or create.
 `cv_action_enabled(user, obj)` receives the object the destination request uses: its own object for an object
 view, its immediate parent for a nested list or create, and `None` for a top-level list or create.
@@ -169,7 +170,8 @@ Review your overrides:
 6. Review a custom `ContextButton.get_context` implementation whose result was corrected by the old list-page
    rewrite, including `key_target="create"` or an action key `create`. Its output is no longer corrected by key
    and can now remain hidden. Move custom create permission logic to `cv_create_has_access` on the actual target;
-   prefer the standard button path for all known ancestor gates and state. Calling the hook directly supplies
+   use [check_link_access](reference/link_access.md) for a complete direct link decision with the ancestors
+   you already have, or the standard button path for the page's known gates and state. Calling the hook directly supplies
    only the bounded permission check described above, not the complete package link decision.
 
 Each parent, sibling or custom button now retains its actual target's result. The ordinary permitted nested
@@ -2102,6 +2104,8 @@ passed; it does not discover or check higher ancestors. A true override cannot b
 denial, and a false override still denies. Custom `ContextButton.get_context` output is no longer corrected
 by key, including `key_target="create"`; use the actual target's `cv_create_has_access` for custom create
 permission logic, with the [direct-hook bounds and parent-only limitation](#link-access-hooks) above.
+Use [check_link_access](reference/link_access.md) for a complete direct link decision from supplied ancestors;
+its reference explains unknown higher levels and the absent rendering view.
 
 Skipping the parent check changed with it. The old `cv_guardian_parent_permission = None` (or the create key) is
 removed; see [Removed Guardian parent fields](#removed-guardian-parent-fields). Its replacement,

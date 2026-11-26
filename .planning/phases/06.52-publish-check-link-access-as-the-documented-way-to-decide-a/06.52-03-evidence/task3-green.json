@@ -1,0 +1,40 @@
+{
+  "command": [
+    ".nox/tests-3-12-django-6-0/bin/python",
+    "-m",
+    "pytest",
+    "tests/test1/test_link_access_docs.py",
+    "-n",
+    "6",
+    "-q"
+  ],
+  "environment": {
+    "PYTHONPATH": "src:.",
+    "CV_ACCESS_RECORD_REQUESTS": "0"
+  },
+  "cwd": "/home/alex/projects/alex/django-crud-views",
+  "head": "6ab892ae688d4f7ffd5c374907515c35fe04c6c2",
+  "source_tree": "e12328771238492a7829f70a4c13c510296aae31",
+  "test_tree": "9071d3bf443c5ff44b6bb2af215f309d3bf3d2b4",
+  "working_source_sha256": "b24a009d0d3e43f8d90009119e5db88828a6dc2413b1b1f6636f2c60b73e2494",
+  "started_at": "2026-11-26T14:01:52.156068+00:00",
+  "duration_seconds": 3.313,
+  "exit_code": 0,
+  "log": ".planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-03-evidence/task3-green.log",
+  "log_sha256": "03f788d1c26d1d4caf9fe2984668ee281026d3f0535c2a908a2c49bd2f2f345d",
+  "runtime": {
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "executable": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-6-0/bin/python",
+    "source": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+    "versions": {
+      "Django": "6.0.10",
+      "pytest": "9.2.0",
+      "pytest-django": "4.14.0",
+      "pytest-xdist": "3.8.0",
+      "django-guardian": "3.5.2"
+    }
+  },
+  "test_counts": {
+    "passed": 29
+  }
+}

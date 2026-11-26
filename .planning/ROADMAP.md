@@ -2534,13 +2534,13 @@ Plans:
 **Documentation:** Document the import path, three results, gate order, state-hook inputs, exceptions and three executable examples. Explain missing-immediate-parent denial, unchecked unknown higher ancestors, no object loading or membership/request authorization, the absence of a public ancestor accessor, Guardian actor rules, rendering-view differences and the D-51 parent-only limitation. Add the stable API inventory entry, update stage 3b migration pointers and their tests, and remove stale claims that no public checker exists. Record the change under `### Added` in the changelog.
 **Acceptance:** Carry all nine issue criteria into planning: direct-input results for core and Guardian targets; all six validation failures including holes and trailing `None`; accepted proxy/multi-table/polymorphic/Resource instances; no target or ancestor model-table queries for the specified cases; nested Guardian create actor/parent admission before the hook, with `None` rendering view; corrected documentation and stability inventory; three runnable examples; strict MkDocs; and unchanged golden files, matrix cells and pinned query counts from stage 3b.
 **Out of scope:** Changes to rendered links, request authorization or the private function; a rendering-view argument, resolved-ancestor accessor, full-hierarchy flag, permission-only public function or new exception class; automatic adoption by table columns, DataPanel/DataView or other off-page components; breadcrumbs and site menus. CONTEXT.md P52-01–P52-08 settle the selected module, argument convention, regular enum and false-denial boolean behavior, missing-ViewSet error and unsaved-own-object acceptance. Remaining discretion is bounded to enum values, annotations, validation organization, precise prefixed wording, tests and reference placement.
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 06.52-01-PLAN.md — Public enum/wrapper tracer and complete caller validation (wave 1)
+- [x] 06.52-01-PLAN.md — Public enum/wrapper tracer and complete caller validation (wave 1)
 
-**Wave 2** *(blocked on Wave 1 completion)*
+**Wave 2** *(ready after Wave 1 completion)*
 - [ ] 06.52-02-PLAN.md — Direct core/Guardian outcomes, aligned ancestry and no-domain-loading guarantees (wave 2)
 
 **Wave 3** *(blocked on Waves 1 and 2; serializes documentation writes with public-test reads)*
@@ -2692,5 +2692,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.49. Reuse Guardian object grants across navigation checks (#385) | 5/5 | Complete | 2026-11-24 |
 | 06.50. Move remaining link consumers to the shared link check - stage 3a (#412) | 9/9 | Complete | 2026-11-25 |
 | 06.51. Remove retained Guardian link exceptions - stage 3b (#413) | 7/7 | Complete | 2026-11-25 |
-| 06.52. Publish check_link_access as the documented way to decide a link - stage 3c (#414) | 0/3 | Planned | - |
+| 06.52. Publish check_link_access as the documented way to decide a link - stage 3c (#414) | 1/3 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

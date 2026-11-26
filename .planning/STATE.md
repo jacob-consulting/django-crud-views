@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.52"
 current_phase_name: Publish check_link_access as the documented way to decide a link - stage 3c
-current_plan: Not started
+current_plan: 2
 status: executing
-stopped_at: Phase 06.52 plan review converged in 3 cycles; ready to execute 3 plans in 3 waves
-last_updated: "2026-11-26T13:23:56.471Z"
+stopped_at: Completed 06.52-01-PLAN.md
+last_updated: "2026-11-26T13:40:34.161Z"
 last_activity: 2026-11-26
-last_activity_desc: Phase 06.52 plans converged after three external review cycles; three plans and seven tasks ready to execute
-state_head: 5e295d4dcc8efbfdf29817dc88282ec5a1d02836
+last_activity_desc: Phase 06.52 plan 01 completed; plan 02 ready
+state_head: 969074df8178fa5e80f7467fc6bb90013a99c338
 progress:
   total_phases: 59
   completed_phases: 57
   total_plans: 318
-  completed_plans: 315
+  completed_plans: 316
 milestone_name: milestone
 ---
 
@@ -28,17 +28,23 @@ Completed Phases: 57
 See: .planning/PROJECT.md (updated 2026-11-25)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.52 — stage 3c (#414), publish the public link checker before the 1.0 freeze
+**Current focus:** Phase 06.52 — Publish check_link_access as the documented way to decide a link - stage 3c
 
 ## Current Position
 
-Phase: 06.52 (Publish check_link_access as the documented way to decide a link - stage 3c) — READY TO EXECUTE
-Current Plan: Not started
+Phase: 06.52 (Publish check_link_access as the documented way to decide a link - stage 3c) — EXECUTING
+Current Plan: 2
 Total Plans in Phase: 3
 Status: Ready to execute
-Last activity: 2026-11-26 -- Phase 06.52 plans converged after three external review cycles; three plans and seven tasks ready to execute
+Last activity: 2026-11-26 — Phase 06.52 plan 01 completed; plan 02 ready
 
-Next: $gsd-execute-phase 06.52 — three plans in three sequential waves; cross-AI review converged in three cycles with no HIGH/actionable findings or open conflicts. Preserve D-53/D-54 and P52-01–P52-08; implementation PR targets feature/link-access-check-design. Phase 7 follows stage 3c; issues close when the feature branch merges to main.
+Next: $gsd-execute-phase 06.52 — execute plan 02, then plan 03 in sequential waves. Plan 01 is complete. Preserve D-53/D-54 and P52-01–P52-08; implementation PR targets feature/link-access-check-design. Phase 7 follows stage 3c; issues close when the feature branch merges to main.
+
+### Phase 06.52 plan 01 — 2026-11-26
+
+- Published the regular LinkAccess enum and bounded check_link_access wrapper with complete validation before authorization. Exact object-target documentation fence runs against real core gates. Proxy/concrete, ordinary MTI, polymorphic, Resource and unsaved integer/UUID cases preserve identity and hook exceptions. Private functions/constants and all consumers remain unchanged.
+- Public tests pass 137; unchanged private/consumer selection passes 568; final combined run passes 705 in 11.68s with four workers. Scoped Ruff/format/diff and private-source preservation pass. RED evidence is machine/semantically validated. Task 2 is passing coverage of the complete wrapper already required by task 1; its fixture-method typo was corrected without a source change, and no RED was fabricated.
+- Task commits 89b5917b, f2a7fd6c and c6bf555a; immediate SUMMARY 969074df precedes tracking. Four deliverables classify as automated. ROADMAP accepted 1/3 and its stale dotted progress row was reconciled. STATE advanced once to plan 2, with one metric and three decisions; totals remain 316/318 plans and 57/59 phases, without an unscoped global percentage. AC labels remain local, not global requirements. Only this executor's state.json timestamp delta was restored; dispatch-time configuration/state dirt and unrelated files remain preserved. No phase completion, install, push, PR, merge or issue closure ran.
 
 ### Phase 06.51 completion — 2026-11-25
 
@@ -2148,6 +2154,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.51 P05 | 15min | 2 tasks | 6 files |
 | Phase 06.51 P06 | 9min | 3 tasks | 14 files |
 | Phase 06.51 P07 | 21min | 2 tasks | 4 files |
+| Phase 06.52 P01 | 7 min | 2 tasks | 3 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2560,6 +2567,9 @@ Recent decisions affecting current work:
 - [Phase 06.51]: AC-1/D-50: close both real-page collision tests with seven additive destination GET lines; every original assertion and all production code remain unchanged.
 - [Phase 06.51]: AC-7: audit historical product baseline 350adaae separately from phase-start 6a875dad; immutable histories and 143 current cost-source hashes match the final tested source.
 - [Phase 06.51]: D-39/T-18: final source acceptance is 20119 core plus 637 examples and 300 subtests; independent phase gates, delivery and unexecuted certification lanes remain explicit.
+- [Phase 06.52]: Preserve private functions/constants; validate inline in the public wrapper and delegate once with rendering_view=None.
+- [Phase 06.52]: Use declared concrete-model/Resource isinstance checks and inspect every supplied list/tuple slot without loads, coercion or persistence checks.
+- [Phase 06.52]: Plan 01 task 2 is passing coverage of the complete wrapper required by task 1; no fabricated RED or redundant source change.
 
 ### Pending Todos
 
@@ -2668,6 +2678,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-26T13:23:48.461Z
-Stopped at: Phase 06.52 plan review converged in 3 cycles; ready to execute 3 plans in 3 waves
-Resume file: .planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-01-PLAN.md
+Last session: 2026-11-26T13:40:25.724Z
+Stopped at: Completed 06.52-01-PLAN.md
+Resume file: None

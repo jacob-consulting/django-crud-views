@@ -8,13 +8,16 @@ from unittest.mock import Mock
 import pytest
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured
+from django.db import connection
 from django.test import override_settings
-from django.test.utils import isolate_apps
+from django.test.utils import CaptureQueriesContext, isolate_apps
 
 from crud_views.lib import link_access
 from crud_views.lib.resource import ResourceViewMixin
 from crud_views.lib.views import DetailView, ListView
-from crud_views.lib.viewset import AncestorPolicy, ParentViewSet, ViewSet
+from crud_views.lib.viewset import AncestorPermissions, AncestorPolicy, ParentViewSet, ViewSet
+from tests.test1 import test_ancestor_actors as actor_tests
+from tests.test1 import test_ancestor_auth_databases as auth_database_tests
 from tests.test1 import test_ancestor_resources as resource_tests
 from tests.test1 import test_link_access as private_link_tests
 from tests.test1.app.models import Author, Book, BookNote, Car, Publisher, PublisherProxy, Truck, Vehicle
@@ -27,6 +30,13 @@ core_targets = private_link_tests.core_targets
 data = private_link_tests.data
 helpers = private_link_tests.helpers
 chains = resource_tests.chains
+provider_calls = private_link_tests.provider_calls
+lookups = private_link_tests.lookups
+resource_events = resource_tests.events
+undeclared_custom = actor_tests.undeclared_custom
+adb = auth_database_tests.adb
+auth_world = auth_database_tests.world
+routes = auth_database_tests.routes
 
 LINK_ACCESS_MD = Path(__file__).resolve().parents[2] / "docs" / "reference" / "link_access.md"
 
@@ -533,3 +543,289 @@ def test_public_repeated_decisions(core_targets, helpers, data, monkeypatch, fam
     if family == "guardian":
         assert checker is not None
         assert actor._cv_guardian_checker is checker
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("container", [list, tuple], ids=["list", "tuple"])
+@pytest.mark.parametrize("cascade", [False, True])
+@pytest.mark.parametrize("shape", ["empty", "missing-nearest", "short", "unknown-higher", "interior-hole", "full"])
+def test_public_ancestor_alignment(chains, data, provider_calls, monkeypatch, container, cascade, shape):
+    target = chains.depth[3].vs["plain"].get_view_class("detail")
+    actor = _user("public_alignment", (BookNote, "view"), (Book, "change"), (Publisher, "change"))
+    note = BookNote.objects.create(book=data.book, note="known")
+    obj = NoteChainFile(key="supplied")
+    monkeypatch.setattr(
+        target.cv_viewset,
+        "ancestor_policy",
+        AncestorPolicy(cascade=cascade, read=AncestorPermissions(nearest="view", higher="change")),
+    )
+    known = container(
+        {
+            "empty": [],
+            "missing-nearest": [None, None, data.penguin],
+            "short": [note],
+            "unknown-higher": [note, None],
+            "interior-hole": [note, None, data.penguin],
+            "full": [note, data.book, data.penguin],
+        }[shape]
+    )
+    missing = shape in ("empty", "missing-nearest")
+    state = Mock(return_value=True)
+    monkeypatch.setattr(target, "cv_action_enabled", state)
+    expected = link_access.LinkAccess.DENIED_PERMISSION if missing else link_access.LinkAccess.ALLOWED
+    assert link_access.check_link_access(target, actor, obj=obj, known_ancestors=known) is expected
+    expected_calls = []
+    if not missing:
+        if cascade and shape in ("interior-hole", "full"):
+            expected_calls.append((chains.pub.name, "app.change_publisher", data.penguin))
+        if cascade and shape == "full":
+            expected_calls.append((chains.book.name, "app.change_book", data.book))
+        expected_calls.append((chains.note.name, "app.view_booknote", note))
+    assert provider_calls == expected_calls
+    for actual, expected_call in zip(provider_calls, expected_calls, strict=True):
+        assert actual[2] is expected_call[2]
+    if missing:
+        state.assert_not_called()
+    else:
+        state.assert_called_once_with(actor, obj)
+        assert state.call_args.args[1] is obj
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("family", ["core", "guardian", "resource"])
+@pytest.mark.parametrize("shape", ["short", "unknown-higher", "known-higher"])
+def test_public_no_domain_queries(chains, helpers, data, lookups, resource_events, monkeypatch, family, shape):
+    actor = _user("public_no_loading", (Publisher, "view"), (Book, "view"), (BookNote, "view"))
+    saved_note = BookNote.objects.create(book=data.book, note="cold")
+    if family == "guardian":
+        target = helpers.note.Detail
+        _grant(actor, helpers.pub, "view", data.penguin)
+        _grant(actor, helpers.book, "view", data.book)
+        _grant(actor, helpers.note, "view", saved_note)
+    elif family == "core":
+        target = type("PublicColdDetail", (DetailView,), {"cv_viewset": chains.note, "cv_context_actions": []})
+    else:
+        target = chains.depth[3].vs["plain"].get_view_class("detail")
+    monkeypatch.setattr(target.cv_viewset, "ancestor_policy", AncestorPolicy(cascade=True))
+    # Assigned fixture FKs are cached. Reload every supplied ORM row outside measurement.
+    publisher = Publisher.objects.get(pk=data.penguin.pk)
+    book = Book.objects.get(pk=data.book.pk)
+    note = BookNote.objects.get(pk=saved_note.pk)
+    obj = NoteChainFile(key="caller-owned") if family == "resource" else note
+    nearest = note if family == "resource" else book
+    known = [nearest] if shape == "short" else [nearest, None]
+    if shape == "known-higher":
+        known = [note, None, publisher] if family == "resource" else [book, publisher]
+    for row in (publisher, book, note):
+        assert row._state.fields_cache == {}
+        monkeypatch.setattr(row, "save", Mock(side_effect=AssertionError("must not save inputs")))
+        monkeypatch.setattr(row, "refresh_from_db", Mock(side_effect=AssertionError("must not refresh inputs")))
+    state = Mock(return_value=True)
+    monkeypatch.setattr(target, "cv_action_enabled", state)
+    assert "publisher" not in book._state.fields_cache
+    assert "book" not in note._state.fields_cache
+    with CaptureQueriesContext(connection) as captured:
+        result = link_access.check_link_access(target, actor, obj=obj, known_ancestors=known)
+    assert result is link_access.LinkAccess.ALLOWED
+    state.assert_called_once_with(actor, obj)
+    assert state.call_args.args[1] is obj
+    assert lookups == []
+    assert resource_events == []
+    for query in captured.captured_queries:
+        for model in (Publisher, Book, BookNote):
+            for clause in ("from", "join"):
+                assert f'{clause} "{model._meta.db_table}"' not in query["sql"].lower()
+    for row in (publisher, book, note):
+        assert row._state.fields_cache == {}
+        row.save.assert_not_called()
+        row.refresh_from_db.assert_not_called()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("family", ["core", "guardian"])
+def test_public_membership_is_not_validated(core_targets, helpers, data, monkeypatch, family):
+    actor = _user("public_mismatched_parent", (Publisher, "view"))
+    _grant(actor, helpers.pub, "view", data.other)
+    _grant(actor, helpers.book, "view", data.book)
+    target = core_targets.Detail if family == "core" else helpers.book.Detail
+    queryset = Mock(side_effect=AssertionError("link decisions do not prove queryset membership"))
+    monkeypatch.setattr(type(target.cv_viewset), "get_queryset", queryset)
+    assert data.book.publisher_id != data.other.pk
+    assert (
+        link_access.check_link_access(target, actor, obj=data.book, known_ancestors=[data.other])
+        is link_access.LinkAccess.ALLOWED
+    )
+    queryset.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        pytest.param(case, marks=pytest.mark.django_db)
+        for case in (
+            "missing-nearest-key",
+            "missing-higher-key",
+            "missing-operation",
+            "missing-core-own-key",
+            "missing-guardian-own-key",
+            "permission-exception",
+            "state-exception",
+        )
+    ]
+    + [
+        pytest.param(f"{gate}/{fault}", marks=pytest.mark.django_db(transaction=True, databases=["default", "shard"]))
+        for gate in ("ancestor-model", "ancestor-guardian", "ancestor-direct", "higher", "own-core", "own-guardian")
+        for fault in ("actor", "auth-table", "object")
+    ]
+    + [
+        pytest.param(case, marks=pytest.mark.django_db(transaction=True, databases=["default", "shard"]))
+        for case in (
+            "own-guardian/grant-table",
+            "ancestor-guardian/grant-table",
+            "ancestor-direct/grant-table",
+            "higher/unselected",
+            "ancestor-model/provider-none",
+            "own-guardian/parent-denied",
+            "own-guardian/inactive",
+            "top-core/actor",
+            "top-guardian/actor",
+        )
+    ],
+)
+def test_public_reached_configuration_errors(request, monkeypatch, case):
+    """Only database cells need transaction/default+shard; imported fixtures supply no marks."""
+    if "/" not in case:
+        helpers = request.getfixturevalue("helpers")
+        data = request.getfixturevalue("data")
+        actor = _user("public_configuration", (Book, "view"))
+        _grant(actor, helpers.pub, "view", data.penguin)
+        _grant(actor, helpers.book, "view", data.book)
+        target, obj, known = helpers.book.Detail, data.book, [data.penguin]
+        expected_error, message, sentinel = ImproperlyConfigured, "missing", None
+        if case == "missing-nearest-key":
+            monkeypatch.setattr(
+                target.cv_viewset,
+                "ancestor_policy",
+                AncestorPolicy(read=AncestorPermissions(nearest="missing", higher="view")),
+            )
+        elif case == "missing-higher-key":
+            target, obj, known = helpers.note.List, None, [data.book, data.penguin]
+            monkeypatch.setattr(
+                target.cv_viewset,
+                "ancestor_policy",
+                AncestorPolicy(cascade=True, read=AncestorPermissions(nearest="view", higher="missing")),
+            )
+        elif case == "missing-operation":
+            undeclared = request.getfixturevalue("undeclared_custom")
+            target = undeclared.views["act"].get_view_class("act")
+            message = r"ancestor_policy\.actions\["
+        elif case.startswith("missing-"):
+            if case == "missing-core-own-key":
+                from crud_views.lib.views import DetailViewPermissionRequired
+
+                target = type(
+                    "PublicMissingPermission",
+                    (DetailViewPermissionRequired,),
+                    {"cv_viewset": helpers.core_book.vs, "cv_key": "public-missing", "cv_path": "public-missing"},
+                )
+                monkeypatch.setattr(helpers.cpub, "ancestor_policy", AncestorPolicy(provider="none"))
+            monkeypatch.setattr(target, "cv_permission", "missing")
+            expected_error = None
+        else:
+            sentinel = RuntimeError("project hook failure")
+            hook = "cv_has_access" if case == "permission-exception" else "cv_action_enabled"
+            monkeypatch.setattr(target, hook, Mock(side_effect=sentinel))
+            expected_error, message = RuntimeError, "project hook failure"
+        if expected_error is None:
+            state = Mock(return_value=True)
+            monkeypatch.setattr(target, "cv_action_enabled", state)
+            assert (
+                link_access.check_link_access(target, actor, obj=obj, known_ancestors=known)
+                is link_access.LinkAccess.DENIED_PERMISSION
+            )
+            state.assert_not_called()
+        else:
+            with pytest.raises(expected_error, match=message) as error:
+                link_access.check_link_access(target, actor, obj=obj, known_ancestors=known)
+            if sentinel is not None:
+                assert error.value is sentinel
+            # A reached error is inherited, not a public-boundary reclassification.
+            with pytest.raises(expected_error, match=message) as private_error:
+                link_access._link_access(target, actor, obj, known)
+            assert str(private_error.value) == str(error.value)
+        return
+
+    adb = request.getfixturevalue("adb")
+    world = request.getfixturevalue("auth_world")
+    routes = request.getfixturevalue("routes")
+    gate, fault = case.split("/")
+    actor = auth_database_tests._actor("public_database", superuser=True)
+    obj, known = world.book, [world.publisher]
+    if gate.startswith("ancestor-"):
+        kind = gate.removeprefix("ancestor-")
+        target = adb.child[kind].List
+        obj = None
+        if kind == "direct":
+            known = [world.shelf]
+    elif gate == "higher":
+        target, obj, known = adb.notes[fault != "unselected"].List, None, [world.book, world.publisher]
+    else:
+        target = {
+            "own-core": adb.CDetail,
+            "own-guardian": adb.GDetail,
+            "top-core": adb.CTDetail,
+            "top-guardian": adb.GTDetail,
+        }[gate]
+        if gate.startswith("top-"):
+            known = []
+    if fault == "actor":
+        actor = User.objects.using("shard").get(pk=actor.pk)
+    elif fault == "auth-table":
+        routes.read[auth_database_tests.TABLES["permission"]] = "shard"
+    elif fault == "grant-table":
+        table = "direct_user_grant" if gate == "ancestor-direct" else "user_grant"
+        routes.read[auth_database_tests.TABLES[table]] = "shard"
+    elif fault == "object":
+        if gate.startswith("own-"):
+            obj = Book.objects.using("shard").get(pk=obj.pk)
+        else:
+            index = 1 if gate == "higher" else 0
+            known[index] = type(known[index]).objects.using("shard").get(pk=known[index].pk)
+    elif fault == "unselected":
+        known[1] = Publisher.objects.using("shard").get(pk=world.publisher.pk)
+    elif fault == "provider-none":
+        monkeypatch.setattr(adb.anc["model"], "ancestor_policy", AncestorPolicy(provider="none"))
+        known[0] = Publisher.objects.using("shard").get(pk=world.publisher.pk)
+    elif fault == "parent-denied":
+        monkeypatch.setattr(adb.none, "ancestor_policy", AncestorPolicy(provider="model"))
+        actor = auth_database_tests._actor("public_parent_denied")
+        routes.read[auth_database_tests.TABLES["user_grant"]] = "shard"
+    elif fault == "inactive":
+        actor.is_active = False
+        routes.read[auth_database_tests.TABLES["permission"]] = "shard"
+    state = Mock(return_value=True)
+    monkeypatch.setattr(target, "cv_action_enabled", state)
+    allowed = case == "own-core/object" or fault in ("unselected", "provider-none") or gate.startswith("top-")
+    denied = fault in ("parent-denied", "inactive")
+    if allowed or denied:
+        expected = link_access.LinkAccess.ALLOWED if allowed else link_access.LinkAccess.DENIED_PERMISSION
+        assert link_access.check_link_access(target, actor, obj=obj, known_ancestors=known) is expected
+        if allowed:
+            state.assert_called_once_with(actor, obj if target.cv_object else known[0])
+        else:
+            state.assert_not_called()
+    else:
+        with pytest.raises(ImproperlyConfigured, match=auth_database_tests.REFUSED) as error:
+            link_access.check_link_access(target, actor, obj=obj, known_ancestors=known)
+        operation = (
+            "actor database"
+            if fault == "actor"
+            else "object database"
+            if fault == "object"
+            else "authorization records"
+        )
+        assert operation in str(error.value)
+        state.assert_not_called()
+        with pytest.raises(ImproperlyConfigured, match=auth_database_tests.REFUSED) as private_error:
+            link_access._link_access(target, actor, obj, known)
+        assert str(private_error.value) == str(error.value)

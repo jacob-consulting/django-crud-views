@@ -702,6 +702,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Public link access** ([#414](https://github.com/jacob-consulting/django-crud-views/issues/414)):
+  stable `check_link_access` and `LinkAccess` decide a link's permission and state from a target class,
+  user and supplied objects. The public call validates inputs and returns three enum outcomes; only
+  `ALLOWED` is truthy. Existing package rendering and request authorization stay unchanged. See the
+  [link access reference](docs/reference/link_access.md) for examples and limits.
+
 - **Theme JavaScript namespace and tooltip placements** (#398): startup calls to `register_js_namespace()` and
   `register_tooltip_placements()` replace namespace/placement adapter scripts for compatible libraries. Namespace
   and data prefix remain independent; explicit trigger placement wins, including an empty attribute. Defaults stay

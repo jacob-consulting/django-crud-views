@@ -624,7 +624,7 @@ Navbar child items already used aligned ancestors on every page; page create con
 known higher gates. Each button follows its actual target without a key rewrite. See
 [known ancestry and Cancel](guardian.md#known-ancestry-and-cancel).
 A visible link can still lead to 403 or a queryset-based 404; URL construction proves no authorization.
-Request responses and login redirects are unchanged. The opt-in [check_link_access](link_access.md) function
+No request response or login redirect changes are introduced. The opt-in [check_link_access](link_access.md) function
 decides a complete link from supplied objects; there is no public accessor for resolved ancestors.
 The manage page shows declared policy, not whether a user can pass it.
 

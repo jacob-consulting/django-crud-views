@@ -1,5 +1,7 @@
 """Migration guidance for narrowed hooks and shared consumers before the 1.0 freeze."""
 
+import re
+
 import pytest
 
 from crud_views.lib.link_access import LinkAccess
@@ -247,6 +249,73 @@ def test_link_check_is_in_the_stability_inventory():
     assert "all names prefixed with an underscore" in text
     assert "`_link_access`" not in text
     assert "`_link_permission`" not in text
+
+
+@pytest.mark.parametrize(
+    "path, heading, marker, link",
+    [
+        (
+            "migrating-1.0.md",
+            "## Link access hooks",
+            "6. Review a custom",
+            "reference/link_access.md",
+        ),
+        (
+            "reference/guardian.md",
+            "### Create button visibility for child viewsets",
+            "Each button follows its actual target.",
+            "link_access.md",
+        ),
+        (
+            "reference/context_buttons.md",
+            "## ContextButton",
+            "Custom `ContextButton.get_context` output",
+            "link_access.md",
+        ),
+        (
+            "migrating-1.0.md",
+            "### Nested Guardian create access",
+            "Custom `ContextButton.get_context` output",
+            "reference/link_access.md",
+        ),
+    ],
+)
+def test_public_checker_migration_pointers(path, heading, marker, link):
+    section = _section((DOCS / path).read_text(), heading)
+    paragraph = section[section.index(marker) :].split("\n\n", 1)[0]
+    flat = _flat(paragraph)
+    for phrase in ("check_link_access", "complete", "cv_create_has_access", "custom create permission"):
+        assert phrase in flat, (path, heading, phrase)
+    assert f"]({link})" in paragraph, (path, heading, link)
+    assert ((DOCS / path).parent / link).resolve() == LINK_ACCESS_MD.resolve()
+    assert "bounded" in flat or "direct-hook bounds" in flat, (path, heading, flat)
+
+
+def test_documentation_public_checker_claims():
+    obsolete = re.compile(
+        r"\bno public (?:link )?checker\b"
+        r"|\bpublic (?:link )?checker\b[^.]*\b(?:not available|not published|later work|future work|pending)\b"
+        r"|\bno\b[^.]*\bpublic checker\b[^.]*\bintroduced\b"
+        r"|\bpublication(?: and validation)? of a standalone function remains? later work\b",
+        re.IGNORECASE,
+    )
+    offending = []
+    for path in sorted(DOCS.rglob("*.md")):
+        prose = _flat(re.sub(r"```.*?```", "", path.read_text(), flags=re.DOTALL))
+        offending.extend((str(path.relative_to(DOCS)), match.group()) for match in obsolete.finditer(prose))
+    assert not offending, offending
+    for path in (MIGRATING_MD, DOCS / "reference/guardian.md", DOCS / "reference/nested.md"):
+        assert "no public accessor for resolved ancestors" in _flat(path.read_text()), path
+    guardian = _flat(_section((DOCS / "reference/guardian.md").read_text(), "#### Limits and configuration failures"))
+    for phrase in ("independent table columns", "LinkChildColumn", "DataPanel/DataView", "breadcrumbs", "site menus"):
+        assert phrase in guardian, phrase
+    assert "opt-in" in guardian
+    filter_section = _section(
+        (DOCS / "reference/context_buttons.md").read_text(),
+        "### `cv_context_has_permission` — gate surrounding markup",
+    )
+    assert "[check_link_access](link_access.md)" in filter_section
+    assert "they remain permission-only and never ask state" in _flat(filter_section)
 
 
 @pytest.mark.parametrize(

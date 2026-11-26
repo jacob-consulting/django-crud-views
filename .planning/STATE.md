@@ -1,24 +1,24 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.52"
+current_phase_name: Publish check_link_access as the documented way to decide a link - stage 3c
 current_plan: Not started
 status: planning
-stopped_at: "Phase 06.51 complete; stage 3c (#414) must settle before Phase 7"
-last_updated: "2026-11-25T20:47:17.297Z"
-last_activity: 2026-11-25
-last_activity_desc: "Phase 06.51 shipped as PR #415 to feature/link-access-check-design"
-state_head: 8576aa5f16fbe1afd5978f55704bd42155e32a1a
+stopped_at: Phase 06.52 context gathered; ready for planning
+last_updated: "2026-11-26T10:31:14.896Z"
+last_activity: 2026-11-26
+last_activity_desc: "Captured Phase 06.52 context: public API, enum results and caller edge cases"
+state_head: 06f2dfaf9628c574e7e6ea2d3f438481d147143a
 progress:
-  total_phases: 58
+  total_phases: 59
   completed_phases: 57
   total_plans: 315
   completed_plans: 315
 milestone_name: milestone
 ---
 
-Total Phases: 58
+Total Phases: 59
 Completed Phases: 57
 
 # Project State
@@ -28,17 +28,17 @@ Completed Phases: 57
 See: .planning/PROJECT.md (updated 2026-11-25)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Stage 3c (#414) before Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.52 — stage 3c (#414), publish the public link checker before the 1.0 freeze
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.52 — Publish check_link_access as the documented way to decide a link - stage 3c (#414)
 Current Plan: Not started
 Total Plans in Phase: TBD
-Status: Awaiting stage 3c (#414) before planning Phase 7
-Last activity: 2026-11-25 -- Phase 06.51 shipped as PR #415 to feature/link-access-check-design
+Status: Planning
+Last activity: 2026-11-26 -- Captured Phase 06.52 context: public API, enum results and caller edge cases
 
-Next: After PR #415 (`https://github.com/jacob-consulting/django-crud-views/pull/415`) merges to `feature/link-access-check-design`, add/plan stage 3c (#414) before Phase 7 and the 1.0 freeze. All seven codebase maps were refreshed after shipping. Phase 7 is the next numbered roadmap phase, but its stage-3c prerequisite is not complete. Auto-advance is disabled. Issues #412/#413 close only when the feature branch merges to `main`.
+Next: $gsd-plan-phase 06.52 — read 06.52-CONTEXT.md and issue #414; preserve D-53/D-54 and local decisions P52-01–P52-08. The implementation PR targets feature/link-access-check-design. Phase 7 remains after stage 3c; issues close when the feature branch merges to main.
 
 ### Phase 06.51 completion — 2026-11-25
 
@@ -2658,6 +2658,7 @@ None yet.
 - Phase 06.49 inserted after Phase 06.48: Reuse Guardian object grants across navigation checks (#385); approved stage 2, concept sections 12.1, 12.3 and 12.7 at 4b65990f, including D-37 and D-38 (URGENT)
 - Phase 06.50 inserted after Phase 06.49: Move remaining link consumers to the shared link check - stage 3a (#412); approved D-39–D-44 and D-52, baseline e444bbfc and PR target feature/link-access-check-design. Before stage 3b (#413), stage 3c (#414) and the 1.0.0 freeze. (URGENT)
 - Phase 06.51 inserted after Phase 06.50: Remove retained Guardian link exceptions - stage 3b (#413); approved D-45–D-52 with D-40–D-42 and D-55 preserved, concept at 55dce6f6. Before stage 3c (#414) and the 1.0 freeze; PR target feature/link-access-check-design. (URGENT)
+- Phase 06.52 inserted after Phase 06.51: Publish check_link_access as the documented way to decide a link - stage 3c (#414); approved D-53/D-54, baseline 1d538046 after merged PR #415. Before Phase 7 and the 1.0 freeze; PR target feature/link-access-check-design. (URGENT)
 
 ## Deferred Items
 
@@ -2667,6 +2668,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-25T20:42:03Z
-Stopped at: Phase 06.51 complete; stage 3c (#414) must settle before Phase 7
-Resume file: None
+Last session: 2026-11-26T10:30:58.511Z
+Stopped at: Phase 06.52 context gathered; ready for planning
+Resume file: .planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-CONTEXT.md

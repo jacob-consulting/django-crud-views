@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
-last_mapped_at: 2026-11-25
+last_mapped_commit: 7d9b74dc51306d98ce007cd001f416463982c456
+last_mapped_at: 2026-11-26
 ---
 # Codebase Structure
 
-**Analysis Date:** 2026-11-25
+**Analysis Date:** 2026-11-26
 
 Scope: the reusable apps under `src/`, test harnesses under `tests/`, theme contracts under `docs/reference/`, and feature consumers under `examples/bootstrap5/`. Apply the developer-maintainability rule in `AGENTS.md` when choosing locations: use focused opt-in modules and keep shared request paths easy to trace.
 
@@ -63,7 +63,7 @@ lib/
 │                       form, manage, mixins (+ __init__ re-exports)
 ├── bulk/               __init__.py (BulkSelectionMixin, BulkFormViewPermissionRequired, BulkConfirmForm)
 ├── ancestors.py        request-time ancestor authorization and child scoping
-├── link_access.py      link-only evaluation over caller-supplied objects; separate from request auth
+├── link_access.py      public check_link_access/LinkAccess plus private link evaluation; separate from request auth
 ├── ancestor_policy.py  AncestorPolicy / AncestorPermissions (config values only)
 ├── ancestor_db.py      database-alias handling for ancestor reads
 ├── resource.py         Resource, ResourceMeta/ResourceOptions, ResourceViewMixin (leaf module)
@@ -94,7 +94,10 @@ lib/
 - Key files: `src/crud_views/lib/view/base.py`, `src/crud_views/lib/view/meta.py`.
 
 **`src/crud_views/lib/link_access.py` and link producers:**
-- Purpose: private permission-then-state evaluation for a bounded set of rendered controls; this is not request authorization and does not load objects or ancestors.
+- Purpose: public caller-input validation and permission-then-state evaluation for custom Python callers, plus private evaluation for a bounded set of package controls. This module does not load objects or ancestors or authorize requests.
+- Public import: `from crud_views.lib.link_access import LinkAccess, check_link_access`. Neither symbol is re-exported by `src/crud_views/lib/__init__.py`. The signature is `check_link_access(target, user, *, obj=None, known_ancestors=()) -> LinkAccess`; no request or rendering view is accepted.
+- Public validation checks the class/ViewSet, own-object presence/type, list-or-tuple ancestry container, and every supplied slot's count/type before gates. ORM compatibility uses concrete models; Resources use their declared class. Compatible unsaved objects and subclasses are accepted. No queryset or parent-membership validation occurs (`src/crud_views/lib/link_access.py`).
+- The wrapper delegates to `_link_access(..., rendering_view=None)` and returns a regular enum: `ALLOWED` is truthy; `DENIED_PERMISSION` and `DENIED_STATE` are false. Gate/hook errors propagate; raw enum values are not a serialization contract. Existing package producers keep using their private entry points and rendering-view context (`src/crud_views/lib/link_access.py`, `docs/reference/link_access.md`).
 - The evaluator receives the target's own object or `None` and known ancestors supplied by callers. `_cv_link_permission()` keeps the own-object argument separate from the immediate parent (`src/crud_views/lib/view/base.py`).
 - `_known_link_ancestors()` aligns already-resolved objects to destination ancestry; explicit unknown immediate parents deny and unknown higher levels are skipped. No relation discovery or query occurs (`src/crud_views/lib/link_access.py`).
 - Link producers in `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/navbar.py`, `src/crud_views/lib/bulk/__init__.py`, and `src/crud_views/templatetags/crud_views.py` use shared permission-before-state checks. Permission-only filters omit state; the destination request independently runs its guard.
@@ -191,6 +194,7 @@ lib/
 **Entry Points:**
 - `src/crud_views/apps.py`: AppConfig; `ready()` imports `crud_views.checks`.
 - `src/crud_views/lib/viewset/__init__.py`: `ViewSet`, `.register`, `.urlpatterns`.
+- `src/crud_views/lib/link_access.py`: canonical public import location for `check_link_access` and `LinkAccess`; opt-in custom Python link decisions.
 - `src/crud_views/management/commands/cv_access.py`, `src/crud_views/management/commands/cv_manage_view.py`: diagnostics CLIs.
 - `examples/bootstrap5/project/urls.py`, `examples/bootstrap5/manage.py`: demo wiring.
 
@@ -282,6 +286,8 @@ lib/
 - Compact headings and field gutters: `src/crud_views/templates/crud_views/formsets/compact_headings.html` and `src/crud_views/lib/formsets/compact.py`; keep `gx-3` on each row plus the existing `cv-formset-*` classes.
 
 **Rendered link access and Cancel changes:**
+- Public custom-caller validation and enum: `src/crud_views/lib/link_access.py`. Keep the public wrapper separate from package rendering producers, accept only list/tuple known ancestry, validate complete inputs before gates, and delegate with `rendering_view=None`. Preserve the own-object/ancestor distinction and the absence of object loading, membership checks and decision caching.
+- Public API contract: `docs/reference/link_access.md`, `docs/development/stability.md`; navigation entry: `mkdocs.yml`. Behavioral coverage and public function/enum shape: `tests/test1/test_public_link_access.py`; documentation contract: `tests/test1/test_link_access_docs.py`.
 - Shared permission/state evaluation and ancestry alignment: `src/crud_views/lib/link_access.py`. Consumers call it directly in `src/crud_views/lib/view/buttons.py`, `src/crud_views/lib/view/base.py`, `src/crud_views/lib/views/card.py`, `src/crud_views/lib/navbar.py` and `src/crud_views/lib/bulk/__init__.py`. Permission-only filters are in `src/crud_views/templatetags/crud_views.py`.
 - Link context uses the actual registered destination. Keep own-object permission input separate from action state: own object for object views, parent for nested non-object views, `None` for top-level non-object views (`src/crud_views/lib/link_access.py`).
 - Guardian nested-create access: `src/crud_views_guardian/lib/views.py` owns `cv_create_has_access()` and its gate-before-override private seam. The hook gets the real same-ViewSet rendering view or `None` across ViewSets. Actor and parent gates run before custom overrides; the default repeats the bounded immediate-parent check.
@@ -326,4 +332,4 @@ lib/
 
 ---
 
-*Structure analysis: 2026-11-25*
+*Structure analysis: 2026-11-26*

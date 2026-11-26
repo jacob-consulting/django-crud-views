@@ -1,11 +1,11 @@
 ---
-last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
-last_mapped_at: 2026-11-25
+last_mapped_commit: 7d9b74dc51306d98ce007cd001f416463982c456
+last_mapped_at: 2026-11-26
 ---
-<!-- refreshed: 2026-11-25 -->
+<!-- refreshed: 2026-11-26 -->
 # Codebase Concerns
 
-**Analysis Date:** 2026-11-25
+**Analysis Date:** 2026-11-26
 
 ## Tech Debt
 
@@ -45,10 +45,11 @@ last_mapped_at: 2026-11-25
 
 **Link eligibility differs from destination authorization:**
 - Risk: applications can mistake a visible/hidden link for proof of endpoint authorization.
-- Files: `src/crud_views/lib/link_access.py`, `src/crud_views/lib/view/base.py`, `src/crud_views_guardian/lib/mixins.py`, `docs/reference/guardian.md`.
-- Current mitigation: shared checks apply known higher gates, immediate-parent/provider checks, own permission and then state. Ordinary checks neither discover unknown ancestors nor cache permission/state decisions. Destination requests enforce independent permission/queryset restrictions.
+- Files: `src/crud_views/lib/link_access.py`, `src/crud_views/lib/view/base.py`, `src/crud_views_guardian/lib/mixins.py`, `docs/reference/link_access.md`, `docs/reference/guardian.md`.
+- Current mitigation: public `check_link_access` validates target, own-object presence/type and finite list/tuple ancestry before delegation. Shared checks apply known higher gates, immediate-parent/provider checks, own permission and then state. Ordinary checks neither discover unknown ancestors nor cache permission/state decisions. Destination requests enforce independent permission/queryset restrictions.
+- Public API boundary: compatible unsaved objects and partial higher ancestry are accepted. Validation establishes type/presence, not membership, queryset access or request authorization; unknown higher levels stay unchecked, and a missing immediate parent denies. The public checker supplies no rendering view, so rendering-view-dependent hooks can differ from package buttons. These limits are intentional and documented in `docs/reference/link_access.md`.
 - Accepted boundary: ordinary nested parent-only non-create links still call `cv_has_access`; a `PermissionRequired` base can hide a link whose parent-only request is allowed. Cancel deliberately omits that hook, including custom overrides, and retains higher/immediate gates and state. Actual Cancel retains bounded parent lookup; ordinary links do not acquire that lookup. These are documented decisions, not defects.
-- Recommendations: test rendered eligibility and direct destination responses together. Preserve object/parent argument separation and gate-before-hook/state ordering in `tests/test1/test_link_access.py`, `tests/test1/test_link_consumers.py`, `tests/test1/test_link_cancel.py`, and `tests/test1/test_guardian_composition.py`.
+- Recommendations: use the public full checker for custom Python links, retaining independent endpoint authorization. Test rendered eligibility and direct destination responses together. Preserve object/parent argument separation and gate-before-hook/state ordering in `tests/test1/test_public_link_access.py`, `tests/test1/test_link_access.py`, `tests/test1/test_link_consumers.py`, `tests/test1/test_link_cancel.py`, and `tests/test1/test_guardian_composition.py`.
 
 **Guardian grant lifetime follows the supplied user object:**
 - Risk: a retained user can retain positive or negative grants after direct/group permission changes; `refresh_from_db()` does not reset permission caches.
@@ -63,9 +64,9 @@ last_mapped_at: 2026-11-25
 - Recommendations: scope source reads and authorization in Resource implementations; design compensation for external writes when needed. This is an extension contract, not a confirmed package leak.
 
 **Scoped security/review evidence is clean:**
-- Files: `.planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-SECURITY.md`, `.planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-REVIEW.md`, `.planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-VERIFICATION.md`.
-- Current mitigation: independent verification passes 28/28 must-haves; all 19 authored threats are closed; the 41-file deep review reports zero findings.
-- Recommendations: treat this as scoped evidence rather than universal certification. The current shared-gate implementation does not retain stage-1 Guardian link exceptions; do not list those as open concerns.
+- Files: `.planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-SECURITY.md`, `.planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-REVIEW.md`, `.planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-VERIFICATION.md`.
+- Current mitigation: independent verification passes 17/17 must-haves; all nine authored threats are closed; review reports zero findings, including the three-file documentation/test delta at `9ec58fa4`.
+- Recommendations: treat this as scoped evidence rather than universal certification. Documented public API limits are approved scope, not waived security findings. The shared-gate implementation does not retain stage-1 Guardian link exceptions; do not list those as open concerns.
 
 ## Performance Bottlenecks
 
@@ -87,7 +88,13 @@ last_mapped_at: 2026-11-25
 - Files: `src/crud_views/lib/ancestors.py`, `src/crud_views/lib/ancestor_db.py`, `src/crud_views/lib/ancestor_policy.py`, `src/crud_views/lib/link_access.py`, `src/crud_views_guardian/lib/ancestors.py`, `src/crud_views_guardian/lib/mixins.py`.
 - Why fragile: actor admission, provider, database alias, MRO and known-ancestry alignment interact. Unknown ancestor holes must stay at their declared levels.
 - Safe modification: preserve missing-immediate-parent denial, supplied-ancestry-only ordinary checks and independent endpoint enforcement. Keep create hook context bound to its own ViewSet and preserve explicit Cancel actor/request semantics.
-- Test coverage: `tests/test1/test_ancestor_*.py`, `tests/test1/test_link_*.py`, `tests/test1/test_guardian_child_link_visibility.py`, and `tests/test1/test_authorization_matrix.py` cover supported contracts; arbitrary downstream overrides remain uncertified.
+- Test coverage: `tests/test1/test_ancestor_*.py`, `tests/test1/test_link_*.py`, `tests/test1/test_public_link_access.py`, `tests/test1/test_guardian_child_link_visibility.py`, and `tests/test1/test_authorization_matrix.py` cover supported contracts; arbitrary downstream overrides remain uncertified.
+
+**Public link API compatibility:**
+- Files: `src/crud_views/lib/link_access.py`, `docs/reference/link_access.md`, `docs/development/stability.md`, `tests/test1/test_public_link_access.py`, `tests/test1/test_link_access_docs.py`.
+- Why fragile: enum truthiness, argument validation and parent/own/state ordering are public promises. Input errors and reached-gate errors share `ImproperlyConfigured`; only public caller-input diagnostics have the `check_link_access` prefix. Private outcome strings are not a serialization API.
+- Safe modification: preserve names, signature, three results, boolean behavior, validation cases and gate ordering. Keep database-gate placement, denial-versus-configuration-error ordering and message wording beyond the input prefix distinguished as current behavior that can change in a minor release. Reached hook exceptions must propagate.
+- Test coverage: public tests exercise compatible subtypes, unsaved objects, malformed containers, missing parents, ancestor holes, no domain lookups, absent membership validation, error propagation and ordinary/Guardian composition; docs tests execute extracted examples. No universal downstream hook or zero-auth-query guarantee is established.
 
 **Nested formsets and conditional activation:**
 - Files: `src/crud_views/lib/formsets/formsets.py`, `src/crud_views/lib/formsets/render_tree.py`, `src/crud_views/lib/formsets/compact.py`, `src/crud_views/lib/conditional/group.py`, `src/crud_views/lib/conditional/queryset.py`, `src/crud_views/static/crud_views/js/formset.js`, `src/crud_views/static/crud_views/js/toggle.js`.
@@ -131,7 +138,7 @@ last_mapped_at: 2026-11-25
 
 ## Missing Critical Features
 
-None independently confirmed. Parent-only link/Cancel semantics in `docs/reference/guardian.md`, Resource behavior in `src/crud_views/lib/resource.py`, and bulk database/PK bounds in `docs/reference/bulk_actions.md` are accepted contracts, not requests to broaden scope.
+None independently confirmed. Partial ancestry and absent membership/rendering-view checks in `docs/reference/link_access.md`, parent-only link/Cancel semantics in `docs/reference/guardian.md`, Resource behavior in `src/crud_views/lib/resource.py`, and bulk database/PK bounds in `docs/reference/bulk_actions.md` are accepted contracts, not requests to broaden scope.
 
 ## Test Coverage Gaps
 
@@ -149,16 +156,16 @@ None independently confirmed. Parent-only link/Cancel semantics in `docs/referen
 
 **Downstream browser and assistive-technology certification:**
 - What's not tested: universal native CoreUI/Tabler behavior, arbitrary copied themes, all engines and assistive-technology combinations.
-- Files: `tests/browser/`, `tests/js/adapters.test.js`, `docs/reference/theme.md`, `.planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-UI-REVIEW.md`.
+- Files: `tests/browser/`, `tests/js/adapters.test.js`, `docs/reference/theme.md`, `.planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-UI-REVIEW.md`.
 - Risk: source/template/jsdom checks have bounded scope; downstream runtime certification is not established. No defect or failed phase criterion is inferred.
 - Priority: Low; consumer-specific validation lane.
 
 **Latest source acceptance is not every runtime lane:**
-- What's not tested: a fresh full dependency matrix, rebuilt installed distribution and universal browser run are not established by the latest source-suite receipt alone.
-- Files: `.planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-VERIFICATION.md`, `.planning/phases/06.51-remove-retained-guardian-link-exceptions-stage-3b-413/06.51-ACCEPTANCE.md`, `noxfile.py`.
-- Risk: conflating lanes overstates release coverage. Recorded acceptance is 20,119 core passes, 637 example passes plus 300 subtests, 2,088 protected regression passes, and scoped docs/lint checks.
+- What's not tested: a fresh full dependency matrix, rebuilt installed distribution, recorder-enabled execution and universal browser run are not established by source-scoped receipts.
+- Files: `.planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-VERIFICATION.md`, `.planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-REGRESSION.md`, `.planning/phases/06.52-publish-check-link-access-as-the-documented-way-to-decide-a/06.52-ship-evidence/receipt.json`, `noxfile.py`.
+- Risk: conflating revisions and lanes overstates release coverage. Historical runtime acceptance is 20,397 core passes and 637 example passes plus 300 subtests. The `9ec58fa4` delta changes two Markdown files and one docs test; production and examples remain unchanged. Fresh checks cover 77 documentation cases, two independent verifier cases, strict docs and scoped Ruff. The full suites are retained evidence for unchanged runtime inputs, not reruns at that documentation commit. The recorded environment is Python 3.12.3 / Django 6.0.10 / Guardian 3.5.2 with request recording disabled.
 - Priority: Low; preserve revision/environment-bound receipts. No tests were rerun for this mapping.
 
 ---
 
-*Concerns audit: 2026-11-25*
+*Concerns audit: 2026-11-26*

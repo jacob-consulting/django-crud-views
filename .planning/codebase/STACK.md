@@ -1,10 +1,10 @@
 ---
-last_mapped_commit: 597d086f3e1e5d418a39b2def8af39cfcbbd8420
-last_mapped_at: 2026-11-25
+last_mapped_commit: 7d9b74dc51306d98ce007cd001f416463982c456
+last_mapped_at: 2026-11-26
 ---
 # Technology Stack
 
-**Analysis Date:** 2026-11-25
+**Analysis Date:** 2026-11-26
 
 ## Languages
 
@@ -58,6 +58,7 @@ last_mapped_at: 2026-11-25
 - python-box >=6.0.2 and typing-extensions >=4.7.1: runtime support (`pyproject.toml`, `src/crud_views/lib/settings.py`).
 - Object detail ships with the base distribution; dependency extras enable workflow, polymorphic, ordered and Guardian integrations (`pyproject.toml`).
 - Bulk actions compose existing ORM/form/table dependencies rather than adding a service or runtime package (`src/crud_views/lib/bulk/__init__.py`).
+- Public `check_link_access` and `LinkAccess` use the existing Django permission/state machinery and Python's `Enum`; no additional dependency or service is required. Import them directly from `src/crud_views/lib/link_access.py`; there is no convenience export from `src/crud_views/lib/__init__.py` (`docs/reference/link_access.md`).
 
 **Infrastructure:**
 - Optional workflow: django-fsm-2 >=4.0.0 and django-fsm-2-admin >=2.0.1 (`pyproject.toml`, `src/crud_views_workflow/lib/`).
@@ -71,7 +72,8 @@ last_mapped_at: 2026-11-25
 
 **Environment:**
 - Configure host Django settings; `src/crud_views/lib/settings.py` reads `CRUD_VIEWS_*` attributes into a module-level Pydantic model. No package-specific dotenv loader is used.
-- Key controls include `CRUD_VIEWS_EXTENDS`, manage visibility/access tracing, strictness, theme/button/icon values, ancestor permissions, and `CRUD_VIEWS_ASSETS_BUNDLED` (`src/crud_views/lib/settings.py`, `docs/reference/settings.md`).
+- Key controls include `CRUD_VIEWS_EXTENDS`, manage visibility/access tracing, strictness, button/icon values, ancestor permissions, and `CRUD_VIEWS_ASSETS_BUNDLED` (`src/crud_views/lib/settings.py`, `docs/reference/settings.md`). Theme templates override the `crud_views/` namespace; `CRUD_VIEWS_THEME` is ignored and produces warning W110 (`src/crud_views/lib/settings.py`, `docs/reference/theme.md`).
+- Direct link checking is opt-in and needs no new setting: pass a target view class, user, own object when required, and a nearest-first list/tuple of known ancestors. `LinkAccess.ALLOWED` is truthy; both denial members are false (`src/crud_views/lib/link_access.py`, `docs/reference/link_access.md`).
 - Host apps, auth/messages/request context processors, crispy Bootstrap pack and tables2 template are demonstrated by `examples/bootstrap5/project/settings.py` and `tests/test1/conftest.py`.
 - Demo reads `SECRET_KEY` and `RENDER_EXTERNAL_HOSTNAME`; Render selects `DJANGO_SETTINGS_MODULE=project.settings_demo` (`examples/bootstrap5/project/settings_demo.py`, `render.yaml`).
 - `dev/.env.example` exists for optional tunnel configuration; its contents are not inspected (`taskfile.yaml`).
@@ -97,4 +99,4 @@ last_mapped_at: 2026-11-25
 
 ---
 
-*Stack analysis: 2026-11-25*
+*Stack analysis: 2026-11-26*

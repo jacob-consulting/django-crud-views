@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="5" time="2.097" timestamp="2026-11-26T13:56:56.997919+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_link_access_docs" name="test_link_check_is_in_the_stability_inventory" time="0.002"><failure message="AssertionError: assert '**Link access**' in '# API stability\n\nFrom release **1.0.0** on, django-crud-views follows [semantic versioning](https://semver.org/):\n...er than the next major release.\n- Every deprecation and removal is recorded in the CHANGELOG with a migration hint.\n'">def test_link_check_is_in_the_stability_inventory():
+        text = (DOCS / "development/stability.md").read_text()
+&gt;       assert "**Link access**" in text
+E       AssertionError: assert '**Link access**' in '# API stability\n\nFrom release **1.0.0** on, django-crud-views follows [semantic versioning](https://semver.org/):\n...er than the next major release.\n- Every deprecation and removal is recorded in the CHANGELOG with a migration hint.\n'
+
+tests/test1/test_link_access_docs.py:230: AssertionError</failure></testcase><testcase classname="tests.test1.test_link_access_docs" name="test_public_reference_contract" time="0.002"><failure message="AssertionError: Both denial members are false&#10;assert 'Both denial members are false' in '# Link access Use check_link_access to decide a link from a target view class, a user and objects you already have. I...user, obj=book, known_ancestors=[publisher]) if result == LinkAccess.ALLOWED: show_link = True else: show_link = False'">def test_public_reference_contract():
+        page = LINK_ACCESS_MD.read_text()
+        flat = _flat(page)
+        for phrase in (
+            "check_link_access(target, user, *, obj=None, known_ancestors=()) -&gt; LinkAccess",
+            "target and user can be positional or keyword arguments",
+            "obj and known_ancestors are keyword-only",
+            "regular enum",
+            "LinkAccess.ALLOWED",
+            "LinkAccess.DENIED_PERMISSION",
+            "LinkAccess.DENIED_STATE",
+            "Both denial members are false",
+            "not interchangeable with raw strings",
+            "not a supported serialization contract",
+            "stable at 1.0",
+            "target must be a view class",
+            "view instances and other non-class inputs",
+            "finite ordered list or tuple",
+            "None, iterators and QuerySets",
+            "before inspection or evaluation",
+            "complete validation before authorization",
+            "messages start with check_link_access",
+            "target without a ViewSet",
+            "ancestor does not fit its declared level",
+            "own object does not fit",
+            "no own object for an object target",
+            "own object for a collection target",
+            "more ancestor slots than declared levels",
+            "any ancestor slot for a top-level target",
+            "trailing None",
+            "nearest first",
+            "isinstance",
+            "concrete model",
+            "proxy",
+            "multi-table",
+            "polymorphic",
+            "Resource class",
+            "unsaved",
+            "does not guarantee permission or request success",
+            "parent gates → own permission → state",
+            "missing immediate parent",
+            "unknown higher slots",
+            "cv_action_enabled(user, obj)",
+            "immediate parent",
+            "top-level collection",
+            "None",
+            "no object or ancestor loading",
+            "authorization queries and project hook work",
+            "broken declared ancestry",
+            "its own message",
+            "missing ancestor permission key",
+            "operation requirements",
+            "project hook exceptions propagate",
+            "missing own permission key denies",
+            "signed-in, active user",
+            "provider none",
+            "anonymous top-level Guardian list",
+            "does not authorize a request",
+            "ViewSet querysets",
+            "dispatch",
+            "has_permission",
+            "middleware",
+            "membership",
+            "another parent",
+            "404",
+            "cv_get_parent_object",
+            "no public accessor for resolved higher ancestors",
+            "stricter higher-level permission",
+            "cv_create_has_access",
+            "rendering-view-dependent override",
+            "permission-only function stays private",
+            "cv_context_has_permission",
+        ):
+&gt;           assert phrase in flat, phrase
+E           AssertionError: Both denial members are false
+E           assert 'Both denial members are false' in '# Link access Use check_link_access to decide a link from a target view class, a user and objects you already have. I...user, obj=book, known_ancestors=[publisher]) if result == LinkAccess.ALLOWED: show_link = True else: show_link = False'
+
+tests/test1/test_link_access_docs.py:101: AssertionError</failure></testcase><testcase classname="tests.test1.test_link_access_docs" name="test_public_documented_examples[object]" time="0.591" /><testcase classname="tests.test1.test_link_access_docs" name="test_public_documented_examples[nested]" time="0.592"><failure message="AssertionError: '## Nested collection' must appear exactly once, found 0&#10;assert 0 == 1&#10; +  where 0 = len([])">core_targets = namespace(parent=ViewSet(linkcorepub6723ebf2), vs=ViewSet(linkcorebook6723ebf2), List=&lt;class 'crud_views.lib.view.meta..., Detail=&lt;class 'crud_views.lib.view.meta.LinkCoreDetail'&gt;, TopList=&lt;class 'crud_views.lib.view.meta.LinkCoreTopList'&gt;)
+helpers = namespace(pub=namespace(vs=ViewSet(ahpubfce00582), List=&lt;class 'crud_views.lib.view.meta.List'&gt;, Detail=&lt;class 'crud_v....view.meta.List'&gt;, Detail=&lt;class 'crud_views.lib.view.meta.Detail'&gt;, Create=&lt;class 'crud_views.lib.view.meta.Create'&gt;))
+data = namespace(penguin=&lt;Publisher: Penguin&gt;, other=&lt;Publisher: Other&gt;, book=&lt;Book: Hitchhiker&gt;, genre=&lt;Genre: Fiction&gt;, author=&lt;Author: Douglas Adams&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x737e28198110&gt;
+example = 'nested'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("example", ["object", "nested", "off-page"])
+    def test_public_documented_examples(core_targets, helpers, data, monkeypatch, example):
+        if example == "object":
+            actor = _user("docs_object", (Publisher, "view"))
+            namespace = {"TargetView": core_targets.Detail, "user": actor, "book": data.book, "publisher": data.penguin}
+            heading = "## Object target"
+        elif example == "nested":
+            actor = _user("docs_nested", (Publisher, "view"))
+            namespace = {"BookList": core_targets.List, "user": actor, "publisher": data.penguin}
+            heading = "## Nested collection"
+        else:
+            actor = _user("docs_off_page")
+            _grant(actor, helpers.pub, "view", data.penguin)
+            _grant(actor, helpers.book, "view", data.book)
+            monkeypatch.setattr(helpers.note.vs, "ancestor_policy", AncestorPolicy(cascade=True))
+            namespace = {"NoteList": helpers.note.List, "user": actor, "book": data.book, "publisher": data.penguin}
+            heading = "## Off-page caller"
+&gt;       result = _run_public_example(heading, namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_link_access_docs.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_link_access_docs.py:22: in _run_public_example
+    source = _fence(LINK_ACCESS_MD, heading)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test1/test_ancestor_docs.py:80: in _fence
+    fences = FENCE.findall(_section(page.read_text(), heading))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = '# Link access\n\nUse `check_link_access` to decide a link from a target view class, a user and objects you already ha...wn_ancestors=[publisher])\nif result == LinkAccess.ALLOWED:\n    show_link = True\nelse:\n    show_link = False\n```\n'
+heading = '## Nested collection'
+
+    def _section(text: str, heading: str) -&gt; str:
+        """The body below a markdown heading, up to the next heading of the same or a higher level."""
+        level = len(heading) - len(heading.lstrip("#"))
+        headings = _headings(text)
+        matches = [m for m in headings if m.group(0) == heading]
+&gt;       assert len(matches) == 1, f"{heading!r} must appear exactly once, found {len(matches)}"
+E       AssertionError: '## Nested collection' must appear exactly once, found 0
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_label_mode_docs.py:40: AssertionError</failure></testcase><testcase classname="tests.test1.test_link_access_docs" name="test_public_documented_examples[off-page]" time="0.610"><failure message="AssertionError: '## Off-page caller' must appear exactly once, found 0&#10;assert 0 == 1&#10; +  where 0 = len([])">core_targets = namespace(parent=ViewSet(linkcorepub5bde4be9), vs=ViewSet(linkcorebook5bde4be9), List=&lt;class 'crud_views.lib.view.meta..., Detail=&lt;class 'crud_views.lib.view.meta.LinkCoreDetail'&gt;, TopList=&lt;class 'crud_views.lib.view.meta.LinkCoreTopList'&gt;)
+helpers = namespace(pub=namespace(vs=ViewSet(ahpubd774cbb1), List=&lt;class 'crud_views.lib.view.meta.List'&gt;, Detail=&lt;class 'crud_v....view.meta.List'&gt;, Detail=&lt;class 'crud_views.lib.view.meta.Detail'&gt;, Create=&lt;class 'crud_views.lib.view.meta.Create'&gt;))
+data = namespace(penguin=&lt;Publisher: Penguin&gt;, other=&lt;Publisher: Other&gt;, book=&lt;Book: Hitchhiker&gt;, genre=&lt;Genre: Fiction&gt;, author=&lt;Author: Douglas Adams&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x717939b89400&gt;
+example = 'off-page'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("example", ["object", "nested", "off-page"])
+    def test_public_documented_examples(core_targets, helpers, data, monkeypatch, example):
+        if example == "object":
+            actor = _user("docs_object", (Publisher, "view"))
+            namespace = {"TargetView": core_targets.Detail, "user": actor, "book": data.book, "publisher": data.penguin}
+            heading = "## Object target"
+        elif example == "nested":
+            actor = _user("docs_nested", (Publisher, "view"))
+            namespace = {"BookList": core_targets.List, "user": actor, "publisher": data.penguin}
+            heading = "## Nested collection"
+        else:
+            actor = _user("docs_off_page")
+            _grant(actor, helpers.pub, "view", data.penguin)
+            _grant(actor, helpers.book, "view", data.book)
+            monkeypatch.setattr(helpers.note.vs, "ancestor_policy", AncestorPolicy(cascade=True))
+            namespace = {"NoteList": helpers.note.List, "user": actor, "book": data.book, "publisher": data.penguin}
+            heading = "## Off-page caller"
+&gt;       result = _run_public_example(heading, namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_link_access_docs.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_link_access_docs.py:22: in _run_public_example
+    source = _fence(LINK_ACCESS_MD, heading)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test1/test_ancestor_docs.py:80: in _fence
+    fences = FENCE.findall(_section(page.read_text(), heading))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = '# Link access\n\nUse `check_link_access` to decide a link from a target view class, a user and objects you already ha...wn_ancestors=[publisher])\nif result == LinkAccess.ALLOWED:\n    show_link = True\nelse:\n    show_link = False\n```\n'
+heading = '## Off-page caller'
+
+    def _section(text: str, heading: str) -&gt; str:
+        """The body below a markdown heading, up to the next heading of the same or a higher level."""
+        level = len(heading) - len(heading.lstrip("#"))
+        headings = _headings(text)
+        matches = [m for m in headings if m.group(0) == heading]
+&gt;       assert len(matches) == 1, f"{heading!r} must appear exactly once, found {len(matches)}"
+E       AssertionError: '## Off-page caller' must appear exactly once, found 0
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test1/test_label_mode_docs.py:40: AssertionError</failure></testcase></testsuite></testsuites>

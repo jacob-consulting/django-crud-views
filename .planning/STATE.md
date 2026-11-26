@@ -3,18 +3,18 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.52"
 current_phase_name: Publish check_link_access as the documented way to decide a link - stage 3c
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 06.52-01-PLAN.md
-last_updated: "2026-11-26T13:40:34.161Z"
+stopped_at: Completed 06.52-02-PLAN.md
+last_updated: "2026-11-26T13:52:38.255Z"
 last_activity: 2026-11-26
-last_activity_desc: Phase 06.52 plan 01 completed; plan 02 ready
-state_head: 969074df8178fa5e80f7467fc6bb90013a99c338
+last_activity_desc: Phase 06.52 plan 02 completed; plan 03 ready
+state_head: b8591c3477946362f0efbf31e238c3c4ce562936
 progress:
   total_phases: 59
   completed_phases: 57
   total_plans: 318
-  completed_plans: 316
+  completed_plans: 317
 milestone_name: milestone
 ---
 
@@ -33,12 +33,18 @@ See: .planning/PROJECT.md (updated 2026-11-25)
 ## Current Position
 
 Phase: 06.52 (Publish check_link_access as the documented way to decide a link - stage 3c) — EXECUTING
-Current Plan: 2
+Current Plan: 3
 Total Plans in Phase: 3
 Status: Ready to execute
-Last activity: 2026-11-26 — Phase 06.52 plan 01 completed; plan 02 ready
+Last activity: 2026-11-26 — Phase 06.52 plan 02 completed; plan 03 ready
 
-Next: $gsd-execute-phase 06.52 — execute plan 02, then plan 03 in sequential waves. Plan 01 is complete. Preserve D-53/D-54 and P52-01–P52-08; implementation PR targets feature/link-access-check-design. Phase 7 follows stage 3c; issues close when the feature branch merges to main.
+Next: $gsd-execute-phase 06.52 — execute plan 03 publication and final combined gates. Plans 01 and 02 are complete. Preserve D-53/D-54 and P52-01–P52-08; implementation PR targets feature/link-access-check-design. Phase 7 follows stage 3c; issues close when the feature branch merges to main.
+
+### Phase 06.52 plan 02 — 2026-11-26
+
+- Added 130 public-call cases: all core/Guardian outcomes, parent/own/state order, absent create rendering view, actor/parent admission, repeated decisions, aligned three-level partial ancestry, cold ORM SQL/loader checks, no membership proof and reached error/database boundaries. Existing fixtures supply model/generic/direct Guardian gates and nested core/Guardian own gates; only database cases use transaction/default+shard marks. No production change was necessary.
+- Complete public module passes 267 in 12.28s; unchanged matrix/cost gate passes 1,665 in 14.37s, both with four workers. Scoped Ruff/format/diff and preservation checks pass. All 13 pre-existing public test/helper functions and all five original private functions remain byte-identical; all production, documentation, matrix/golden/pin/receipt inputs are preserved. Two setup mistakes were corrected in one pass; no behavioral RED or source edit was fabricated.
+- Task commits e28436c5 and d2249304; immediate SUMMARY b8591c34 precedes tracking. Five deliverables classify as automated. ROADMAP accepted 2/3 and its stale dotted row was reconciled. STATE advanced exactly once to plan 3, with one metric and three decisions. Totals remain 57/59 phases and now 317/318 plans, without an unscoped global percentage. AC labels remain local. Only the helper-owned state.json timestamp delta was restored; original dirt and unrelated files remain intact. Full-source/strict-doc/final publication gates remain with plan 03. No phase completion, install, push, PR, merge or issue closure ran.
 
 ### Phase 06.52 plan 01 — 2026-11-26
 
@@ -2155,6 +2161,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.51 P06 | 9min | 3 tasks | 14 files |
 | Phase 06.51 P07 | 21min | 2 tasks | 4 files |
 | Phase 06.52 P01 | 7 min | 2 tasks | 3 files |
+| Phase 06.52 P02 | 6 min | 2 tasks | 1 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2570,6 +2577,9 @@ Recent decisions affecting current work:
 - [Phase 06.52]: Preserve private functions/constants; validate inline in the public wrapper and delegate once with rendering_view=None.
 - [Phase 06.52]: Use declared concrete-model/Resource isinstance checks and inspect every supplied list/tuple slot without loads, coercion or persistence checks.
 - [Phase 06.52]: Plan 01 task 2 is passing coverage of the complete wrapper required by task 1; no fabricated RED or redundant source change.
+- [Phase 06.52]: Plan 02 extends passing coverage of existing private behavior through the complete plan-01 wrapper; no production correction or artificial RED is warranted.
+- [Phase 06.52]: Reload supplied ORM rows before SQL capture and assert empty relation caches; permit existing authorization-table queries.
+- [Phase 06.52]: Keep database refusal assertions at reached nested gates and preserve core own-object, top-level and skipped-gate exceptions.
 
 ### Pending Todos
 
@@ -2678,6 +2688,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-26T13:40:25.724Z
-Stopped at: Completed 06.52-01-PLAN.md
+Last session: 2026-11-26T13:52:29.611Z
+Stopped at: Completed 06.52-02-PLAN.md
 Resume file: None

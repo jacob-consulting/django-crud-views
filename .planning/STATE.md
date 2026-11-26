@@ -4,17 +4,17 @@ milestone: v1.0
 current_phase: "06.52"
 current_phase_name: Publish check_link_access as the documented way to decide a link - stage 3c
 current_plan: 3
-status: executing
-stopped_at: Completed 06.52-02-PLAN.md
-last_updated: "2026-11-26T13:52:38.255Z"
+status: verifying
+stopped_at: Completed 06.52-03-PLAN.md
+last_updated: "2026-11-26T14:20:51.075Z"
 last_activity: 2026-11-26
-last_activity_desc: Phase 06.52 plan 02 completed; plan 03 ready
-state_head: b8591c3477946362f0efbf31e238c3c4ce562936
+last_activity_desc: Phase 06.52 plan 03 completed; independent phase verification pending
+state_head: 35fe1edd6f579883899d197328ff54cda5167abf
 progress:
   total_phases: 59
   completed_phases: 57
   total_plans: 318
-  completed_plans: 317
+  completed_plans: 318
 milestone_name: milestone
 ---
 
@@ -32,13 +32,19 @@ See: .planning/PROJECT.md (updated 2026-11-25)
 
 ## Current Position
 
-Phase: 06.52 (Publish check_link_access as the documented way to decide a link - stage 3c) — EXECUTING
+Phase: 06.52 (Publish check_link_access as the documented way to decide a link - stage 3c) — READY FOR VERIFICATION
 Current Plan: 3
 Total Plans in Phase: 3
-Status: Ready to execute
-Last activity: 2026-11-26 — Phase 06.52 plan 02 completed; plan 03 ready
+Status: Plans complete — independent phase verification pending
+Last activity: 2026-11-26 — Phase 06.52 plan 03 completed; independent phase verification pending
 
-Next: $gsd-execute-phase 06.52 — execute plan 03 publication and final combined gates. Plans 01 and 02 are complete. Preserve D-53/D-54 and P52-01–P52-08; implementation PR targets feature/link-access-check-design. Phase 7 follows stage 3c; issues close when the feature branch merges to main.
+Next: $gsd-execute-phase 06.52 — continue independent phase gates using the source-bound final receipts. All three plans are complete; phase completion is pending verification/review. Preserve D-53/D-54 and P52-01–P52-08; implementation PR targets feature/link-access-check-design. Phase 7 follows stage 3c; issues close when the feature branch merges to main.
+
+### Phase 06.52 plan 03 — 2026-11-26
+
+- Published the complete stable checker/enum reference, real navigation links and inventory, three executable Markdown examples, four custom-button migration pointers and the Added release note. Original object fence, eleven retained prose-test functions, historical Breaking section, private functions/constants, consumers and protected tests/goldens/matrix/query pins remain byte-identical. No production edit.
+- Final source suite passes **20,397 in 410.53s** with six workers; 29 publication tests, 77 combined link/navbar docs, strict MkDocs (1.42s) and scoped Ruff pass. The 1,665-case matrix/cost result is reused from plan 02 on unchanged relevant source. A first full run caught one rephrased protected sentence; restoring its exact request/redirect wording fixed it without editing the test, and the final full rerun passes. Durable receipts retain both runs and SHA256 for all 884 final source inputs.
+- Task commits fe255a4a, f26c5454, 7625a252, accc4c1f, 6ab892ae and 814c2790; immediate SUMMARY 35fe1edd precedes tracking. Five deliverables classify as automated. ROADMAP accepted 3/3; the dotted progress row and wave prose are reconciled. STATE advance ran exactly once and retained plan 3 ready for verification; one metric and two decisions recorded. Totals remain **57/59 phases**, now **318/318 plans**, without an unscoped global percentage. AC labels remain local. Only helper-owned state.json timestamp/next-label/next-reason deltas are restored to the pretracking snapshot; original dirt remains intact. No phase.complete, install, push, PR, merge or issue closure ran.
 
 ### Phase 06.52 plan 02 — 2026-11-26
 
@@ -2162,6 +2168,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.51 P07 | 21min | 2 tasks | 4 files |
 | Phase 06.52 P01 | 7 min | 2 tasks | 3 files |
 | Phase 06.52 P02 | 6 min | 2 tasks | 1 files |
+| Phase 06.52 P03 | 23 min | 3 tasks | 10 files |
 
 | Phase 06.32 P01 | 22min | 3 tasks | 12 files |
 
@@ -2580,6 +2587,8 @@ Recent decisions affecting current work:
 - [Phase 06.52]: Plan 02 extends passing coverage of existing private behavior through the complete plan-01 wrapper; no production correction or artificial RED is warranted.
 - [Phase 06.52]: Reload supplied ORM rows before SQL capture and assert empty relation caches; permit existing authorization-table queries.
 - [Phase 06.52]: Keep database refusal assertions at reached nested gates and preserve core own-object, top-level and skipped-gate exceptions.
+- [Phase 06.52]: Preserve the original object fence and prior behavioral prose tests while publishing the exact full checker and gate-specific database limits.
+- [Phase 06.52]: Use the 20397-case final source receipt and its 884 input hashes for subsequent phase gates; keep failed-run and correction evidence separate.
 
 ### Pending Todos
 
@@ -2688,6 +2697,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-26T13:52:29.611Z
-Stopped at: Completed 06.52-02-PLAN.md
+Last session: 2026-11-26T14:20:42.337Z
+Stopped at: Completed 06.52-03-PLAN.md
 Resume file: None

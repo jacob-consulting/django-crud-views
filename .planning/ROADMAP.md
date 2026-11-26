@@ -2692,5 +2692,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 06.49. Reuse Guardian object grants across navigation checks (#385) | 5/5 | Complete | 2026-11-24 |
 | 06.50. Move remaining link consumers to the shared link check - stage 3a (#412) | 9/9 | Complete | 2026-11-25 |
 | 06.51. Remove retained Guardian link exceptions - stage 3b (#413) | 7/7 | Complete | 2026-11-25 |
-| 06.52. Publish check_link_access as the documented way to decide a link - stage 3c (#414) | 0/TBD | Not started | - |
+| 06.52. Publish check_link_access as the documented way to decide a link - stage 3c (#414) | 0/3 | Planned | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

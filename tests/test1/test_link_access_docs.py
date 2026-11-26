@@ -261,8 +261,14 @@ def test_link_check_is_in_the_stability_inventory():
         "Both denial members are false",
         "../reference/link_access.md",
         "keyword-only",
+        "input validation cases",
+        "current behavior that is not part of this promise",
+        "which reached gate checks which database",
     ):
         assert phrase in inventory, phrase
+    assert "the behavior in the" not in inventory
+    reference = _flat(LINK_ACCESS_MD.read_text())
+    assert "describe current behavior and can change in a minor release" in reference
     assert "all names prefixed with an underscore" in text
     assert "`_link_access`" not in text
     assert "`_link_permission`" not in text

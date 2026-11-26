@@ -14,7 +14,11 @@ Pass known ancestors as a list or tuple, nearest first and aligned with the targ
 The function takes no request or rendering view.
 
 The function, argument convention and result behavior are **stable at 1.0**, as listed in the
-[public API inventory](../development/stability.md). There is no convenience import from `crud_views.lib`.
+[public API inventory](../development/stability.md). The stable part is the names, the calling convention,
+the three results, the validation cases below and the order parent gates, own permission, state.
+[Database checks at reached gates](#database-checks-at-reached-gates), the order of a denial against a
+configuration error and the wording of messages after the `check_link_access` prefix describe current
+behavior and can change in a minor release. There is no convenience import from `crud_views.lib`.
 
 ## Results
 

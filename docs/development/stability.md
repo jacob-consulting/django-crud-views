@@ -100,8 +100,11 @@ deprecation and migration policy below.
 `LinkAccess.DENIED_STATE`. The function takes positional-or-keyword `target` and `user`, with keyword-only
 `obj` and `known_ancestors`. `LinkAccess` is a regular enum: only `ALLOWED` is truthy.
 Both denial members are false, and members are not interchangeable with raw strings.
-These names, calling convention and the behavior in the [link access reference](../reference/link_access.md)
-are stable at 1.0.
+These names, the calling convention, the three results with their boolean value, the input validation cases
+and the order parent gates, own permission, state are stable at 1.0. The
+[link access reference](../reference/link_access.md) also describes current behavior that is not part of
+this promise: which reached gate checks which database, the order of a denial against a configuration
+error, and the wording of error messages beyond their `check_link_access` prefix.
 
 **Settings**: all `CRUD_VIEWS_*` settings documented in the
 [settings reference](../reference/settings.md).
